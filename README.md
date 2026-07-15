@@ -2,19 +2,30 @@
 
 Landing page situs donasi bagiberbagi.id — komunitas penyalur bantuan makanan & dukungan UMKM.
 
-## Struktur
-
-- [bagiberbagi.dc.html](bagiberbagi.dc.html) — halaman utama, hasil export dari site builder.
-- [support.js](support.js), [image-slot.js](image-slot.js) — runtime generated oleh builder. **Jangan edit manual** — akan ketimpa saat re-export.
-- [content.js](content.js) — konten yang dimaksud untuk diedit manual (nomor WA, teks program, FAQ, dll) tanpa sentuh layout/logic.
+Dibangun dengan [Astro](https://astro.build) + Tailwind CSS, static output (no backend).
 
 ## Menjalankan
 
-Situs statis, gak ada build step. Buka [bagiberbagi.dc.html](bagiberbagi.dc.html) langsung di browser, atau serve folder ini pakai static server apa aja (mis. `npx serve .`).
+```bash
+bun install
+bun run dev       # dev server, http://localhost:4321
+bun run build     # build ke dist/
+bun run preview   # preview hasil build
+bun test          # unit test src/lib/format.ts
+```
+
+## Struktur
+
+- `src/pages/index.astro` — halaman utama, merangkai semua section dari `src/components/`.
+- `src/consts.ts` — data situs (program, fitur, langkah, dampak, FAQ, footer nav).
+- `src/content/legal/` — dokumen legal (kebijakan privasi, syarat & ketentuan, transparansi) sebagai Astro Content Collection.
+- `src/lib/format.ts` — helper format Rupiah & link WhatsApp, diuji di `format.test.ts`.
+- `src/scripts/` — JS interaktif per fitur (mobile nav, scrollspy, ticker, kalkulator donasi, FAQ accordion, dll).
+- `legacy/` — situs lama (export dari site builder), disimpan untuk referensi, tidak lagi dipakai.
 
 ## Update konten
 
-Edit [content.js](content.js), lalu re-export/upload ulang lewat site builder sesuai alur biasa.
+Edit `src/consts.ts` untuk data section (program/fitur/langkah/dampak/FAQ/footer), atau markdown di `src/content/legal/` untuk dokumen legal.
 
 ## Lisensi
 

@@ -4,20 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & dukungan UMKM). Static site, no build step, no package manager.
+Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & dukungan UMKM). Astro static site, bun as package manager/test runner.
 
 ## Commands
 
-No build/lint/test tooling. To preview: open [bagiberbagi.dc.html](bagiberbagi.dc.html) directly in a browser, or serve the folder with any static server (`npx serve .`).
+- `bun install` — install dependencies
+- `bun run dev` — dev server (http://localhost:4321)
+- `bun run build` — build static site to `dist/`
+- `bun run preview` — preview the production build
+- `bun test` — run unit tests (`src/lib/format.test.ts`)
+- `bunx astro check` — type-check `.astro` files
 
 ## Architecture
 
-This site is an **export from a no-code site builder** ("dc" runtime — custom `<x-dc>`/`<x-import>` tags, `{{ }}` bindings, `<sc-if>` conditionals). Files fall into two categories:
+Astro static site (`output: 'static'`, no adapter — no deploy target chosen yet), Tailwind CSS, TypeScript strict.
 
-- **Generated, do not hand-edit**: [support.js](support.js) (header says: "GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`" — that source repo isn't part of this export) and [image-slot.js](image-slot.js) (a copied "omelette starter" component, gets overwritten by the builder's `copy_starter_component` tool). Both will be silently overwritten if the page is re-exported from the builder.
-- **Meant to be edited by hand**: [content.js](content.js) — a plain CMS-style module (WA number, program list, FAQ text, legal copy, stats labels, etc). [bagiberbagi.dc.html](bagiberbagi.dc.html) loads it at runtime via `import('./content.js')` (line ~410) and merges it into component state — editing copy here does not require touching layout/logic.
-
-[bagiberbagi.dc.html](bagiberbagi.dc.html) itself is the single-page layout (header, program sections, FAQ, legal modals, footer) with an inline `<script type="text/x-dc" data-dc-script>` block driving state/behavior. Since it's a builder export, prefer editing [content.js](content.js) for copy changes; treat structural changes to the `.dc.html` as likely to be overwritten on the next export from the builder tool.
+- `src/pages/index.astro` assembles the page from one component per original section (see `src/components/`).
+- `src/consts.ts` holds all small structured content (programs, features, steps, impacts, FAQs, footer nav, socials) as plain typed arrays/objects — deliberately not an Astro Content Collection, since these are fixed-size (4-5 items), tightly coupled to one section each, and never individually routed.
+- `src/content/legal/*.md` is a Content Collection (`src/content/config.ts`) — privacy/terms/transparency are long-form prose and Phase 2 candidates for standalone pages, unlike the data above.
+- `src/lib/format.ts` holds pure functions (Rupiah formatting, WhatsApp link building) used by both server-rendered markup and the client-side calculator script; it's the only part of the app with unit tests (`bun test`).
+- `src/scripts/*.js` are small vanilla-JS modules (no UI framework) each imported via a `<script>` tag in the one component that owns that behavior — mobile nav, scrollspy, fade-in-on-scroll, activity ticker, stats count-up, donation calculator, FAQ accordion.
+- `legacy/` is the original site-builder export (`bagiberbagi.dc.html`, `content.js`, `image-slot.js`, `support.js`) — kept for reference only, never imported by the Astro app.
+- `plan.md`, `faq.md`, `kebijakan.md`, `syarat.md` at the repo root are Phase 2 backlog (new program mega-menu, dedicated FAQ/legal/about pages) — not yet implemented.
 
 ## Git conventions
 

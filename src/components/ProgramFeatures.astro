@@ -1,0 +1,35 @@
+---
+import Icon from './Icon.astro';
+import { FEATURES } from '../consts';
+---
+
+<section id="program" class="px-5 md:px-10 py-12 md:py-[88px]">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="text-brand-orange font-bold text-[13px] tracking-wide mb-3">SETIAP ORANG MEMILIKI CARA BERBEDA UNTUK BERBAGI</div>
+      <h2 class="text-[28px] md:text-[38px] font-extrabold tracking-tight mb-4">Menciptakan Dampak Melalui Berbagai Program Kebaikan</h2>
+      <p class="text-muted text-base leading-relaxed">bagiberbagi.id menghadirkan berbagai program sosial yang dapat dipilih sesuai kebutuhan, momen, maupun tujuan berbagi—dengan proses yang mudah, transparan, dan terdokumentasi.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-10 items-stretch">
+      <div class="flex-1 basis-[400px] min-w-[280px] bg-brand-blue rounded-[20px] p-9 flex flex-col justify-end min-h-[340px] text-white">
+        <h3 class="text-2xl font-extrabold mb-2.5">Dari Kebaikan Anda Menjadi Dampak Nyata</h3>
+        <p class="text-sm leading-relaxed opacity-90">Setiap program menggerakkan ekosistem lokal mulai dari UMKM, relawan, komunitas, hingga penerima manfaat.</p>
+      </div>
+
+      <div class="flex-1 basis-[400px] min-w-[280px] flex flex-col gap-7 justify-center">
+        {FEATURES.map((f) => (
+          <div class="flex gap-4" data-fade="1">
+            <div class="w-11 h-11 flex-none rounded-xl flex items-center justify-center" style={{ background: f.bg }}>
+              <Icon name={f.icon} color={f.color} />
+            </div>
+            <div>
+              <h4 class="text-[17px] font-bold mb-1">{f.title}</h4>
+              <p class="text-[14.5px] text-muted leading-snug">{f.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

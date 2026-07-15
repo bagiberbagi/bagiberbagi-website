@@ -17,7 +17,7 @@ Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & d
 
 ## Architecture
 
-Astro static site (`output: 'static'`, no adapter — no deploy target chosen yet), Tailwind CSS, TypeScript strict.
+Astro static site (`output: 'static'`, no adapter), Tailwind CSS, TypeScript strict. Deploys to a self-managed VPS (nginx + certbot, see `deploy/README.md`) via GitHub Actions on push to `main`.
 
 - `src/pages/index.astro` assembles the page from one component per original section (see `src/components/`).
 - `src/consts.ts` holds all small structured content (programs, features, steps, impacts, FAQs, footer nav, socials) as plain typed arrays/objects — deliberately not an Astro Content Collection, since these are fixed-size (4-5 items), tightly coupled to one section each, and never individually routed.

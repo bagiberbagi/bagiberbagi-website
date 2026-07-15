@@ -1,0 +1,30 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const terms = await getEntry('legal', 'terms');
+if (!terms) throw new Error('legal/terms entry not found');
+const { Content } = await render(terms);
+---
+
+<BaseLayout title={`${terms.data.title} — bagiberbagi.id`}>
+  <Header />
+  <section class="px-5 md:px-10 py-12 md:py-[88px] bg-white">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-brand-orange font-bold text-[13px] tracking-wide mb-3">LEGAL</div>
+      <h1 class="text-2xl md:text-[30px] font-extrabold tracking-tight mb-4">{terms.data.title}</h1>
+      <div class="prose-legal flex flex-col gap-3 text-[14.5px] text-muted leading-relaxed">
+        <Content />
+      </div>
+    </div>
+  </section>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .prose-legal :global(p) {
+    margin: 0;
+  }
+</style>

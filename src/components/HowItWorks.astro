@@ -1,0 +1,21 @@
+---
+import { STEPS } from '../consts';
+---
+
+<section id="cara-kerja" class="px-5 md:px-10 pb-12 md:pb-[88px]">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <div class="text-brand-orange font-bold text-[13px] tracking-wide mb-3">CARA KERJA</div>
+      <h2 class="text-[26px] md:text-[34px] font-extrabold tracking-tight">Lima Langkah Menciptakan Dampak</h2>
+    </div>
+    <div class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+      {STEPS.map((s) => (
+        <div data-fade="1">
+          <div class="text-3xl font-extrabold text-brand-blue/20 mb-2">{s.n}</div>
+          <h4 class="text-base font-bold mb-1.5">{s.title}</h4>
+          <p class="text-sm text-muted leading-relaxed">{s.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -5,9 +5,7 @@ export default config({
     kind: 'cloud',
   },
   cloud: {
-    // TODO: replace after creating the project at https://keystatic.cloud
-    // Format is "<team-slug>/<project-slug>"
-    project: 'TODO/bagiberbagi-website',
+    project: 'bagiberbagi/bagiberbagi-website',
   },
   singletons: {
     settings: singleton({

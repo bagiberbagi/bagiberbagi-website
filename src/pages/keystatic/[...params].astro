@@ -6,6 +6,11 @@ import keystaticConfig from '../../../keystatic.config';
 export function getStaticPaths() {
   return [{ params: { params: undefined } }];
 }
+
+const appSlug = {
+  envName: 'PUBLIC_KEYSTATIC_GITHUB_APP_SLUG',
+  value: import.meta.env.PUBLIC_KEYSTATIC_GITHUB_APP_SLUG,
+};
 ---
 
 <!doctype html>
@@ -17,6 +22,6 @@ export function getStaticPaths() {
     <title>Keystatic — bagiberbagi.id</title>
   </head>
   <body>
-    <Keystatic config={keystaticConfig as Config} client:load />
+    <Keystatic config={keystaticConfig as Config} appSlug={appSlug} client:only="react" />
   </body>
 </html>

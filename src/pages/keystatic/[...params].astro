@@ -1,0 +1,22 @@
+---
+import type { Config } from '@keystatic/core';
+import { Keystatic } from '@keystatic/core/ui';
+import keystaticConfig from '../../../keystatic.config';
+
+export function getStaticPaths() {
+  return [{ params: { params: undefined } }];
+}
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Keystatic — bagiberbagi.id</title>
+  </head>
+  <body>
+    <Keystatic config={keystaticConfig as Config} client:load />
+  </body>
+</html>

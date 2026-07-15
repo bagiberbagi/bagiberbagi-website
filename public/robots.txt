@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /keystatic/
 
 Sitemap: https://bagiberbagi.id/sitemap-index.xml

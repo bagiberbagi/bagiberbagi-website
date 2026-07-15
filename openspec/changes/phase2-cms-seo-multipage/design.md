@@ -39,14 +39,17 @@ Both run at build time only (Astro frontmatter, top-level `await`), so output HT
 **`@astrojs/sitemap` over hand-rolled sitemap generation.**
 Official integration, scans build output automatically (including new Content Collection-driven routes), zero runtime cost, no separate CLI/cron step. Requires `site:` to be set in `astro.config.mjs` (currently missing) for absolute URLs.
 
-**Auth: GitHub OAuth App, not Keystatic Cloud.**
-Keeps auth self-contained to the existing GitHub org/repo permissions (Keystatic's local/GitHub mode), no third-party account needed, no recurring cost.
+**Auth: Keystatic Cloud, not a self-hosted GitHub OAuth App.** (Revised during implementation — see below.)
+The official `@keystatic/astro` integration always injects `/keystatic` and `/api/keystatic` routes with `prerender: false`, which requires an Astro adapter (`output: 'server'`/hybrid + a running Node process) regardless of storage backend — discovered while wiring task 6, this directly conflicts with the "no architecture change" goal. Two ways to avoid it: (a) run a small Node process on the VPS just for those two routes, or (b) skip the integration's auto-injected routes entirely and mount `<Keystatic config={...} client:load />` manually on a plain page. Option (b) only works without a server if `storage.kind: 'cloud'` is used, since GitHub-storage mode's OAuth token exchange must happen server-side (client secret can't live in the browser) — `makeGenericAPIRouteHandler` explicitly 404s for `'cloud'` storage because Keystatic Cloud handles that exchange on their own infrastructure instead. Given a choice between (1) adding a Node process to the VPS or (2) accepting Keystatic Cloud as a vendor dependency, the user chose (2) to keep `output: 'static'` and the existing rsync-only deploy pipeline completely unchanged. Trade-off accepted: a third-party account/service (keystatic.cloud) is now load-bearing for content editing, reversing the original "no vendor dependency" preference from the initial Keystatic-vs-Tina comparison — accepted because the alternative (Node adapter) was judged a bigger change to the deploy model than a Cloud account is to the vendor footprint.
+
+The manually-mounted admin page is still a static-friendly catch-all route: `src/pages/keystatic/[...params].astro` needs an explicit `getStaticPaths()` returning a single path (Keystatic's router is a client-side SPA), and `deploy/nginx/bagiberbagi.id.conf` needs a `location /keystatic/ { try_files $uri $uri/ /keystatic/index.html; }` fallback so deep-linked sub-routes (e.g. `/keystatic/collection/faqs`) don't 404 on direct load — both are static-hosting-compatible, no server process involved.
 
 ## Risks / Trade-offs
 
 - **[Risk]** Admin edits content through Keystatic and commits land directly on `main` (repo convention is direct-to-main, no PR gate) → a bad FAQ/program edit ships as soon as CI passes. **Mitigation**: `bun test`/`astro check` catch schema/type errors, not editorial mistakes; accept this as consistent with the project's existing solo/direct-to-main convention. Revisit (e.g. require review before merge) only if a second editor/admin joins.
 - **[Risk]** Content Collection schema (zod) is stricter than the current loosely-typed `consts.ts` exports — migrating could surface hidden inconsistencies in existing data (e.g. `Faq` entries with missing fields). **Mitigation**: schema validation runs at `astro check`/build time, so any mismatch fails CI before deploy, not silently in production.
-- **[Risk]** GitHub OAuth App setup is a manual, outside-the-repo step (not automatable via code change) → implementation can stall waiting on it. **Mitigation**: sequence tasks so Content Collection migration + SEO + new pages can be built and verified locally before the OAuth App is registered; Keystatic admin route is the only piece blocked on it.
+- **[Risk]** Keystatic Cloud project signup + GitHub repo connection is a manual, outside-the-repo step (not automatable via code change) → implementation can stall waiting on it. **Mitigation**: sequence tasks so Content Collection migration + SEO + new pages can be built and verified locally before the Cloud project exists; `keystatic.config.ts`'s `cloud.project` is left as a `TODO/...` placeholder and is the only piece blocked on it.
+- **[Risk]** Vendor dependency: if keystatic.cloud has an outage or changes pricing/terms, content editing (not the live site) is affected. **Mitigation**: git remains the source of truth regardless — Cloud only brokers the write; worst case, edit `src/content/**` files directly and push, same as before Keystatic existed.
 - **[Trade-off]** Keeping `FEATURES`/`STEPS`/`IMPACTS`/`NAV_LINKS` out of the CMS means those still require a code change + deploy to edit. Accepted: they're layout-bound, not editorial, and including them would bloat the Keystatic UI with fields that shouldn't be touched without also touching markup/icons.
 
 ## Migration Plan
@@ -56,12 +59,12 @@ Keeps auth self-contained to the existing GitHub org/repo permissions (Keystatic
 3. Update consuming components (`Header`, `Footer`, `Faq`, `DonationCalculator`, `JoinUs`) to read from collections instead of `consts.ts`; remove migrated exports from `consts.ts`.
 4. Add `@astrojs/sitemap`, set `site:` in `astro.config.mjs`, add `public/robots.txt`.
 5. Add `src/pages/{privasi,syarat,transparansi,faq}.astro` routes.
-6. Register GitHub OAuth App, add `keystatic.config.ts` + `/keystatic` admin route, wire env vars/secrets.
+6. Add `keystatic.config.ts` (storage `kind: 'cloud'`) + manually-mounted `/keystatic` admin route (`getStaticPaths` + `@astrojs/react` for hydration) + nginx SPA-fallback for `/keystatic/*`; sign up at keystatic.cloud, create a project, connect the GitHub repo, fill in the real `cloud.project` slug.
 7. Deploy via existing pipeline; confirm sitemap/robots reachable, new pages render, Keystatic login/edit/commit loop works end-to-end on a throwaway FAQ edit.
 
 Rollback: each step is a small, independently revertible commit (per project's one-concern-per-commit convention); reverting the Keystatic-route commit alone fully removes the admin surface without touching the Content Collection data it edits.
 
 ## Open Questions
 
-- Exact GitHub OAuth App owner/scope (personal account vs. an org) — needs the user's call before step 6.
+- `keystatic.config.ts`'s `cloud.project` is a placeholder (`'TODO/bagiberbagi-website'`) until the user creates the project at keystatic.cloud and connects this GitHub repo — needed before the admin route is actually usable.
 - Whether `/faq` and `/privasi` etc. get linked from the header/footer nav now, or stay unlinked-but-indexable until Phase 2's broader nav rework (mega-menu, per `plan.md`) lands.

@@ -11,3 +11,6 @@ dist/
 
 # playwright mcp debug artifacts
 .playwright-mcp/
+
+# Claude Code local-only settings (personal permission allowlist)
+.claude/settings.local.json

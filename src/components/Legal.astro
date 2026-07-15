@@ -1,0 +1,45 @@
+---
+import { getEntry, render } from 'astro:content';
+
+const privacy = await getEntry('legal', 'privacy');
+const terms = await getEntry('legal', 'terms');
+const transparency = await getEntry('legal', 'transparency');
+
+if (!privacy || !terms || !transparency) {
+  throw new Error('Missing legal content collection entry');
+}
+
+const { Content: PrivacyContent } = await render(privacy);
+const { Content: TermsContent } = await render(terms);
+const { Content: TransparencyContent } = await render(transparency);
+---
+
+<section class="px-5 md:px-10 py-12 md:py-[88px] bg-white">
+  <div class="max-w-3xl mx-auto flex flex-col gap-10">
+    <div id="privasi">
+      <div class="text-brand-orange font-bold text-[13px] tracking-wide mb-3">LEGAL</div>
+      <h2 class="text-2xl md:text-[30px] font-extrabold tracking-tight mb-4">{privacy.data.title}</h2>
+      <div class="prose-legal flex flex-col gap-3 text-[14.5px] text-muted leading-relaxed">
+        <PrivacyContent />
+      </div>
+    </div>
+    <div id="syarat">
+      <h2 class="text-2xl md:text-[30px] font-extrabold tracking-tight mb-4">{terms.data.title}</h2>
+      <div class="prose-legal flex flex-col gap-3 text-[14.5px] text-muted leading-relaxed">
+        <TermsContent />
+      </div>
+    </div>
+    <div>
+      <h2 class="text-2xl md:text-[30px] font-extrabold tracking-tight mb-4">{transparency.data.title}</h2>
+      <div class="prose-legal flex flex-col gap-3 text-[14.5px] text-muted leading-relaxed">
+        <TransparencyContent />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .prose-legal :global(p) {
+    margin: 0;
+  }
+</style>

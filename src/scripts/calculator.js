@@ -1,4 +1,3 @@
-import { WA_NUMBER } from '../consts';
 import { calcTotal, formatRupiah, buildWaLink, buildDonationMessage } from '../lib/format';
 
 const select = document.getElementById('program-select');
@@ -16,7 +15,7 @@ function render() {
   paxCount.textContent = String(pax);
   totalDisplay.textContent = totalFormatted;
   const message = buildDonationMessage(select.value, pax, totalFormatted);
-  waLink.href = buildWaLink(WA_NUMBER, message);
+  waLink.href = buildWaLink(waLink.dataset.waNumber, message);
 }
 
 if (select && paxCount && incBtn && decBtn && totalDisplay && waLink) {

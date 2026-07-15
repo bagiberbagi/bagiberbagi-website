@@ -1,9 +1,11 @@
 ---
-import { WA_NUMBER } from '../consts';
+import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
 
-const waMitraLink = buildWaLink(WA_NUMBER, 'Halo, saya tertarik untuk bergabung sebagai Mitra Dapur UMKM di bagiberbagi.id.');
-const waCsrLink = buildWaLink(WA_NUMBER, 'Halo, kami tertarik menjalankan program CSR Korporasi bersama bagiberbagi.id.');
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waMitraLink = buildWaLink(site.data.waNumber, 'Halo, saya tertarik untuk bergabung sebagai Mitra Dapur UMKM di bagiberbagi.id.');
+const waCsrLink = buildWaLink(site.data.waNumber, 'Halo, kami tertarik menjalankan program CSR Korporasi bersama bagiberbagi.id.');
 ---
 
 <section id="tentang" class="px-5 md:px-10 py-12 md:py-[88px]">

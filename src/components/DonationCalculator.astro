@@ -1,8 +1,11 @@
 ---
-import { PROGRAMS, WA_NUMBER } from '../consts';
+import { getCollection, getEntry } from 'astro:content';
 import { formatProgramOptionLabel, buildWaLink } from '../lib/format';
 
-const initialWaLink = buildWaLink(WA_NUMBER, 'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const programs = await getCollection('programs');
+const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
 ---
 
 <div id="donasi" class="flex-1 basis-[380px] max-w-[480px] min-w-[280px] bg-white rounded-[20px] p-6 md:p-8 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.18)]">
@@ -13,9 +16,9 @@ const initialWaLink = buildWaLink(WA_NUMBER, 'Halo, saya ingin donasi program "J
     id="program-select"
     class="w-full p-4 border border-border rounded-2xl text-[15px] font-semibold text-ink mb-2 bg-white"
   >
-    {PROGRAMS.map((opt) => (
-      <option value={opt.label} disabled={opt.disabled} selected={opt.label === 'Jumat Berkah'}>
-        {formatProgramOptionLabel(opt)}
+    {programs.map((opt) => (
+      <option value={opt.data.label} disabled={opt.data.disabled} selected={opt.data.label === 'Jumat Berkah'}>
+        {formatProgramOptionLabel(opt.data)}
       </option>
     ))}
   </select>
@@ -37,6 +40,7 @@ const initialWaLink = buildWaLink(WA_NUMBER, 'Halo, saya ingin donasi program "J
 
   <a
     id="wa-donation-link"
+    data-wa-number={site.data.waNumber}
     href={initialWaLink}
     target="_blank"
     rel="noopener"

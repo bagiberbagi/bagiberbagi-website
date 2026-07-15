@@ -1,8 +1,11 @@
 ---
-import { NAV_LINKS, WA_NUMBER } from '../consts';
+import { getEntry } from 'astro:content';
+import { NAV_LINKS } from '../consts';
 import { buildWaLink } from '../lib/format';
 
-const waHeaderLink = buildWaLink(WA_NUMBER);
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waHeaderLink = buildWaLink(site.data.waNumber);
 ---
 
 <header class="sticky top-0 z-50 bg-white border-b border-border">

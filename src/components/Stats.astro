@@ -1,24 +1,34 @@
 ---
-import { STAT_LABELS } from '../consts';
+import { getEntry } from 'astro:content';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
 ---
 
-<section id="stats-section" class="px-5 md:px-10 py-7 md:py-11 border-b border-border">
+<section
+  id="stats-section"
+  class="px-5 md:px-10 py-7 md:py-11 border-b border-border"
+  data-target-dana={site.data.statTargets.dana}
+  data-target-donatur={site.data.statTargets.donatur}
+  data-target-berbagi={site.data.statTargets.berbagi}
+  data-target-area={site.data.statTargets.area}
+>
   <div class="max-w-5xl mx-auto grid gap-6 text-center" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
     <div>
       <div id="stat-dana" class="text-2xl md:text-[32px] font-extrabold tabular-nums">Rp 0.0Jt</div>
-      <div class="text-sm text-muted mt-1">{STAT_LABELS[0]}</div>
+      <div class="text-sm text-muted mt-1">{site.data.statLabels[0]}</div>
     </div>
     <div>
       <div id="stat-donatur" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-muted mt-1">{STAT_LABELS[1]}</div>
+      <div class="text-sm text-muted mt-1">{site.data.statLabels[1]}</div>
     </div>
     <div>
       <div id="stat-berbagi" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-muted mt-1">{STAT_LABELS[2]}</div>
+      <div class="text-sm text-muted mt-1">{site.data.statLabels[2]}</div>
     </div>
     <div>
       <div id="stat-area" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-muted mt-1">{STAT_LABELS[3]}</div>
+      <div class="text-sm text-muted mt-1">{site.data.statLabels[3]}</div>
     </div>
   </div>
 </section>

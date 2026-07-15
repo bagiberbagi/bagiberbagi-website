@@ -1,5 +1,3 @@
-import { STAT_TARGETS } from '../consts';
-
 const section = document.getElementById('stats-section');
 const danaEl = document.getElementById('stat-dana');
 const donaturEl = document.getElementById('stat-donatur');
@@ -8,7 +6,7 @@ const areaEl = document.getElementById('stat-area');
 
 let started = false;
 
-function animate() {
+function animate(targets) {
   const duration = 1800;
   const start = performance.now();
 
@@ -16,10 +14,10 @@ function animate() {
     const t = Math.min(1, (now - start) / duration);
     const eased = 1 - Math.pow(1 - t, 3);
 
-    danaEl.textContent = 'Rp ' + (STAT_TARGETS.dana * eased).toFixed(1) + 'Jt';
-    donaturEl.textContent = Math.round(STAT_TARGETS.donatur * eased).toLocaleString('id-ID');
-    berbagiEl.textContent = Math.round(STAT_TARGETS.berbagi * eased).toLocaleString('id-ID');
-    areaEl.textContent = Math.round(STAT_TARGETS.area * eased).toLocaleString('id-ID');
+    danaEl.textContent = 'Rp ' + (targets.dana * eased).toFixed(1) + 'Jt';
+    donaturEl.textContent = Math.round(targets.donatur * eased).toLocaleString('id-ID');
+    berbagiEl.textContent = Math.round(targets.berbagi * eased).toLocaleString('id-ID');
+    areaEl.textContent = Math.round(targets.area * eased).toLocaleString('id-ID');
 
     if (t < 1) requestAnimationFrame(tick);
   }
@@ -28,11 +26,17 @@ function animate() {
 }
 
 if (section && danaEl && donaturEl && berbagiEl && areaEl) {
+  const targets = {
+    dana: parseFloat(section.dataset.targetDana),
+    donatur: parseFloat(section.dataset.targetDonatur),
+    berbagi: parseFloat(section.dataset.targetBerbagi),
+    area: parseFloat(section.dataset.targetArea),
+  };
   const observer = new IntersectionObserver(
     (entries) => {
       if (entries[0].isIntersecting && !started) {
         started = true;
-        animate();
+        animate(targets);
       }
     },
     { threshold: 0.3 }

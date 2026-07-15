@@ -29,6 +29,6 @@ jobs:
 
       - name: Deploy dist/ to VPS
         run: |
-          rsync -avz --delete --omit-dir-times \
+          rsync -avz --delete --omit-dir-times --no-perms \
             -e "ssh -i ~/.ssh/deploy_key -p 32771" \
             dist/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/bagiberbagi/"

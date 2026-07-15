@@ -14,22 +14,33 @@ Hasilnya 2 file: `deploy_key` (private) dan `deploy_key.pub` (public).
 
 ### 2. Bootstrap VPS
 
-Copy folder `deploy/` ke VPS (`scp -r deploy root@<VPS_IP>:/root/`), lalu login SSH sbg root dan jalankan:
+`vps-setup.sh` ada buat VPS fresh (install nginx+certbot, bikin `WEB_ROOT="/var/www/${DOMAIN}"`). **VPS produksi aktual gak pernah dibootstrap pake script ini** — nginx/TLS udah disetup manual sebelumnya dengan struktur beda. Jangan jalanin script ini di VPS yang udah live, bakal nimpa config nginx yang ada (termasuk blok SSL certbot + SPA-fallback `/keystatic/`).
+
+Nilai aktual VPS produksi (bukan default script):
+- SSH port: `32771` (bukan 22 default)
+- Web root: `/var/www/html/bagiberbagi` (bukan `/var/www/bagiberbagi.id`)
+- User `deploy`: dibikin manual, join grup `www-data` (bukan `chown` jadi owner) — akses tulis ke web root lewat grup
+
+### 3. Bikin user `deploy` + pasang public key (manual, VPS yang udah live)
 
 ```bash
-cd /root/deploy
-bash vps-setup.sh
+# via user sudo yang ada (mis. developer@), bukan root langsung
+sudo adduser --disabled-password --gecos "" deploy
+sudo mkdir -p /home/deploy/.ssh
+sudo touch /home/deploy/.ssh/authorized_keys
+sudo chmod 700 /home/deploy/.ssh
+sudo chmod 600 /home/deploy/.ssh/authorized_keys
+sudo chown -R deploy:deploy /home/deploy/.ssh
+
+sudo usermod -aG www-data deploy
+sudo chown -R root:www-data /var/www/html/bagiberbagi
+sudo chmod -R 775 /var/www/html/bagiberbagi
+sudo find /var/www/html/bagiberbagi -type d -exec chmod g+s {} +
+
+echo "<isi deploy_key.pub>" | sudo tee -a /home/deploy/.ssh/authorized_keys
 ```
 
-Script ini install nginx + certbot, bikin user `deploy`, pasang config nginx, setup firewall (ufw), dan request sertifikat TLS untuk `bagiberbagi.id` (pastikan DNS A record udah nunjuk ke IP VPS sebelum run ini, kalo belum certbot bakal gagal — install nginx-nya tetep jalan, tinggal ulang command certbot manual nanti).
-
-### 3. Pasang public key ke user `deploy`
-
-```bash
-cat deploy_key.pub | ssh root@<VPS_IP> "cat >> /home/deploy/.ssh/authorized_keys"
-```
-
-Verifikasi bisa login: `ssh -i deploy_key deploy@<VPS_IP>`
+Verifikasi bisa login: `ssh -i deploy_key -p 32771 deploy@<VPS_IP>`
 
 ### 4. Set GitHub Secrets
 
@@ -37,9 +48,11 @@ Repo → Settings → Secrets and variables → Actions → New repository secre
 
 | Secret | Isi |
 |---|---|
-| `VPS_HOST` | IP VPS (ganti placeholder di config lain juga kalo masih ada) |
+| `VPS_HOST` | `165.22.246.217` |
 | `VPS_USER` | `deploy` |
 | `VPS_SSH_KEY` | isi file `deploy_key` (private key, full content termasuk header/footer) |
+
+Port SSH (`32771`) di-hardcode langsung di `.github/workflows/deploy.yml` (bukan secret, karena bukan data sensitif).
 
 ### 5. Merge `astro-migration` ke `main`
 
@@ -47,7 +60,7 @@ Workflow (`.github/workflows/deploy.yml`) trigger dari push ke `main` — branch
 
 ## Deploy selanjutnya
 
-Push/merge ke `main` → GitHub Actions otomatis: install → `bun test` → `astro check` → `bun run build` → rsync `dist/` ke `/var/www/bagiberbagi.id` di VPS. Gak perlu langkah manual lagi.
+Push/merge ke `main` → GitHub Actions otomatis: install → `bun test` → `astro check` → `bun run build` → rsync `dist/` ke `/var/www/html/bagiberbagi` di VPS (port SSH `32771`). Gak perlu langkah manual lagi.
 
 ## Update konten legal/domain
 

@@ -81,10 +81,20 @@ export interface Faq {
 }
 
 export const FAQS: Faq[] = [
+  { q: 'Apa itu bagiberbagi.id?', a: 'Platform social impact yang menghubungkan donatur, komunitas, UMKM, dan relawan untuk menyalurkan bantuan makanan dan dukungan sosial secara mudah, transparan, dan berdampak.' },
+  { q: 'Apa yang membedakan bagiberbagi.id dengan platform donasi lain?', a: 'Kami tidak hanya memfasilitasi donasi, tapi membangun ekosistem kolaborasi bersama UMKM, relawan lapangan, dan komunitas lokal — setiap donasi turut menggerakkan ekonomi lokal.' },
   { q: 'Bagaimana cara memastikan donasi saya benar-benar disalurkan?', a: 'Setiap penyaluran didokumentasikan dengan foto & video geotagged yang dikirim ke donatur maksimal H+1 setelah distribusi.' },
   { q: 'Bisakah saya memilih program atau jumlah pax secara spesifik?', a: 'Bisa. Pilih program yang tersedia dan atur jumlah pax sesuai kebutuhan langsung dari kalkulator donasi di atas.' },
   { q: 'Apakah bisa donasi rutin setiap minggu?', a: 'Bisa, aktifkan donasi berlangganan yang berjalan otomatis tanpa perlu diingat-ingat setiap minggunya.' },
-  { q: 'Bagaimana proses pembayarannya?', a: 'Setelah memilih program, Anda akan diarahkan ke tim kami via WhatsApp untuk menyelesaikan detail dan metode pembayaran.' },
+  { q: 'Apakah saya perlu akun untuk berdonasi?', a: 'Tidak. Semua donasi diproses langsung melalui WhatsApp tanpa perlu membuat akun.' },
+  { q: 'Apakah ada minimal donasi?', a: 'Ya, minimal 1 pax (Rp 25.000) untuk program yang sedang aktif.' },
+  { q: 'Bagaimana proses pembayarannya?', a: 'Setelah memilih program dan jumlah pax, Anda diarahkan ke tim kami via WhatsApp untuk pembayaran melalui transfer bank atau e-wallet (OVO/GoPay/DANA).' },
+  { q: 'Bagaimana bagiberbagi.id menyalurkan bantuan?', a: 'Program dijalankan bersama UMKM dan relawan lapangan mitra kami, dengan titik penyaluran yang dipetakan agar bantuan tepat sasaran dan merata.' },
+  { q: 'Apakah saya akan menerima bukti pembayaran?', a: 'Ya, konfirmasi transaksi Anda terima langsung melalui percakapan WhatsApp dengan tim kami.' },
+  { q: 'Apakah donasi yang sudah dikonfirmasi bisa dibatalkan?', a: 'Pada umumnya tidak, karena dana segera dialokasikan untuk pelaksanaan program. Pengecualian dipertimbangkan untuk kesalahan sistem atau transaksi ganda.' },
+  { q: 'Siapa yang bisa menjadi mitra?', a: 'UMKM kuliner, relawan lapangan, dan komunitas lokal yang ingin ikut menciptakan dampak sosial bersama kami.' },
+  { q: 'Bagaimana cara menjadi mitra?', a: 'Hubungi kami langsung melalui WhatsApp untuk mendiskusikan kerja sama.' },
+  { q: 'Bagaimana cara menghubungi bagiberbagi.id?', a: `Melalui WhatsApp, Instagram/TikTok @${SOCIALS.instagram}, atau email di ${SOCIALS.email}.` },
 ];
 
 export interface FooterLink {

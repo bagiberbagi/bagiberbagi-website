@@ -2,3 +2,8 @@
 .DS_Store
 .idea/
 .vscode/
+
+# build output / Astro cache
+node_modules/
+dist/
+.astro/

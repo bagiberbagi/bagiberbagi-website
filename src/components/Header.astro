@@ -1,0 +1,62 @@
+---
+import { NAV_LINKS, WA_NUMBER } from '../consts';
+import { buildWaLink } from '../lib/format';
+
+const waHeaderLink = buildWaLink(WA_NUMBER);
+---
+
+<header class="sticky top-0 z-50 bg-white border-b border-border">
+  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-5 md:px-10 py-4">
+    <a href="#top" class="text-xl font-extrabold text-brand-blue tracking-tight">
+      bagiberbagi<span class="text-ink">.id</span>
+    </a>
+
+    <nav class="hidden nav:flex items-center gap-8">
+      {NAV_LINKS.map((link) => (
+        <a
+          href={`#${link.id}`}
+          data-nav-link={link.id}
+          class="font-medium text-muted transition-colors hover:text-brand-blue"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    <a
+      href={waHeaderLink}
+      target="_blank"
+      rel="noopener"
+      class="hidden nav:inline-block bg-brand-orange text-white font-bold px-8 py-4 rounded-full whitespace-nowrap transition-colors hover:bg-[#d9660f]"
+    >
+      Donasi Sekarang
+    </a>
+
+    <button
+      id="nav-toggle"
+      aria-label="Menu"
+      aria-expanded="false"
+      class="nav:hidden bg-[#F4F6F8] border-0 w-11 h-11 rounded-xl flex items-center justify-center"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+    </button>
+  </div>
+
+  <nav id="mobile-nav-panel" class="hidden nav:hidden flex-col gap-0.5 px-5 md:px-10 pb-5 pt-2 border-t border-border">
+    {NAV_LINKS.map((link) => (
+      <a href={`#${link.id}`} class="px-1 py-3 font-medium text-muted">{link.label}</a>
+    ))}
+    <a
+      href={waHeaderLink}
+      target="_blank"
+      rel="noopener"
+      class="mt-2 bg-brand-orange text-white font-bold px-8 py-4 rounded-full text-center"
+    >
+      Donasi Sekarang
+    </a>
+  </nav>
+</header>
+
+<script>
+  import '../scripts/mobile-nav.js';
+  import '../scripts/scrollspy.js';
+</script>

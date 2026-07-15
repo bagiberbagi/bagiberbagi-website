@@ -1,5 +1,5 @@
 import { defineCollection } from 'astro:content';
-import { file, glob } from 'astro/loaders';
+import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const legal = defineCollection({
@@ -10,7 +10,7 @@ const legal = defineCollection({
 });
 
 const settings = defineCollection({
-  loader: file('./src/content/settings.json'),
+  loader: glob({ pattern: '*.json', base: './src/content/settings' }),
   schema: z.object({
     waNumber: z.string(),
     waNumberDisplay: z.string(),

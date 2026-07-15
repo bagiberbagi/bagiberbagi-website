@@ -1,0 +1,32 @@
+---
+import Icon from './Icon.astro';
+import { IMPACTS } from '../consts';
+---
+
+<section class="bg-brand-blue text-white px-5 md:px-10 py-12 md:py-[88px]">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <div class="text-brand-yellow font-bold text-[13px] tracking-wide mb-3">DAMPAK BERGANDA</div>
+      <h2 class="text-[28px] md:text-[38px] font-extrabold tracking-tight mb-4">Satu Aksi. Banyak Dampak.</h2>
+      <p class="text-base leading-relaxed opacity-90">
+        <strong>Setiap kontribusi menggerakkan lebih dari sekadar penerima manfaat.</strong> Ia juga mendukung UMKM lokal, membuka peluang kerja, memperkuat komunitas, dan membangun ekonomi berbasis kebaikan.
+      </p>
+    </div>
+
+    <div class="grid gap-5 mb-9" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+      {IMPACTS.map((im) => (
+        <div class="bg-white/10 border border-white/[0.18] rounded-[20px] p-6 transition-all hover:-translate-y-1 hover:bg-white/[0.16]" data-fade="1">
+          <div class="w-10 h-10 rounded-[10px] bg-white/[0.16] flex items-center justify-center mb-4">
+            <Icon name={im.icon} color="white" size={19} />
+          </div>
+          <h4 class="text-[17px] font-bold mb-2">{im.title}</h4>
+          <p class="text-sm leading-snug opacity-85">{im.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="border-t border-white/20 pt-6 text-center text-[14.5px] leading-relaxed">
+      <strong>Ekonomi kebaikan yang berputar lokal:</strong> dana dari donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dan dinikmati penerima yang tepat.
+    </div>
+  </div>
+</section>

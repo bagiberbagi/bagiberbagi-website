@@ -1,0 +1,4 @@
+---
+q: "Apa itu bagiberbagi.id?"
+a: "Platform social impact yang menghubungkan donatur, komunitas, UMKM, dan relawan untuk menyalurkan bantuan makanan dan dukungan sosial secara mudah, transparan, dan berdampak."
+---

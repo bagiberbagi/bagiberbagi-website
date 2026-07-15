@@ -1,0 +1,4 @@
+---
+q: "Apakah saya akan menerima bukti pembayaran?"
+a: "Ya, konfirmasi transaksi Anda terima langsung melalui percakapan WhatsApp dengan tim kami."
+---

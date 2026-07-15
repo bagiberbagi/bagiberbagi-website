@@ -1,0 +1,23 @@
+{
+  "site": {
+    "waNumber": "+6282233996648",
+    "waNumberDisplay": "+62 822-3399-6648",
+    "socials": {
+      "instagram": "bagiberbagiid",
+      "tiktok": "bagiberbagiid",
+      "email": "bagiberbagi.official@gmail.com"
+    },
+    "statLabels": [
+      "Total Dana Tersalurkan",
+      "Donatur Terdaftar",
+      "Orang Telah Berbagi",
+      "Area Distribusi"
+    ],
+    "statTargets": {
+      "dana": 8.5,
+      "donatur": 42,
+      "berbagi": 210,
+      "area": 5
+    }
+  }
+}

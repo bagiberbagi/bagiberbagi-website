@@ -1,0 +1,4 @@
+---
+q: "Apakah saya perlu akun untuk berdonasi?"
+a: "Tidak. Semua donasi diproses langsung melalui WhatsApp tanpa perlu membuat akun."
+---

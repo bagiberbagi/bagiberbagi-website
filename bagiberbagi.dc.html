@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<template id="__bundler_thumbnail" data-bg-color="#FFD900">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#FFD900"/>
+    <text x="600" y="420" font-family="sans-serif" font-size="220" text-anchor="middle">🤝</text>
+  </svg>
+</template>
+<helmet>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231D46B9'/%3E%3Cpath d='M16 24s-6.2-3.8-8.3-7.4C6 14 7.3 11 10 11c1.7 0 2.8 1 3.4 1.9.6-.9 1.7-1.9 3.4-1.9 2.7 0 4 3 2.3 5.6C22.2 20.2 16 24 16 24Z' fill='%23FFD900'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  *{box-sizing:border-box;}
+  a{color:#1D46B9;text-decoration:none;}
+  a:hover{color:#153590;}
+  button{font-family:inherit;cursor:pointer;}
+  select{font-family:inherit;}
+  ::selection{background:#FFD900;color:#0F172A;}
+</style>
+</helmet>
+<div id="top" style="width:100%;overflow-x:hidden;background:#FFFFFF;color:#0F172A;">
+
+  <!-- HEADER -->
+  <header style="position:sticky;top:0;z-index:50;background:#FFFFFF;border-bottom:1px solid #EEF0F3;">
+    <div style="max-width:1280px;margin:0 auto;padding:16px clamp(20px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <a href="#top" style="font-size:22px;font-weight:800;color:#1D46B9;letter-spacing:-0.02em;">bagiberbagi<span style="color:#0F172A;">.id</span></a>
+
+      <sc-if value="{{ isDesktopNav }}" hint-placeholder-val="{{ true }}">
+        <nav style="display:flex;align-items:center;gap:32px;">
+          <a href="#cara-kerja" style="font-weight:{{ navWeight.caraKerja }};color:{{ navColor.caraKerja }};transition:color 0.2s;" style-hover="color:#1D46B9;">Cara Kerja</a>
+          <a href="#program" style="font-weight:{{ navWeight.program }};color:{{ navColor.program }};transition:color 0.2s;" style-hover="color:#1D46B9;">Program</a>
+          <a href="#faq" style="font-weight:{{ navWeight.faq }};color:{{ navColor.faq }};transition:color 0.2s;" style-hover="color:#1D46B9;">FAQ</a>
+          <a href="#tentang" style="font-weight:{{ navWeight.tentang }};color:{{ navColor.tentang }};transition:color 0.2s;" style-hover="color:#1D46B9;">Tentang Kami</a>
+        </nav>
+        <a href="{{ waHeaderLink }}" target="_blank" rel="noopener" style="background:#F4791D;color:white;font-weight:700;padding:16px 32px;border-radius:9999px;white-space:nowrap;transition:background 0.2s,transform 0.15s;" style-hover="background:#d9660f;transform:translateY(-1px);">Donasi Sekarang</a>
+      </sc-if>
+
+      <sc-if value="{{ isMobileNav }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleNav }}" aria-label="Menu" style="background:#F4F6F8;border:none;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+          <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>
+          </sc-if>
+          <sc-if value="{{ navClosed }}" hint-placeholder-val="{{ true }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+          </sc-if>
+        </button>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ navOpen }}" hint-placeholder-val="{{ false }}">
+      <nav style="display:flex;flex-direction:column;gap:2px;padding:8px clamp(20px,4vw,40px) 20px;border-top:1px solid #EEF0F3;">
+        <a href="#cara-kerja" onClick="{{ closeNav }}" style="padding:12px 4px;font-weight:500;color:#64748B;">Cara Kerja</a>
+        <a href="#program" onClick="{{ closeNav }}" style="padding:12px 4px;font-weight:500;color:#64748B;">Program</a>
+        <a href="#faq" onClick="{{ closeNav }}" style="padding:12px 4px;font-weight:500;color:#64748B;">FAQ</a>
+        <a href="#tentang" onClick="{{ closeNav }}" style="padding:12px 4px;font-weight:500;color:#64748B;">Tentang Kami</a>
+        <a href="{{ waHeaderLink }}" target="_blank" rel="noopener" onClick="{{ closeNav }}" style="margin-top:8px;background:#F4791D;color:white;font-weight:700;padding:16px 32px;border-radius:9999px;text-align:center;">Donasi Sekarang</a>
+      </nav>
+    </sc-if>
+  </header>
+
+  <!-- HERO -->
+  <section style="background:#FFD900;padding:clamp(32px,6vw,64px) clamp(20px,4vw,40px);">
+    <div style="max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;gap:48px;align-items:center;">
+      <div style="flex:1 1 440px;min-width:280px;">
+        <h1 style="font-size:clamp(32px,5.2vw,56px);line-height:1.08;font-weight:800;letter-spacing:-0.02em;margin:0 0 20px;color:#0F172A;">Berbagi Lebih Mudah.<br>Dampaknya Lebih Nyata.</h1>
+        <p style="font-size:clamp(16px,1.6vw,18px);line-height:1.6;color:#64748B;max-width:520px;margin:0 0 28px;">bagiberbagi.id adalah platform social impact yang menghubungkan donatur, komunitas, UMKM, dan perusahaan untuk menyalurkan berbagai bentuk kebaikan secara mudah, transparan, dan berdampak.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+          <a href="#cara-kerja" style="color:#1D46B9;font-weight:700;font-size:16px;display:inline-flex;align-items:center;gap:8px;">
+            Lihat Cara Kerja
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D46B9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:12px;background:#0F172A;padding:10px 20px 10px 14px;border-radius:9999px;font-size:14px;font-weight:600;color:white;box-shadow:0 8px 20px -8px rgba(15,23,42,0.5);">
+          <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(244,121,29,0.2);color:#F4791D;font-size:11px;font-weight:800;letter-spacing:0.05em;padding:5px 10px;border-radius:16px;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#F4791D;"></span>KOMITMEN
+          </span>
+          {{ currentActivity }}
+        </div>
+      </div>
+
+      <div id="donasi" style="flex:1 1 380px;max-width:480px;min-width:280px;background:white;border-radius:20px;padding:clamp(24px,3vw,32px);box-shadow:0 20px 40px -24px rgba(15,23,42,0.18);">
+        <h3 style="font-size:22px;font-weight:800;margin:0 0 6px;">Pilih Program Berbagi</h3>
+        <p style="font-size:14px;color:#64748B;margin:0 0 20px;">Rp 25.000 per pax — sudah termasuk pengantaran &amp; dokumentasi.</p>
+
+        <select value="{{ program }}" onChange="{{ setProgram }}" style="width:100%;padding:16px;border:1px solid #EEF0F3;border-radius:14px;font-size:15px;font-weight:600;color:#0F172A;margin-bottom:8px;background:white;">
+          <sc-for list="{{ programOptions }}" as="opt" hint-placeholder-count="4">
+            <option value="{{ opt.label }}" disabled="{{ opt.disabled }}">{{ opt.optionLabel }}</option>
+          </sc-for>
+        </select>
+        <p style="font-size:12px;color:#94A3B8;margin:0 0 16px;">Program lain akan dibuka bertahap sesuai kesiapan tim.</p>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid #EEF0F3;border-radius:14px;padding:14px 18px;margin-bottom:16px;">
+          <span style="font-weight:600;font-size:15px;">Jumlah pax</span>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <button onClick="{{ decPax }}" style="width:32px;height:32px;border-radius:50%;border:none;background:#F1F5F9;font-size:18px;font-weight:700;color:#0F172A;">–</button>
+            <span style="font-weight:700;font-size:17px;min-width:20px;text-align:center;">{{ pax }}</span>
+            <button onClick="{{ incPax }}" style="width:32px;height:32px;border-radius:50%;border:none;background:#F1F5F9;font-size:18px;font-weight:700;color:#0F172A;">+</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px dashed #EEF0F3;padding-top:16px;margin-bottom:20px;">
+          <span style="font-size:14px;color:#64748B;">Total donasi</span>
+          <span style="font-size:26px;font-weight:800;">{{ totalFormatted }}</span>
+        </div>
+
+        <a href="{{ waDonasiLink }}" target="_blank" rel="noopener" style="display:block;text-align:center;width:100%;background:#F4791D;color:white;font-weight:700;font-size:16px;padding:16px;border:none;border-radius:9999px;margin-bottom:10px;box-sizing:border-box;transition:background 0.2s,transform 0.15s;" style-hover="background:#d9660f;transform:translateY(-1px);">Donasi Sekarang</a>
+        <p style="font-size:12.5px;color:#94A3B8;text-align:center;margin:0 0 18px;">Transfer Bank &amp; E-wallet (OVO/GoPay/DANA) — diproses tim kami via WhatsApp</p>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:8px;font-size:13.5px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Paket makanan sehat bergizi dari UMKM terkurasi</div>
+          <div style="display:flex;gap:8px;font-size:13.5px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Diantar langsung ke Penerima yang tepat</div>
+          <div style="display:flex;gap:8px;font-size:13.5px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Foto &amp; video penyaluran dikirim maksimal H+1</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section style="padding:clamp(28px,4vw,44px) clamp(20px,4vw,40px);border-bottom:1px solid #EEF0F3;">
+    <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;text-align:center;" ref="{{ statsRef }}">
+      <div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;font-variant-numeric:tabular-nums;">{{ statDana }}</div><div style="font-size:14px;color:#64748B;margin-top:4px;">{{ statLabel0 }}</div></div>
+      <div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;font-variant-numeric:tabular-nums;">{{ statDonatur }}</div><div style="font-size:14px;color:#64748B;margin-top:4px;">{{ statLabel1 }}</div></div>
+      <div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;font-variant-numeric:tabular-nums;">{{ statBerbagi }}</div><div style="font-size:14px;color:#64748B;margin-top:4px;">{{ statLabel2 }}</div></div>
+      <div><div style="font-size:clamp(24px,3vw,32px);font-weight:800;font-variant-numeric:tabular-nums;">{{ statArea }}</div><div style="font-size:14px;color:#64748B;margin-top:4px;">{{ statLabel3 }}</div></div>
+    </div>
+  </section>
+
+  <!-- PROGRAM -->
+  <section id="program" style="padding:clamp(48px,7vw,88px) clamp(20px,4vw,40px);">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div style="text-align:center;max-width:720px;margin:0 auto 56px;">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">SETIAP ORANG MEMILIKI CARA BERBEDA UNTUK BERBAGI</div>
+        <h2 style="font-size:clamp(28px,3.6vw,38px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">Menciptakan Dampak Melalui Berbagai Program Kebaikan</h2>
+        <p style="color:#64748B;font-size:16px;line-height:1.6;margin:0;">bagiberbagi.id menghadirkan berbagai program sosial yang dapat dipilih sesuai kebutuhan, momen, maupun tujuan berbagi—dengan proses yang mudah, transparan, dan terdokumentasi.</p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:40px;align-items:stretch;">
+        <div style="flex:1 1 400px;min-width:280px;background:#1D46B9;border-radius:20px;padding:36px;display:flex;flex-direction:column;justify-content:flex-end;min-height:340px;color:white;">
+          <h3 style="font-size:26px;font-weight:800;margin:0 0 10px;">Dari Kebaikan Anda Menjadi Dampak Nyata</h3>
+          <p style="font-size:15px;line-height:1.6;opacity:0.9;margin:0;">Setiap program menggerakkan ekosistem lokal mulai dari UMKM, relawan, komunitas, hingga penerima manfaat.</p>
+        </div>
+
+        <div style="flex:1 1 400px;min-width:280px;display:flex;flex-direction:column;gap:28px;justify-content:center;">
+          <sc-for list="{{ programFeatures }}" as="f" hint-placeholder-count="4">
+            <div style="display:flex;gap:16px;" data-fade="1">
+              <div style="width:44px;height:44px;flex:none;border-radius:12px;background:{{ f.bg }};display:flex;align-items:center;justify-content:center;">
+                <sc-if value="{{ f.iconFood }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ f.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16a8 8 0 0 1-8 8 8 8 0 0 1-8-8Z"></path><path d="M12 3v3M8 4v2M16 4v2"></path></svg></sc-if>
+                <sc-if value="{{ f.iconMap }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ f.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg></sc-if>
+                <sc-if value="{{ f.iconCamera }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ f.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"></path><circle cx="12" cy="13" r="3.2"></circle></svg></sc-if>
+                <sc-if value="{{ f.iconRepeat }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ f.color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14.3-4.9M20 12a8 8 0 0 1-14.3 4.9"></path><path d="M18 3v5h-5M6 21v-5h5"></path></svg></sc-if>
+              </div>
+              <div>
+                <h4 style="font-size:17px;font-weight:700;margin:0 0 4px;">{{ f.title }}</h4>
+                <p style="font-size:14.5px;color:#64748B;line-height:1.55;margin:0;">{{ f.desc }}</p>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOKUMENTASI -->
+  <section style="padding:0 clamp(20px,4vw,40px) clamp(48px,7vw,88px);">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div style="text-align:center;max-width:640px;margin:0 auto 32px;">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">DOKUMENTASI</div>
+        <h2 style="font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-0.02em;margin:0;">Bukti Nyata dari Lapangan</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+        <div style="aspect-ratio:4/3;border-radius:20px;overflow:hidden;" data-fade="1">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="doc-1" shape="rect" placeholder="Foto penyaluran ke penerima manfaat" hint-size="100%,100%"></x-import>
+        </div>
+        <div style="aspect-ratio:4/3;border-radius:20px;overflow:hidden;" data-fade="1">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="doc-2" shape="rect" placeholder="Foto dapur mitra UMKM" hint-size="100%,100%"></x-import>
+        </div>
+        <div style="aspect-ratio:4/3;border-radius:20px;overflow:hidden;" data-fade="1">
+          <x-import component-from-global-scope="image-slot" from="./image-slot.js" id="doc-3" shape="rect" placeholder="Foto relawan di lapangan" hint-size="100%,100%"></x-import>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARA KERJA -->
+  <section id="cara-kerja" style="padding:0 clamp(20px,4vw,40px) clamp(48px,7vw,88px);">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div style="text-align:center;max-width:640px;margin:0 auto 40px;">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">CARA KERJA</div>
+        <h2 style="font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-0.02em;margin:0;">Lima Langkah Menciptakan Dampak</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+          <div style="background:#F8FAFC;border:1px solid #EEF0F3;border-radius:20px;padding:26px;transition:transform 0.2s,box-shadow 0.2s;" data-fade="1" style-hover="transform:translateY(-4px);box-shadow:0 16px 32px -20px rgba(15,23,42,0.25);">
+            <div style="font-size:30px;font-weight:800;color:#BFD3F5;margin-bottom:14px;">{{ s.n }}</div>
+            <h4 style="font-size:16px;font-weight:700;margin:0 0 8px;">{{ s.title }}</h4>
+            <p style="font-size:14px;color:#64748B;line-height:1.55;margin:0;">{{ s.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- SATU AKSI BANYAK DAMPAK -->
+  <section style="background:#1D46B9;padding:clamp(48px,7vw,88px) clamp(20px,4vw,40px);color:white;">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;max-width:760px;margin:0 auto 48px;">
+        <div style="color:#FFD900;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">DAMPAK BERGANDA</div>
+        <h2 style="font-size:clamp(28px,3.6vw,38px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">Satu Aksi. Banyak Dampak.</h2>
+        <p style="font-size:16px;line-height:1.6;opacity:0.9;margin:0;"><strong>Setiap kontribusi menggerakkan lebih dari sekadar penerima manfaat.</strong> Ia juga mendukung UMKM lokal, membuka peluang kerja, memperkuat komunitas, dan membangun ekonomi berbasis kebaikan.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:36px;">
+        <sc-for list="{{ impacts }}" as="im" hint-placeholder-count="4">
+          <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:26px;transition:transform 0.2s,background 0.2s;" data-fade="1" style-hover="transform:translateY(-4px);background:rgba(255,255,255,0.16);">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,0.16);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+              <sc-if value="{{ im.iconHeart }}" hint-placeholder-val="{{ false }}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-8.5C.9 8.2 2.4 5 6 5c2 0 3.2 1.1 4 2.2C10.8 6.1 12 5 14 5c3.6 0 5.1 3.2 3.5 6.5C19 15.65 12 20 12 20Z"></path></svg></sc-if>
+              <sc-if value="{{ im.iconChef }}" hint-placeholder-val="{{ false }}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M9 21v-6M15 21v-6M6 10a4 4 0 0 1 3-6.8A4 4 0 0 1 12 2a4 4 0 0 1 3 1.2A4 4 0 0 1 18 10c0 2-1 3-2 4H8c-1-1-2-2-2-4Z"></path></svg></sc-if>
+              <sc-if value="{{ im.iconWalk }}" hint-placeholder-val="{{ false }}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"></circle><path d="M12 8v5l-3 7M12 13l3 7M9 11l-3 2M15 11l3 2"></path></svg></sc-if>
+              <sc-if value="{{ im.iconBox }}" hint-placeholder-val="{{ false }}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg></sc-if>
+            </div>
+            <h4 style="font-size:17px;font-weight:700;margin:0 0 8px;">{{ im.title }}</h4>
+            <p style="font-size:14px;line-height:1.55;opacity:0.85;margin:0;">{{ im.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:24px;text-align:center;font-size:14.5px;line-height:1.6;">
+        <strong>Ekonomi kebaikan yang berputar lokal:</strong> dana dari donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dan dinikmati penerima yang tepat.
+      </div>
+    </div>
+  </section>
+
+  <!-- BANGUN DAMPAK BERSAMA -->
+  <section id="tentang" style="padding:clamp(48px,7vw,88px) clamp(20px,4vw,40px);">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="max-width:640px;margin:0 0 40px;">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">BERGABUNG LEBIH JAUH</div>
+        <h2 style="font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-0.02em;margin:0 0 12px;">Bangun Dampak Bersama</h2>
+        <p style="color:#64748B;font-size:16px;margin:0;">Tidak hanya sebagai donatur. Anda juga dapat bergabung sebagai:</p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:28px;">
+        <div style="flex:1 1 420px;min-width:280px;background:#FDEEE1;border-radius:20px;padding:clamp(28px,3vw,36px);transition:transform 0.2s;" data-fade="1" style-hover="transform:translateY(-4px);">
+          <div style="width:52px;height:52px;border-radius:14px;background:#0F172A;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M9 21v-6M15 21v-6M6 10a4 4 0 0 1 3-6.8A4 4 0 0 1 12 2a4 4 0 0 1 3 1.2A4 4 0 0 1 18 10c0 2-1 3-2 4H8c-1-1-2-2-2-4Z"></path></svg>
+          </div>
+          <h3 style="font-size:22px;font-weight:800;margin:0 0 10px;">Jadi Mitra Dapur UMKM</h3>
+          <p style="font-size:15px;color:#64748B;line-height:1.6;margin:0 0 18px;">Dapatkan order pasti setiap minggu. Kami bantu standar higienitas dan kemasan. Anda fokus memasak.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+            <div style="display:flex;gap:8px;font-size:14px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Order berulang &amp; bayar tepat waktu</div>
+            <div style="display:flex;gap:8px;font-size:14px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Pendampingan sertifikasi higiene</div>
+            <div style="display:flex;gap:8px;font-size:14px;color:#64748B;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Branding usaha di laporan donatur</div>
+          </div>
+          <a href="{{ waMitraLink }}" target="_blank" rel="noopener" style="display:inline-block;background:#F4791D;color:white;font-weight:700;padding:16px 32px;border-radius:9999px;transition:background 0.2s,transform 0.15s;" style-hover="background:#d9660f;transform:translateY(-1px);">Bergabung Jadi Mitra</a>
+        </div>
+
+        <div style="flex:1 1 420px;min-width:280px;background:#1D46B9;border-radius:20px;padding:clamp(28px,3vw,36px);color:white;transition:transform 0.2s;" data-fade="1" style-hover="transform:translateY(-4px);">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01"></path></svg>
+          </div>
+          <h3 style="font-size:22px;font-weight:800;margin:0 0 10px;">CSR Korporasi</h3>
+          <p style="font-size:15px;line-height:1.6;opacity:0.9;margin:0 0 18px;">Jalankan program Jumat Berkah atas nama perusahaan — kami yang mengeksekusi dari dapur hingga laporan.</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+            <div style="display:flex;gap:8px;font-size:14px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Laporan dampak profesional &amp; video</div>
+            <div style="display:flex;gap:8px;font-size:14px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Branding perusahaan pada kemasan</div>
+            <div style="display:flex;gap:8px;font-size:14px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px;"><path d="M5 13l4 4L19 7"></path></svg> Skala fleksibel sesuai kebutuhan perusahaan Anda</div>
+          </div>
+          <a href="{{ waCsrLink }}" target="_blank" rel="noopener" style="display:inline-block;background:white;color:#1D46B9;font-weight:700;padding:16px 32px;border-radius:9999px;transition:transform 0.15s;" style-hover="transform:translateY(-1px);">Hubungi Tim Kemitraan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="background:#F8FAFC;padding:clamp(48px,7vw,88px) clamp(20px,4vw,40px);">
+    <div style="max-width:760px;margin:0 auto;">
+      <div style="text-align:center;max-width:560px;margin:0 auto 40px;">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">FAQ</div>
+        <h2 style="font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-0.02em;margin:0;">Pertanyaan yang Sering Diajukan</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;">
+        <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="4">
+          <div style="padding:22px 0;border-bottom:1px solid #EEF0F3;cursor:pointer;" onClick="{{ q.toggle }}">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+              <h4 style="font-size:16px;font-weight:700;margin:0;">{{ q.q }}</h4>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex:none;transition:transform 0.2s;transform:{{ q.chevronRotation }};"><path d="M6 9l6 6 6-6"></path></svg>
+            </div>
+            <sc-if value="{{ q.isOpen }}" hint-placeholder-val="{{ false }}">
+              <p style="font-size:14.5px;color:#64748B;line-height:1.6;margin:10px 0 0;">{{ q.a }}</p>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEGAL -->
+  <section style="padding:clamp(48px,7vw,88px) clamp(20px,4vw,40px);background:#FFFFFF;">
+    <div style="max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:40px;">
+      <div id="privasi">
+        <div style="color:#F4791D;font-weight:700;font-size:13px;letter-spacing:0.08em;margin-bottom:12px;">LEGAL</div>
+        <h2 style="font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">{{ legalPrivacyTitle }}</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;color:#64748B;line-height:1.6;">
+          <sc-for list="{{ legalPrivacyParagraphs }}" as="para" hint-placeholder-count="3">
+            <p style="margin:0;">{{ para }}</p>
+          </sc-for>
+        </div>
+      </div>
+      <div id="syarat">
+        <h2 style="font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">{{ legalTermsTitle }}</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;color:#64748B;line-height:1.6;">
+          <sc-for list="{{ legalTermsParagraphs }}" as="para" hint-placeholder-count="3">
+            <p style="margin:0;">{{ para }}</p>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <h2 style="font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;">{{ legalTransparencyTitle }}</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;color:#64748B;line-height:1.6;">
+          <sc-for list="{{ legalTransparencyParagraphs }}" as="para" hint-placeholder-count="2">
+            <p style="margin:0;">{{ para }}</p>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="background:#F8FAFC;border-top:1px solid #EEF0F3;padding:clamp(40px,6vw,64px) clamp(20px,4vw,40px) 28px;">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div style="display:flex;flex-wrap:wrap;gap:40px;margin-bottom:40px;">
+        <div style="flex:1 1 260px;min-width:220px;">
+          <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <a href="{{ igLink }}" target="_blank" rel="noopener" style="width:36px;height:36px;border-radius:50%;background:#EEF0F3;display:flex;align-items:center;justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="#64748B" stroke="none"></circle></svg>
+            </a>
+            <a href="{{ tiktokLink }}" target="_blank" rel="noopener" style="width:36px;height:36px;border-radius:50%;background:#EEF0F3;display:flex;align-items:center;justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
+            </a>
+            <a href="{{ emailLink }}" style="width:36px;height:36px;border-radius:50%;background:#EEF0F3;display:flex;align-items:center;justify-content:center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+            </a>
+          </div>
+          <p style="font-size:14px;color:#64748B;line-height:1.6;margin:0 0 18px;max-width:320px;">© 2026 bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
+          <a href="{{ waHeaderLink }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#1D46B9;margin-bottom:18px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
+            {{ waNumberDisplay }}
+          </a>
+        </div>
+
+        <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="4">
+          <div style="flex:1 1 140px;min-width:140px;">
+            <div style="font-weight:700;font-size:15px;margin-bottom:14px;">{{ col.title }}</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="3">
+                <sc-if value="{{ l.href }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ l.href }}" target="{{ l.target }}" rel="noopener" style="font-size:14px;color:#64748B;">{{ l.label }}</a>
+                </sc-if>
+                <sc-if value="{{ l.isPlain }}" hint-placeholder-val="{{ true }}">
+                  <span style="font-size:14px;color:#B4BCC8;cursor:default;">{{ l.label }}</span>
+                </sc-if>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="border-top:1px solid #EEF0F3;padding-top:22px;text-align:center;">
+        <p style="font-size:13.5px;color:#94A3B8;margin:0;">Dibuat dengan kasih sayang untuk Indonesia</p>
+        <p style="font-size:12.5px;color:#B4BCC8;margin:4px 0 0;">Soft Launch — bagiberbagi.id</p>
+      </div>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;activity1&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Transparan di setiap penyaluran&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Komitmen Berjalan&quot;},
+  &quot;activity2&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Didukung UMKM lokal terkurasi&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Komitmen Berjalan&quot;},
+  &quot;activity3&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Bukti foto &amp; video maksimal H+1&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Komitmen Berjalan&quot;},
+  &quot;rotateSeconds&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 4, &quot;min&quot;: 2, &quot;max&quot;: 10, &quot;step&quot;: 1, &quot;unit&quot;: &quot;s&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Komitmen Berjalan&quot;}
+}">
+
+class Component extends DCLogic {
+  state = {
+    navOpen: false,
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    pax: 10,
+    program: 'Jumat Berkah',
+    activityIndex: 0,
+    statProgress: 0,
+    content: null,
+    activeSection: 'cara-kerja',
+    openFaqIndex: 0
+  };
+
+  componentDidMount() {
+    import('./content.js').then(m => this.setState({ content: m.content }));
+    this._onResize = () => this.setState({ width: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+
+    this._navSectionIds = ['cara-kerja', 'program', 'faq', 'tentang'];
+    this._navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) this.setState({ activeSection: entry.target.id });
+      });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    this._navSectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) this._navObserver.observe(el);
+    });
+
+    this._fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'none';
+          this._fadeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('[data-fade]').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.transition = 'opacity 0.7s ease-out, transform 0.7s ease-out';
+      this._fadeObserver.observe(el);
+    });
+    const seconds = this.props.rotateSeconds ?? 4;
+    this._rotateTimer = setInterval(() => {
+      this.setState(s => ({ activityIndex: (s.activityIndex + 1) % 3 }));
+    }, seconds * 1000);
+
+    this._statsEl = null;
+    this._statsStarted = false;
+    this._statsObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !this._statsStarted) {
+        this._statsStarted = true;
+        this.animateStats();
+      }
+    }, { threshold: 0.3 });
+    if (this._pendingStatsEl) this._statsObserver.observe(this._pendingStatsEl);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    clearInterval(this._rotateTimer);
+    cancelAnimationFrame(this._statsRaf);
+    if (this._statsObserver) this._statsObserver.disconnect();
+    if (this._navObserver) this._navObserver.disconnect();
+    if (this._fadeObserver) this._fadeObserver.disconnect();
+  }
+
+  toggleFaq = (i) => this.setState(s => ({ openFaqIndex: s.openFaqIndex === i ? -1 : i }));
+
+  setStatsRef = (el) => {
+    if (el && el !== this._statsEl) {
+      this._statsEl = el;
+      if (this._statsObserver) this._statsObserver.observe(el);
+      else this._pendingStatsEl = el;
+    }
+  };
+
+  animateStats = () => {
+    const duration = 1800;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      this.setState({ statProgress: eased });
+      if (t < 1) this._statsRaf = requestAnimationFrame(tick);
+    };
+    this._statsRaf = requestAnimationFrame(tick);
+  };
+
+  toggleNav = () => this.setState(s => ({ navOpen: !s.navOpen }));
+  closeNav = () => this.setState({ navOpen: false });
+  incPax = () => this.setState(s => ({ pax: Math.min(999, s.pax + 1) }));
+  decPax = () => this.setState(s => ({ pax: Math.max(1, s.pax - 1) }));
+  setProgram = (e) => this.setState({ program: e.target.value });
+
+  renderVals() {
+    const isMobile = this.state.width < 860;
+    const total = this.state.pax * 25000;
+    const totalFormatted = 'Rp ' + total.toLocaleString('id-ID');
+    const activities = [
+      this.props.activity1 ?? 'Transparan di setiap penyaluran',
+      this.props.activity2 ?? 'Didukung UMKM lokal terkurasi',
+      this.props.activity3 ?? 'Bukti foto & video maksimal H+1'
+    ];
+    const currentActivity = activities[this.state.activityIndex];
+
+    const waNumber = this.state.content?.waNumber ?? '+6282233996648';
+    const waNumberDisplay = this.state.content?.waNumberDisplay ?? '+62 822-3399-6648';
+    const waHeaderLink = `https://wa.me/${waNumber}`;
+    const waMitraLink = `https://wa.me/${waNumber}?text=${encodeURIComponent('Halo, saya tertarik untuk bergabung sebagai Mitra Dapur UMKM di bagiberbagi.id.')}`;
+    const waCsrLink = `https://wa.me/${waNumber}?text=${encodeURIComponent('Halo, kami tertarik menjalankan program CSR Korporasi bersama bagiberbagi.id.')}`;
+    const waText = encodeURIComponent(
+      `Halo, saya ingin donasi program "${this.state.program}" untuk ${this.state.pax} pax (Total: ${totalFormatted}).`
+    );
+    const waDonasiLink = `https://wa.me/${waNumber}?text=${waText}`;
+    const statLabels = this.state.content?.statLabels ?? ['Total Dana Tersalurkan', 'Donatur Terdaftar', 'Orang Telah Berbagi', 'Area Distribusi'];
+    const legal = this.state.content?.legal ?? {};
+    const socials = this.state.content?.socials ?? { instagram: 'bagiberbagiid', tiktok: 'bagiberbagiid', email: 'bagiberbagi.official@gmail.com' };
+    const igLink = `https://instagram.com/${socials.instagram}`;
+    const tiktokLink = `https://tiktok.com/@${socials.tiktok}`;
+    const emailLink = `mailto:${socials.email}`;
+
+    const navIds = ['caraKerja', 'program', 'faq', 'tentang'];
+    const navIdMap = { caraKerja: 'cara-kerja', program: 'program', faq: 'faq', tentang: 'tentang' };
+    const navWeight = {};
+    const navColor = {};
+    navIds.forEach(k => {
+      const active = this.state.activeSection === navIdMap[k];
+      navWeight[k] = active ? 700 : 500;
+      navColor[k] = active ? '#0F172A' : '#64748B';
+    });
+
+    const p = this.state.statProgress;
+    const statDana = 'Rp ' + (8.5 * p).toFixed(1) + 'Jt';
+    const statDonatur = Math.round(42 * p).toLocaleString('id-ID');
+    const statBerbagi = Math.round(210 * p).toLocaleString('id-ID');
+    const statArea = Math.round(5 * p).toLocaleString('id-ID');
+
+    return {
+      statsRef: this.setStatsRef,
+      statDana,
+      statDonatur,
+      statBerbagi,
+      statArea,
+      currentActivity,
+      isDesktopNav: !isMobile,
+      isMobileNav: isMobile,
+      navOpen: isMobile && this.state.navOpen,
+      navClosed: !(isMobile && this.state.navOpen),
+      toggleNav: this.toggleNav,
+      closeNav: this.closeNav,
+      pax: this.state.pax,
+      incPax: this.incPax,
+      decPax: this.decPax,
+      program: this.state.program,
+      setProgram: this.setProgram,
+      totalFormatted,
+      waDonasiLink,
+      waHeaderLink,
+      waMitraLink,
+      waCsrLink,
+      waNumberDisplay,
+      igLink,
+      tiktokLink,
+      emailLink,
+      navWeight,
+      navColor,
+      programOptions: (this.state.content?.programOptions ?? []).map(opt => ({
+        ...opt,
+        optionLabel: opt.disabled ? `${opt.label} (Segera Hadir)` : opt.label
+      })),
+      statLabel0: statLabels[0],
+      statLabel1: statLabels[1],
+      statLabel2: statLabels[2],
+      statLabel3: statLabels[3],
+      legalPrivacyTitle: legal.privacy?.title ?? 'Kebijakan Privasi',
+      legalPrivacyParagraphs: legal.privacy?.paragraphs ?? [],
+      legalTermsTitle: legal.terms?.title ?? 'Syarat & Ketentuan',
+      legalTermsParagraphs: legal.terms?.paragraphs ?? [],
+      legalTransparencyTitle: legal.transparency?.title ?? 'Transparansi & Status Kami',
+      legalTransparencyParagraphs: legal.transparency?.paragraphs ?? [],
+      programFeatures: this.state.content?.programFeatures ?? [],
+      steps: this.state.content?.steps ?? [],
+      impacts: this.state.content?.impacts ?? [],
+      faqs: (this.state.content?.faqs ?? []).map((q, i) => ({
+        ...q,
+        isOpen: this.state.openFaqIndex === i,
+        chevronRotation: this.state.openFaqIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
+        toggle: () => this.toggleFaq(i)
+      })),
+      footerCols: (this.state.content?.footerCols ?? []).map(col => ({
+        ...col,
+        links: col.links.map(l => l.href === 'WA_LINK' ? { ...l, href: waHeaderLink } : l)
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

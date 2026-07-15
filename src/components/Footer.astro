@@ -1,0 +1,50 @@
+---
+import { FOOTER_COLS, SOCIALS, WA_NUMBER, WA_NUMBER_DISPLAY } from '../consts';
+import { buildWaLink } from '../lib/format';
+
+const igLink = `https://instagram.com/${SOCIALS.instagram}`;
+const tiktokLink = `https://tiktok.com/@${SOCIALS.tiktok}`;
+const emailLink = `mailto:${SOCIALS.email}`;
+const waHeaderLink = buildWaLink(WA_NUMBER);
+---
+
+<footer class="bg-[#F8FAFC] border-t border-border px-5 md:px-10 pt-10 md:pt-16 pb-7">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-wrap gap-10 mb-10">
+      <div class="flex-1 basis-[260px] min-w-[220px]">
+        <div class="flex gap-2.5 mb-3.5">
+          <a href={igLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="#64748B" stroke="none"></circle></svg>
+          </a>
+          <a href={tiktokLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
+          </a>
+          <a href={emailLink} class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          </a>
+        </div>
+        <p class="text-sm text-muted leading-relaxed mb-4.5 max-w-[320px]">© 2026 bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
+        <a href={waHeaderLink} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-blue mb-4.5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
+          {WA_NUMBER_DISPLAY}
+        </a>
+      </div>
+
+      {FOOTER_COLS.map((col) => (
+        <div class="flex-1 basis-[140px] min-w-[140px]">
+          <div class="font-bold text-[15px] mb-3.5">{col.title}</div>
+          <div class="flex flex-col gap-2.5">
+            {col.links.map((l) => (
+              <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted">{l.label}</a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="border-t border-border pt-5.5 text-center">
+      <p class="text-[13.5px] text-[#94A3B8]">Dibuat dengan kasih sayang untuk Indonesia</p>
+      <p class="text-xs text-[#B4BCC8] mt-1">Soft Launch — bagiberbagi.id</p>
+    </div>
+  </div>
+</footer>

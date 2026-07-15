@@ -1,0 +1,28 @@
+---
+import { STAT_LABELS } from '../consts';
+---
+
+<section id="stats-section" class="px-5 md:px-10 py-7 md:py-11 border-b border-border">
+  <div class="max-w-5xl mx-auto grid gap-6 text-center" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+    <div>
+      <div id="stat-dana" class="text-2xl md:text-[32px] font-extrabold tabular-nums">Rp 0.0Jt</div>
+      <div class="text-sm text-muted mt-1">{STAT_LABELS[0]}</div>
+    </div>
+    <div>
+      <div id="stat-donatur" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
+      <div class="text-sm text-muted mt-1">{STAT_LABELS[1]}</div>
+    </div>
+    <div>
+      <div id="stat-berbagi" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
+      <div class="text-sm text-muted mt-1">{STAT_LABELS[2]}</div>
+    </div>
+    <div>
+      <div id="stat-area" class="text-2xl md:text-[32px] font-extrabold tabular-nums">0</div>
+      <div class="text-sm text-muted mt-1">{STAT_LABELS[3]}</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/stats-counter.js';
+</script>

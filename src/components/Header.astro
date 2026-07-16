@@ -1,11 +1,15 @@
 ---
 import { getEntry } from 'astro:content';
-import { NAV_LINKS } from '../consts';
+import { Image } from 'astro:assets';
+import { NAV_LINKS, PROGRAM_MENU } from '../consts';
 import { buildWaLink } from '../lib/format';
+import ProgramMenuCategory from './ProgramMenuCategory.astro';
+import programPromoImage from '../assets/images/program-promo.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 const waHeaderLink = buildWaLink(site.data.waNumber);
+const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
 ---
 
 <header class="sticky top-0 z-50 bg-white border-b border-border">
@@ -16,13 +20,48 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
 
     <nav class="hidden nav:flex items-center gap-8">
       {NAV_LINKS.map((link) => (
-        <a
-          href={link.href}
-          data-nav-link={link.href.startsWith('#') ? link.id : undefined}
-          class="font-medium text-muted transition-colors hover:text-brand-blue"
-        >
-          {link.label}
-        </a>
+        link.id === 'program' ? (
+          <div class="relative" data-program-menu>
+            <button
+              type="button"
+              data-program-trigger
+              aria-expanded="false"
+              aria-haspopup="true"
+              class="flex items-center gap-1.5 font-medium text-muted transition-colors hover:text-brand-blue"
+            >
+              {link.label}
+              <svg data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
+            </button>
+            <div
+              data-program-panel
+              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[860px] bg-white rounded-card shadow-[0_20px_40px_-24px_rgba(15,23,42,0.25)] border border-border p-7 flex items-start gap-10 z-50"
+            >
+              <div class="flex-1 min-w-[220px]">
+                <ProgramMenuCategory category={makananMenu} />
+              </div>
+              <div class="flex-1 min-w-[220px] flex flex-col gap-7">
+                <ProgramMenuCategory category={bantuanMenu} />
+                <ProgramMenuCategory category={pendidikanMenu} />
+              </div>
+              <div class="w-[240px] flex-none bg-gray-50 rounded-card overflow-hidden">
+                <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={480} height={300} class="w-full h-32 object-cover" />
+                <div class="p-5">
+                  <div class="font-bold text-title-sm mb-1.5">Peduli Lewat Makanan</div>
+                  <p class="text-sm text-muted leading-relaxed mb-4">Setiap donasi makanan yang Anda berikan, kami salurkan langsung kepada mereka yang membutuhkan dengan transparan dan terdokumentasi.</p>
+                  <a href="/jumat-berkah" class="btn-primary text-center text-sm block">Lihat Program</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <a
+            href={link.href}
+            data-nav-link={link.href.startsWith('#') ? link.id : undefined}
+            class="font-medium text-muted transition-colors hover:text-brand-blue"
+          >
+            {link.label}
+          </a>
+        )
       ))}
     </nav>
     <a
@@ -46,7 +85,27 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
 
   <nav id="mobile-nav-panel" class="hidden nav:hidden flex-col gap-0.5 px-5 md:px-10 pb-5 pt-2 border-t border-border">
     {NAV_LINKS.map((link) => (
-      <a href={link.href} class="px-1 py-3 font-medium text-muted">{link.label}</a>
+      link.id === 'program' ? (
+        <div data-program-menu-mobile>
+          <button
+            type="button"
+            data-program-trigger-mobile
+            aria-expanded="false"
+            class="w-full flex items-center justify-between px-1 py-3 font-medium text-muted"
+          >
+            {link.label}
+            <svg data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <div data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
+            {PROGRAM_MENU.map((cat) => (
+              <ProgramMenuCategory category={cat} iconSize={14} />
+            ))}
+            <a href="/jumat-berkah" class="btn-primary text-center text-sm">Lihat Program Jumat Berkah</a>
+          </div>
+        </div>
+      ) : (
+        <a href={link.href} class="px-1 py-3 font-medium text-muted">{link.label}</a>
+      )
     ))}
     <a
       href={waHeaderLink}
@@ -62,4 +121,5 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
 <script>
   import '../scripts/mobile-nav.js';
   import '../scripts/scrollspy.js';
+  import '../scripts/program-menu.js';
 </script>

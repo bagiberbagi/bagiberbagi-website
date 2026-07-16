@@ -53,11 +53,56 @@ export const ACTIVITIES = [
   'Bukti foto & video maksimal H+1',
 ];
 
-export const NAV_SECTION_IDS = ['cara-kerja', 'program', 'tentang'] as const;
+export const NAV_SECTION_IDS = ['program', 'tentang'] as const;
 
 export const NAV_LINKS = [
-  { id: 'cara-kerja', label: 'Cara Kerja', href: '#cara-kerja' },
+  { id: 'home', label: 'Home', href: '#top' },
   { id: 'program', label: 'Program', href: '#program' },
-  { id: 'faq', label: 'FAQ', href: '/faq' },
   { id: 'tentang', label: 'Tentang Kami', href: '#tentang' },
+  { id: 'faq', label: 'FAQ', href: '/faq' },
+];
+
+export interface ProgramMenuItem {
+  label: string;
+  desc: string;
+  active: boolean;
+  href?: string;
+}
+
+export interface ProgramMenuCategory {
+  id: string;
+  label: string;
+  icon: 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
+  items: ProgramMenuItem[];
+}
+
+export const PROGRAM_MENU: ProgramMenuCategory[] = [
+  {
+    id: 'bagiberbagimakanan',
+    label: '#bagiberbagimakanan',
+    icon: 'food',
+    items: [
+      { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah' },
+      { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadan penuh berkah.', active: false },
+      { label: 'Berbagi Makanan Harian', desc: 'Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.', active: false },
+    ],
+  },
+  {
+    id: 'bagiberbagibantuan',
+    label: '#bagiberbagibantuan',
+    icon: 'box',
+    items: [
+      { label: 'Berbagi Sembako', desc: 'Menyalurkan paket sembako bagi keluarga yang membutuhkan.', active: false },
+      { label: 'Berbagi Bantuan Bencana', desc: 'Memberikan bantuan darurat bagi korban bencana terdampak.', active: false },
+    ],
+  },
+  {
+    id: 'bagiberbagipendidikan',
+    label: '#bagiberbagipendidikan',
+    icon: 'walk',
+    items: [
+      { label: 'Berbagi Beasiswa', desc: 'Membantu pendidikan melalui dukungan biaya belajar.', active: false },
+      { label: 'Berbagi Buku & Alat Sekolah', desc: 'Menyalurkan perlengkapan belajar untuk pelajar membutuhkan.', active: false },
+    ],
+  },
 ];

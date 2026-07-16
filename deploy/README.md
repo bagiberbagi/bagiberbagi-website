@@ -51,8 +51,7 @@ Repo → Settings → Secrets and variables → Actions → New repository secre
 | `VPS_HOST` | `165.22.246.217` |
 | `VPS_USER` | `deploy` |
 | `VPS_SSH_KEY` | isi file `deploy_key` (private key, full content termasuk header/footer) |
-
-Port SSH (`32550`) di-hardcode langsung di `.github/workflows/deploy.yml` (bukan secret, karena bukan data sensitif).
+| `VPS_SSH_PORT` | `32550` |
 
 ### 5. Merge `astro-migration` ke `main`
 

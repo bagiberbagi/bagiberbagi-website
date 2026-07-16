@@ -9,9 +9,9 @@ import { STEPS } from '../consts';
       <h2 class="text-heading-sm md:text-heading-xl font-extrabold tracking-tight">Lima Langkah Menciptakan Dampak</h2>
     </div>
     <div class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-      {STEPS.map((s) => (
-        <div data-fade="1">
-          <div class="text-3xl font-extrabold text-brand-blue/20 mb-2">{s.n}</div>
+      {STEPS.map((s, i) => (
+        <div class="bg-gray-50 rounded-card p-6" data-fade="1">
+          <div class={`text-3xl font-extrabold mb-2 ${i % 2 === 0 ? 'text-brand-orange' : 'text-brand-blue'}`}>{s.n}</div>
           <h4 class="text-base font-bold mb-1.5">{s.title}</h4>
           <p class="text-sm text-muted leading-relaxed">{s.desc}</p>
         </div>

@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { FEATURES } from '../consts';
+import programPromoImage from '../assets/images/program-promo.png';
 ---
 
 <section id="program" class="section">
@@ -12,9 +14,13 @@ import { FEATURES } from '../consts';
     </div>
 
     <div class="flex flex-wrap gap-10 items-stretch">
-      <div class="flex-1 basis-[400px] min-w-[280px] bg-brand-blue rounded-card p-9 flex flex-col justify-end min-h-[340px] text-white">
-        <h3 class="text-2xl font-extrabold mb-2.5">Dari Kebaikan Anda Menjadi Dampak Nyata</h3>
-        <p class="text-sm leading-relaxed opacity-90">Setiap program menggerakkan ekosistem lokal mulai dari UMKM, relawan, komunitas, hingga penerima manfaat.</p>
+      <div class="flex-1 basis-[400px] min-w-[280px] relative rounded-card overflow-hidden flex flex-col justify-end min-h-[340px] text-white">
+        <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={800} height={600} class="absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-brand-blue via-brand-blue/70 to-transparent"></div>
+        <div class="relative p-9">
+          <h3 class="text-2xl font-extrabold mb-2.5">Dari Kebaikan Anda Menjadi Dampak Nyata</h3>
+          <p class="text-sm leading-relaxed opacity-90">Setiap program menggerakkan ekosistem lokal mulai dari UMKM, relawan, komunitas, hingga penerima manfaat.</p>
+        </div>
       </div>
 
       <div class="flex-1 basis-[400px] min-w-[280px] flex flex-col gap-7 justify-center">

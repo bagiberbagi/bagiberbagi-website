@@ -48,4 +48,4 @@
 - [x] 5.1 `bunx astro check` passes (0 errors).
 - [x] 5.2 Verified via built output: `/syarat` (15 sections) and `/privasi` (12 sections) both have `data-toc-link` count === `<h2 id="...">` count exactly, `updatedAt`/`closing`/multi-paragraph `intro` all render correctly per page. Scrollspy highlight behavior and sticky/stacked responsive switch (JS + CSS interaction) not manually browser-tested this session — no browser tool available, user accepted this risk (same as prior changes this session).
 - [x] 5.3 `bun run build` succeeds.
-- [ ] 5.4 **Pending user review** — expanded Syarat (15 sections) and Privasi (12 sections) copy is a first draft, not signed off. Do not merge to `main` until reviewed.
+- [x] 5.4 User reviewed and approved expanded Syarat (15 sections) and Privasi (12 sections) copy.

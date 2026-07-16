@@ -27,5 +27,4 @@ Kebijakan ini dapat diperbarui sewaktu-waktu; perubahan berlaku sejak tanggal pe
 
 ## Hubungi Kami
 
-WhatsApp: +62 822-3399-6648
-Email: bagiberbagi.official@gmail.com
+Apabila Anda memiliki pertanyaan mengenai Kebijakan Privasi ini, silakan hubungi kami melalui:

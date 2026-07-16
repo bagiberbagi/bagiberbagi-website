@@ -31,6 +31,11 @@
 - [x] Used Tailwind arbitrary variants instead of a `<style>` block with plain CSS — a plain-CSS approach would have needed hardcoded hex (`::marker` can't take a Tailwind class directly) or `theme()` (already known broken in this Tailwind v4 setup, see `design-system`'s `BaseLayout.astro` fix), either of which would violate `design-system`'s "no raw hex in `src/layouts/`" requirement. Re-verified `grep -rE '#[0-9A-Fa-f]{3,6}'` still returns 0 matches (excluding `Documentation.astro`/`Legal.astro`).
 - [x] `transparency.md` had no H2 sections at all (2 flat paragraphs) — added one ("Status Saat Ini") so its TOC isn't empty; first paragraph moved to `intro`.
 
+## 5.6 Second visual-precision pass (user flagged remaining gaps)
+
+- [x] "Selamat datang di bagiberbagi.id" is a separate bold heading (with `bagiberbagi.id` in `text-brand-blue`) above the regular-weight `intro` paragraph — was incorrectly merged into one bold paragraph. Fixed the duplicated phrase this created in `terms.md`'s `intro` (used to start with the same "Selamat datang..." text).
+- [x] **Real bug, not just visual**: `Hubungi Kami`'s WhatsApp/Email were hardcoded as static text in all 3 markdown files, duplicating data already owned by the `settings` collection (`site.data.waNumberDisplay`/`socials.email`, same source `Footer.astro` uses) — would have gone stale if the WA number changed via Keystatic. Fixed by rendering the contact block in `LegalLayout.astro` itself (icon-in-circle style matching the mockup, `getEntry('settings', 'site')` + `buildWaLink`), removing the static lines from all 3 markdown bodies. Added a "Website" line (wasn't present before) and a closing "Terima kasih..." line, and added a "Hubungi Kami" section to `transparency.md` (didn't have one) for consistency across all 3 pages.
+
 ## 5. Verification
 
 - [x] 5.1 `bunx astro check` passes (0 errors).

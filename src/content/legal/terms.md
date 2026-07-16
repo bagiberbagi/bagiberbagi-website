@@ -1,7 +1,7 @@
 ---
 title: Syarat dan Ketentuan Layanan
 eyebrow: SYARAT DAN KETENTUAN
-intro: "Selamat datang di bagiberbagi.id. Syarat dan Ketentuan ini mengatur penggunaan situs bagiberbagi.id dan proses donasi yang difasilitasi melalui WhatsApp. Dengan mengakses, menggunakan, atau melakukan donasi melalui platform ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan yang berlaku."
+intro: "Syarat dan Ketentuan ini mengatur penggunaan situs bagiberbagi.id dan proses donasi yang difasilitasi melalui WhatsApp. Dengan mengakses, menggunakan, atau melakukan donasi melalui platform ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan yang berlaku."
 updatedAt: 16 Juli 2026
 ---
 
@@ -111,6 +111,3 @@ bagiberbagi.id berupaya memberikan layanan terbaik namun tidak bertanggung jawab
 ## Hubungi Kami
 
 Apabila Anda memiliki pertanyaan mengenai Syarat dan Ketentuan ini, silakan hubungi kami melalui:
-
-WhatsApp: +62 822-3399-6648
-Email: bagiberbagi.official@gmail.com

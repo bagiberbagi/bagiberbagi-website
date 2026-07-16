@@ -2,6 +2,7 @@
 
 - [ ] 1.1 Update `NAV_LINKS` in `src/consts.ts`: order Home, Program, Tentang Kami, FAQ (drop `cara-kerja`); `Tentang Kami` targets existing `#tentang` anchor, `FAQ` targets `/faq`.
 - [ ] 1.2 Add new `PROGRAM_MENU` array in `src/consts.ts`: 3 categories (`bagiberbagimakanan`, `bagiberbagibantuan`, `bagiberbagipendidikan`) with their items; mark "Jumat Berkah" as the only active/linked item, others coming-soon.
+- [ ] 1.3 Drop `'cara-kerja'` from `NAV_SECTION_IDS` in `src/consts.ts` — no longer a nav-linked scroll target now that it's removed from `NAV_LINKS` (the `#cara-kerja` section itself stays on the homepage, just untracked by scrollspy).
 
 ## 2. Header + mega-menu component
 

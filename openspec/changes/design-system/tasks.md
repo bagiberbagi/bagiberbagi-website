@@ -22,14 +22,14 @@
 - [ ] 4.1 `Hero.astro`
 - [ ] 4.2 `Stats.astro`
 - [ ] 4.3 `ProgramFeatures.astro`
-- [ ] 4.4 `Documentation.astro`
-- [ ] 4.5 `HowItWorks.astro`
-- [ ] 4.6 `ImpactSection.astro`
-- [ ] 4.7 `JoinUs.astro`
-- [ ] 4.8 `Faq.astro`
-- [ ] 4.9 `Legal.astro`
-- [ ] 4.10 `DonationCalculator.astro`
-- [ ] 4.11 `Icon.astro` — ensure `color` prop callers pass token-derived values, not raw hex.
+- [ ] 4.4 `HowItWorks.astro`
+- [ ] 4.5 `ImpactSection.astro`
+- [ ] 4.6 `JoinUs.astro`
+- [ ] 4.7 `Faq.astro`
+- [ ] 4.8 `DonationCalculator.astro`
+- [ ] 4.9 `Icon.astro` — ensure `color` prop callers pass token-derived values, not raw hex.
+
+**Skipped**: `Documentation.astro`, `Legal.astro` — slated for deletion in `homepage-redesign`; retrofitting them here would be wasted work regardless of merge order.
 
 ## 5. Retrofit — pages & verification
 

@@ -1,5 +1,6 @@
 ---
 title: Transparansi & Status Kami
+updatedAt: 15 Juli 2026
 ---
 
 bagiberbagi.id adalah inisiatif komunitas independen yang saat ini dalam tahap pengembangan menuju badan hukum resmi. Kami berkomitmen menjalankan setiap donasi secara akuntabel selama masa awal ini.

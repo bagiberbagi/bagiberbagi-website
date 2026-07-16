@@ -1,29 +1,29 @@
 ## 1. Content collection
 
-- [ ] 1.1 Add `updatedAt: z.string()` to the `legal` schema in `src/content.config.ts`.
-- [ ] 1.2 Update `terms.md`, `privacy.md`, `transparency.md` frontmatter with `updatedAt`; remove the plain-text "Terakhir diperbarui" line from each body.
+- [x] 1.1 Added `updatedAt: z.string()` to the `legal` schema in `src/content.config.ts`.
+- [x] 1.2 Updated all 3 entries' frontmatter with `updatedAt`; removed the plain-text "Terakhir diperbarui" line (`terms.md`/`privacy.md` had it; `transparency.md` never did, so nothing to remove there).
 
 ## 2. Syarat content expansion
 
-- [ ] 2.1 Draft the 8 new sections in `terms.md` (Definisi, Ruang Lingkup Layanan, Akun Pengguna, Donasi, Penggunaan Dana, Transparansi dan Pelaporan, Program dan Pelaksanaan, Hak Kekayaan Intelektual, Larangan Penggunaan) alongside the 7 retained/adjusted existing sections, matching the mockup's 15-section structure.
-- [ ] 2.2 Flag draft content for user review before merge (legal copy — not to be treated as final without sign-off).
+- [x] 2.1 Drafted all 8 new sections + retained/merged the 7 existing ones (site-specific mechanics — WA-based flow, pax calculator, transfer/e-wallet, H+1 documentation — preserved inside the new section structure rather than replaced with generic mockup text). 15 sections total, matches mockup structure.
+- [x] 2.2 Flagged: see task 5.4 (user review required before merge — this is drafted legal copy, not signed off).
 
 ## 3. Layout + TOC
 
-- [ ] 3.1 Create `src/layouts/LegalLayout.astro`: header block (eyebrow/title/updatedAt) + two-column body (TOC + `<slot />`), reading `headings` from the page and filtering to `depth === 2`.
-- [ ] 3.2 Build TOC markup: each item is a link with `data-toc-link="{slug}"`, active-state classes toggled by script.
-- [ ] 3.3 Create `src/scripts/legal-toc-scrollspy.js`: query `[data-toc-link]`, `IntersectionObserver` over the corresponding heading ids, toggle active class (parallel to `scrollspy.js` but no `NAV_SECTION_IDS` import).
-- [ ] 3.4 Responsive styles: sticky TOC column on desktop, stacked non-sticky block on mobile.
+- [x] 3.1 Created `src/layouts/LegalLayout.astro`: header block (eyebrow/title/`updatedAt`) + two-column body (TOC + `<slot />`); `headings` prop filtered to `depth === 2` for the TOC.
+- [x] 3.2 TOC markup: each item a link with `data-toc-link="{slug}"`, base classes `border-transparent text-muted`, toggled to active state by script.
+- [x] 3.3 Created `src/scripts/legal-toc-scrollspy.js`: queries `[data-toc-link]` already in the DOM (not an imported id list), `IntersectionObserver` over each corresponding heading id, toggles active class.
+- [x] 3.4 `md:sticky md:top-24` on the TOC nav (desktop); plain stacked block by default (mobile) — same `md:` breakpoint convention already used elsewhere on the site.
 
 ## 4. Page migration
 
-- [ ] 4.1 Migrate `src/pages/syarat.astro` to `LegalLayout`, passing `headings` from `render(entry)`.
-- [ ] 4.2 Migrate `src/pages/privasi.astro` to `LegalLayout` (structure only, content unchanged).
-- [ ] 4.3 Migrate `src/pages/transparansi.astro` to `LegalLayout` (structure only, content unchanged).
+- [x] 4.1 Migrated `syarat.astro` to `LegalLayout`.
+- [x] 4.2 Migrated `privasi.astro` to `LegalLayout`.
+- [x] 4.3 Migrated `transparansi.astro` to `LegalLayout`.
 
 ## 5. Verification
 
-- [ ] 5.1 `bunx astro check` passes.
-- [ ] 5.2 Manually verify in browser: TOC matches headings on all 3 pages, scrollspy highlights correctly while scrolling, desktop sticky vs. mobile stacked behavior, `/syarat` shows all 15 sections.
-- [ ] 5.3 `bun run build` succeeds.
-- [ ] 5.4 User reviews expanded Syarat copy before this branch merges to `main`.
+- [x] 5.1 `bunx astro check` passes (0 errors).
+- [x] 5.2 Verified via built output: `/syarat` has exactly 15 `data-toc-link` entries matching 15 `<h2 id="...">` sections 1:1, `updatedAt` renders correctly on all 3 pages (16 Juli 2026 for `terms`, 15 Juli 2026 for `privacy`/`transparency`). Scrollspy highlight behavior and sticky/stacked responsive switch (JS + CSS interaction) not manually browser-tested this session — no browser tool available, user accepted this risk (same as prior changes this session).
+- [x] 5.3 `bun run build` succeeds.
+- [ ] 5.4 **Pending user review** — expanded Syarat copy (8 new sections + reorganized 7 existing) is a first draft, not signed off. Do not merge to `main` until reviewed.

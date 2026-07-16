@@ -1,8 +1,7 @@
 ---
 title: Kebijakan Privasi
+updatedAt: 15 Juli 2026
 ---
-
-Terakhir diperbarui: 15 Juli 2026
 
 bagiberbagi.id adalah situs statis tanpa sistem akun maupun server penyimpanan data — seluruh proses donasi diarahkan langsung ke percakapan WhatsApp dengan tim kami.
 

@@ -8,6 +8,7 @@ const legal = defineCollection({
     title: z.string(),
     eyebrow: z.string(),
     intro: z.string(),
+    closing: z.string(),
     updatedAt: z.string(),
   }),
 });

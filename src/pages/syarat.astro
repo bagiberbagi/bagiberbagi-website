@@ -7,6 +7,6 @@ if (!terms) throw new Error('legal/terms entry not found');
 const { Content, headings } = await render(terms);
 ---
 
-<LegalLayout title={terms.data.title} eyebrow={terms.data.eyebrow} intro={terms.data.intro} updatedAt={terms.data.updatedAt} headings={headings}>
+<LegalLayout title={terms.data.title} eyebrow={terms.data.eyebrow} intro={terms.data.intro} closing={terms.data.closing} updatedAt={terms.data.updatedAt} headings={headings}>
   <Content />
 </LegalLayout>

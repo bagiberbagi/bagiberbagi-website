@@ -2,6 +2,7 @@
 title: Syarat dan Ketentuan Layanan
 eyebrow: SYARAT DAN KETENTUAN
 intro: "Syarat dan Ketentuan ini mengatur penggunaan seluruh layanan yang tersedia di platform bagiberbagi.id. Dengan mengakses, menggunakan, atau melakukan transaksi melalui platform ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan yang berlaku."
+closing: "Terima kasih telah menjadi bagian dari gerakan berbagi bersama bagiberbagi.id."
 updatedAt: 16 Juli 2026
 ---
 

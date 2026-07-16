@@ -2,6 +2,7 @@
 title: Transparansi & Status Kami
 eyebrow: TRANSPARANSI
 intro: "bagiberbagi.id adalah inisiatif komunitas independen yang saat ini dalam tahap pengembangan menuju badan hukum resmi. Kami berkomitmen menjalankan setiap donasi secara akuntabel selama masa awal ini."
+closing: "Terima kasih telah menjadi bagian dari gerakan berbagi bersama bagiberbagi.id."
 updatedAt: 15 Juli 2026
 ---
 

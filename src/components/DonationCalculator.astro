@@ -8,13 +8,13 @@ const programs = await getCollection('programs');
 const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
 ---
 
-<div id="donasi" class="flex-1 basis-[380px] max-w-[480px] min-w-[280px] bg-white rounded-[20px] p-6 md:p-8 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.18)]">
-  <h3 class="text-[22px] font-extrabold mb-1.5">Pilih Program Berbagi</h3>
+<div id="donasi" class="flex-1 basis-[380px] max-w-[480px] min-w-[280px] bg-white rounded-card p-6 md:p-8 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.18)]">
+  <h3 class="text-title font-extrabold mb-1.5">Pilih Program Berbagi</h3>
   <p class="text-sm text-muted mb-5">Rp 25.000 per pax — sudah termasuk pengantaran & dokumentasi.</p>
 
   <select
     id="program-select"
-    class="w-full p-4 border border-border rounded-2xl text-[15px] font-semibold text-ink mb-2 bg-white"
+    class="w-full p-4 border border-border rounded-2xl text-body font-semibold text-ink mb-2 bg-white"
   >
     {programs.map((opt) => (
       <option value={opt.data.label} disabled={opt.data.disabled} selected={opt.data.label === 'Jumat Berkah'}>
@@ -22,20 +22,20 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
       </option>
     ))}
   </select>
-  <p class="text-xs text-[#94A3B8] mb-4">Program lain akan dibuka bertahap sesuai kesiapan tim.</p>
+  <p class="text-xs text-gray-400 mb-4">Program lain akan dibuka bertahap sesuai kesiapan tim.</p>
 
   <div class="flex items-center justify-between border border-border rounded-2xl px-4.5 py-3.5 mb-4">
-    <span class="font-semibold text-[15px]">Jumlah pax</span>
+    <span class="font-semibold text-body">Jumlah pax</span>
     <div class="flex items-center gap-4">
-      <button id="pax-dec" class="w-8 h-8 rounded-full border-0 bg-[#F1F5F9] text-lg font-bold text-ink">–</button>
-      <span id="pax-count" class="font-bold text-[17px] min-w-[20px] text-center">10</span>
-      <button id="pax-inc" class="w-8 h-8 rounded-full border-0 bg-[#F1F5F9] text-lg font-bold text-ink">+</button>
+      <button id="pax-dec" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">–</button>
+      <span id="pax-count" class="font-bold text-title-sm min-w-[20px] text-center">10</span>
+      <button id="pax-inc" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">+</button>
     </div>
   </div>
 
   <div class="flex items-center justify-between border-t border-dashed border-border pt-4 mb-5">
     <span class="text-sm text-muted">Total donasi</span>
-    <span id="total-display" class="text-[26px] font-extrabold">Rp 250.000</span>
+    <span id="total-display" class="text-heading-sm font-extrabold">Rp 250.000</span>
   </div>
 
   <a
@@ -44,23 +44,23 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
     href={initialWaLink}
     target="_blank"
     rel="noopener"
-    class="block text-center w-full bg-brand-orange text-white font-bold text-base py-4 rounded-full mb-2.5 transition-colors hover:bg-[#d9660f]"
+    class="block text-center w-full bg-brand-orange text-white font-bold text-base py-4 rounded-full mb-2.5 transition-colors hover:bg-brand-orangeDark"
   >
     Donasi Sekarang
   </a>
-  <p class="text-xs text-[#94A3B8] text-center mb-4.5">Transfer Bank &amp; E-wallet (OVO/GoPay/DANA) — diproses tim kami via WhatsApp</p>
+  <p class="text-xs text-gray-400 text-center mb-4.5">Transfer Bank &amp; E-wallet (OVO/GoPay/DANA) — diproses tim kami via WhatsApp</p>
 
   <div class="flex flex-col gap-2.5">
-    <div class="flex gap-2 text-[13.5px] text-muted">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg>
+    <div class="flex gap-2 text-eyebrow text-muted">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
       Paket makanan sehat bergizi dari UMKM terkurasi
     </div>
-    <div class="flex gap-2 text-[13.5px] text-muted">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg>
+    <div class="flex gap-2 text-eyebrow text-muted">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
       Diantar langsung ke Penerima yang tepat
     </div>
-    <div class="flex gap-2 text-[13.5px] text-muted">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F4791D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg>
+    <div class="flex gap-2 text-eyebrow text-muted">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
       Foto &amp; video penyaluran dikirim maksimal H+1
     </div>
   </div>

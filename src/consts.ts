@@ -6,11 +6,18 @@ export interface Feature {
   desc: string;
 }
 
+// Mirror tailwind.config.mjs brand tokens — Icon's `color`/`bg` are literal SVG/style
+// values (not Tailwind classes), so they can't reference the theme directly.
+const BRAND_ORANGE = '#F4791D';
+const BRAND_ORANGE_TINT = '#FDEEE1';
+const BRAND_BLUE = '#1D46B9';
+const BRAND_BLUE_TINT = '#E3EAFB';
+
 export const FEATURES: Feature[] = [
-  { icon: 'food', bg: '#FDEEE1', color: '#F4791D', title: 'Makanan sehat & higienis', desc: 'Menu bergizi lengkap dimasak UMKM kuliner terkurasi dengan standar laik higiene.' },
-  { icon: 'map', bg: '#E3EAFB', color: '#1D46B9', title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan dengan seksama, merata, tidak menumpuk di satu tempat.' },
-  { icon: 'camera', bg: '#FDEEE1', color: '#F4791D', title: 'Bukti nyata setiap pekan', desc: 'Foto dan video geotagged dari lapangan dikirim ke donatur maksimal H+1 setelah distribusi.' },
-  { icon: 'repeat', bg: '#E3EAFB', color: '#1D46B9', title: 'Bisa berlangganan', desc: 'Aktifkan donasi berlangganan yang berjalan otomatis tanpa perlu diingat-ingat.' },
+  { icon: 'food', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Makanan sehat & higienis', desc: 'Menu bergizi lengkap dimasak UMKM kuliner terkurasi dengan standar laik higiene.' },
+  { icon: 'map', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan dengan seksama, merata, tidak menumpuk di satu tempat.' },
+  { icon: 'camera', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Bukti nyata setiap pekan', desc: 'Foto dan video geotagged dari lapangan dikirim ke donatur maksimal H+1 setelah distribusi.' },
+  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Bisa berlangganan', desc: 'Aktifkan donasi berlangganan yang berjalan otomatis tanpa perlu diingat-ingat.' },
 ];
 
 export interface Step {

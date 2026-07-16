@@ -12,19 +12,19 @@ const emailLink = `mailto:${site.data.socials.email}`;
 const waHeaderLink = buildWaLink(site.data.waNumber);
 ---
 
-<footer class="bg-[#F8FAFC] border-t border-border px-5 md:px-10 pt-10 md:pt-16 pb-7">
+<footer class="bg-gray-50 border-t border-border px-5 md:px-10 pt-10 md:pt-16 pb-7">
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-wrap gap-10 mb-10">
       <div class="flex-1 basis-[260px] min-w-[220px]">
         <div class="flex gap-2.5 mb-3.5">
-          <a href={igLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="#64748B" stroke="none"></circle></svg>
+          <a href={igLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
           </a>
-          <a href={tiktokLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
+          <a href={tiktokLink} target="_blank" rel="noopener" class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
           </a>
-          <a href={emailLink} class="w-9 h-9 rounded-full bg-border flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          <a href={emailLink} class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
           </a>
         </div>
         <p class="text-sm text-muted leading-relaxed mb-4.5 max-w-[320px]">© 2026 bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
@@ -36,7 +36,7 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
 
       {footerCols.map((col) => (
         <div class="flex-1 basis-[140px] min-w-[140px]">
-          <div class="font-bold text-[15px] mb-3.5">{col.data.title}</div>
+          <div class="font-bold text-body mb-3.5">{col.data.title}</div>
           <div class="flex flex-col gap-2.5">
             {col.data.links.map((l) => (
               <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted">{l.label}</a>
@@ -47,8 +47,8 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
     </div>
 
     <div class="border-t border-border pt-5.5 text-center">
-      <p class="text-[13.5px] text-[#94A3B8]">Dibuat dengan kasih sayang untuk Indonesia</p>
-      <p class="text-xs text-[#B4BCC8] mt-1">Soft Launch — bagiberbagi.id</p>
+      <p class="text-eyebrow text-gray-400">Dibuat dengan kasih sayang untuk Indonesia</p>
+      <p class="text-xs text-gray-300 mt-1">Soft Launch — bagiberbagi.id</p>
     </div>
   </div>
 </footer>

@@ -20,10 +20,9 @@ const { title } = Astro.props;
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     html { scroll-behavior: smooth; }
-    ::selection { background: #FFD900; color: #0F172A; }
   </style>
 </head>
-<body class="m-0 font-sans antialiased text-ink bg-white overflow-x-hidden">
+<body class="m-0 font-sans antialiased text-ink bg-white overflow-x-hidden selection:bg-brand-yellow selection:text-ink">
   <slot />
 </body>
 </html>

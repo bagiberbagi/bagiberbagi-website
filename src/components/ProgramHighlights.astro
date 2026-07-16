@@ -1,0 +1,34 @@
+---
+import { Image } from 'astro:assets';
+import { MAKANAN_PROGRAMS } from '../consts';
+import programPromoImage from '../assets/images/program-promo.png';
+---
+
+<section class="section">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-xl mx-auto mb-10">
+      <div class="eyebrow">PROGRAM</div>
+      <h2 class="text-heading-sm md:text-heading-xl font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
+    </div>
+
+    <div class="flex flex-wrap gap-7 items-stretch">
+      {MAKANAN_PROGRAMS.map((p) => (
+        <div class="flex-1 basis-[320px] min-w-[260px] relative overflow-hidden rounded-card min-h-[280px] flex flex-col justify-end p-8 text-white" data-fade="1">
+          {p.active && (
+            <Image src={programPromoImage} alt="" width={480} height={300} class="absolute inset-0 w-full h-full object-cover" />
+          )}
+          <div class="absolute inset-0 bg-brand-blue/85"></div>
+          <div class="relative">
+            <h3 class="text-xl font-extrabold mb-2.5">{p.label}</h3>
+            <p class="text-sm leading-relaxed opacity-90 mb-6">{p.desc}</p>
+            {p.active ? (
+              <a href={p.href} class="btn-secondary inline-flex items-center text-sm px-5 py-2.5">Jelajahi Program</a>
+            ) : (
+              <span class="badge-coming-soon bg-white/15 text-white">Segera Hadir</span>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

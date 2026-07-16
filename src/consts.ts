@@ -20,6 +20,19 @@ export const FEATURES: Feature[] = [
   { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Bisa berlangganan', desc: 'Aktifkan donasi berlangganan yang berjalan otomatis tanpa perlu diingat-ingat.' },
 ];
 
+export interface MakananProgram {
+  label: string;
+  desc: string;
+  active: boolean;
+  href?: string;
+}
+
+export const MAKANAN_PROGRAMS: MakananProgram[] = [
+  { label: 'Jumat Berkah', desc: 'Berbagi makanan setiap Jumat untuk masyarakat yang membutuhkan.', active: true, href: '/jumat-berkah' },
+  { label: 'Ramadhan Berkah', desc: 'Berbagi kebahagiaan Ramadhan melalui makanan dan santunan berkah.', active: false },
+  { label: 'Berbagi Makanan Harian', desc: 'Menyalurkan makanan layak setiap hari bagi yang membutuhkan.', active: false },
+];
+
 export interface Step {
   n: string;
   title: string;

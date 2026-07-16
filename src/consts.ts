@@ -53,11 +53,11 @@ export const ACTIVITIES = [
   'Bukti foto & video maksimal H+1',
 ];
 
-export const NAV_SECTION_IDS = ['cara-kerja', 'program', 'faq', 'tentang'] as const;
+export const NAV_SECTION_IDS = ['cara-kerja', 'program', 'tentang'] as const;
 
 export const NAV_LINKS = [
-  { id: 'cara-kerja', label: 'Cara Kerja' },
-  { id: 'program', label: 'Program' },
-  { id: 'faq', label: 'FAQ' },
-  { id: 'tentang', label: 'Tentang Kami' },
+  { id: 'cara-kerja', label: 'Cara Kerja', href: '#cara-kerja' },
+  { id: 'program', label: 'Program', href: '#program' },
+  { id: 'faq', label: 'FAQ', href: '/faq' },
+  { id: 'tentang', label: 'Tentang Kami', href: '#tentang' },
 ];

@@ -17,8 +17,8 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
     <nav class="hidden nav:flex items-center gap-8">
       {NAV_LINKS.map((link) => (
         <a
-          href={`#${link.id}`}
-          data-nav-link={link.id}
+          href={link.href}
+          data-nav-link={link.href.startsWith('#') ? link.id : undefined}
           class="font-medium text-muted transition-colors hover:text-brand-blue"
         >
           {link.label}
@@ -46,7 +46,7 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
 
   <nav id="mobile-nav-panel" class="hidden nav:hidden flex-col gap-0.5 px-5 md:px-10 pb-5 pt-2 border-t border-border">
     {NAV_LINKS.map((link) => (
-      <a href={`#${link.id}`} class="px-1 py-3 font-medium text-muted">{link.label}</a>
+      <a href={link.href} class="px-1 py-3 font-medium text-muted">{link.label}</a>
     ))}
     <a
       href={waHeaderLink}

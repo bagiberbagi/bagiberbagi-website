@@ -4,20 +4,20 @@ import { getCollection } from 'astro:content';
 const faqs = await getCollection('faqs');
 ---
 
-<section id="faq" class="bg-[#F8FAFC] px-5 md:px-10 py-12 md:py-[88px]">
+<section id="faq" class="section bg-gray-50">
   <div class="max-w-[760px] mx-auto">
     <div class="text-center max-w-xl mx-auto mb-10">
-      <div class="text-brand-orange font-bold text-[13px] tracking-wide mb-3">FAQ</div>
-      <h2 class="text-[26px] md:text-[34px] font-extrabold tracking-tight">Pertanyaan yang Sering Diajukan</h2>
+      <div class="eyebrow">FAQ</div>
+      <h2 class="text-heading-sm md:text-heading-xl font-extrabold tracking-tight">Pertanyaan yang Sering Diajukan</h2>
     </div>
     <div class="flex flex-col">
       {faqs.map((faq, i) => (
         <div class="faq-item py-5.5 border-b border-border cursor-pointer" data-index={i}>
           <div class="flex items-center justify-between gap-4">
             <h4 class="text-base font-bold m-0">{faq.data.q}</h4>
-            <svg class="faq-chevron flex-none transition-transform duration-200" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+            <svg class="faq-chevron flex-none transition-transform duration-200 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
           </div>
-          <p class={`faq-answer text-[14.5px] text-muted leading-relaxed mt-2.5 ${i === 0 ? '' : 'hidden'}`}>{faq.data.a}</p>
+          <p class={`faq-answer text-body-sm text-muted leading-relaxed mt-2.5 ${i === 0 ? '' : 'hidden'}`}>{faq.data.a}</p>
         </div>
       ))}
     </div>

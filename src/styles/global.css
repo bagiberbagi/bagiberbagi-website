@@ -1,2 +1,28 @@
 @import "tailwindcss";
 @config "../../tailwind.config.mjs";
+
+@layer components {
+  .section {
+    @apply px-5 md:px-10 py-12 md:py-[88px];
+  }
+
+  .eyebrow {
+    @apply text-brand-orange font-bold text-eyebrow tracking-wide mb-3;
+  }
+
+  .card {
+    @apply bg-white rounded-card;
+  }
+
+  .btn-primary {
+    @apply bg-brand-orange text-white font-bold px-8 py-4 rounded-full transition-colors hover:bg-brand-orangeDark;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-brand-blue font-bold px-8 py-4 rounded-full transition-transform hover:-translate-y-0.5;
+  }
+
+  .badge-coming-soon {
+    @apply inline-block bg-gray-100 text-muted text-eyebrow font-semibold px-3 py-1 rounded-full;
+  }
+}

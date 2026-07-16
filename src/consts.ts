@@ -64,6 +64,7 @@ export const NAV_LINKS = [
 
 export interface ProgramMenuItem {
   label: string;
+  desc: string;
   active: boolean;
   href?: string;
 }
@@ -81,9 +82,9 @@ export const PROGRAM_MENU: ProgramMenuCategory[] = [
     label: '#bagiberbagimakanan',
     icon: 'food',
     items: [
-      { label: 'Jumat Berkah', active: true, href: '/jumat-berkah' },
-      { label: 'Ramadhan Berkah', active: false },
-      { label: 'Berbagi Makanan Harian', active: false },
+      { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah' },
+      { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadan penuh berkah.', active: false },
+      { label: 'Berbagi Makanan Harian', desc: 'Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.', active: false },
     ],
   },
   {
@@ -91,8 +92,8 @@ export const PROGRAM_MENU: ProgramMenuCategory[] = [
     label: '#bagiberbagibantuan',
     icon: 'box',
     items: [
-      { label: 'Berbagi Sembako', active: false },
-      { label: 'Berbagi Bantuan Bencana', active: false },
+      { label: 'Berbagi Sembako', desc: 'Menyalurkan paket sembako bagi keluarga yang membutuhkan.', active: false },
+      { label: 'Berbagi Bantuan Bencana', desc: 'Memberikan bantuan darurat bagi korban bencana terdampak.', active: false },
     ],
   },
   {
@@ -100,8 +101,8 @@ export const PROGRAM_MENU: ProgramMenuCategory[] = [
     label: '#bagiberbagipendidikan',
     icon: 'walk',
     items: [
-      { label: 'Berbagi Beasiswa', active: false },
-      { label: 'Berbagi Buku dan Alat Sekolah', active: false },
+      { label: 'Berbagi Beasiswa', desc: 'Membantu pendidikan melalui dukungan biaya belajar.', active: false },
+      { label: 'Berbagi Buku & Alat Sekolah', desc: 'Menyalurkan perlengkapan belajar untuk pelajar membutuhkan.', active: false },
     ],
   },
 ];

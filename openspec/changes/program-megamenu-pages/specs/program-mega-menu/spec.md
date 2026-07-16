@@ -12,15 +12,15 @@ The header nav SHALL render, in order: Home, Program, Tentang Kami, FAQ, with "D
 - **THEN** the panel lists the same items in the same order, ending with the "Donasi Sekarang" CTA
 
 ### Requirement: Program mega-menu structure
-The "Program" nav item SHALL open a mega-menu with 3 even-width category columns (`bagiberbagimakanan`, `bagiberbagibantuan`, `bagiberbagipendidikan`) plus one promo column, on desktop viewports.
+The "Program" nav item SHALL open a mega-menu on desktop viewports showing all 3 categories (`bagiberbagimakanan`, `bagiberbagibantuan`, `bagiberbagipendidikan`), each item with its label and a short description, plus a promo panel. Categories MAY be arranged across columns in whatever grouping keeps each column's content readable (not required to be 1-category-per-column) — the binding requirement is that all 3 categories and all 7 items are visible with no visual overflow/clipping/excessive wrapping.
 
 #### Scenario: Mega-menu shows all categories
 - **WHEN** the Program mega-menu is open on desktop
-- **THEN** all 3 categories are visible as separate, equal-width columns, each with an icon + label header
+- **THEN** all 3 categories are visible, each with an icon + label header, and every item shows its label and description without text being clipped or overlapping another column
 
 #### Scenario: Promo column links to the active program
 - **WHEN** the Program mega-menu is open
-- **THEN** the promo column shows content promoting "Jumat Berkah" and links to `/jumat-berkah`
+- **THEN** the promo panel shows an image and content promoting "Jumat Berkah" and links to `/jumat-berkah`
 
 ### Requirement: Program item active/coming-soon state
 Within the mega-menu, the "Jumat Berkah" item SHALL be a clickable link to `/jumat-berkah`. The other 6 items SHALL render as non-interactive (non-`<a>`) text with a visible "Segera Hadir" badge/style, matching the existing `disabled` convention used in the `programs` Content Collection.

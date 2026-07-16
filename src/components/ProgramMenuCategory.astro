@@ -1,0 +1,36 @@
+---
+import Icon from './Icon.astro';
+import type { ProgramMenuCategory as ProgramMenuCategoryType } from '../consts';
+
+export interface Props {
+  category: ProgramMenuCategoryType;
+  iconSize?: number;
+}
+
+const { category, iconSize = 16 } = Astro.props;
+---
+
+<div>
+  <div class="flex items-center gap-2 text-brand-blue font-bold text-eyebrow mb-3 pb-2 border-b border-border">
+    <Icon name={category.icon} size={iconSize} />
+    {category.label}
+  </div>
+  <div class="flex flex-col gap-4">
+    {category.items.map((item) => (
+      <div>
+        <div class="flex items-start gap-2 flex-wrap">
+          <span class="w-2 h-2 mt-1.5 flex-none bg-ink"></span>
+          {item.active && item.href ? (
+            <a href={item.href} class="text-sm font-bold text-ink hover:text-brand-blue">{item.label}</a>
+          ) : (
+            <>
+              <span class="text-sm font-bold text-ink">{item.label}</span>
+              <span class="badge-coming-soon">Segera Hadir</span>
+            </>
+          )}
+        </div>
+        <p class="text-xs text-muted leading-relaxed mt-1 pl-4">{item.desc}</p>
+      </div>
+    ))}
+  </div>
+</div>

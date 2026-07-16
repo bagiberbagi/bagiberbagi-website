@@ -17,7 +17,7 @@ Hasilnya 2 file: `deploy_key` (private) dan `deploy_key.pub` (public).
 `vps-setup.sh` ada buat VPS fresh (install nginx+certbot, bikin `WEB_ROOT="/var/www/${DOMAIN}"`). **VPS produksi aktual gak pernah dibootstrap pake script ini** — nginx/TLS udah disetup manual sebelumnya dengan struktur beda. Jangan jalanin script ini di VPS yang udah live, bakal nimpa config nginx yang ada (termasuk blok SSL certbot + SPA-fallback `/keystatic/`).
 
 Nilai aktual VPS produksi (bukan default script):
-- SSH port: `32771` (bukan 22 default)
+- SSH port: `32550` (bukan 22 default)
 - Web root: `/var/www/html/bagiberbagi` (bukan `/var/www/bagiberbagi.id`)
 - User `deploy`: dibikin manual, join grup `www-data` (bukan `chown` jadi owner) — akses tulis ke web root lewat grup
 
@@ -40,7 +40,7 @@ sudo find /var/www/html/bagiberbagi -type d -exec chmod g+s {} +
 echo "<isi deploy_key.pub>" | sudo tee -a /home/deploy/.ssh/authorized_keys
 ```
 
-Verifikasi bisa login: `ssh -i deploy_key -p 32771 deploy@<VPS_IP>`
+Verifikasi bisa login: `ssh -i deploy_key -p 32550 deploy@<VPS_IP>`
 
 ### 4. Set GitHub Secrets
 
@@ -52,7 +52,7 @@ Repo → Settings → Secrets and variables → Actions → New repository secre
 | `VPS_USER` | `deploy` |
 | `VPS_SSH_KEY` | isi file `deploy_key` (private key, full content termasuk header/footer) |
 
-Port SSH (`32771`) di-hardcode langsung di `.github/workflows/deploy.yml` (bukan secret, karena bukan data sensitif).
+Port SSH (`32550`) di-hardcode langsung di `.github/workflows/deploy.yml` (bukan secret, karena bukan data sensitif).
 
 ### 5. Merge `astro-migration` ke `main`
 
@@ -60,7 +60,7 @@ Workflow (`.github/workflows/deploy.yml`) trigger dari push ke `main` — branch
 
 ## Deploy selanjutnya
 
-Push/merge ke `main` → GitHub Actions otomatis: install → `bun test` → `astro check` → `bun run build` → rsync `dist/` ke `/var/www/html/bagiberbagi` di VPS (port SSH `32771`). Gak perlu langkah manual lagi.
+Push/merge ke `main` → GitHub Actions otomatis: install → `bun test` → `astro check` → `bun run build` → rsync `dist/` ke `/var/www/html/bagiberbagi` di VPS (port SSH `32550`). Gak perlu langkah manual lagi.
 
 ## Update konten legal/domain
 

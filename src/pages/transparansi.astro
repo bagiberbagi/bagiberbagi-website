@@ -7,6 +7,6 @@ if (!transparency) throw new Error('legal/transparency entry not found');
 const { Content, headings } = await render(transparency);
 ---
 
-<LegalLayout title={transparency.data.title} updatedAt={transparency.data.updatedAt} headings={headings}>
+<LegalLayout title={transparency.data.title} eyebrow={transparency.data.eyebrow} intro={transparency.data.intro} updatedAt={transparency.data.updatedAt} headings={headings}>
   <Content />
 </LegalLayout>

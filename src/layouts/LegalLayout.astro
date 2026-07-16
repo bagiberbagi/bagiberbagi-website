@@ -5,11 +5,13 @@ import Footer from '../components/Footer.astro';
 
 export interface Props {
   title: string;
+  eyebrow: string;
+  intro: string;
   updatedAt: string;
   headings: { depth: number; slug: string; text: string }[];
 }
 
-const { title, updatedAt, headings } = Astro.props;
+const { title, eyebrow, intro, updatedAt, headings } = Astro.props;
 const toc = headings.filter((h) => h.depth === 2);
 ---
 
@@ -17,9 +19,11 @@ const toc = headings.filter((h) => h.depth === 2);
   <Header />
   <section class="section bg-white">
     <div class="max-w-6xl mx-auto">
-      <div class="eyebrow">LEGAL</div>
+      <div class="eyebrow">{eyebrow}</div>
       <h1 class="text-2xl md:text-heading-md font-extrabold tracking-tight mb-2">{title}</h1>
       <p class="text-sm text-muted mb-8">Terakhir diperbarui: {updatedAt}</p>
+
+      <p class="text-body font-semibold text-ink leading-relaxed mb-8 max-w-3xl">{intro}</p>
 
       <div class="flex flex-col md:flex-row gap-10 items-start">
         <nav aria-label="Daftar isi" class="w-full md:w-[240px] md:flex-none md:sticky md:top-24">
@@ -39,7 +43,13 @@ const toc = headings.filter((h) => h.depth === 2);
           </ul>
         </nav>
 
-        <div class="prose-legal flex-1 min-w-0 flex flex-col gap-8 text-body-sm text-muted leading-relaxed">
+        <div
+          class="flex-1 min-w-0 text-body-sm text-muted leading-relaxed
+            [&_h2]:scroll-mt-24 [&_h2]:text-title-sm [&_h2]:font-extrabold [&_h2]:text-ink [&_h2]:mt-10 [&_h2]:mb-3 [&_h2:first-child]:mt-0
+            [&_p]:mb-3 [&_p:last-child]:mb-0
+            [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5
+            [&_li]:pl-1 [&_li::marker]:text-brand-orange"
+        >
           <slot />
         </div>
       </div>
@@ -47,15 +57,6 @@ const toc = headings.filter((h) => h.depth === 2);
   </section>
   <Footer />
 </BaseLayout>
-
-<style>
-  .prose-legal :global(h2) {
-    scroll-margin-top: 96px;
-  }
-  .prose-legal :global(p) {
-    margin: 0;
-  }
-</style>
 
 <script>
   import '../scripts/legal-toc-scrollspy.js';

@@ -1,9 +1,9 @@
 ---
-title: Syarat & Ketentuan
+title: Syarat dan Ketentuan Layanan
+eyebrow: SYARAT DAN KETENTUAN
+intro: "Selamat datang di bagiberbagi.id. Syarat dan Ketentuan ini mengatur penggunaan situs bagiberbagi.id dan proses donasi yang difasilitasi melalui WhatsApp. Dengan mengakses, menggunakan, atau melakukan donasi melalui platform ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan yang berlaku."
 updatedAt: 16 Juli 2026
 ---
-
-Selamat datang di bagiberbagi.id. Syarat dan Ketentuan ini mengatur penggunaan situs bagiberbagi.id dan proses donasi yang difasilitasi melalui WhatsApp. Dengan mengakses, menggunakan, atau melakukan donasi melalui platform ini, Anda dianggap telah membaca, memahami, dan menyetujui seluruh ketentuan yang berlaku.
 
 ## Definisi
 

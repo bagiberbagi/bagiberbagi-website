@@ -21,6 +21,16 @@
 - [x] 4.2 Migrated `privasi.astro` to `LegalLayout`.
 - [x] 4.3 Migrated `transparansi.astro` to `LegalLayout`.
 
+## 5.5 Visual precision fixes (post-review against mockup)
+
+- [x] Added `eyebrow`/`intro` fields to the `legal` schema and all 3 entries (was hardcoded "LEGAL" for all pages; mockup uses a page-specific label like "SYARAT DAN KETENTUAN").
+- [x] Fixed `terms.md` title to "Syarat dan Ketentuan Layanan" (was "Syarat & Ketentuan").
+- [x] Added full-width intro paragraph (bold, `text-ink`) above the TOC/content grid, matching the mockup's "Selamat datang di bagiberbagi.id..." lead line.
+- [x] Rewrote list/heading spacing: replaced a uniform `flex flex-col gap-8` (which applied the same gap between every markdown element regardless of type) with per-element rules via Tailwind arbitrary variants (`[&_h2]:mt-10 [&_h2]:mb-3`, `[&_p]:mb-3`, `[&_ul]:mb-4 [&_ul]:gap-1.5`) — h2→own paragraph is tight, section→next-section is loose.
+- [x] Styled markdown `<ul>`/`<li>` at all — previously fell back to unstyled browser defaults (big default bullets/indent). Now `list-disc pl-5` with `li::marker` colored via `[&_li::marker]:text-brand-orange`.
+- [x] Used Tailwind arbitrary variants instead of a `<style>` block with plain CSS — a plain-CSS approach would have needed hardcoded hex (`::marker` can't take a Tailwind class directly) or `theme()` (already known broken in this Tailwind v4 setup, see `design-system`'s `BaseLayout.astro` fix), either of which would violate `design-system`'s "no raw hex in `src/layouts/`" requirement. Re-verified `grep -rE '#[0-9A-Fa-f]{3,6}'` still returns 0 matches (excluding `Documentation.astro`/`Legal.astro`).
+- [x] `transparency.md` had no H2 sections at all (2 flat paragraphs) — added one ("Status Saat Ini") so its TOC isn't empty; first paragraph moved to `intro`.
+
 ## 5. Verification
 
 - [x] 5.1 `bunx astro check` passes (0 errors).

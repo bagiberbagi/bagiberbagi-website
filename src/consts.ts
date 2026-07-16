@@ -53,11 +53,55 @@ export const ACTIVITIES = [
   'Bukti foto & video maksimal H+1',
 ];
 
-export const NAV_SECTION_IDS = ['cara-kerja', 'program', 'tentang'] as const;
+export const NAV_SECTION_IDS = ['program', 'tentang'] as const;
 
 export const NAV_LINKS = [
-  { id: 'cara-kerja', label: 'Cara Kerja', href: '#cara-kerja' },
+  { id: 'home', label: 'Home', href: '#top' },
   { id: 'program', label: 'Program', href: '#program' },
-  { id: 'faq', label: 'FAQ', href: '/faq' },
   { id: 'tentang', label: 'Tentang Kami', href: '#tentang' },
+  { id: 'faq', label: 'FAQ', href: '/faq' },
+];
+
+export interface ProgramMenuItem {
+  label: string;
+  active: boolean;
+  href?: string;
+}
+
+export interface ProgramMenuCategory {
+  id: string;
+  label: string;
+  icon: 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
+  items: ProgramMenuItem[];
+}
+
+export const PROGRAM_MENU: ProgramMenuCategory[] = [
+  {
+    id: 'bagiberbagimakanan',
+    label: '#bagiberbagimakanan',
+    icon: 'food',
+    items: [
+      { label: 'Jumat Berkah', active: true, href: '/jumat-berkah' },
+      { label: 'Ramadhan Berkah', active: false },
+      { label: 'Berbagi Makanan Harian', active: false },
+    ],
+  },
+  {
+    id: 'bagiberbagibantuan',
+    label: '#bagiberbagibantuan',
+    icon: 'box',
+    items: [
+      { label: 'Berbagi Sembako', active: false },
+      { label: 'Berbagi Bantuan Bencana', active: false },
+    ],
+  },
+  {
+    id: 'bagiberbagipendidikan',
+    label: '#bagiberbagipendidikan',
+    icon: 'walk',
+    items: [
+      { label: 'Berbagi Beasiswa', active: false },
+      { label: 'Berbagi Buku dan Alat Sekolah', active: false },
+    ],
+  },
 ];

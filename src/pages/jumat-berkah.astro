@@ -1,0 +1,49 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+
+const defaultPax = 10;
+const waLink = buildWaLink(
+  site.data.waNumber,
+  buildDonationMessage('Jumat Berkah', defaultPax, formatRupiah(calcTotal(defaultPax)))
+);
+---
+
+<BaseLayout title="Jumat Berkah — bagiberbagi.id">
+  <Header />
+  <section class="section bg-white">
+    <div class="max-w-3xl mx-auto">
+      <div class="eyebrow">PROGRAM AKTIF</div>
+      <h1 class="text-2xl md:text-heading-md font-extrabold tracking-tight mb-4">Jumat Berkah</h1>
+      <p class="text-body-sm text-muted leading-relaxed mb-6">
+        Berbagi paket makanan setiap hari Jumat bagi masyarakat yang membutuhkan secara langsung. Setiap donasi diproses melalui tim kami di WhatsApp, disalurkan bersama mitra UMKM dan relawan lapangan, dan didokumentasikan dengan foto &amp; video maksimal H+1.
+      </p>
+
+      <div class="flex flex-col gap-2.5 mb-7">
+        <div class="flex gap-2 text-sm text-muted">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
+          Paket makanan sehat bergizi dari UMKM terkurasi
+        </div>
+        <div class="flex gap-2 text-sm text-muted">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
+          Diantar langsung ke penerima yang tepat setiap hari Jumat
+        </div>
+        <div class="flex gap-2 text-sm text-muted">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
+          Foto &amp; video penyaluran dikirim maksimal H+1
+        </div>
+      </div>
+
+      <a href={waLink} target="_blank" rel="noopener" class="inline-block btn-primary">
+        Donasi Jumat Berkah Sekarang
+      </a>
+    </div>
+  </section>
+  <Footer />
+</BaseLayout>

@@ -9,9 +9,10 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
 ---
 
 <div id="donasi" class="flex-1 basis-[380px] max-w-[480px] min-w-[280px] bg-white rounded-card p-6 md:p-8 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.18)]">
-  <h3 class="text-title font-extrabold mb-1.5">Pilih Program Berbagi</h3>
+  <h2 class="text-title font-extrabold mb-1.5">Pilih Program Berbagi</h2>
   <p class="text-sm text-muted mb-5">Rp 25.000 per pax — sudah termasuk pengantaran & dokumentasi.</p>
 
+  <label for="program-select" class="sr-only">Pilih program berbagi</label>
   <select
     id="program-select"
     class="w-full p-4 border border-border rounded-2xl text-body font-semibold text-ink mb-2 bg-white"
@@ -27,9 +28,9 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
   <div class="flex items-center justify-between border border-border rounded-2xl px-4.5 py-3.5 mb-4">
     <span class="font-semibold text-body">Jumlah pax</span>
     <div class="flex items-center gap-4">
-      <button id="pax-dec" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">–</button>
-      <span id="pax-count" class="font-bold text-title-sm min-w-[20px] text-center">10</span>
-      <button id="pax-inc" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">+</button>
+      <button id="pax-dec" aria-label="Kurangi jumlah pax" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">–</button>
+      <span id="pax-count" aria-live="polite" class="font-bold text-title-sm min-w-[20px] text-center">10</span>
+      <button id="pax-inc" aria-label="Tambah jumlah pax" class="w-8 h-8 rounded-full border-0 bg-gray-100 text-lg font-bold text-ink">+</button>
     </div>
   </div>
 

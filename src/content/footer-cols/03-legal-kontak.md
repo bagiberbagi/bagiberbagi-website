@@ -2,10 +2,10 @@
 title: Legal & Kontak
 links:
   - label: Kebijakan Privasi
-    href: "#privasi"
+    href: "/privasi"
   - label: Syarat & Ketentuan
-    href: "#syarat"
+    href: "/syarat"
   - label: Kontak
-    href: "https://wa.me/6282233996648"
+    href: "https://wa.me/+6285139506070"
     target: "_blank"
 ---

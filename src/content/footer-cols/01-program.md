@@ -2,9 +2,9 @@
 title: Program
 links:
   - label: Donasi
-    href: "#donasi"
+    href: "/#donasi"
   - label: CSR Enterprise
-    href: "#tentang"
+    href: "/#tentang"
   - label: UMKM Partner
-    href: "#tentang"
+    href: "/#tentang"
 ---

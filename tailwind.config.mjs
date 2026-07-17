@@ -7,19 +7,19 @@ export default {
         brand: {
           yellow: '#FFD900',
           blue: '#1D46B9',
-          orange: '#F4791D',
-          orangeDark: '#d9660f',
+          orange: '#C25400',
+          orangeDark: '#A54700',
           orangeTint: '#FDEEE1',
           blueTint: '#E3EAFB',
         },
         ink: '#0F172A',
-        muted: '#64748B',
+        muted: '#505D6F',
         border: '#EEF0F3',
         gray: {
           50: '#F8FAFC',
           100: '#F1F5F9',
           300: '#B4BCC8',
-          400: '#94A3B8',
+          400: '#687281',
         },
       },
       fontFamily: {

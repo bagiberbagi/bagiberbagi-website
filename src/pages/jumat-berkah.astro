@@ -1,8 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../lib/format';
 
 const site = await getEntry('settings', 'site');
@@ -15,8 +13,10 @@ const waLink = buildWaLink(
 );
 ---
 
-<BaseLayout title="Jumat Berkah — bagiberbagi.id">
-  <Header />
+<BaseLayout
+  title="Jumat Berkah — bagiberbagi.id"
+  description="Program Jumat Berkah bagiberbagi.id: berbagi paket makanan sehat dari UMKM terkurasi setiap Jumat, diantar langsung ke penerima, dengan dokumentasi foto & video maksimal H+1."
+>
   <section class="section bg-white">
     <div class="max-w-3xl mx-auto">
       <div class="eyebrow">PROGRAM AKTIF</div>
@@ -45,5 +45,4 @@ const waLink = buildWaLink(
       </a>
     </div>
   </section>
-  <Footer />
 </BaseLayout>

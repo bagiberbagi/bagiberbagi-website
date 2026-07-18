@@ -1,8 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import { buildWaLink } from '../lib/format';
 
 export interface Props {
@@ -17,6 +15,7 @@ export interface Props {
 const { title, eyebrow, intro, closing, updatedAt, headings } = Astro.props;
 const toc = headings.filter((h) => h.depth === 2);
 const introParagraphs = intro.split('\n\n');
+const metaDescription = `${title} bagiberbagi.id — ${introParagraphs[0]}`.slice(0, 160);
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -25,8 +24,7 @@ const emailLink = `mailto:${site.data.socials.email}`;
 const websiteUrl = 'https://bagiberbagi.id';
 ---
 
-<BaseLayout title={`${title} — bagiberbagi.id`}>
-  <Header />
+<BaseLayout title={`${title} — bagiberbagi.id`} description={metaDescription}>
   <section class="section bg-white">
     <div class="max-w-6xl mx-auto">
       <div class="eyebrow mb-2">{eyebrow}</div>
@@ -93,7 +91,6 @@ const websiteUrl = 'https://bagiberbagi.id';
       </div>
     </div>
   </section>
-  <Footer />
 </BaseLayout>
 
 <script>

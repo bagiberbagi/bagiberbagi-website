@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Stats from '../components/Stats.astro';
 import ProgramHighlights from '../components/ProgramHighlights.astro';
@@ -8,21 +7,19 @@ import ProgramFeatures from '../components/ProgramFeatures.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import ImpactSection from '../components/ImpactSection.astro';
 import JoinUs from '../components/JoinUs.astro';
-import Footer from '../components/Footer.astro';
 ---
 
-<BaseLayout title="bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata">
-  <div id="top">
-    <Header />
-    <Hero />
-    <Stats />
-    <ProgramHighlights />
-    <ProgramFeatures />
-    <HowItWorks />
-    <ImpactSection />
-    <JoinUs />
-    <Footer />
-  </div>
+<BaseLayout
+  title="bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata"
+  description="Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id. Komunitas penyalur bantuan yang transparan dan terdokumentasi — berbagi jadi lebih mudah, dampaknya lebih nyata."
+>
+  <Hero />
+  <Stats />
+  <ProgramHighlights />
+  <ProgramFeatures />
+  <HowItWorks />
+  <ImpactSection />
+  <JoinUs />
 </BaseLayout>
 
 <script>

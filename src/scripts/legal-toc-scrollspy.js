@@ -3,6 +3,7 @@ const links = document.querySelectorAll('[data-toc-link]');
 const setActive = (slug) => {
   links.forEach((link) => {
     const isActive = link.getAttribute('data-toc-link') === slug;
+    link.classList.toggle('bg-brand-blueTint', isActive);
     link.classList.toggle('border-brand-blue', isActive);
     link.classList.toggle('text-ink', isActive);
     link.classList.toggle('font-semibold', isActive);

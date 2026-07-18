@@ -24,7 +24,7 @@ Astro static site (`output: 'static'`, no adapter), Tailwind CSS, TypeScript str
 - `src/content/legal/*.md` is a Content Collection (`src/content/config.ts`) — privacy/terms/transparency are long-form prose and Phase 2 candidates for standalone pages, unlike the data above.
 - `src/lib/format.ts` holds pure functions (Rupiah formatting, WhatsApp link building) used by both server-rendered markup and the client-side calculator script; it's the only part of the app with unit tests (`bun test`).
 - `src/scripts/*.js` are small vanilla-JS modules (no UI framework) each imported via a `<script>` tag in the one component that owns that behavior — mobile nav, scrollspy, fade-in-on-scroll, activity ticker, stats count-up, donation calculator, FAQ accordion.
-- `legacy/` is the original site-builder export (`bagiberbagi.dc.html`, `content.js`, `image-slot.js`, `support.js`) — kept for reference only, never imported by the Astro app.
+- Design mockups are **git-ignored, local-only** references (see `.gitignore`): `legacy/` (the original site-builder export), `newpage/`, and any `*.dc.html` site-builder export. Workflow: a `.dc.html` export is dropped in as the visual/content reference for building a page, then used as the spec — never imported or deployed. Map its raw hex to the design-system tokens (don't copy mockup colors verbatim), and treat its `sc-for`/`{{ }}` template placeholders as dynamic slots (real content lives in the Astro content collections, not the mockup). Files stay on disk for iteration and are deleted manually once spent.
 - `plan.md`, `faq.md`, `kebijakan.md`, `syarat.md` at the repo root are Phase 2 backlog (new program mega-menu, dedicated FAQ/legal/about pages) — not yet implemented.
 
 ## Git conventions

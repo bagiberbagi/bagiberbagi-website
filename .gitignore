@@ -14,3 +14,11 @@ dist/
 
 # Claude Code local-only settings (personal permission allowlist)
 .claude/settings.local.json
+
+# Design mockups / site-builder exports — local reference only, never imported
+# or deployed. Kept on disk for evaluation/iteration; deleted manually when spent.
+legacy/
+newpage/
+*.dc.html
+image-slot.js
+support.js

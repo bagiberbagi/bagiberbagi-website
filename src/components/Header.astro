@@ -5,6 +5,7 @@ import { NAV_LINKS, PROGRAM_MENU } from '../consts';
 import { buildWaLink } from '../lib/format';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
 import programPromoImage from '../assets/images/program-promo.png';
+import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -14,8 +15,8 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
 
 <header class="sticky top-0 z-50 bg-white border-b border-border">
   <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-5 md:px-10 py-4">
-    <a href="/#top" class="text-xl font-extrabold text-brand-blue tracking-tight">
-      bagiberbagi<span class="text-ink">.id</span>
+    <a href="/#top" class="flex items-center">
+      <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto md:h-9" />
     </a>
 
     <nav class="hidden nav:flex items-center gap-8">

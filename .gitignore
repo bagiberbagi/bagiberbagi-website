@@ -17,8 +17,8 @@ dist/
 
 # Design mockups / site-builder exports — local reference only, never imported
 # or deployed. Kept on disk for evaluation/iteration; deleted manually when spent.
-legacy/
-newpage/
+# All mockups live under mockup/ (legacy/, newpage/, stray *.dc.html exports).
+mockup/
 *.dc.html
 image-slot.js
 support.js

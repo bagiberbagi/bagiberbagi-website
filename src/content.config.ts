@@ -38,6 +38,9 @@ const faqs = defineCollection({
   schema: z.object({
     q: z.string(),
     a: z.string(),
+    category: z
+      .enum(['umum', 'donasi', 'penyaluran', 'kemitraan', 'kontak'])
+      .default('umum'),
   }),
 });
 

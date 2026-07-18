@@ -42,6 +42,17 @@ export default config({
       schema: {
         q: fields.text({ label: 'Pertanyaan' }),
         a: fields.text({ label: 'Jawaban', multiline: true }),
+        category: fields.select({
+          label: 'Kategori',
+          options: [
+            { label: 'Umum', value: 'umum' },
+            { label: 'Donasi & Pembayaran', value: 'donasi' },
+            { label: 'Penyaluran & Transparansi', value: 'penyaluran' },
+            { label: 'Kemitraan', value: 'kemitraan' },
+            { label: 'Kontak', value: 'kontak' },
+          ],
+          defaultValue: 'umum',
+        }),
       },
     }),
     programs: collection({

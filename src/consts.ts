@@ -66,12 +66,12 @@ export const ACTIVITIES = [
   'Bukti foto & video maksimal H+1',
 ];
 
-export const NAV_SECTION_IDS = ['program', 'tentang'] as const;
+export const NAV_SECTION_IDS = ['program'] as const;
 
 export const NAV_LINKS = [
   { id: 'home', label: 'Home', href: '/#top' },
   { id: 'program', label: 'Program', href: '/#program' },
-  { id: 'tentang', label: 'Tentang Kami', href: '/#tentang' },
+  { id: 'tentang', label: 'Tentang Kami', href: '/tentang' },
   { id: 'faq', label: 'FAQ', href: '/faq' },
 ];
 

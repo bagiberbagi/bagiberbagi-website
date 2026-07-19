@@ -32,6 +32,71 @@ export default config({
         }),
       },
     }),
+    about: singleton({
+      label: 'Halaman Tentang Kami',
+      path: 'src/content/about/about',
+      format: 'json',
+      schema: {
+        hero: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Eyebrow' }),
+            title: fields.text({ label: 'Judul utama' }),
+            paragraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
+              label: 'Paragraf hero',
+              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
+            }),
+          },
+          { label: 'Hero' }
+        ),
+        mission: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Eyebrow' }),
+            title: fields.text({ label: 'Judul' }),
+            paragraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
+              label: 'Paragraf',
+              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
+            }),
+            growTitle: fields.text({ label: 'Judul blok kedua' }),
+            growParagraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
+              label: 'Paragraf blok kedua',
+              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
+            }),
+          },
+          { label: 'Mengapa Kami Ada' }
+        ),
+        values: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Eyebrow' }),
+            title: fields.text({ label: 'Judul' }),
+            items: fields.array(
+              fields.object({
+                icon: fields.select({
+                  label: 'Ikon',
+                  options: [
+                    { label: 'Transparansi (mata)', value: 'transparansi' },
+                    { label: 'Kolaborasi (orang)', value: 'kolaborasi' },
+                    { label: 'Keberlanjutan (daur ulang)', value: 'keberlanjutan' },
+                    { label: 'Dampak (target)', value: 'dampak' },
+                  ],
+                  defaultValue: 'transparansi',
+                }),
+                title: fields.text({ label: 'Judul nilai' }),
+                desc: fields.text({ label: 'Deskripsi', multiline: true }),
+              }),
+              { label: 'Nilai', itemLabel: (props) => props.fields.title.value || 'Nilai' }
+            ),
+          },
+          { label: 'Nilai yang Kami Pegang' }
+        ),
+        cta: fields.object(
+          {
+            title: fields.text({ label: 'Judul' }),
+            text: fields.text({ label: 'Teks', multiline: true }),
+          },
+          { label: 'Ajakan (CTA)' }
+        ),
+      },
+    }),
   },
   collections: {
     faqs: collection({

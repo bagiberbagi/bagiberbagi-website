@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "eyebrow": "#TentangBagiberbagi.id",
+    "title": "Menghubungkan Kebaikan, Menciptakan Dampak.",
+    "paragraphs": [
+      "Kami percaya bahwa setiap orang ingin berbagi. Yang sering menjadi tantangan bukanlah niatnya, melainkan bagaimana memastikan bantuan dapat tersalurkan dengan mudah, tepat sasaran, dan transparan.",
+      "bagiberbagi.id hadir sebagai platform social impact yang menghubungkan individu, komunitas, perusahaan, dan UMKM untuk bersama-sama menciptakan dampak sosial yang berkelanjutan."
+    ]
+  },
+  "mission": {
+    "eyebrow": "MENGAPA KAMI ADA",
+    "title": "Berbagi Seharusnya Semudah Memulai.",
+    "paragraphs": [
+      "Di Indonesia, jutaan orang ingin berbagi setiap hari. Namun proses yang rumit, minim transparansi, dan sulitnya menemukan penyalur yang terpercaya sering kali membuat niat baik tertunda.",
+      "Di sisi lain, banyak komunitas, panti asuhan, masjid, sekolah, dan masyarakat yang membutuhkan dukungan secara berkelanjutan.",
+      "Karena itu, bagiberbagi.id dibangun untuk membuat proses berbagi menjadi lebih sederhana, lebih transparan, dan memberikan dampak yang nyata bagi semua pihak yang terlibat."
+    ],
+    "growTitle": "Setiap Kebaikan Memiliki Tempat untuk Bertumbuh.",
+    "growParagraphs": [
+      "Kami percaya bahwa perubahan besar selalu dimulai dari langkah kecil. Ketika individu, komunitas, UMKM, dan perusahaan bergerak bersama, setiap aksi berbagi dapat menjadi dampak yang terus bertumbuh.",
+      "bagiberbagi.id hadir untuk menjadi platform yang menghubungkan niat baik dengan aksi nyata — membangun ekosistem kebaikan yang lebih mudah, lebih transparan, dan lebih bermakna bagi Indonesia."
+    ]
+  },
+  "values": {
+    "eyebrow": "NILAI YANG KAMI PEGANG",
+    "title": "Membangun Kepercayaan Melalui Aksi Nyata",
+    "items": [
+      {
+        "icon": "transparansi",
+        "title": "Transparansi",
+        "desc": "Setiap program dirancang agar dapat dipantau secara jelas, mulai dari proses hingga hasil penyaluran."
+      },
+      {
+        "icon": "kolaborasi",
+        "title": "Kolaborasi",
+        "desc": "Kami percaya dampak yang besar hanya dapat tercipta melalui kerja sama antara masyarakat, komunitas, UMKM, dan perusahaan."
+      },
+      {
+        "icon": "keberlanjutan",
+        "title": "Keberlanjutan",
+        "desc": "Kami ingin setiap program tidak berhenti pada satu kali bantuan, tetapi menjadi gerakan yang terus tumbuh."
+      },
+      {
+        "icon": "dampak",
+        "title": "Dampak Nyata",
+        "desc": "Setiap kontribusi harus memberikan manfaat yang dapat dirasakan oleh penerima sekaligus memperkuat ekosistem sosial di sekitarnya."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Mari bersama memberikan dampak yang lebih baik",
+    "text": "Setiap kontribusi menggerakkan lebih dari sekadar penerima manfaat. Ia juga mendukung UMKM lokal, membuka peluang kerja, memperkuat komunitas, dan membangun ekonomi berbasis kebaikan."
+  }
+}

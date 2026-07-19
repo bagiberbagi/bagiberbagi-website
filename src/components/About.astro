@@ -1,0 +1,132 @@
+---
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+import PhotoSlot from './PhotoSlot.astro';
+import type { ImageMetadata } from 'astro';
+
+const about = await getEntry('about', 'about');
+if (!about) throw new Error('about/about entry not found');
+const { hero, mission, values, cta } = about.data;
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waMitraLink = buildWaLink(site.data.waNumber, 'Halo, saya tertarik untuk bergabung sebagai Mitra Dapur UMKM di bagiberbagi.id.');
+const waRelawanLink = buildWaLink(site.data.waNumber, 'Halo, saya tertarik untuk bergabung sebagai relawan bagiberbagi.id.');
+
+// Foto opsional. Drop file ke src/assets/images/about/ dengan nama sesuai
+// (hero-1..hero-5, nilai) → langsung tampil & dioptimasi; kalau belum ada,
+// PhotoSlot render placeholder abu. Ekstensi bebas: jpg/jpeg/png/webp/avif.
+const aboutImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/images/about/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true }
+);
+const photo = (name: string) =>
+  Object.entries(aboutImages).find(([p]) => p.includes(`/about/${name}.`))?.[1].default;
+
+const VALUE_ICONS = {
+  transparansi: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle>',
+  kolaborasi: '<path d="M16 3.13a4 4 0 0 1 0 7.75"></path><path d="M13 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="7" cy="9" r="4"></circle><path d="M21 21v-2a4 4 0 0 0-3-3.87"></path>',
+  keberlanjutan: '<path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path>',
+  dampak: '<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>',
+} as const;
+---
+
+<!-- Hero -->
+<section class="section" data-fade="1">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-10 lg:gap-14">
+    <div class="flex-1 basis-[340px] min-w-0">
+      <div class="eyebrow">{hero.eyebrow}</div>
+      <h1 class="font-sans text-display md:text-[2.85rem] font-extrabold tracking-tight text-ink leading-[1.12] mb-5">
+        {hero.title}
+      </h1>
+      {hero.paragraphs.map((p) => (
+        <p class="text-body text-muted leading-relaxed mb-4 last:mb-0">{p}</p>
+      ))}
+    </div>
+
+    <div class="flex-1 basis-[320px] min-w-0 w-full max-w-[520px] grid grid-cols-3 gap-4 items-start">
+      <PhotoSlot image={photo('hero-1')} alt="Senyum penerima manfaat bagiberbagi.id" class="w-full aspect-4/9 rounded-full" />
+      <div class="flex flex-col gap-4 mt-10">
+        <PhotoSlot image={photo('hero-2')} alt="Relawan bagiberbagi.id" class="w-full aspect-square rounded-full" />
+        <PhotoSlot image={photo('hero-3')} alt="Penyaluran bantuan makanan" class="w-full aspect-3/4 rounded-full" />
+      </div>
+      <div class="flex flex-col gap-4 mt-20">
+        <PhotoSlot image={photo('hero-4')} alt="Kegiatan berbagi di lapangan" class="w-full aspect-3/4 rounded-full" />
+        <PhotoSlot image={photo('hero-5')} alt="Komunitas bagiberbagi.id" class="w-full aspect-square rounded-full" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mengapa kami ada -->
+<section class="section bg-brand-orangeTint">
+  <div class="max-w-6xl mx-auto flex flex-col gap-14">
+    <div class="flex flex-wrap gap-10 lg:gap-14" data-fade="1">
+      <div class="flex-1 basis-[280px] min-w-0">
+        <div class="eyebrow">{mission.eyebrow}</div>
+        <h2 class="font-sans text-heading-sm md:text-heading-md font-extrabold tracking-tight text-ink leading-snug">
+          {mission.title}
+        </h2>
+      </div>
+      <div class="flex-[1.4] basis-[340px] min-w-0 flex flex-col gap-4">
+        {mission.paragraphs.map((p) => (
+          <p class="text-body text-muted leading-relaxed">{p}</p>
+        ))}
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-10 lg:gap-14" data-fade="1">
+      <div class="flex-1 basis-[280px] min-w-0">
+        <h2 class="font-sans text-title md:text-heading-sm font-extrabold tracking-tight text-ink leading-snug">
+          {mission.growTitle}
+        </h2>
+      </div>
+      <div class="flex-[1.4] basis-[340px] min-w-0 flex flex-col gap-4">
+        {mission.growParagraphs.map((p) => (
+          <p class="text-body text-muted leading-relaxed">{p}</p>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Nilai -->
+<section class="section bg-white">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center max-w-[640px] mx-auto mb-12">
+      <div class="eyebrow">{values.eyebrow}</div>
+      <h2 class="font-sans text-heading-sm md:text-heading-md font-extrabold tracking-tight text-ink">
+        {values.title}
+      </h2>
+    </div>
+    <div class="flex flex-wrap items-center gap-10 lg:gap-12">
+      <PhotoSlot image={photo('nilai')} alt="Penyerahan bantuan bagiberbagi.id" class="flex-1 basis-[320px] min-w-0 aspect-4/3 rounded-card" data-fade="1" />
+
+      <div class="flex-1 basis-[320px] min-w-0 flex flex-col gap-7">
+        {values.items.map((v) => (
+          <div class="flex gap-4 items-start" data-fade="1">
+            <span class="w-9 h-9 rounded-lg bg-brand-blue flex-none flex items-center justify-center text-white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={VALUE_ICONS[v.icon]} />
+            </span>
+            <div>
+              <div class="font-extrabold text-base text-ink mb-1.5">{v.title}</div>
+              <p class="text-body-sm text-muted leading-relaxed">{v.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="px-5 md:px-10 pb-12 md:pb-[88px]">
+  <div class="max-w-6xl mx-auto bg-brand-blue rounded-card px-6 py-14 md:px-12 md:py-16 text-center text-white" data-fade="1">
+    <h2 class="font-sans text-heading-sm md:text-heading-md font-extrabold tracking-tight mb-4">{cta.title}</h2>
+    <p class="text-body text-white/85 leading-relaxed max-w-[640px] mx-auto mb-8">{cta.text}</p>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href={waMitraLink} target="_blank" rel="noopener" class="btn-primary">Bergabung jadi Mitra UMKM</a>
+      <a href={waRelawanLink} target="_blank" rel="noopener" class="btn-secondary">Bergabung jadi Relawan</a>
+    </div>
+  </div>
+</section>

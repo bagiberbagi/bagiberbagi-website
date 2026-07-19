@@ -33,6 +33,39 @@ const settings = defineCollection({
   }),
 });
 
+const about = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/about' }),
+  schema: z.object({
+    hero: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      paragraphs: z.array(z.string()),
+    }),
+    mission: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      paragraphs: z.array(z.string()),
+      growTitle: z.string(),
+      growParagraphs: z.array(z.string()),
+    }),
+    values: z.object({
+      eyebrow: z.string(),
+      title: z.string(),
+      items: z.array(
+        z.object({
+          icon: z.enum(['transparansi', 'kolaborasi', 'keberlanjutan', 'dampak']),
+          title: z.string(),
+          desc: z.string(),
+        })
+      ),
+    }),
+    cta: z.object({
+      title: z.string(),
+      text: z.string(),
+    }),
+  }),
+});
+
 const faqs = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/faqs' }),
   schema: z.object({
@@ -66,4 +99,4 @@ const footerCols = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, faqs, programs, footerCols };
+export const collections = { legal, settings, about, faqs, programs, footerCols };

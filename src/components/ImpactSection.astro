@@ -7,20 +7,20 @@ import { IMPACTS } from '../consts';
   <div class="max-w-6xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-12">
       <div class="eyebrow text-brand-yellow">DAMPAK BERGANDA</div>
-      <h2 class="text-heading md:text-display font-extrabold tracking-tight mb-4">Satu Aksi. Banyak Dampak.</h2>
-      <p class="text-base leading-relaxed opacity-90">
-        <strong>Setiap kontribusi menggerakkan lebih dari sekadar penerima manfaat.</strong> Ia juga mendukung UMKM lokal, membuka peluang kerja, memperkuat komunitas, dan membangun ekonomi berbasis kebaikan.
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Satu Aksi. Banyak Dampak.</h2>
+      <p class="text-base leading-relaxed text-white/85">
+        <strong>Sekali berbagi, dampaknya menjangkau jauh melampaui penerima bantuan.</strong> Donasi Anda turut menghidupkan UMKM sekitar, menciptakan lapangan kerja, mempererat ikatan warga, dan menumbuhkan ekonomi yang berlandaskan kebaikan.
       </p>
     </div>
 
     <div class="grid gap-5 mb-9" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
       {IMPACTS.map((im) => (
-        <div class="bg-white/10 border border-white/[0.18] rounded-card p-6 transition-all hover:-translate-y-1 hover:bg-white/[0.16]" data-fade="1">
-          <div class="w-10 h-10 rounded-[10px] bg-white/[0.16] flex items-center justify-center mb-4">
+        <div class="bg-white/15 border border-white/20 rounded-card p-6 transition-all hover:-translate-y-1 hover:bg-white/20" data-fade="1">
+          <div class="w-10 h-10 rounded-[10px] bg-white/15 flex items-center justify-center mb-4">
             <Icon name={im.icon} color="white" size={19} />
           </div>
           <h3 class="text-title-sm font-bold mb-2">{im.title}</h3>
-          <p class="text-sm leading-snug opacity-85">{im.desc}</p>
+          <p class="text-sm leading-snug text-white/85">{im.desc}</p>
         </div>
       ))}
     </div>

@@ -10,16 +10,17 @@
     @apply text-brand-orange font-bold text-eyebrow tracking-wide mb-3;
   }
 
-  .card {
-    @apply bg-white rounded-card;
-  }
-
   .btn-primary {
     @apply bg-brand-orange text-white font-bold px-8 py-4 rounded-full transition-colors hover:bg-brand-orangeDark;
   }
 
   .btn-secondary {
     @apply bg-white text-brand-blue font-bold px-8 py-4 rounded-full transition-transform hover:-translate-y-0.5;
+  }
+
+  /* Size modifier — pakai bareng .btn-primary/.btn-secondary; override padding besar. */
+  .btn-sm {
+    @apply px-5 py-2.5 text-body-sm;
   }
 
   .badge-coming-soon {

@@ -6,5 +6,5 @@ links:
   - label: CSR Korporasi
     href: "/#tentang"
   - label: Jadi Relawan
-    href: "/#tentang"
+    href: "/tentang"
 ---

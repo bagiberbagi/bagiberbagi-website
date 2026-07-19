@@ -1,6 +1,5 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
-import { buildWaLink } from '../lib/format';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -9,7 +8,6 @@ const footerCols = await getCollection('footerCols');
 const igLink = `https://instagram.com/${site.data.socials.instagram}`;
 const tiktokLink = `https://tiktok.com/@${site.data.socials.tiktok}`;
 const emailLink = `mailto:${site.data.socials.email}`;
-const waHeaderLink = buildWaLink(site.data.waNumber);
 const year = new Date().getFullYear();
 ---
 
@@ -18,19 +16,19 @@ const year = new Date().getFullYear();
     <div class="flex flex-wrap gap-10 mb-10">
       <div class="flex-1 basis-[260px] min-w-[220px]">
         <div class="flex gap-2.5 mb-3.5">
-          <a href={igLink} target="_blank" rel="noopener" aria-label="Instagram bagiberbagi.id" class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
+          <a href={igLink} target="_blank" rel="noopener" aria-label="Instagram bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
           </a>
-          <a href={tiktokLink} target="_blank" rel="noopener" aria-label="TikTok bagiberbagi.id" class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
+          <a href={tiktokLink} target="_blank" rel="noopener" aria-label="TikTok bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
           </a>
-          <a href={emailLink} aria-label="Email bagiberbagi.id" class="w-9 h-9 rounded-full bg-border flex items-center justify-center text-muted">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          <a href={emailLink} aria-label="Email bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
           </a>
         </div>
-        <p class="text-sm text-muted leading-relaxed mb-4.5 max-w-[320px]">© {year} bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
-        <a href={waHeaderLink} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-blue mb-4.5">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
+        <p class="text-sm text-muted leading-relaxed mb-4 max-w-[320px]">© {year} bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
+        <a href="/#donasi" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-blue mb-4">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
           {site.data.waNumberDisplay}
         </a>
       </div>
@@ -38,18 +36,18 @@ const year = new Date().getFullYear();
       {footerCols.map((col) => (
         <div class="flex-1 basis-[140px] min-w-[140px]">
           <div class="font-bold text-body mb-3.5">{col.data.title}</div>
-          <div class="flex flex-col gap-2.5">
+          <div class="flex flex-col -my-0.5">
             {col.data.links.map((l) => (
-              <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted">{l.label}</a>
+              <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted py-1.5 hover:text-brand-blue transition-colors">{l.label}</a>
             ))}
           </div>
         </div>
       ))}
     </div>
 
-    <div class="border-t border-border pt-5.5 text-center">
-      <p class="text-eyebrow text-gray-400">Dibuat dengan kasih sayang untuk Indonesia</p>
-      <p class="text-xs text-gray-400 mt-1">Soft Launch — bagiberbagi.id</p>
+    <div class="border-t border-border pt-6 text-center">
+      <p class="text-eyebrow text-muted">Dibuat dengan kasih sayang untuk Indonesia</p>
+      <p class="text-xs text-muted mt-1">Soft Launch — bagiberbagi.id</p>
     </div>
   </div>
 </footer>

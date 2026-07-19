@@ -8,7 +8,7 @@ import programPromoImage from '../assets/images/program-promo.png';
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-xl mx-auto mb-10">
       <div class="eyebrow">PROGRAM</div>
-      <h2 class="text-heading-sm md:text-heading-xl font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
     </div>
 
     <div class="flex flex-wrap gap-7 items-stretch">
@@ -20,9 +20,9 @@ import programPromoImage from '../assets/images/program-promo.png';
           <div class="absolute inset-0 bg-brand-blue/85"></div>
           <div class="relative">
             <h3 class="text-xl font-extrabold mb-2.5">{p.label}</h3>
-            <p class="text-sm leading-relaxed opacity-90 mb-6">{p.desc}</p>
+            <p class="text-sm leading-relaxed text-white/85 mb-6">{p.desc}</p>
             {p.active ? (
-              <a href={p.href} class="btn-secondary inline-flex items-center text-sm px-5 py-2.5">Jelajahi Program</a>
+              <a href={p.href} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
             ) : (
               <span class="badge-coming-soon bg-white/15 text-white">Segera Hadir</span>
             )}

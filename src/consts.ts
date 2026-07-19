@@ -66,8 +66,6 @@ export const ACTIVITIES = [
   'Bukti foto & video maksimal H+1',
 ];
 
-export const NAV_SECTION_IDS = ['program'] as const;
-
 export const NAV_LINKS = [
   { id: 'home', label: 'Home', href: '/#top' },
   { id: 'program', label: 'Program', href: '/#program' },

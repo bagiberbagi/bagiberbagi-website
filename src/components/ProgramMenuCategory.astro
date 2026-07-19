@@ -11,26 +11,28 @@ const { category, iconSize = 16 } = Astro.props;
 ---
 
 <div>
-  <div class="flex items-center gap-2 text-brand-blue font-bold text-eyebrow mb-3 pb-2 border-b border-border">
-    <Icon name={category.icon} size={iconSize} />
-    {category.label}
+  <div class="flex items-center gap-2.5 mb-3 pb-2.5 border-b border-border">
+    <span class="w-7 h-7 rounded-lg bg-brand-blueTint text-brand-blue flex items-center justify-center flex-none">
+      <Icon name={category.icon} size={iconSize} />
+    </span>
+    <span class="text-brand-blue font-bold text-eyebrow">{category.label}</span>
   </div>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-0.5">
     {category.items.map((item) => (
-      <div>
-        <div class="flex items-start gap-2 flex-wrap">
-          <span class="w-2 h-2 mt-1.5 flex-none bg-ink"></span>
-          {item.active && item.href ? (
-            <a href={item.href} class="text-sm font-bold text-ink hover:text-brand-blue">{item.label}</a>
-          ) : (
-            <>
-              <span class="text-sm font-bold text-ink">{item.label}</span>
-              <span class="badge-coming-soon">Segera Hadir</span>
-            </>
-          )}
+      item.active && item.href ? (
+        <a href={item.href} class="group block rounded-lg px-2 py-2 hover:bg-gray-50 transition-colors">
+          <div class="text-sm font-bold text-ink group-hover:text-brand-blue transition-colors">{item.label}</div>
+          <p class="text-xs text-muted leading-relaxed mt-0.5">{item.desc}</p>
+        </a>
+      ) : (
+        <div class="px-2 py-2">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-sm font-bold text-ink/60">{item.label}</span>
+            <span class="badge-coming-soon">Segera Hadir</span>
+          </div>
+          <p class="text-xs text-muted leading-relaxed mt-0.5">{item.desc}</p>
         </div>
-        <p class="text-xs text-muted leading-relaxed mt-1 pl-4">{item.desc}</p>
-      </div>
+      )
     ))}
   </div>
 </div>

@@ -2,15 +2,21 @@
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import { NAV_LINKS, PROGRAM_MENU } from '../consts';
-import { buildWaLink } from '../lib/format';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
 import programPromoImage from '../assets/images/program-promo.png';
 import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
-const waHeaderLink = buildWaLink(site.data.waNumber);
 const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
+
+// Active-nav: tandai current-page berdasar route (SSR, per-halaman statis).
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const navActive = (link: (typeof NAV_LINKS)[number]) => {
+  if (link.id === 'home') return pathname === '/';
+  if (link.href.includes('#')) return false;
+  return pathname === link.href.replace(/\/$/, '');
+};
 ---
 
 <header class="sticky top-0 z-50 bg-white border-b border-border">
@@ -28,28 +34,26 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
               data-program-trigger
               aria-expanded="false"
               aria-haspopup="true"
+              aria-controls="program-panel"
               class="flex items-center gap-1.5 font-medium text-muted transition-colors hover:text-brand-blue"
             >
               {link.label}
-              <svg data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
+              <svg aria-hidden="true" data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
             </button>
             <div
+              id="program-panel"
               data-program-panel
-              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[860px] bg-white rounded-card shadow-[0_20px_40px_-24px_rgba(15,23,42,0.25)] border border-border p-7 flex items-start gap-10 z-50"
+              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[920px] bg-white rounded-card shadow-[0_24px_48px_-24px_rgba(15,23,42,0.22)] border border-border p-6 grid grid-cols-[1fr_1fr_1fr_240px] gap-6 z-50"
             >
-              <div class="flex-1 min-w-[220px]">
-                <ProgramMenuCategory category={makananMenu} />
-              </div>
-              <div class="flex-1 min-w-[220px] flex flex-col gap-7">
-                <ProgramMenuCategory category={bantuanMenu} />
-                <ProgramMenuCategory category={pendidikanMenu} />
-              </div>
-              <div class="w-[240px] flex-none bg-gray-50 rounded-card overflow-hidden">
-                <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={480} height={300} class="w-full h-32 object-cover" />
-                <div class="p-5">
+              <ProgramMenuCategory category={makananMenu} />
+              <ProgramMenuCategory category={bantuanMenu} />
+              <ProgramMenuCategory category={pendidikanMenu} />
+              <div class="bg-gray-50 rounded-card overflow-hidden self-start">
+                <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={480} height={300} class="w-full h-28 object-cover" />
+                <div class="p-4">
                   <div class="font-bold text-title-sm mb-1.5">Peduli Lewat Makanan</div>
-                  <p class="text-sm text-muted leading-relaxed mb-4">Setiap donasi makanan yang Anda berikan, kami salurkan langsung kepada mereka yang membutuhkan dengan transparan dan terdokumentasi.</p>
-                  <a href="/jumat-berkah" class="btn-primary text-center text-sm block">Lihat Program</a>
+                  <p class="text-body-sm text-muted leading-relaxed mb-3.5">Setiap donasi makanan yang Anda berikan, kami salurkan langsung kepada mereka yang membutuhkan dengan transparan dan terdokumentasi.</p>
+                  <a href="/jumat-berkah" class="btn-primary btn-sm text-center block">Lihat Program</a>
                 </div>
               </div>
             </div>
@@ -57,8 +61,8 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
         ) : (
           <a
             href={link.href}
-            data-nav-link={link.href.includes('#') ? link.id : undefined}
-            class="font-medium text-muted transition-colors hover:text-brand-blue"
+            aria-current={navActive(link) ? 'page' : undefined}
+            class:list={['transition-colors hover:text-brand-blue', navActive(link) ? 'font-bold text-ink' : 'font-medium text-muted']}
           >
             {link.label}
           </a>
@@ -66,9 +70,7 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
       ))}
     </nav>
     <a
-      href={waHeaderLink}
-      target="_blank"
-      rel="noopener"
+      href="/#donasi"
       class="hidden nav:inline-block btn-primary whitespace-nowrap"
     >
       Donasi Sekarang
@@ -78,9 +80,10 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
       id="nav-toggle"
       aria-label="Menu"
       aria-expanded="false"
+      aria-controls="mobile-nav-panel"
       class="nav:hidden bg-gray-50 border-0 w-11 h-11 rounded-xl flex items-center justify-center text-ink"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
     </button>
   </div>
 
@@ -92,28 +95,28 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
             type="button"
             data-program-trigger-mobile
             aria-expanded="false"
+            aria-controls="mobile-program-panel"
             class="w-full flex items-center justify-between px-1 py-3 font-medium text-muted"
           >
             {link.label}
-            <svg data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
+            <svg aria-hidden="true" data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
-          <div data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
+          <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
             {PROGRAM_MENU.map((cat) => (
               <ProgramMenuCategory category={cat} iconSize={14} />
             ))}
-            <a href="/jumat-berkah" class="btn-primary text-center text-sm">Lihat Program Jumat Berkah</a>
+            <a href="/jumat-berkah" class="btn-primary btn-sm text-center">Lihat Program Jumat Berkah</a>
           </div>
         </div>
       ) : (
-        <a href={link.href} class="px-1 py-3 font-medium text-muted">{link.label}</a>
+        <a
+          href={link.href}
+          aria-current={navActive(link) ? 'page' : undefined}
+          class:list={['px-1 py-3', navActive(link) ? 'font-bold text-ink' : 'font-medium text-muted']}
+        >{link.label}</a>
       )
     ))}
-    <a
-      href={waHeaderLink}
-      target="_blank"
-      rel="noopener"
-      class="mt-2 btn-primary text-center"
-    >
+    <a href="/#donasi" class="mt-2 btn-primary text-center">
       Donasi Sekarang
     </a>
   </nav>
@@ -121,6 +124,5 @@ const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
 
 <script>
   import '../scripts/mobile-nav.js';
-  import '../scripts/scrollspy.js';
   import '../scripts/program-menu.js';
 </script>

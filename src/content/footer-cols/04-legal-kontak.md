@@ -1,6 +1,8 @@
 ---
 title: Legal & Kontak
 links:
+  - label: Transparansi
+    href: "/transparansi"
   - label: Kebijakan Privasi
     href: "/privasi"
   - label: Syarat & Ketentuan

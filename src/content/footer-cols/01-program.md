@@ -1,10 +1,12 @@
 ---
 title: Program
 links:
-  - label: Donasi
-    href: "/#donasi"
-  - label: CSR Enterprise
-    href: "/#tentang"
-  - label: UMKM Partner
-    href: "/#tentang"
+  - label: Jumat Berkah
+    href: "/jumat-berkah"
+  - label: Ramadhan Berkah
+    href: "/#program"
+  - label: Berbagi Makanan Harian
+    href: "/#program"
+  - label: Lihat Semua Program
+    href: "/#program"
 ---

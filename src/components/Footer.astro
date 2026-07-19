@@ -10,6 +10,7 @@ const igLink = `https://instagram.com/${site.data.socials.instagram}`;
 const tiktokLink = `https://tiktok.com/@${site.data.socials.tiktok}`;
 const emailLink = `mailto:${site.data.socials.email}`;
 const waHeaderLink = buildWaLink(site.data.waNumber);
+const year = new Date().getFullYear();
 ---
 
 <footer class="bg-gray-50 border-t border-border px-5 md:px-10 pt-10 md:pt-16 pb-7">
@@ -27,7 +28,7 @@ const waHeaderLink = buildWaLink(site.data.waNumber);
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
           </a>
         </div>
-        <p class="text-sm text-muted leading-relaxed mb-4.5 max-w-[320px]">© 2026 bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
+        <p class="text-sm text-muted leading-relaxed mb-4.5 max-w-[320px]">© {year} bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
         <a href={waHeaderLink} target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-blue mb-4.5">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
           {site.data.waNumberDisplay}

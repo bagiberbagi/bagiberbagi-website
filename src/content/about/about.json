@@ -1,4 +1,9 @@
 {
+  "seo": {
+    "title": "Tentang Kami — bagiberbagi.id",
+    "description": "bagiberbagi.id adalah platform social impact yang menghubungkan individu, komunitas, perusahaan, dan UMKM untuk menciptakan dampak sosial yang berkelanjutan dan transparan.",
+    "image": "/open-graph/tentang.png"
+  },
   "hero": {
     "eyebrow": "#tentangbagiberbagi",
     "title": "Menghubungkan Kebaikan, Menciptakan Dampak.",

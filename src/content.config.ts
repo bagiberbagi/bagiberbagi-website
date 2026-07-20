@@ -2,6 +2,12 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
+const seoOverrides = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  image: z.string().optional(),
+});
+
 const legal = defineCollection({
   loader: glob({ pattern: '*.mdoc', base: './src/content/legal' }),
   schema: z.object({
@@ -10,6 +16,7 @@ const legal = defineCollection({
     intro: z.string(),
     closing: z.string(),
     updatedAt: z.string(),
+    seo: seoOverrides.optional(),
   }),
 });
 
@@ -61,6 +68,7 @@ const seo = defineCollection({
 const about = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/about' }),
   schema: z.object({
+    seo: seoOverrides.optional(),
     hero: z.object({
       eyebrow: z.string(),
       title: z.string(),

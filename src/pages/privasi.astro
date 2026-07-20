@@ -7,6 +7,6 @@ if (!privacy) throw new Error('legal/privacy entry not found');
 const { Content, headings } = await render(privacy);
 ---
 
-<LegalLayout title={privacy.data.title} eyebrow={privacy.data.eyebrow} intro={privacy.data.intro} closing={privacy.data.closing} updatedAt={privacy.data.updatedAt} headings={headings}>
+<LegalLayout title={privacy.data.title} eyebrow={privacy.data.eyebrow} intro={privacy.data.intro} closing={privacy.data.closing} updatedAt={privacy.data.updatedAt} headings={headings} seo={privacy.data.seo}>
   <Content />
 </LegalLayout>

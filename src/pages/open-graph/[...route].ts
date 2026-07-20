@@ -17,12 +17,27 @@ import { ogKeyFromPath } from '../../lib/seo';
 const seoEntry = await getEntry('seo', 'seo');
 if (!seoEntry) throw new Error('seo/seo entry not found');
 
-const manualPages: Record<string, { title: string; description: string }> = Object.fromEntries(
-  seoEntry.data.pages.map((page) => [
+const aboutEntry = await getEntry('about', 'about');
+
+const manualPages: Record<string, { title: string; description: string }> = Object.fromEntries([
+  ...seoEntry.data.pages.map((page) => [
     ogKeyFromPath(page.path),
     { title: page.title, description: page.description },
-  ])
-);
+  ]),
+  // /tentang/ SEO-nya menempel di entri kontennya sendiri, jadi tidak ikut
+  // terbawa daftar terpusat di atas.
+  ...(aboutEntry
+    ? [
+        [
+          'tentang',
+          {
+            title: aboutEntry.data.seo?.title || `${aboutEntry.data.hero.title} — bagiberbagi.id`,
+            description: aboutEntry.data.seo?.description || aboutEntry.data.hero.paragraphs[0],
+          },
+        ],
+      ]
+    : []),
+]);
 
 /**
  * Cuma program yang punya halaman sendiri yang dibikinin OG image — kalau

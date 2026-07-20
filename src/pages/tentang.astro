@@ -1,9 +1,22 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import About from '../components/About.astro';
+
+const about = await getEntry('about', 'about');
+if (!about) throw new Error('about/about entry not found');
+
+// SEO halaman ini menempel di entri kontennya sendiri, bukan di daftar terpusat
+// — judul hero dipakai kalau blok SEO-nya dikosongkan.
+const seo = about.data.seo;
 ---
 
-<BaseLayout>
+<BaseLayout
+  title={seo?.title || `${about.data.hero.title} — bagiberbagi.id`}
+  description={seo?.description || about.data.hero.paragraphs[0]}
+  image={seo?.image || undefined}
+  breadcrumbName="Tentang Kami"
+>
   <About />
 </BaseLayout>
 

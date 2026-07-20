@@ -10,9 +10,11 @@ export interface Props {
   closing: string;
   updatedAt: string;
   headings: { depth: number; slug: string; text: string }[];
+  /** Override SEO dari entri Keystatic. Field yang kosong jatuh ke turunan isi halaman. */
+  seo?: { title?: string; description?: string; image?: string };
 }
 
-const { title, eyebrow, intro, closing, updatedAt, headings } = Astro.props;
+const { title, eyebrow, intro, closing, updatedAt, headings, seo } = Astro.props;
 const toc = headings.filter((h) => h.depth === 2);
 const introParagraphs = intro.split('\n\n');
 const metaDescription = `${title} bagiberbagi.id — ${introParagraphs[0]}`.slice(0, 160);
@@ -25,7 +27,12 @@ const emailLink = `mailto:${site.data.socials.email}`;
 const websiteUrl = Astro.site!.href.replace(/\/$/, '');
 ---
 
-<BaseLayout title={`${title} — bagiberbagi.id`} description={metaDescription}>
+<BaseLayout
+  title={seo?.title || `${title} — bagiberbagi.id`}
+  description={seo?.description || metaDescription}
+  image={seo?.image || undefined}
+  breadcrumbName={title}
+>
   <section class="section bg-white">
     <div class="max-w-6xl mx-auto">
       <div class="eyebrow mb-2">{eyebrow}</div>

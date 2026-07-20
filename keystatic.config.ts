@@ -1,5 +1,34 @@
 import { collection, config, fields, singleton } from '@keystatic/core';
 
+/**
+ * Blok SEO yang menempel di entri konten yang punya halamannya sendiri.
+ * Semua opsional: dikosongkan berarti halaman memakai judul/deskripsi yang
+ * diturunkan dari isinya, seperti sebelum blok ini ada.
+ */
+function seoFields(hint: string) {
+  return fields.object(
+    {
+      title: fields.text({
+        label: 'Judul di hasil pencarian',
+        description: `Kosongkan untuk memakai ${hint}. Ideal 30–65 karakter.`,
+      }),
+      description: fields.text({
+        label: 'Deskripsi di hasil pencarian',
+        description: 'Kosongkan untuk memakai paragraf pembuka halaman. Ideal 70–160 karakter.',
+        multiline: true,
+      }),
+      image: fields.text({
+        label: 'Gambar share',
+        description: 'Path dari root situs. Kosongkan untuk memakai gambar default.',
+      }),
+    },
+    {
+      label: 'SEO',
+      description: 'Bagaimana halaman ini tampil di Google dan saat dibagikan.',
+    }
+  );
+}
+
 /** Tiga halaman legal berbagi bentuk yang sama; hanya id dan label yang beda. */
 function legalPage(id: 'privacy' | 'terms' | 'transparency', label: string) {
   return {
@@ -13,6 +42,7 @@ function legalPage(id: 'privacy' | 'terms' | 'transparency', label: string) {
         intro: fields.text({ label: 'Paragraf pembuka', multiline: true }),
         closing: fields.text({ label: 'Paragraf penutup', multiline: true }),
         updatedAt: fields.text({ label: 'Terakhir diperbarui (contoh: 15 Juli 2026)' }),
+        seo: seoFields('judul halaman + nama situs'),
         content: fields.markdoc({
           label: 'Isi halaman',
           options: { image: false, codeBlock: false, table: false, blockquote: false },
@@ -138,6 +168,7 @@ export default config({
       path: 'src/content/about/about',
       format: 'json',
       schema: {
+        seo: seoFields('judul hero'),
         hero: fields.object(
           {
             eyebrow: fields.text({ label: 'Eyebrow' }),

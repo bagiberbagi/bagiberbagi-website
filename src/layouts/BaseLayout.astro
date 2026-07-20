@@ -1,4 +1,5 @@
 ---
+import { getEntry } from 'astro:content';
 import '@fontsource/plus-jakarta-sans/400.css';
 import '@fontsource/plus-jakarta-sans/500.css';
 import '@fontsource/plus-jakarta-sans/600.css';
@@ -24,6 +25,21 @@ const { title, description = DEFAULT_DESCRIPTION, image = '/og-image.png', noind
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+
+const site = await getEntry('settings', 'site');
+const organizationSchema = site && {
+  '@context': 'https://schema.org',
+  '@type': 'NGO',
+  name: 'bagiberbagi.id',
+  url: Astro.site!.href,
+  logo: new URL('/favicon/apple-touch-icon.png', Astro.site).href,
+  description: DEFAULT_DESCRIPTION,
+  email: site.data.socials.email,
+  sameAs: [
+    `https://www.instagram.com/${site.data.socials.instagram}/`,
+    `https://www.tiktok.com/@${site.data.socials.tiktok}`,
+  ],
+};
 ---
 
 <!doctype html>
@@ -48,6 +64,10 @@ const imageUrl = image ? new URL(image, Astro.site).href : undefined;
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+  {organizationSchema && (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  )}
 
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />

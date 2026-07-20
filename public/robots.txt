@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /keystatic/
 
-Sitemap: https://bagiberbagi.id/sitemap-index.xml
+Sitemap: https://www.bagiberbagi.id/sitemap-index.xml

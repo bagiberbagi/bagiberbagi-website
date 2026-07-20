@@ -8,7 +8,7 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bagiberbagi.id',
+  site: 'https://www.bagiberbagi.id',
   output: 'static',
 
   // Keystatic Cloud's local-dev auth flow redirects to 127.0.0.1 specifically

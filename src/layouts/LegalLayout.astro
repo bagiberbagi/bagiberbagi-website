@@ -21,7 +21,8 @@ const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 const waLink = buildWaLink(site.data.waNumber);
 const emailLink = `mailto:${site.data.socials.email}`;
-const websiteUrl = 'https://bagiberbagi.id';
+// Ikut `site` di astro.config supaya host canonical cuma didefinisikan sekali.
+const websiteUrl = Astro.site!.href.replace(/\/$/, '');
 ---
 
 <BaseLayout title={`${title} — bagiberbagi.id`} description={metaDescription}>

@@ -1,9 +1,66 @@
 ---
+import { existsSync, readdirSync } from 'node:fs';
+import keystaticConfig from '../../../keystatic.config';
 import KeystaticAdmin from '../../components/KeystaticAdmin';
 
+/**
+ * Admin UI Keystatic adalah SPA: navigasi di dalamnya ditangani router-nya
+ * sendiri, jadi normalnya satu halaman sudah cukup. Tapi situs ini
+ * `output: 'static'` tanpa adapter — beda dengan integrasi resmi
+ * `@keystatic/astro` yang meng-inject route dengan `prerender: false` —
+ * sehingga tiap URL yang bisa dibuka lewat *full page load* harus punya file
+ * HTML sendiri. Kalau tidak, yang keluar 404, bukan SPA-nya.
+ *
+ * Yang wajib ada:
+ *   - `cloud/oauth/callback`, tujuan redirect Keystatic Cloud setelah login.
+ *     Tanpa ini, login berhenti dengan 404 di tengah jalan.
+ *   - Route entri (singleton, daftar collection, form create, dan item yang
+ *     filenya sudah ada), supaya reload atau bookmark saat sedang mengedit
+ *     tidak berujung 404.
+ *
+ * Entri yang baru dibuat lewat admin belum punya halaman sampai build
+ * berikutnya. Membukanya dari dalam UI tetap jalan; yang gagal hanya reload
+ * tepat di URL itu.
+ */
+
 export function getStaticPaths() {
-  return [{ params: { params: undefined } }];
+  // Helper sengaja di dalam fungsi: Astro meng-hoist getStaticPaths ke modul
+  // terpisah, jadi apa pun yang dideklarasikan di frontmatter tidak terlihat
+  // dari sini. Daftar file dibaca lewat `fs`, bukan `import.meta.glob`, karena
+  // glob membuat bundler ikut mencoba mem-parse YAML-nya sebagai modul JS.
+  const itemSlugs = (collectionPath: string): string[] => {
+    const dir = collectionPath.replace(/\/\*$/, '');
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir)
+      .filter((file) => /\.(yaml|json|mdoc)$/.test(file))
+      .map((file) => file.replace(/\.(yaml|json|mdoc)$/, ''));
+  };
+
+  const routes = ['cloud/oauth/callback'];
+
+  for (const key of Object.keys(keystaticConfig.singletons ?? {})) {
+    routes.push(`singleton/${key}`);
+  }
+
+  for (const [key, collection] of Object.entries(keystaticConfig.collections ?? {})) {
+    routes.push(`collection/${key}`, `collection/${key}/create`);
+    for (const slug of itemSlugs(collection.path ?? '')) {
+      routes.push(`collection/${key}/item/${slug}`);
+    }
+  }
+
+  return [
+    { params: { params: undefined } },
+    ...routes.map((params) => ({ params: { params } })),
+  ];
 }
+
+// Judul dibedakan per route bukan demi SEO (halaman ini noindex), tapi supaya
+// validator build tidak melaporkan puluhan halaman berjudul sama — validator-nya
+// memindai semua HTML di dist dan tidak punya opsi exclude. Dipotong di 65
+// karakter dengan alasan yang sama.
+const section = Astro.params.params ?? 'admin';
+const adminTitle = `Keystatic ${section} — bagiberbagi.id`.slice(0, 65);
 ---
 
 <!doctype html>
@@ -12,9 +69,15 @@ export function getStaticPaths() {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Keystatic — bagiberbagi.id</title>
+    <title>{adminTitle}</title>
   </head>
   <body>
+    <!-- Admin UI Keystatic dirender sepenuhnya di klien dan tidak punya heading
+         sendiri. Judul ini disembunyikan secara visual, tapi memberi halaman
+         landmark untuk pembaca layar. -->
+    <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
+      Keystatic — panel admin bagiberbagi.id
+    </h1>
     <KeystaticAdmin client:only="react" />
   </body>
 </html>

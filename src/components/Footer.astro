@@ -1,9 +1,11 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
-const footerCols = await getCollection('footerCols');
+const footer = await getEntry('footer', 'footer');
+if (!footer) throw new Error('footer/footer entry not found');
+const footerCols = footer.data.columns;
 
 const igLink = `https://instagram.com/${site.data.socials.instagram}`;
 const tiktokLink = `https://tiktok.com/@${site.data.socials.tiktok}`;
@@ -35,9 +37,9 @@ const year = new Date().getFullYear();
 
       {footerCols.map((col) => (
         <div class="flex-1 basis-[140px] min-w-[140px]">
-          <div class="font-bold text-body mb-3.5">{col.data.title}</div>
+          <div class="font-bold text-body mb-3.5">{col.title}</div>
           <div class="flex flex-col -my-0.5">
-            {col.data.links.map((l) => (
+            {col.links.map((l) => (
               <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted py-1.5 hover:text-brand-blue transition-colors">{l.label}</a>
             ))}
           </div>

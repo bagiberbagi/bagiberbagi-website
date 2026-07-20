@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
 
 const CATEGORIES = [
@@ -10,10 +10,14 @@ const CATEGORIES = [
   { slug: 'kontak', label: 'Kontak' },
 ];
 
-const faqs = (await getCollection('faqs')).sort((a, b) => a.id.localeCompare(b.id));
+const faqEntry = await getEntry('faq', 'faq');
+if (!faqEntry) throw new Error('faq/faq entry not found');
+// Urutan pertanyaan = urutan array di Keystatic (bisa diseret di admin);
+// kategori cuma mengelompokkan, urutan kelompoknya dari CATEGORIES di atas.
+const faqs = faqEntry.data.items;
 const groups = CATEGORIES.map((c) => ({
   ...c,
-  items: faqs.filter((f) => f.data.category === c.slug),
+  items: faqs.filter((f) => f.category === c.slug),
 })).filter((g) => g.items.length > 0);
 
 const site = await getEntry('settings', 'site');
@@ -88,17 +92,17 @@ const waLink = buildWaLink(site.data.waNumber);
             <h2 class="text-title-sm font-extrabold text-brand-blue mb-2">{g.label}</h2>
             <div class="flex flex-col">
               {g.items.map((faq, i) => (
-                <div class="faq-item border-b border-border" data-faq data-q={faq.data.q} data-a={faq.data.a}>
+                <div class="faq-item border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>
                   <button
                     type="button"
                     class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"
                     aria-expanded="false"
                     aria-controls={`faq-answer-${g.slug}-${i}`}
                   >
-                    <span class="text-base font-bold text-ink m-0">{faq.data.q}</span>
+                    <span class="text-base font-bold text-ink m-0">{faq.q}</span>
                     <svg aria-hidden="true" class="faq-chevron flex-none transition-transform duration-200 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
                   </button>
-                  <p id={`faq-answer-${g.slug}-${i}`} class="faq-answer hidden text-body-sm text-muted leading-relaxed pb-5 -mt-1">{faq.data.a}</p>
+                  <p id={`faq-answer-${g.slug}-${i}`} class="faq-answer hidden text-body-sm text-muted leading-relaxed pb-5 -mt-1">{faq.a}</p>
                 </div>
               ))}
             </div>

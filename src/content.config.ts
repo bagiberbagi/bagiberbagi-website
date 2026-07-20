@@ -99,14 +99,18 @@ const about = defineCollection({
   }),
 });
 
-const faqs = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/faqs' }),
+const faq = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/faq' }),
   schema: z.object({
-    q: z.string(),
-    a: z.string(),
-    category: z
-      .enum(['umum', 'donasi', 'penyaluran', 'kemitraan', 'kontak'])
-      .default('umum'),
+    items: z.array(
+      z.object({
+        q: z.string(),
+        a: z.string(),
+        category: z
+          .enum(['umum', 'donasi', 'penyaluran', 'kemitraan', 'kontak'])
+          .default('umum'),
+      })
+    ),
   }),
 });
 
@@ -118,18 +122,22 @@ const programs = defineCollection({
   }),
 });
 
-const footerCols = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/footer-cols' }),
+const footer = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/footer' }),
   schema: z.object({
-    title: z.string(),
-    links: z.array(
+    columns: z.array(
       z.object({
-        label: z.string(),
-        href: z.string(),
-        target: z.enum(['_self', '_blank']).optional(),
+        title: z.string(),
+        links: z.array(
+          z.object({
+            label: z.string(),
+            href: z.string(),
+            target: z.enum(['_self', '_blank']).optional(),
+          })
+        ),
       })
     ),
   }),
 });
 
-export const collections = { legal, settings, seo, about, faqs, programs, footerCols };
+export const collections = { legal, settings, seo, about, faq, programs, footer };

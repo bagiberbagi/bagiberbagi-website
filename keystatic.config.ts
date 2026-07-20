@@ -139,6 +139,74 @@ export default config({
       },
     }),
 
+    faq: singleton({
+      label: 'FAQ',
+      path: 'src/content/faq/faq',
+      format: 'json',
+      schema: {
+        items: fields.array(
+          fields.object({
+            q: fields.text({ label: 'Pertanyaan' }),
+            a: fields.text({ label: 'Jawaban', multiline: true }),
+            category: fields.select({
+              label: 'Kategori',
+              options: [
+                { label: 'Umum', value: 'umum' },
+                { label: 'Donasi & Pembayaran', value: 'donasi' },
+                { label: 'Penyaluran & Transparansi', value: 'penyaluran' },
+                { label: 'Kemitraan', value: 'kemitraan' },
+                { label: 'Kontak', value: 'kontak' },
+              ],
+              defaultValue: 'umum',
+            }),
+          }),
+          {
+            label: 'Pertanyaan',
+            description:
+              'Seret untuk mengurutkan. Pertanyaan dikelompokkan per kategori di halaman FAQ; urutan di sini menentukan urutan di dalam kelompoknya.',
+            itemLabel: (props) => props.fields.q.value || 'Pertanyaan',
+          }
+        ),
+      },
+    }),
+
+    footer: singleton({
+      label: 'Footer',
+      path: 'src/content/footer/footer',
+      format: 'json',
+      schema: {
+        columns: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Judul Kolom' }),
+            links: fields.array(
+              fields.object({
+                label: fields.text({ label: 'Label' }),
+                href: fields.text({ label: 'URL / Anchor' }),
+                target: fields.select({
+                  label: 'Buka di',
+                  options: [
+                    { label: 'Tab yang sama', value: '_self' },
+                    { label: 'Tab baru', value: '_blank' },
+                  ],
+                  defaultValue: '_self',
+                }),
+              }),
+              {
+                label: 'Link',
+                description: 'Seret untuk mengurutkan.',
+                itemLabel: (props) => props.fields.label.value || 'Link',
+              }
+            ),
+          }),
+          {
+            label: 'Kolom',
+            description: 'Seret untuk mengurutkan kolom dari kiri ke kanan.',
+            itemLabel: (props) => props.fields.title.value || 'Kolom',
+          }
+        ),
+      },
+    }),
+
     settings: singleton({
       label: 'Site Settings',
       path: 'src/content/settings/site',
@@ -231,27 +299,6 @@ export default config({
     }),
   },
   collections: {
-    faqs: collection({
-      label: 'FAQ',
-      slugField: 'q',
-      path: 'src/content/faqs/*',
-      format: { data: 'yaml' },
-      schema: {
-        q: fields.text({ label: 'Pertanyaan' }),
-        a: fields.text({ label: 'Jawaban', multiline: true }),
-        category: fields.select({
-          label: 'Kategori',
-          options: [
-            { label: 'Umum', value: 'umum' },
-            { label: 'Donasi & Pembayaran', value: 'donasi' },
-            { label: 'Penyaluran & Transparansi', value: 'penyaluran' },
-            { label: 'Kemitraan', value: 'kemitraan' },
-            { label: 'Kontak', value: 'kontak' },
-          ],
-          defaultValue: 'umum',
-        }),
-      },
-    }),
     programs: collection({
       label: 'Program',
       slugField: 'label',
@@ -260,30 +307,6 @@ export default config({
       schema: {
         label: fields.text({ label: 'Nama Program' }),
         disabled: fields.checkbox({ label: 'Nonaktif (belum dibuka)' }),
-      },
-    }),
-    footerCols: collection({
-      label: 'Kolom Footer',
-      slugField: 'title',
-      path: 'src/content/footer-cols/*',
-      format: { data: 'yaml' },
-      schema: {
-        title: fields.text({ label: 'Judul Kolom' }),
-        links: fields.array(
-          fields.object({
-            label: fields.text({ label: 'Label' }),
-            href: fields.text({ label: 'URL / Anchor' }),
-            target: fields.select({
-              label: 'Buka di',
-              options: [
-                { label: 'Tab yang sama', value: '_self' },
-                { label: 'Tab baru', value: '_blank' },
-              ],
-              defaultValue: '_self',
-            }),
-          }),
-          { label: 'Link', itemLabel: (props) => props.fields.label.value || 'Link' }
-        ),
       },
     }),
   },

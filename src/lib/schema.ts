@@ -6,21 +6,22 @@
  * `<script type="application/ld+json">` per halaman, bukan satu per komponen.
  */
 
-interface FaqEntry {
-  data: { q: string; a: string };
+interface FaqItem {
+  q: string;
+  a: string;
 }
 
-/** FAQPage piece dari entri collection `faqs`. */
-export function buildFaqPageSchema(faqs: readonly FaqEntry[], pageUrl: string) {
+/** FAQPage piece dari daftar pertanyaan di singleton `faq`. */
+export function buildFaqPageSchema(faqs: readonly FaqItem[], pageUrl: string) {
   return {
     '@type': 'FAQPage',
     '@id': `${pageUrl}#faq`,
     mainEntity: faqs.map((f) => ({
       '@type': 'Question',
-      name: f.data.q,
+      name: f.q,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: f.data.a,
+        text: f.a,
       },
     })),
   };

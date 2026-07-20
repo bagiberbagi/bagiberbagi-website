@@ -41,6 +41,74 @@ export default config({
     ...legalPage('terms', 'Legal — Syarat & Ketentuan'),
     ...legalPage('transparency', 'Legal — Transparansi'),
 
+    // SEO dipisah dari Site Settings: yang satu identitas & kontak, yang satu
+    // teks yang muncul di hasil pencarian dan share preview. Dibaca dua tempat
+    // sekaligus — BaseLayout (meta + JSON-LD) dan generator OG image — jadi
+    // judul yang diedit di sini ikut terpakai di gambar share-nya.
+    seo: singleton({
+      label: 'SEO',
+      path: 'src/content/seo/seo',
+      format: 'json',
+      schema: {
+        siteName: fields.text({ label: 'Nama situs (og:site_name)' }),
+        defaultTitle: fields.text({ label: 'Judul default' }),
+        defaultDescription: fields.text({
+          label: 'Deskripsi default',
+          description: 'Dipakai halaman yang belum punya deskripsi sendiri. Ideal 50–160 karakter.',
+          multiline: true,
+        }),
+        defaultImage: fields.text({
+          label: 'Gambar share default',
+          description: 'Path dari root situs, contoh: /og-image.png',
+        }),
+        organization: fields.object(
+          {
+            type: fields.select({
+              label: 'Tipe entitas',
+              options: [
+                { label: 'NGO / organisasi nirlaba', value: 'NGO' },
+                { label: 'Organisasi umum', value: 'Organization' },
+              ],
+              defaultValue: 'NGO',
+            }),
+            name: fields.text({ label: 'Nama organisasi' }),
+            logo: fields.text({ label: 'Path logo', description: 'Contoh: /favicon/apple-touch-icon.png' }),
+          },
+          {
+            label: 'Organisasi (structured data)',
+            description: 'Email dan akun sosial diambil dari Site Settings.',
+          }
+        ),
+        pages: fields.array(
+          fields.object({
+            path: fields.text({
+              label: 'Path halaman',
+              description: 'Diawali dan diakhiri garis miring, contoh: /faq/ — beranda cukup /',
+            }),
+            title: fields.text({ label: 'Judul', description: 'Ideal 30–60 karakter.' }),
+            description: fields.text({
+              label: 'Deskripsi',
+              description: 'Ideal 50–160 karakter.',
+              multiline: true,
+            }),
+            image: fields.text({
+              label: 'Gambar share',
+              description: 'Kosongkan untuk memakai gambar default.',
+            }),
+            breadcrumbName: fields.text({
+              label: 'Nama di breadcrumb',
+              description: 'Kosongkan untuk memakai judul tanpa embel-embel nama situs.',
+            }),
+            noindex: fields.checkbox({ label: 'Sembunyikan dari mesin pencari' }),
+          }),
+          {
+            label: 'Halaman',
+            itemLabel: (props) => props.fields.path.value || 'Halaman',
+          }
+        ),
+      },
+    }),
+
     settings: singleton({
       label: 'Site Settings',
       path: 'src/content/settings/site',

@@ -2,6 +2,7 @@
 import { getEntry } from 'astro:content';
 import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
 import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';
+import { findPageSeo } from '../lib/seo';
 import {
   assembleGraph,
   buildBreadcrumbList,
@@ -20,7 +21,8 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
 export interface Props {
-  title: string;
+  /** Overrides the title from the SEO singleton. Halaman yang isinya sendiri dari CMS (legal) memakai ini. */
+  title?: string;
   description?: string;
   /** Absolute or root-relative URL of a share image (1200x630 ideal). */
   image?: string;
@@ -32,25 +34,30 @@ export interface Props {
   extraSchema?: Record<string, unknown>[];
 }
 
-const DEFAULT_DESCRIPTION =
-  'bagiberbagi.id — platform donasi & sosial yang menghubungkan kebaikan, komunitas, dan dampak nyata untuk Indonesia. Salurkan bantuan makanan dan dukung UMKM secara transparan.';
-const SITE_NAME = 'bagiberbagi.id';
 const ORG_SLUG = 'bagiberbagi';
 
-const {
-  title: rawTitle,
-  description = DEFAULT_DESCRIPTION,
-  image = '/og-image.png',
-  noindex = false,
-  breadcrumbName,
-  extraSchema = [],
-} = Astro.props;
+const props = Astro.props;
+
+const seoEntry = await getEntry('seo', 'seo');
+if (!seoEntry) throw new Error('seo/seo entry not found');
+const seo = seoEntry.data;
+
+// Halaman statis mengambil teksnya dari singleton `seo`; halaman yang teksnya
+// sudah punya sumber sendiri di CMS (legal) menimpanya lewat props.
+const page = findPageSeo(seo, Astro.url.pathname);
+
+const rawTitle = props.title ?? page?.title ?? seo.defaultTitle;
+const description = props.description ?? page?.description ?? seo.defaultDescription;
+const image = props.image ?? page?.image ?? seo.defaultImage;
+const noindex = props.noindex ?? page?.noindex ?? false;
+const breadcrumbName = props.breadcrumbName ?? page?.breadcrumbName;
+const extraSchema = props.extraSchema ?? [];
 
 // <Seo> merender judul lewat `<title set:html={...}>` — tanpa escaping. Karena
-// judul nantinya datang dari CMS, buang `<`/`>` supaya isian editor tidak bisa
-// menutup tag dan menyuntik markup. `&` sengaja dibiarkan: parser HTML5
-// memperlakukannya sebagai teks di dalam <title>, dan meng-escape-nya di sini
-// akan double-escape og:title (yang sudah di-escape Astro lewat `content=`).
+// judul datang dari CMS, buang `<`/`>` supaya isian editor tidak bisa menutup
+// tag dan menyuntik markup. `&` sengaja dibiarkan: parser HTML5 memperlakukannya
+// sebagai teks di dalam <title>, dan meng-escape-nya di sini akan double-escape
+// og:title (yang sudah di-escape Astro lewat `content=`).
 const title = rawTitle.replace(/[<>]/g, '');
 
 const siteUrl = Astro.site!.href.replace(/\/$/, '');
@@ -60,18 +67,18 @@ const imageUrl = image ? new URL(image, Astro.site).href : undefined;
 const site = await getEntry('settings', 'site');
 const ids = makeIds({ siteUrl });
 
-// Titles arrive as "Halaman — bagiberbagi.id"; the breadcrumb wants just the
-// page part, and the mega-menu routes read better with explicit names.
-const pageName = breadcrumbName ?? title.split('—')[0].trim();
+// Judul datang sebagai "Halaman — bagiberbagi.id"; breadcrumb cuma mau bagian
+// halamannya.
+const pageName = breadcrumbName || title.split('—')[0].trim();
 
 const organization = site
   ? buildPiece({
-      '@type': 'NGO',
+      '@type': seo.organization.type,
       '@id': ids.organization(ORG_SLUG),
-      name: SITE_NAME,
+      name: seo.organization.name,
       url: `${siteUrl}/`,
-      logo: new URL('/favicon/apple-touch-icon.png', Astro.site).href,
-      description: DEFAULT_DESCRIPTION,
+      logo: new URL(seo.organization.logo, Astro.site).href,
+      description: seo.defaultDescription,
       email: site.data.socials.email,
       sameAs: [
         `https://www.instagram.com/${site.data.socials.instagram}/`,
@@ -86,8 +93,8 @@ const graph = organization
       buildWebSite(
         {
           url: `${siteUrl}/`,
-          name: SITE_NAME,
-          description: DEFAULT_DESCRIPTION,
+          name: seo.siteName,
+          description: seo.defaultDescription,
           inLanguage: 'id-ID',
           publisher: { '@id': ids.organization(ORG_SLUG) },
         },
@@ -130,7 +137,7 @@ const graph = organization
     title={title}
     description={description}
     canonical={canonical}
-    siteName={SITE_NAME}
+    siteName={seo.siteName}
     locale="id_ID"
     ogImage={imageUrl}
     ogImageAlt={title}

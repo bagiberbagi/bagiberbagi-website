@@ -33,6 +33,31 @@ const settings = defineCollection({
   }),
 });
 
+const seo = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/seo' }),
+  schema: z.object({
+    siteName: z.string(),
+    defaultTitle: z.string(),
+    defaultDescription: z.string(),
+    defaultImage: z.string(),
+    organization: z.object({
+      type: z.enum(['NGO', 'Organization']),
+      name: z.string(),
+      logo: z.string(),
+    }),
+    pages: z.array(
+      z.object({
+        path: z.string(),
+        title: z.string(),
+        description: z.string(),
+        image: z.string().optional(),
+        breadcrumbName: z.string().optional(),
+        noindex: z.boolean().default(false),
+      })
+    ),
+  }),
+});
+
 const about = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/about' }),
   schema: z.object({
@@ -99,4 +124,4 @@ const footerCols = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, about, faqs, programs, footerCols };
+export const collections = { legal, settings, seo, about, faqs, programs, footerCols };

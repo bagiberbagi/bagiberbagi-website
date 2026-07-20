@@ -1,5 +1,6 @@
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { OGImageRoute } from 'astro-og-canvas';
+import { ogKeyFromPath } from '../../lib/seo';
 
 /**
  * OG image di-generate saat build (bukan file statis yang didesain manual),
@@ -8,29 +9,20 @@ import { OGImageRoute } from 'astro-og-canvas';
  * bikin gambar baru tiap kali.
  */
 
-/** Title/description disamakan persis dengan yang dipassing ke BaseLayout. */
-const manualPages: Record<string, { title: string; description: string }> = {
-  home: {
-    title: 'bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata',
-    description:
-      'Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id. Komunitas penyalur bantuan yang transparan dan terdokumentasi — berbagi jadi lebih mudah, dampaknya lebih nyata.',
-  },
-  faq: {
-    title: 'FAQ — bagiberbagi.id',
-    description:
-      'Pertanyaan yang sering diajukan seputar donasi, program, penyaluran bantuan, dan cara kerja bagiberbagi.id.',
-  },
-  tentang: {
-    title: 'Tentang Kami — bagiberbagi.id',
-    description:
-      'bagiberbagi.id adalah platform social impact yang menghubungkan individu, komunitas, perusahaan, dan UMKM untuk menciptakan dampak sosial yang berkelanjutan dan transparan.',
-  },
-  'jumat-berkah': {
-    title: 'Jumat Berkah — bagiberbagi.id',
-    description:
-      'Program Jumat Berkah bagiberbagi.id: berbagi paket makanan sehat dari UMKM terkurasi setiap Jumat, diantar langsung ke penerima, dengan dokumentasi foto & video maksimal H+1.',
-  },
-};
+/**
+ * Judul/deskripsi dibaca dari singleton `seo` yang sama dengan yang dipakai
+ * BaseLayout, jadi teks di gambar share selalu sama dengan meta tag-nya —
+ * dulu keduanya disimpan terpisah dan harus disamakan manual.
+ */
+const seoEntry = await getEntry('seo', 'seo');
+if (!seoEntry) throw new Error('seo/seo entry not found');
+
+const manualPages: Record<string, { title: string; description: string }> = Object.fromEntries(
+  seoEntry.data.pages.map((page) => [
+    ogKeyFromPath(page.path),
+    { title: page.title, description: page.description },
+  ])
+);
 
 /**
  * Cuma program yang punya halaman sendiri yang dibikinin OG image — kalau

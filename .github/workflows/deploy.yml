@@ -43,17 +43,33 @@ jobs:
       - run: bunx --bun astro check
       - run: bun run build
 
+      # Host key VPS diambil dari secret, bukan `ssh-keyscan` waktu run:
+      # keyscan mempercayai kunci apa pun yang dijawab host saat itu
+      # (trust-on-first-use tiap deploy), jadi runner yang di-MITM akan
+      # menempelkan kunci penyerang lalu mengirim rsync ke sana. Secret
+      # mengunci kunci yang sudah diverifikasi sekali di luar CI.
+      # Isi ulang secret kalau host key VPS diputar:
+      #   ssh-keyscan -p <port> <host> | gh secret set VPS_KNOWN_HOSTS
+      # (verifikasi dulu lewat console provider, jangan percaya keyscan buta).
       - name: Set up SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "${{ secrets.VPS_SSH_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          if [ -z "$VPS_KNOWN_HOSTS" ]; then
+            echo "::error::Secret VPS_KNOWN_HOSTS kosong. Deploy dihentikan; jangan jatuh balik ke ssh-keyscan, itu menghapus jaminannya."
+            exit 1
+          fi
+          printf '%s\n' "$VPS_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
 
       - name: Deploy dist/ to VPS
         run: |
           rsync -avz --delete --omit-dir-times --no-perms \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }}" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }} -o StrictHostKeyChecking=yes" \
             dist/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/bagiberbagi/"
 
       # rsync ke VPS tidak menyentuh edge cache Cloudflare: aset yang berubah

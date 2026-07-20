@@ -36,7 +36,7 @@ Astro static site (`output: 'static'`, no adapter), Tailwind CSS, TypeScript str
 
 - One logical concern per commit, Conventional Commits style subject (`fix: ...`, `feat: ...`), body explains *why* when non-obvious.
 - Never amend/force-push shared history.
-- Direct-to-`main` is fine (solo/scratch project) — no feature-branch requirement yet.
+- Code changes go through a feature branch, merged into `main` when they're verified — `main` is what deploys, so never commit code straight onto it. Docs-only edits may go direct.
 - Push once a commit/feature is solid, not every intermediate step.
 - No SemVer tagging yet.
 - No PR review requirement (solo project) — revisit if a second contributor joins.

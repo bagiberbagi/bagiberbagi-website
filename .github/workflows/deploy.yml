@@ -55,3 +55,28 @@ jobs:
           rsync -avz --delete --omit-dir-times --no-perms \
             -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_SSH_PORT }}" \
             dist/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/bagiberbagi/"
+
+      # rsync ke VPS tidak menyentuh edge cache Cloudflare: aset yang berubah
+      # bisa tertahan berhari-hari dan terbaca seperti "deploy gagal". Purge
+      # everything, bukan per-URL: nama file aset Astro ber-hash (otomatis
+      # cache-miss), yang benar-benar butuh invalidasi justru path tetap
+      # seperti HTML, favicon, robots.txt, dan sitemap.
+      - name: Purge Cloudflare cache
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: |
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ZONE_ID" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN/CLOUDFLARE_ZONE_ID belum diset — purge dilewati."
+            exit 0
+          fi
+          response=$(curl -sS --retry 3 --retry-all-errors --retry-delay 5 \
+            -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
+            -H "Authorization: Bearer $CF_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          echo "$response"
+          echo "$response" | grep -q '"success":true' || {
+            echo "::error::Purge Cloudflare gagal — deploy sudah masuk VPS, purge manual lewat dashboard."
+            exit 1
+          }

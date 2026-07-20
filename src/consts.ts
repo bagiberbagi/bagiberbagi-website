@@ -28,7 +28,7 @@ export interface MakananProgram {
 }
 
 export const MAKANAN_PROGRAMS: MakananProgram[] = [
-  { label: 'Jumat Berkah', desc: 'Berbagi makanan setiap Jumat untuk masyarakat yang membutuhkan.', active: true, href: '/jumat-berkah' },
+  { label: 'Jumat Berkah', desc: 'Berbagi makanan setiap Jumat untuk masyarakat yang membutuhkan.', active: true, href: '/jumat-berkah/' },
   { label: 'Ramadhan Berkah', desc: 'Berbagi kebahagiaan Ramadhan melalui makanan dan santunan berkah.', active: false },
   { label: 'Berbagi Makanan Harian', desc: 'Menyalurkan makanan layak setiap hari bagi yang membutuhkan.', active: false },
 ];
@@ -69,8 +69,8 @@ export const ACTIVITIES = [
 export const NAV_LINKS = [
   { id: 'home', label: 'Home', href: '/#top' },
   { id: 'program', label: 'Program', href: '/#program' },
-  { id: 'tentang', label: 'Tentang Kami', href: '/tentang' },
-  { id: 'faq', label: 'FAQ', href: '/faq' },
+  { id: 'tentang', label: 'Tentang Kami', href: '/tentang/' },
+  { id: 'faq', label: 'FAQ', href: '/faq/' },
 ];
 
 export interface ProgramMenuItem {
@@ -93,7 +93,7 @@ export const PROGRAM_MENU: ProgramMenuCategory[] = [
     label: '#bagiberbagimakanan',
     icon: 'food',
     items: [
-      { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah' },
+      { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah/' },
       { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadhan penuh berkah.', active: false },
       { label: 'Berbagi Makanan Harian', desc: 'Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.', active: false },
     ],

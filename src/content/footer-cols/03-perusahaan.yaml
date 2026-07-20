@@ -1,8 +1,8 @@
 title: Perusahaan
 links:
   - label: Tentang Kami
-    href: "/tentang"
+    href: "/tentang/"
   - label: Cara Kerja
     href: "/#cara-kerja"
   - label: FAQ
-    href: "/faq"
+    href: "/faq/"

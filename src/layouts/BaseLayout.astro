@@ -1,5 +1,15 @@
 ---
 import { getEntry } from 'astro:content';
+import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
+import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';
+import {
+  assembleGraph,
+  buildBreadcrumbList,
+  buildPiece,
+  buildWebPage,
+  buildWebSite,
+  makeIds,
+} from '@jdevalk/seo-graph-core';
 import '@fontsource/plus-jakarta-sans/400.css';
 import '@fontsource/plus-jakarta-sans/500.css';
 import '@fontsource/plus-jakarta-sans/600.css';
@@ -16,30 +26,99 @@ export interface Props {
   image?: string;
   /** Hide the page from search engines (e.g. admin routes). */
   noindex?: boolean;
+  /** Short name for the last breadcrumb crumb. Defaults to the title minus the site suffix. */
+  breadcrumbName?: string;
+  /** Extra JSON-LD pieces contributed by the page (e.g. FAQPage), merged into the same @graph. */
+  extraSchema?: Record<string, unknown>[];
 }
 
 const DEFAULT_DESCRIPTION =
   'bagiberbagi.id — platform donasi & sosial yang menghubungkan kebaikan, komunitas, dan dampak nyata untuk Indonesia. Salurkan bantuan makanan dan dukung UMKM secara transparan.';
+const SITE_NAME = 'bagiberbagi.id';
+const ORG_SLUG = 'bagiberbagi';
 
-const { title, description = DEFAULT_DESCRIPTION, image = '/og-image.png', noindex = false } = Astro.props;
+const {
+  title: rawTitle,
+  description = DEFAULT_DESCRIPTION,
+  image = '/og-image.png',
+  noindex = false,
+  breadcrumbName,
+  extraSchema = [],
+} = Astro.props;
 
+// <Seo> merender judul lewat `<title set:html={...}>` — tanpa escaping. Karena
+// judul nantinya datang dari CMS, buang `<`/`>` supaya isian editor tidak bisa
+// menutup tag dan menyuntik markup. `&` sengaja dibiarkan: parser HTML5
+// memperlakukannya sebagai teks di dalam <title>, dan meng-escape-nya di sini
+// akan double-escape og:title (yang sudah di-escape Astro lewat `content=`).
+const title = rawTitle.replace(/[<>]/g, '');
+
+const siteUrl = Astro.site!.href.replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const imageUrl = image ? new URL(image, Astro.site).href : undefined;
 
 const site = await getEntry('settings', 'site');
-const organizationSchema = site && {
-  '@context': 'https://schema.org',
-  '@type': 'NGO',
-  name: 'bagiberbagi.id',
-  url: Astro.site!.href,
-  logo: new URL('/favicon/apple-touch-icon.png', Astro.site).href,
-  description: DEFAULT_DESCRIPTION,
-  email: site.data.socials.email,
-  sameAs: [
-    `https://www.instagram.com/${site.data.socials.instagram}/`,
-    `https://www.tiktok.com/@${site.data.socials.tiktok}`,
-  ],
-};
+const ids = makeIds({ siteUrl });
+
+// Titles arrive as "Halaman — bagiberbagi.id"; the breadcrumb wants just the
+// page part, and the mega-menu routes read better with explicit names.
+const pageName = breadcrumbName ?? title.split('—')[0].trim();
+
+const organization = site
+  ? buildPiece({
+      '@type': 'NGO',
+      '@id': ids.organization(ORG_SLUG),
+      name: SITE_NAME,
+      url: `${siteUrl}/`,
+      logo: new URL('/favicon/apple-touch-icon.png', Astro.site).href,
+      description: DEFAULT_DESCRIPTION,
+      email: site.data.socials.email,
+      sameAs: [
+        `https://www.instagram.com/${site.data.socials.instagram}/`,
+        `https://www.tiktok.com/@${site.data.socials.tiktok}`,
+      ],
+    })
+  : undefined;
+
+const graph = organization
+  ? assembleGraph([
+      organization,
+      buildWebSite(
+        {
+          url: `${siteUrl}/`,
+          name: SITE_NAME,
+          description: DEFAULT_DESCRIPTION,
+          inLanguage: 'id-ID',
+          publisher: { '@id': ids.organization(ORG_SLUG) },
+        },
+        ids
+      ),
+      buildWebPage(
+        {
+          url: canonical,
+          name: title,
+          description,
+          inLanguage: 'id-ID',
+          isPartOf: { '@id': ids.website },
+          breadcrumb: { '@id': ids.breadcrumb(canonical) },
+        },
+        ids
+      ),
+      buildBreadcrumbList(
+        {
+          url: canonical,
+          items: breadcrumbsFromUrl({
+            url: Astro.url,
+            siteUrl,
+            pageName,
+            homeName: 'Beranda',
+          }),
+        },
+        ids
+      ),
+      ...extraSchema.map((piece) => buildPiece(piece as Parameters<typeof buildPiece>[0])),
+    ])
+  : null;
 ---
 
 <!doctype html>
@@ -47,27 +126,21 @@ const organizationSchema = site && {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title}</title>
-  <meta name="description" content={description} />
-  <link rel="canonical" href={canonical} />
-  {noindex && <meta name="robots" content="noindex, nofollow" />}
-
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="bagiberbagi.id" />
-  <meta property="og:locale" content="id_ID" />
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
-  <meta property="og:url" content={canonical} />
-  {imageUrl && <meta property="og:image" content={imageUrl} />}
-
-  <meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
-  <meta name="twitter:title" content={title} />
-  <meta name="twitter:description" content={description} />
-  {imageUrl && <meta name="twitter:image" content={imageUrl} />}
-
-  {organizationSchema && (
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
-  )}
+  <Seo
+    title={title}
+    description={description}
+    canonical={canonical}
+    siteName={SITE_NAME}
+    locale="id_ID"
+    ogImage={imageUrl}
+    ogImageAlt={title}
+    ogImageWidth={imageUrl ? 1200 : undefined}
+    ogImageHeight={imageUrl ? 630 : undefined}
+    twitter={{ card: imageUrl ? 'summary_large_image' : 'summary' }}
+    noindex={noindex}
+    nofollow={noindex}
+    graph={graph}
+  />
 
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />

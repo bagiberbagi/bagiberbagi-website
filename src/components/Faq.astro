@@ -20,21 +20,7 @@ const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 const waLink = buildWaLink(site.data.waNumber);
 
-const faqPageSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqs.map((f) => ({
-    '@type': 'Question',
-    name: f.data.q,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: f.data.a,
-    },
-  })),
-};
 ---
-
-<script is:inline type="application/ld+json" set:html={JSON.stringify(faqPageSchema)} />
 
 <section id="faq" class="section bg-white">
   <div class="max-w-6xl mx-auto">

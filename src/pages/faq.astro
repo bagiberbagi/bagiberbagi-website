@@ -1,12 +1,18 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Faq from '../components/Faq.astro';
+import { buildFaqPageSchema } from '../lib/schema';
+
+const faqs = (await getCollection('faqs')).sort((a, b) => a.id.localeCompare(b.id));
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
 <BaseLayout
   title="FAQ — bagiberbagi.id"
   description="Pertanyaan yang sering diajukan seputar donasi, program, penyaluran bantuan, dan cara kerja bagiberbagi.id."
   image="/open-graph/faq.png"
+  extraSchema={[buildFaqPageSchema(faqs, canonical)]}
 >
   <Faq />
 </BaseLayout>

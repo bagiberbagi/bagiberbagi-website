@@ -6,6 +6,8 @@ import sitemap from '@astrojs/sitemap';
 
 import markdoc from '@astrojs/markdoc';
 
+import seoGraph from '@jdevalk/astro-seo-graph/integration';
+
 import react from '@astrojs/react';
 
 // https://astro.build/config
@@ -34,5 +36,15 @@ export default defineConfig({
     // content collections API, jadi TOC di LegalLayout tidak berubah.
     markdoc(),
     react(),
+    // Hanya lint saat build (peringatan, tidak menggagalkan). IndexNow dan
+    // llms.txt sengaja belum diaktifkan: yang pertama butuh API key, yang kedua
+    // baru berguna kalau situs punya konten artikel.
+    seoGraph({
+      validateH1: true,
+      validateUniqueMetadata: true,
+      validateImageAlt: true,
+      validateMetadataLength: true,
+      validateInternalLinks: true,
+    }),
   ],
 });

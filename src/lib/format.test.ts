@@ -28,5 +28,5 @@ test('buildDonationMessage includes program, pax, and formatted total', () => {
 
 test('formatProgramOptionLabel appends "(Segera Hadir)" only when disabled', () => {
   expect(formatProgramOptionLabel({ label: 'Jumat Berkah', disabled: false })).toBe('Jumat Berkah');
-  expect(formatProgramOptionLabel({ label: 'Paket Makanan Sehat', disabled: true })).toBe('Paket Makanan Sehat (Segera Hadir)');
+  expect(formatProgramOptionLabel({ label: 'Ramadhan Berkah', disabled: true })).toBe('Ramadhan Berkah (Segera Hadir)');
 });

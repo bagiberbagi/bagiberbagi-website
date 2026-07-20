@@ -40,9 +40,24 @@ const waLink = buildWaLink(
         </div>
       </div>
 
-      <a href={waLink} target="_blank" rel="noopener" class="inline-block btn-primary">
-        Donasi Jumat Berkah Sekarang
-      </a>
+      <div class="bg-brand-orangeTint rounded-card p-6 md:p-7 mb-7">
+        <div class="eyebrow text-brand-orangeDark mb-1.5">HARGA DONASI</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-1.5">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></h2>
+        <p class="text-sm text-muted">Sudah termasuk pengantaran &amp; dokumentasi foto &amp; video penyaluran.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-6">
+        <a href={waLink} target="_blank" rel="noopener" class="inline-block btn-primary">
+          Donasi Jumat Berkah Sekarang
+        </a>
+        <a href="/#donasi" class="inline-block btn-secondary border border-border">
+          Hitung Donasi Anda
+        </a>
+      </div>
+
+      <p class="text-sm text-muted">
+        Ingin menyalurkan bantuan lewat program lain? <a href="/#program" class="font-semibold text-brand-orangeDark underline underline-offset-2">Lihat program lain</a>.
+      </p>
     </div>
   </section>
 </BaseLayout>

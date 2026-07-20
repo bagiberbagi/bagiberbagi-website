@@ -17,7 +17,7 @@ export const FEATURES: Feature[] = [
   { icon: 'food', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Makanan sehat & higienis', desc: 'Menu bergizi lengkap dimasak UMKM kuliner terkurasi dengan standar laik higiene.' },
   { icon: 'map', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan dengan seksama, merata, tidak menumpuk di satu tempat.' },
   { icon: 'camera', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Bukti nyata setiap pekan', desc: 'Foto dan video geotagged dari lapangan dikirim ke donatur maksimal H+1 setelah distribusi.' },
-  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Bisa berlangganan', desc: 'Aktifkan donasi berlangganan yang berjalan otomatis tanpa perlu diingat-ingat.' },
+  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Mudah diulang kapan saja', desc: 'Donasi rutin lewat WhatsApp, tim kami bantu proses dan atur jumlah pax sesuai kebutuhan Anda.' },
 ];
 
 export interface MakananProgram {
@@ -40,7 +40,7 @@ export interface Step {
 }
 
 export const STEPS: Step[] = [
-  { n: '01', title: 'Pilih Program', desc: 'Pilih jumlah pax, sekali jalan atau langganan mingguan.' },
+  { n: '01', title: 'Pilih Program', desc: 'Pilih program dan jumlah pax sesuai kebutuhan Anda.' },
   { n: '02', title: 'Lakukan Pembayaran', desc: 'Lakukan pembayaran dengan aman melalui mekanisme pada platform.' },
   { n: '03', title: 'Mitra Menjalankan', desc: 'Order diteruskan ke UMKM partner dengan standar higienitas.' },
   { n: '04', title: 'Penyaluran', desc: 'Panti asuhan, petugas kebersihan dan fakir miskin sesuai pemetaan.' },
@@ -94,7 +94,7 @@ export const PROGRAM_MENU: ProgramMenuCategory[] = [
     icon: 'food',
     items: [
       { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah' },
-      { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadan penuh berkah.', active: false },
+      { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadhan penuh berkah.', active: false },
       { label: 'Berbagi Makanan Harian', desc: 'Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.', active: false },
     ],
   },

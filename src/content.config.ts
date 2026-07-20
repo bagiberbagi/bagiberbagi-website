@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const legal = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/legal' }),
+  loader: glob({ pattern: '*.mdoc', base: './src/content/legal' }),
   schema: z.object({
     title: z.string(),
     eyebrow: z.string(),
@@ -67,7 +67,7 @@ const about = defineCollection({
 });
 
 const faqs = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/faqs' }),
+  loader: glob({ pattern: '*.yaml', base: './src/content/faqs' }),
   schema: z.object({
     q: z.string(),
     a: z.string(),
@@ -78,7 +78,7 @@ const faqs = defineCollection({
 });
 
 const programs = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/programs' }),
+  loader: glob({ pattern: '*.yaml', base: './src/content/programs' }),
   schema: z.object({
     label: z.string(),
     disabled: z.boolean(),
@@ -86,7 +86,7 @@ const programs = defineCollection({
 });
 
 const footerCols = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/footer-cols' }),
+  loader: glob({ pattern: '*.yaml', base: './src/content/footer-cols' }),
   schema: z.object({
     title: z.string(),
     links: z.array(

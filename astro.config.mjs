@@ -4,6 +4,8 @@ import { defineConfig } from 'astro/config';
 
 import sitemap from '@astrojs/sitemap';
 
+import markdoc from '@astrojs/markdoc';
+
 import react from '@astrojs/react';
 
 // https://astro.build/config
@@ -26,6 +28,11 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/keystatic'),
     }),
+    // Halaman legal (privasi/syarat/transparansi) pakai .mdoc supaya body-nya
+    // bisa diedit lewat Keystatic: contentField Keystatic hanya mendukung
+    // ekstensi .mdoc. Markdoc tetap menghasilkan `headings` + anchor id lewat
+    // content collections API, jadi TOC di LegalLayout tidak berubah.
+    markdoc(),
     react(),
   ],
 });

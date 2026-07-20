@@ -1,5 +1,27 @@
 import { collection, config, fields, singleton } from '@keystatic/core';
 
+/** Tiga halaman legal berbagi bentuk yang sama; hanya id dan label yang beda. */
+function legalPage(id: 'privacy' | 'terms' | 'transparency', label: string) {
+  return {
+    [id]: singleton({
+      label,
+      path: `src/content/legal/${id}`,
+      format: { contentField: 'content' as const },
+      schema: {
+        title: fields.text({ label: 'Judul' }),
+        eyebrow: fields.text({ label: 'Eyebrow' }),
+        intro: fields.text({ label: 'Paragraf pembuka', multiline: true }),
+        closing: fields.text({ label: 'Paragraf penutup', multiline: true }),
+        updatedAt: fields.text({ label: 'Terakhir diperbarui (contoh: 15 Juli 2026)' }),
+        content: fields.markdoc({
+          label: 'Isi halaman',
+          options: { image: false, codeBlock: false, table: false, blockquote: false },
+        }),
+      },
+    }),
+  };
+}
+
 export default config({
   storage: {
     kind: 'cloud',
@@ -8,6 +30,17 @@ export default config({
     project: 'bagiberbagi/bagiberbagi-website',
   },
   singletons: {
+    // Halaman legal sengaja singleton, bukan collection: masing-masing punya
+    // route hard-coded (privasi/syarat/transparansi.astro) yang memanggil
+    // getEntry dengan id tetap. Sebagai collection, UI-nya menawarkan
+    // tambah/hapus/rename-slug — entri baru tidak akan punya halaman, dan
+    // rename atau hapus justru mematahkan route yang sudah ada.
+    // Ini juga satu-satunya konten dengan body prose, jadi satu-satunya yang
+    // pakai contentField; Keystatic hanya mendukung ekstensi .mdoc untuk itu.
+    ...legalPage('privacy', 'Legal — Kebijakan Privasi'),
+    ...legalPage('terms', 'Legal — Syarat & Ketentuan'),
+    ...legalPage('transparency', 'Legal — Transparansi'),
+
     settings: singleton({
       label: 'Site Settings',
       path: 'src/content/settings/site',

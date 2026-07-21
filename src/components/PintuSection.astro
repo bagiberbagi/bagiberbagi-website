@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import { PINTU } from '../consts';
+---
+
+<section id="pintu" class="section scroll-mt-24">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <div class="eyebrow">PINTU BERBAGI</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Lima Pintu Berbagi</h2>
+      <p class="text-base leading-relaxed text-muted">
+        Lima jalan masuk untuk berbagi sumber daya bagi komunitas, sekolah, panti, sampai UMKM. Uang hanya satu di antaranya.
+      </p>
+    </div>
+
+    <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {PINTU.map((pintu) => (
+        <a
+          href={`/berbagi/${pintu.slug}/`}
+          style={`--cat:${pintu.color};--cat-tint:${pintu.colorTint}`}
+          class="group h-full rounded-card border border-border bg-white p-6 flex flex-col transition-all hover:shadow-[0_20px_40px_-24px_rgba(15,23,42,0.22)] hover:border-[var(--cat)]"
+        >
+          <span class="w-12 h-12 rounded-xl flex items-center justify-center flex-none mb-5 bg-[var(--cat-tint)] text-[var(--cat)]">
+            <Icon name={pintu.icon} size={22} />
+          </span>
+          <h3 class="text-title-sm font-bold mb-1 group-hover:text-[var(--cat)] transition-colors">{pintu.label}</h3>
+          <div class="eyebrow text-muted mb-3">{pintu.english}</div>
+          <p class="text-sm text-muted leading-relaxed">{pintu.tagline}</p>
+          <span class="mt-4 text-eyebrow font-bold text-[var(--cat)] inline-flex items-center gap-1 group-hover:gap-1.5 transition-all">
+            Jelajahi
+            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

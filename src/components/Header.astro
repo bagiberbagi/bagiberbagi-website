@@ -1,9 +1,9 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { NAV_LINKS, PROGRAM_CATEGORIES, PROGRAM_CATEGORIES_LABEL } from '../consts';
+import { NAV_LINKS, PINTU, PINTU_LABEL } from '../consts';
 import type { ProgramMenuCategoryData } from '../consts';
-import { getProgramsByPillar } from '../lib/programs';
+import { getProgramsByPintu } from '../lib/programs';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
 import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
@@ -15,7 +15,7 @@ if (!site) throw new Error('settings/site entry not found');
 // label "Pintu Berbagi". Kategori ber-program menampilkan daftar programnya;
 // yang belum jalan menampilkan tagline-nya (lihat ProgramMenuCategory).
 const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
-  PROGRAM_CATEGORIES.map(async (cat) => ({
+  PINTU.map(async (cat) => ({
     label: cat.label,
     icon: cat.icon,
     href: `/berbagi/${cat.slug}/`,
@@ -23,8 +23,8 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
     colorTint: cat.colorTint,
     tagline: cat.tagline,
     // Aktif dulu, lalu yang belum jalan — keduanya tetap urut `order`
-    // (sort stabil di atas hasil getProgramsByPillar yang sudah ter-order).
-    items: (await getProgramsByPillar(cat.id))
+    // (sort stabil di atas hasil getProgramsByPintu yang sudah ter-order).
+    items: (await getProgramsByPintu(cat.id))
       .map((p) => ({
         label: p.label,
         desc: p.summary,
@@ -70,7 +70,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               data-program-panel
               class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-[0_24px_48px_-24px_rgba(15,23,42,0.22)] border border-border p-6 z-50"
             >
-              <div class="eyebrow text-brand-orange mb-1">{PROGRAM_CATEGORIES_LABEL}</div>
+              <div class="eyebrow text-brand-orange mb-1">{PINTU_LABEL}</div>
               <div class="divide-y divide-border">
                 {PROGRAM_MENU.map((col) => (
                   <ProgramMenuCategory category={col} />
@@ -122,7 +122,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <svg aria-hidden="true" data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
           <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
-            <div class="eyebrow text-brand-orange">{PROGRAM_CATEGORIES_LABEL}</div>
+            <div class="eyebrow text-brand-orange">{PINTU_LABEL}</div>
             {PROGRAM_MENU.map((cat) => (
               <ProgramMenuCategory category={cat} iconSize={14} />
             ))}

@@ -335,9 +335,9 @@ export default config({
       format: { data: 'yaml' },
       schema: {
         label: fields.slug({ name: { label: 'Nama Program' } }),
-        pillar: fields.select({
-          label: 'Pilar',
-          description: 'Pilar sumber daya tempat program ini bernaung.',
+        pintu: fields.select({
+          label: 'Pintu',
+          description: 'Pintu berbagi tempat program ini bernaung.',
           options: [
             { label: 'Berbagi Makanan (Food)', value: 'food' },
             { label: 'Berbagi Barang (Goods)', value: 'goods' },

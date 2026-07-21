@@ -1,10 +1,10 @@
 import { getCollection } from 'astro:content';
-import type { PillarId } from '../consts';
+import type { PintuId } from '../consts';
 
 export interface Program {
   slug: string;
   label: string;
-  pillar: PillarId;
+  pintu: PintuId;
   order: number;
   active: boolean;
   summary: string;
@@ -28,8 +28,8 @@ export async function getPrograms(): Promise<Program[]> {
     .sort((a, b) => a.order - b.order);
 }
 
-export async function getProgramsByPillar(pillar: PillarId): Promise<Program[]> {
-  return (await getPrograms()).filter((p) => p.pillar === pillar);
+export async function getProgramsByPintu(pintu: PintuId): Promise<Program[]> {
+  return (await getPrograms()).filter((p) => p.pintu === pintu);
 }
 
 /** Program yang punya halaman detail sendiri — dasar route dinamis & OG image. */

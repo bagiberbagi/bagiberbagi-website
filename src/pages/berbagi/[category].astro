@@ -4,55 +4,55 @@ import Icon from '../../components/Icon.astro';
 import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import { buildWaLink } from '../../lib/format';
-import { getProgramsByPillar } from '../../lib/programs';
-import { PROGRAM_CATEGORIES, CATEGORY_CONTENT } from '../../consts';
+import { getProgramsByPintu } from '../../lib/programs';
+import { PINTU, CATEGORY_CONTENT } from '../../consts';
 import programPromoImage from '../../assets/images/program-promo.png';
 
 // Satu route untuk kelima pintu (kategori program) di /berbagi/[slug]. Slug
 // berbahasa Indonesia (makanan/barang/…) supaya URL konsisten satu bahasa;
 // id internal (food/goods/…) tetap dipakai taksonomi program. Impact
-// dikecualikan (PROGRAM_CATEGORIES) — lapisan hasil, bukan channel program.
+// dikecualikan (PINTU) — lapisan hasil, bukan channel program.
 export async function getStaticPaths() {
-  return PROGRAM_CATEGORIES.map((pillar) => ({
-    params: { category: pillar.slug },
-    props: { pillar },
+  return PINTU.map((pintu) => ({
+    params: { category: pintu.slug },
+    props: { pintu },
   }));
 }
 
-const { pillar } = Astro.props;
-const content = CATEGORY_CONTENT[pillar.id];
+const { pintu } = Astro.props;
+const content = CATEGORY_CONTENT[pintu.id];
 
-const programs = await getProgramsByPillar(pillar.id);
+const programs = await getProgramsByPintu(pintu.id);
 const active = programs.filter((p) => p.active);
 const upcoming = programs.filter((p) => !p.active);
-const otherPillars = PROGRAM_CATEGORIES.filter((p) => p.id !== pillar.id);
+const otherPintu = PINTU.filter((p) => p.id !== pintu.id);
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
-const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribusi di pintu ${pillar.label}.`);
-const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pillar.label} dibuka.`);
+const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribusi di pintu ${pintu.label}.`);
+const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pintu.label} dibuka.`);
 
-const styleVars = `--cat:${pillar.color};--cat-tint:${pillar.colorTint};--cat-deep:${pillar.colorDeep}`;
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 ---
 
 <BaseLayout
-  title={`${pillar.label} — bagiberbagi.id`}
-  description={pillar.tagline}
-  breadcrumbName={pillar.label}
+  title={`${pintu.label} — bagiberbagi.id`}
+  description={pintu.tagline}
+  breadcrumbName={pintu.label}
 >
   <div class="pintu" style={styleVars}>
     <div class="pintu-wrap">
       <!-- breadcrumb: item aktif (terakhir) yang di-highlight -->
       <nav class="crumb" aria-label="Breadcrumb">
-        <a href="/">Beranda</a><span>/</span>Pintu Berbagi<span>/</span><b class="cur">{pillar.label}</b>
+        <a href="/">Beranda</a><span>/</span>Pintu Berbagi<span>/</span><b class="cur">{pintu.label}</b>
       </nav>
 
       <!-- hero -->
       <header class="hero">
-        <span class="pico"><Icon name={pillar.icon} size={34} /></span>
-        <div class="eyb">{pillar.english}</div>
-        <h1 class="h1">{pillar.label}</h1>
-        <p class="tp">{pillar.tagline}</p>
+        <span class="pico"><Icon name={pintu.icon} size={34} /></span>
+        <div class="eyb">{pintu.english}</div>
+        <h1 class="h1">{pintu.label}</h1>
+        <p class="tp">{pintu.tagline}</p>
         <div class="hbtns">
           <a class="btn btn-p" href={contactWa} target="_blank" rel="noopener">Hubungi Kami</a>
           <a class="btn btn-o" href={contactWa} target="_blank" rel="noopener">Jadi Mitra</a>
@@ -109,9 +109,9 @@ const styleVars = `--cat:${pillar.color};--cat-tint:${pillar.colorTint};--cat-de
             <div class="sh"><span class="tick"></span><span class="lbl">Program</span></div>
             <div class="coming">
               <span class="coming-badge">Segera</span>
-              <span class="coming-ic"><Icon name={pillar.icon} size={27} /></span>
+              <span class="coming-ic"><Icon name={pintu.icon} size={27} /></span>
               <div class="coming-t">Program di pintu ini segera hadir</div>
-              <p class="coming-d">Kami sedang menyiapkan program {pillar.label} bersama relawan dan mitra. Tinggalkan kontak untuk jadi yang pertama tahu, atau bantu kami memulainya.</p>
+              <p class="coming-d">Kami sedang menyiapkan program {pintu.label} bersama relawan dan mitra. Tinggalkan kontak untuk jadi yang pertama tahu, atau bantu kami memulainya.</p>
               <a class="btn btn-p" href={notifyWa} target="_blank" rel="noopener">Beri tahu saya saat dibuka →</a>
             </div>
           </Fragment>
@@ -189,7 +189,7 @@ const styleVars = `--cat:${pillar.color};--cat-tint:${pillar.colorTint};--cat-de
       <section>
         <div class="sh"><span class="tick"></span><span class="lbl">Pintu Lainnya</span></div>
         <div class="doors">
-          {otherPillars.map((o) => (
+          {otherPintu.map((o) => (
             <a class="door" href={`/berbagi/${o.slug}/`} style={`--dc:${o.color}`}>
               <span class="di"><Icon name={o.icon} size={18} /></span>
               <span class="dn">{o.label}</span>
@@ -201,7 +201,7 @@ const styleVars = `--cat:${pillar.color};--cat-tint:${pillar.colorTint};--cat-de
       <!-- cta -->
       <a class="cta" href={contactWa} target="_blank" rel="noopener">
         <div>
-          <h3>{content?.ctaTitle ?? `Ingin berkontribusi di ${pillar.label}?`}</h3>
+          <h3>{content?.ctaTitle ?? `Ingin berkontribusi di ${pintu.label}?`}</h3>
           <p>{content?.ctaText ?? 'Hubungi tim kami untuk memulai atau menjadi mitra penyalur.'}</p>
         </div>
         <span class="cta-b">Hubungi Kami</span>

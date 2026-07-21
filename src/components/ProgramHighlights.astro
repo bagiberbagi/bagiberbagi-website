@@ -1,13 +1,13 @@
 ---
 import { Image } from 'astro:assets';
-import { getProgramsByPillar } from '../lib/programs';
+import { getProgramsByPintu } from '../lib/programs';
 import programPromoImage from '../assets/images/program-promo.png';
 
 // Featured + rail: program aktif tampil menonjol (pendorong donasi), program
 // food yang belum jalan diturunkan jadi chip "Segera" redup tanpa CTA — memberi
 // keluasan & memperlihatkan roadmap tanpa bersaing dengan tombol utama. Teaser
-// lintas pilar lain tetap di mega-menu (Header).
-const food = await getProgramsByPillar('food');
+// lintas pintu lain tetap di mega-menu (Header).
+const food = await getProgramsByPintu('food');
 const active = food.filter((p) => p.active);
 const upcoming = food.filter((p) => !p.active);
 ---

@@ -1,12 +1,12 @@
 ---
 import { getEntry } from 'astro:content';
 import { formatProgramOptionLabel, buildWaLink } from '../lib/format';
-import { getProgramsByPillar } from '../lib/programs';
+import { getProgramsByPintu } from '../lib/programs';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
-// Kalkulator per-pax hanya berlaku untuk pilar Food (harga per-pax seragam).
-const programs = await getProgramsByPillar('food');
+// Kalkulator per-pax hanya berlaku untuk pintu Food (harga per-pax seragam).
+const programs = await getProgramsByPintu('food');
 const firstActive = programs.find((p) => p.active)?.label;
 const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
 ---

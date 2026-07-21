@@ -70,7 +70,13 @@ export type IconName =
 // Lima "Pintu Berbagi" — jalan masuk berkontribusi sumber daya. Sebuah program
 // menempel pada satu pintu lewat field `pintu`-nya (lihat programs.ts).
 // (Dampak/impact BUKAN pintu — ia lapisan hasil, tampil lewat ImpactSection.)
-export type PintuId = 'food' | 'goods' | 'time' | 'space' | 'money';
+//
+// Satu-satunya sumber daftar pintu. Semua tempat lain menurunkan darinya:
+// `PintuId` (tipe), enum zod di content.config.ts, dan opsi select Keystatic.
+// Tambah/hapus pintu cukup di sini + entri PINTU di bawah — jangan tulis ulang
+// daftar id di tempat lain.
+export const PINTU_IDS = ['food', 'goods', 'time', 'space', 'money'] as const;
+export type PintuId = (typeof PINTU_IDS)[number];
 
 export interface Pintu {
   id: PintuId;

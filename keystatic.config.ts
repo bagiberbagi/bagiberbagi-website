@@ -1,5 +1,31 @@
 import { createElement } from 'react';
 import { collection, config, fields, singleton } from '@keystatic/core';
+import { PINTU } from './src/consts';
+
+/**
+ * Field gambar share reusable — dipakai di blok SEO (seoFields) dan di tiap
+ * entri seo.pages. Diekstrak agar `directory`/`publicPath` tak bisa drift:
+ * kalau keduanya beda, unggahan share terpecah ke dua folder.
+ */
+function shareImage() {
+  return fields.image({
+    label: 'Gambar share',
+    description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
+    directory: 'public/uploads/share',
+    publicPath: '/uploads/share',
+  });
+}
+
+/**
+ * Array paragraf teks multiline — pola berulang di halaman About (hero, misi,
+ * blok kedua misi). itemLabel memakai 40 karakter pertama sebagai preview.
+ */
+function paragraphsField(label: string) {
+  return fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
+    label,
+    itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
+  });
+}
 
 /**
  * Blok SEO yang menempel di entri konten yang punya halamannya sendiri.
@@ -18,12 +44,7 @@ function seoFields(hint: string) {
         description: 'Kosongkan untuk memakai paragraf pembuka halaman. Ideal 70–160 karakter.',
         multiline: true,
       }),
-      image: fields.image({
-        label: 'Gambar share',
-        description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
-        directory: 'public/uploads/share',
-        publicPath: '/uploads/share',
-      }),
+      image: shareImage(),
     },
     {
       label: 'SEO',
@@ -148,12 +169,7 @@ export default config({
               description: 'Ideal 50–160 karakter.',
               multiline: true,
             }),
-            image: fields.image({
-              label: 'Gambar share',
-              description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
-              directory: 'public/uploads/share',
-              publicPath: '/uploads/share',
-            }),
+            image: shareImage(),
             breadcrumbName: fields.text({
               label: 'Nama di breadcrumb',
               description: 'Kosongkan untuk memakai judul tanpa embel-embel nama situs.',
@@ -348,10 +364,7 @@ export default config({
           {
             eyebrow: fields.text({ label: 'Eyebrow' }),
             title: fields.text({ label: 'Judul utama' }),
-            paragraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
-              label: 'Paragraf hero',
-              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
-            }),
+            paragraphs: paragraphsField('Paragraf hero'),
           },
           { label: 'Hero' }
         ),
@@ -359,15 +372,9 @@ export default config({
           {
             eyebrow: fields.text({ label: 'Eyebrow' }),
             title: fields.text({ label: 'Judul' }),
-            paragraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
-              label: 'Paragraf',
-              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
-            }),
+            paragraphs: paragraphsField('Paragraf'),
             growTitle: fields.text({ label: 'Judul blok kedua' }),
-            growParagraphs: fields.array(fields.text({ label: 'Paragraf', multiline: true }), {
-              label: 'Paragraf blok kedua',
-              itemLabel: (props) => props.value?.slice(0, 40) || 'Paragraf',
-            }),
+            growParagraphs: paragraphsField('Paragraf blok kedua'),
           },
           { label: 'Mengapa Kami Ada' }
         ),
@@ -416,13 +423,12 @@ export default config({
         pintu: fields.select({
           label: 'Pintu',
           description: 'Pintu berbagi tempat program ini bernaung.',
-          options: [
-            { label: 'Berbagi Makanan (Food)', value: 'food' },
-            { label: 'Berbagi Barang (Goods)', value: 'goods' },
-            { label: 'Berbagi Waktu (Time)', value: 'time' },
-            { label: 'Berbagi Ruang (Space)', value: 'space' },
-            { label: 'Berbagi Dana (Money)', value: 'money' },
-          ],
+          // Opsi diturunkan dari PINTU (consts.ts) — satu sumber daftar pintu.
+          // Label mempertahankan format lama "Berbagi X (Id)".
+          options: PINTU.map((p) => ({
+            label: `${p.label} (${p.id[0].toUpperCase()}${p.id.slice(1)})`,
+            value: p.id,
+          })),
           defaultValue: 'food',
         }),
         order: fields.integer({

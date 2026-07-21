@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { PINTU_IDS } from './consts';
 
 const seoOverrides = z.object({
   title: z.string().optional(),
@@ -120,10 +121,8 @@ const programs = defineCollection({
   schema: z.object({
     label: z.string(),
     // Pintu tempat program bernaung. Impact bukan pintu (lapisan hasil) — tak
-    // ada di enum ini.
-    pintu: z
-      .enum(['food', 'goods', 'time', 'space', 'money'])
-      .default('food'),
+    // ada di enum ini. Daftar id-nya tunggal di PINTU_IDS (consts.ts).
+    pintu: z.enum(PINTU_IDS).default('food'),
     order: z.number().default(0),
     active: z.boolean().default(false),
     summary: z.string(),

@@ -17,9 +17,11 @@ function seoFields(hint: string) {
         description: 'Kosongkan untuk memakai paragraf pembuka halaman. Ideal 70–160 karakter.',
         multiline: true,
       }),
-      image: fields.text({
+      image: fields.image({
         label: 'Gambar share',
-        description: 'Path dari root situs. Kosongkan untuk memakai gambar default.',
+        description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
+        directory: 'public/uploads/share',
+        publicPath: '/uploads/share',
       }),
     },
     {
@@ -29,27 +31,29 @@ function seoFields(hint: string) {
   );
 }
 
-/** Tiga halaman legal berbagi bentuk yang sama; hanya id dan label yang beda. */
+/**
+ * Tiga halaman legal berbagi bentuk yang sama; hanya id dan label yang beda.
+ * Kembalikan singleton langsung (bukan objek ber-computed-key) supaya kunci
+ * tetap literal — `ui.navigation` butuh kunci literal untuk mereferensikannya.
+ */
 function legalPage(id: 'privacy' | 'terms' | 'transparency', label: string) {
-  return {
-    [id]: singleton({
-      label,
-      path: `src/content/legal/${id}`,
-      format: { contentField: 'content' as const },
-      schema: {
-        title: fields.text({ label: 'Judul' }),
-        eyebrow: fields.text({ label: 'Eyebrow' }),
-        intro: fields.text({ label: 'Paragraf pembuka', multiline: true }),
-        closing: fields.text({ label: 'Paragraf penutup', multiline: true }),
-        updatedAt: fields.text({ label: 'Terakhir diperbarui (contoh: 15 Juli 2026)' }),
-        seo: seoFields('judul halaman + nama situs'),
-        content: fields.markdoc({
-          label: 'Isi halaman',
-          options: { image: false, codeBlock: false, table: false, blockquote: false },
-        }),
-      },
-    }),
-  };
+  return singleton({
+    label,
+    path: `src/content/legal/${id}`,
+    format: { contentField: 'content' as const },
+    schema: {
+      title: fields.text({ label: 'Judul' }),
+      eyebrow: fields.text({ label: 'Eyebrow' }),
+      intro: fields.text({ label: 'Paragraf pembuka', multiline: true }),
+      closing: fields.text({ label: 'Paragraf penutup', multiline: true }),
+      updatedAt: fields.text({ label: 'Terakhir diperbarui (contoh: 15 Juli 2026)' }),
+      seo: seoFields('judul halaman + nama situs'),
+      content: fields.markdoc({
+        label: 'Isi halaman',
+        options: { image: false, codeBlock: false, table: false, blockquote: false },
+      }),
+    },
+  });
 }
 
 export default config({
@@ -59,6 +63,17 @@ export default config({
   cloud: {
     project: 'bagiberbagi/bagiberbagi-website',
   },
+  ui: {
+    brand: { name: 'bagiberbagi.id' },
+    // Kelompokkan sidebar agar tidak menumpuk datar. Kunci di sini harus sama
+    // persis dengan kunci singleton/collection di bawah.
+    navigation: {
+      Halaman: ['about', 'programs'],
+      'Konten Situs': ['faq', 'footer'],
+      Legal: ['privacy', 'terms', 'transparency'],
+      'Pengaturan Situs': ['settings', 'seo'],
+    },
+  },
   singletons: {
     // Halaman legal sengaja singleton, bukan collection: masing-masing punya
     // route hard-coded (privasi/syarat/transparansi.astro) yang memanggil
@@ -67,9 +82,9 @@ export default config({
     // rename atau hapus justru mematahkan route yang sudah ada.
     // Ini juga satu-satunya konten dengan body prose, jadi satu-satunya yang
     // pakai contentField; Keystatic hanya mendukung ekstensi .mdoc untuk itu.
-    ...legalPage('privacy', 'Legal — Kebijakan Privasi'),
-    ...legalPage('terms', 'Legal — Syarat & Ketentuan'),
-    ...legalPage('transparency', 'Legal — Transparansi'),
+    privacy: legalPage('privacy', 'Legal — Kebijakan Privasi'),
+    terms: legalPage('terms', 'Legal — Syarat & Ketentuan'),
+    transparency: legalPage('transparency', 'Legal — Transparansi'),
 
     // SEO dipisah dari Site Settings: yang satu identitas & kontak, yang satu
     // teks yang muncul di hasil pencarian dan share preview. Dibaca dua tempat
@@ -121,9 +136,11 @@ export default config({
               description: 'Ideal 50–160 karakter.',
               multiline: true,
             }),
-            image: fields.text({
+            image: fields.image({
               label: 'Gambar share',
-              description: 'Kosongkan untuk memakai gambar default.',
+              description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
+              directory: 'public/uploads/share',
+              publicPath: '/uploads/share',
             }),
             breadcrumbName: fields.text({
               label: 'Nama di breadcrumb',

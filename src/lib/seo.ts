@@ -10,7 +10,7 @@ export interface SeoPageEntry {
   path: string;
   title: string;
   description: string;
-  image?: string;
+  image?: string | null;
   breadcrumbName?: string;
   noindex: boolean;
 }

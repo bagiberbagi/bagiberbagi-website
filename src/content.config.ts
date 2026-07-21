@@ -5,7 +5,8 @@ import { z } from 'astro/zod';
 const seoOverrides = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  image: z.string().optional(),
+  // fields.image menulis null saat kosong; nullish() menerima null & undefined.
+  image: z.string().nullish(),
 });
 
 const legal = defineCollection({
@@ -57,7 +58,7 @@ const seo = defineCollection({
         path: z.string(),
         title: z.string(),
         description: z.string(),
-        image: z.string().optional(),
+        image: z.string().nullish(),
         breadcrumbName: z.string().optional(),
         noindex: z.boolean().default(false),
       })

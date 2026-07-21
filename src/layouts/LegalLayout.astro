@@ -11,7 +11,7 @@ export interface Props {
   updatedAt: string;
   headings: { depth: number; slug: string; text: string }[];
   /** Override SEO dari entri Keystatic. Field yang kosong jatuh ke turunan isi halaman. */
-  seo?: { title?: string; description?: string; image?: string };
+  seo?: { title?: string; description?: string; image?: string | null };
 }
 
 const { title, eyebrow, intro, closing, updatedAt, headings, seo } = Astro.props;

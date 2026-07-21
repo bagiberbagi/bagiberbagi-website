@@ -51,10 +51,10 @@ const waLink = buildWaLink(
       </div>
 
       <div class="flex flex-wrap gap-3 mb-6">
-        <a href={waLink} target="_blank" rel="noopener" class="inline-block btn-primary">
+        <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-program={program.label} data-track-source="program_page" data-track-pax="10" class="inline-block btn-primary">
           Donasi {program.label} Sekarang
         </a>
-        <a href="/#donasi" class="inline-block btn-secondary border border-border">
+        <a href="/#donasi" data-track="hitung_donasi" class="inline-block btn-secondary border border-border">
           Hitung Donasi Anda
         </a>
       </div>

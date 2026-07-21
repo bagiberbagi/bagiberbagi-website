@@ -45,6 +45,8 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
   <a
     id="wa-donation-link"
     data-wa-number={site.data.waNumber}
+    data-track="donate_click"
+    data-track-source="calculator"
     href={initialWaLink}
     target="_blank"
     rel="noopener"

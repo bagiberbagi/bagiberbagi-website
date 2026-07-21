@@ -29,7 +29,7 @@ const upcoming = food.filter((p) => !p.active);
               <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
               <p class="text-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
               {p.href && (
-                <a href={p.href} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
+                <a href={p.href} data-track="program_click" data-track-program={p.label} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
               )}
             </div>
           </div>

@@ -54,8 +54,8 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
         <h1 class="h1">{pintu.label}</h1>
         <p class="tp">{pintu.tagline}</p>
         <div class="hbtns">
-          <a class="btn btn-p" href={contactWa} target="_blank" rel="noopener">Hubungi Kami</a>
-          <a class="btn btn-o" href={contactWa} target="_blank" rel="noopener">Jadi Mitra</a>
+          <a class="btn btn-p" href={contactWa} target="_blank" rel="noopener" data-track="contact_wa" data-track-pintu={pintu.slug} data-track-source="berbagi_hero">Hubungi Kami</a>
+          <a class="btn btn-o" href={contactWa} target="_blank" rel="noopener" data-track="partner_click" data-track-pintu={pintu.slug}>Jadi Mitra</a>
         </div>
       </header>
 
@@ -112,7 +112,7 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
               <span class="coming-ic"><Icon name={pintu.icon} size={27} /></span>
               <div class="coming-t">Program di pintu ini segera hadir</div>
               <p class="coming-d">Kami sedang menyiapkan program {pintu.label} bersama relawan dan mitra. Tinggalkan kontak untuk jadi yang pertama tahu, atau bantu kami memulainya.</p>
-              <a class="btn btn-p" href={notifyWa} target="_blank" rel="noopener">Beri tahu saya saat dibuka →</a>
+              <a class="btn btn-p" href={notifyWa} target="_blank" rel="noopener" data-track="notify_click" data-track-pintu={pintu.slug}>Beri tahu saya saat dibuka →</a>
             </div>
           </Fragment>
         )}
@@ -199,7 +199,7 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
       </section>
 
       <!-- cta -->
-      <a class="cta" href={contactWa} target="_blank" rel="noopener">
+      <a class="cta" href={contactWa} target="_blank" rel="noopener" data-track="contact_wa" data-track-pintu={pintu.slug} data-track-source="berbagi_cta">
         <div>
           <h3>{content?.ctaTitle ?? `Ingin berkontribusi di ${pintu.label}?`}</h3>
           <p>{content?.ctaText ?? 'Hubungi tim kami untuk memulai atau menjadi mitra penyalur.'}</p>

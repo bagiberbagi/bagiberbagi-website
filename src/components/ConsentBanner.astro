@@ -1,0 +1,74 @@
+---
+// Consent banner minimal — dirender BaseLayout hanya bila ada provider berbasis
+// cookie yang aktif DAN toggle consent banner menyala. Alat cookie (GA4/Pixel/
+// GTM/Clarity) baru aktif setelah "Terima"; PostHog (cookieless) tak terpengaruh.
+---
+
+<div
+  id="bb-consent-banner"
+  hidden
+  role="dialog"
+  aria-live="polite"
+  aria-label="Preferensi cookie"
+  class="fixed inset-x-0 bottom-0 z-[60] p-3 sm:p-4"
+>
+  <div class="max-w-3xl mx-auto bg-white border border-border rounded-card shadow-[0_20px_50px_-24px_rgba(15,23,42,0.35)] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+    <div class="flex-1">
+      <p class="font-extrabold text-body mb-1">Bantu kami mengukur dampak</p>
+      <p class="text-sm text-muted leading-relaxed">
+        Kami memakai cookie analitik untuk memahami trafik dan seberapa efektif tiap program mengajak orang berdonasi. Kamu bisa terima atau tolak — donasi tetap jalan.
+        <a href="/privasi/" class="font-semibold text-brand-orangeDark underline underline-offset-2">Kebijakan Privasi</a>.
+      </p>
+    </div>
+    <div class="flex gap-2.5 shrink-0">
+      <button type="button" data-consent-decline class="btn-secondary btn-sm border border-border">Tolak</button>
+      <button type="button" data-consent-accept class="btn-primary btn-sm">Terima</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var KEY = 'bb-consent';
+    var el = document.getElementById('bb-consent-banner');
+    if (!el) return;
+
+    function apply(state, persist) {
+      window.__bbConsent = state;
+      try {
+        if (persist) localStorage.setItem(KEY, state);
+      } catch (e) {}
+      if (state === 'granted') {
+        if (window.gtag) {
+          gtag('consent', 'update', {
+            ad_storage: 'granted',
+            analytics_storage: 'granted',
+            ad_user_data: 'granted',
+            ad_personalization: 'granted',
+          });
+        }
+        document.dispatchEvent(new Event('bb:consent-granted'));
+      }
+      el.hidden = true;
+    }
+
+    var stored = null;
+    try {
+      stored = localStorage.getItem(KEY);
+    } catch (e) {}
+
+    if (stored === 'granted' || stored === 'denied') {
+      // Head sudah menerapkan status tersimpan; di sini cukup pastikan tersembunyi.
+      el.hidden = true;
+    } else {
+      el.hidden = false;
+    }
+
+    el.querySelector('[data-consent-accept]').addEventListener('click', function () {
+      apply('granted', true);
+    });
+    el.querySelector('[data-consent-decline]').addEventListener('click', function () {
+      apply('denied', true);
+    });
+  })();
+</script>

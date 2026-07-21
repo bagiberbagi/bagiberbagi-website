@@ -4,7 +4,9 @@
 .vscode/
 
 # build output / Astro cache
-node_modules/
+# Tanpa trailing slash: juga meng-ignore `node_modules` yang berupa symlink
+# (worktree kadang menautkannya) — pola `node_modules/` hanya cocok direktori.
+node_modules
 dist/
 .astro/
 *.tar.gz

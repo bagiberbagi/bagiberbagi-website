@@ -83,7 +83,7 @@ export default config({
       Halaman: ['about', 'programs'],
       'Konten Situs': ['faq', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
-      'Pengaturan Situs': ['settings', 'seo'],
+      'Pengaturan Situs': ['settings', 'seo', 'analytics'],
     },
   },
   singletons: {
@@ -257,6 +257,70 @@ export default config({
           donatur: fields.number({ label: 'Donatur Terdaftar' }),
           berbagi: fields.number({ label: 'Orang Telah Berbagi' }),
           area: fields.number({ label: 'Area Distribusi' }),
+        }),
+      },
+    }),
+    // Switchboard analytics: tiap alat = centang + ID. BaseLayout menyuntik
+    // skripnya hanya jika aktif + ID terisi. ID adalah kode publik (tampil di
+    // HTML), bukan rahasia. Menyimpan = deploy otomatis ± 2 menit.
+    analytics: singleton({
+      label: 'Analytics',
+      path: 'src/content/analytics/analytics',
+      format: 'json',
+      schema: {
+        posthog: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan PostHog' }),
+            host: fields.text({
+              label: 'Host',
+              description: 'Contoh: https://eu.i.posthog.com atau https://us.i.posthog.com',
+            }),
+            projectKey: fields.text({
+              label: 'Project Key',
+              description: 'Kode publik (phc_…), bukan rahasia.',
+            }),
+          },
+          { label: 'PostHog — insight privat (cookieless, tanpa consent)' }
+        ),
+        ga4: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan Google Analytics 4' }),
+            measurementId: fields.text({
+              label: 'Measurement ID',
+              description: 'Format: G-XXXXXXXXXX. Kode publik.',
+            }),
+          },
+          { label: 'Google Analytics 4 — cookie, butuh consent' }
+        ),
+        metaPixel: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan Meta Pixel' }),
+            pixelId: fields.text({ label: 'Pixel ID', description: 'Kode publik.' }),
+          },
+          { label: 'Meta Pixel — cookie, butuh consent' }
+        ),
+        clarity: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan Microsoft Clarity' }),
+            projectId: fields.text({ label: 'Project ID' }),
+          },
+          { label: 'Microsoft Clarity — cookie, butuh consent (opsional)' }
+        ),
+        gtm: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan Google Tag Manager' }),
+            containerId: fields.text({
+              label: 'Container ID',
+              description:
+                'Format: GTM-XXXXXXX. Jika ini aktif, kelola GA4/Pixel di dalam GTM — jangan dicentang juga di sini (hindari dobel-fire).',
+            }),
+          },
+          { label: 'Google Tag Manager — cookie, butuh consent (opsional)' }
+        ),
+        consentBanner: fields.checkbox({
+          label: 'Tampilkan consent banner',
+          description: 'Wajib begitu ada alat cookie di atas yang aktif. Consent Mode v2 default: denied.',
+          defaultValue: true,
         }),
       },
     }),

@@ -1,0 +1,8 @@
+{
+  "posthog": { "enabled": false, "host": "", "projectKey": "" },
+  "ga4": { "enabled": false, "measurementId": "" },
+  "metaPixel": { "enabled": false, "pixelId": "" },
+  "clarity": { "enabled": false, "projectId": "" },
+  "gtm": { "enabled": false, "containerId": "" },
+  "consentBanner": true
+}

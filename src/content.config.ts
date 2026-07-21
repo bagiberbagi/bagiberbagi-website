@@ -157,4 +157,30 @@ const footer = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, footer };
+const analytics = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/analytics' }),
+  schema: z.object({
+    posthog: z
+      .object({
+        enabled: z.boolean().default(false),
+        host: z.string().default(''),
+        projectKey: z.string().default(''),
+      })
+      .default({ enabled: false, host: '', projectKey: '' }),
+    ga4: z
+      .object({ enabled: z.boolean().default(false), measurementId: z.string().default('') })
+      .default({ enabled: false, measurementId: '' }),
+    metaPixel: z
+      .object({ enabled: z.boolean().default(false), pixelId: z.string().default('') })
+      .default({ enabled: false, pixelId: '' }),
+    clarity: z
+      .object({ enabled: z.boolean().default(false), projectId: z.string().default('') })
+      .default({ enabled: false, projectId: '' }),
+    gtm: z
+      .object({ enabled: z.boolean().default(false), containerId: z.string().default('') })
+      .default({ enabled: false, containerId: '' }),
+    consentBanner: z.boolean().default(true),
+  }),
+});
+
+export const collections = { legal, settings, seo, about, faq, programs, footer, analytics };

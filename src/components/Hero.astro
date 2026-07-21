@@ -1,41 +1,75 @@
 ---
-import { Image } from 'astro:assets';
 import DonationCalculator from './DonationCalculator.astro';
-import { ACTIVITIES } from '../consts';
-import heroImage from '../assets/images/hero-jumat-berkah.png';
+import Icon from './Icon.astro';
+import { PINTU } from '../consts';
+
+// Versi lebih terang dari warna identitas tiap pintu — hue sama, lightness
+// dinaikkan agar ikon kontras di atas pill gelap (bg ink). Lokal ke ticker ini;
+// warna pintu global (consts) tetap dipakai apa adanya di tempat lain.
+const ICON_BRIGHT: Record<string, string> = {
+  food: '#FF9E4D',
+  goods: '#A98BF0',
+  time: '#F56D9A',
+  space: '#3DC6E3',
+  money: '#3FD07A',
+};
 ---
 
-<section class="relative overflow-hidden bg-brand-yellow px-5 md:px-10 py-8 md:py-16">
-  {/* Foto lapangan sebagai latar; overlay kuning menjaga identitas brand & keterbacaan
-      teks — opaque di kiri (teks), memudar ke kanan agar foto menembus. */}
-  <Image src={heroImage} alt="" loading="eager" class="absolute inset-0 w-full h-full object-cover object-center" />
-  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-brand-yellow from-30% via-brand-yellow/90 to-brand-yellow/40"></div>
-  <div aria-hidden="true" class="absolute inset-0 bg-brand-yellow/20 md:hidden"></div>
+{/* Foto lapangan + overlay kuning kini hidup di wrapper zona (index.astro) yang
+    dibagi bersama Stats — section ini transparan agar background tembus. */}
+<section class="relative px-5 md:px-10 pt-8 md:pt-16 pb-6 md:pb-10">
   <div class="relative max-w-7xl mx-auto flex flex-wrap gap-12 items-center">
     <div class="flex-1 basis-[440px] min-w-[280px]">
       <h1 class="text-heading-lg md:text-display-lg leading-[1.08] font-extrabold tracking-tight mb-5 text-ink">
         Berbagi Makanan.<br />Dampaknya Nyata.
       </h1>
       <p class="text-base md:text-lg leading-relaxed text-muted max-w-[520px] mb-7">
-        Salurkan paket makanan bergizi lewat dapur UMKM terkurasi — sampai ke penerima terdata, dengan bukti foto &amp; video maksimal H+1. Mudah, transparan, berdampak.
+        Salurkan paket makanan bergizi lewat dapur UMKM lokal, sampai ke orang yang membutuhkan. Kamu dapat bukti foto dan videonya, maksimal H+1.
       </p>
       <div class="flex flex-wrap gap-4 mb-7">
         <a href="#cara-kerja" class="text-brand-blue font-bold text-base inline-flex items-center gap-2">
-          Lihat Cara Kerja
+          Lihat Cara Kerjanya
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
         </a>
       </div>
-      <div class="inline-flex items-center gap-3 bg-ink pl-3.5 pr-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-pill">
-        <span class="inline-flex items-center gap-1.5 bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide px-2.5 py-1 rounded-full">
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow"></span>KOMITMEN
+      {/* Ticker 5 pintu: badge statis "YUK BAGI", lalu slot bergulir berisi ikon
+          (warna identitas pintu) + label — fade-slide bergantian untuk menarik mata. */}
+      <div class="inline-flex items-center gap-3 bg-ink pl-3.5 pr-5 py-2.5 rounded-full text-body-sm font-semibold text-white shadow-pill">
+        <span class="bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide uppercase px-2.5 py-1 rounded-full">
+          Yuk Bagi
         </span>
-        <span id="activity-ticker">{ACTIVITIES[0]}</span>
+        <span id="pintu-ticker" class="relative block h-5 min-w-[142px]">
+          {PINTU.map((p, i) => (
+            <span
+              class:list={['pintu-item absolute inset-0 inline-flex items-center gap-1.5 whitespace-nowrap', i === 0 && 'is-active']}
+              data-pintu-item
+            >
+              <Icon name={p.icon} color={ICON_BRIGHT[p.id] ?? p.color} size={16} />
+              {p.label}
+            </span>
+          ))}
+        </span>
       </div>
     </div>
 
     <DonationCalculator />
   </div>
 </section>
+
+<style>
+  /* Tiap item pintu (ikon + label) menumpuk absolute di slot; hanya .is-active
+     yang tampil, masuk fade + slide naik agar pergantiannya menarik mata. */
+  .pintu-item {
+    opacity: 0;
+    transform: translateY(0.4rem);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .pintu-item.is-active {
+    opacity: 1;
+    transform: none;
+  }
+</style>
 
 <script>
   import '../scripts/ticker.js';

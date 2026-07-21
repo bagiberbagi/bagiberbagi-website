@@ -47,14 +47,9 @@ export const IMPACTS: Impact[] = [
   { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi & kurir ikut bergerak. Lapangan kerja baru lahir dari satu tradisi.' },
 ];
 
-export const ACTIVITIES = [
-  'Transparan di setiap penyaluran',
-  'Didukung UMKM lokal terkurasi',
-  'Bukti foto & video maksimal H+1',
-];
 
+// Tanpa link "Home" — logo di navbar yang jadi jalan pulang ke beranda.
 export const NAV_LINKS = [
-  { id: 'home', label: 'Home', href: '/#top' },
   { id: 'program', label: 'Program', href: '/#program' },
   { id: 'tentang', label: 'Tentang Kami', href: '/tentang/' },
   { id: 'faq', label: 'FAQ', href: '/faq/' },

@@ -1,7 +1,13 @@
 ---
+import { getEntry } from 'astro:content';
 import Icon from './Icon.astro';
 import { PINTU } from '../consts';
 import { getProgramsByPintu } from '../lib/programs';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waResourceLink = buildWaLink(site.data.waNumber, 'Halo, saya punya sumber daya untuk dibagikan lewat bagiberbagi.id.');
 
 // Status pintu diturunkan dari data program (single-source): sebuah pintu
 // "sudah jalan" bila punya ≥1 program aktif. Kini hanya Makanan (Jumat Berkah).
@@ -13,13 +19,13 @@ const pintuStatus = await Promise.all(
 );
 ---
 
-<section id="pintu" class="section bg-gray-50 scroll-mt-24">
+<section id="pintu" class="section bg-white scroll-mt-24">
   <div class="max-w-7xl mx-auto">
     <div class="max-w-2xl mb-10">
       <div class="eyebrow">ARAH KAMI</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Berbagi Tak Berhenti di Makanan</h2>
       <p class="text-base leading-relaxed text-muted">
-        Jumat Berkah baru langkah pertama. Kami sedang membuka lima pintu untuk berbagi sumber daya — satu per satu, saat tim &amp; mitra siap.
+        Jumat Berkah baru langkah pertama. Kami sedang membuka lima pintu untuk berbagi sumber daya, satu per satu, begitu tim dan mitra siap.
       </p>
     </div>
 
@@ -41,18 +47,28 @@ const pintuStatus = await Promise.all(
           </span>
 
           <h3 class="relative text-title-sm font-bold leading-tight">{pintu.label}</h3>
-          <div class="relative text-eyebrow text-muted mb-4">{pintu.english}</div>
-          {pintu.active ? (
-            <span class="relative mt-auto inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-[#12833F]">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>Sudah jalan
-            </span>
-          ) : (
-            <span class="relative mt-auto inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
-            </span>
-          )}
+          <div class="relative text-eyebrow text-muted">{pintu.english}</div>
+          <p class="relative text-body-sm text-muted leading-snug mt-2.5 mb-4 flex-1">{pintu.tagline}</p>
+          <div class="relative flex items-center justify-between gap-2 mt-auto">
+            {pintu.active ? (
+              <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-[#12833F]">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>Sudah jalan
+              </span>
+            ) : (
+              <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
+                <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
+              </span>
+            )}
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="flex-none text-muted/35 transition-all group-hover:text-[var(--cat)] group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </div>
         </a>
       ))}
     </div>
+
+    {/* Ajakan kontribusi — mengundang sumber daya untuk pintu yang belum jalan. */}
+    <p class="mt-8 text-body-sm text-muted">
+      Punya sumber daya lain untuk dibagi?{' '}
+      <a href={waResourceLink} target="_blank" rel="noopener" data-track="pintu_contribute" class="font-semibold text-brand-blue hover:underline underline-offset-2">Ceritakan ke kami</a>, kami bantu wujudkan pintunya.
+    </p>
   </div>
 </section>

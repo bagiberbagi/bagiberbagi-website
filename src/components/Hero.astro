@@ -1,16 +1,23 @@
 ---
+import { Image } from 'astro:assets';
 import DonationCalculator from './DonationCalculator.astro';
 import { ACTIVITIES } from '../consts';
+import heroImage from '../assets/images/hero-jumat-berkah.png';
 ---
 
-<section class="bg-brand-yellow px-5 md:px-10 py-8 md:py-16">
-  <div class="max-w-7xl mx-auto flex flex-wrap gap-12 items-center">
+<section class="relative overflow-hidden bg-brand-yellow px-5 md:px-10 py-8 md:py-16">
+  {/* Foto lapangan sebagai latar; overlay kuning menjaga identitas brand & keterbacaan
+      teks — opaque di kiri (teks), memudar ke kanan agar foto menembus. */}
+  <Image src={heroImage} alt="" loading="eager" class="absolute inset-0 w-full h-full object-cover object-center" />
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-brand-yellow from-30% via-brand-yellow/90 to-brand-yellow/40"></div>
+  <div aria-hidden="true" class="absolute inset-0 bg-brand-yellow/20 md:hidden"></div>
+  <div class="relative max-w-7xl mx-auto flex flex-wrap gap-12 items-center">
     <div class="flex-1 basis-[440px] min-w-[280px]">
       <h1 class="text-heading-lg md:text-display-lg leading-[1.08] font-extrabold tracking-tight mb-5 text-ink">
-        Berbagi Lebih Mudah.<br />Dampaknya Lebih Nyata.
+        Berbagi Makanan.<br />Dampaknya Nyata.
       </h1>
       <p class="text-base md:text-lg leading-relaxed text-muted max-w-[520px] mb-7">
-        bagiberbagi.id adalah platform social impact yang menghubungkan donatur, komunitas, UMKM, dan perusahaan untuk menyalurkan berbagai bentuk kebaikan secara mudah, transparan, dan berdampak.
+        Salurkan paket makanan bergizi lewat dapur UMKM terkurasi — sampai ke penerima terdata, dengan bukti foto &amp; video maksimal H+1. Mudah, transparan, berdampak.
       </p>
       <div class="flex flex-wrap gap-4 mb-7">
         <a href="#cara-kerja" class="text-brand-blue font-bold text-base inline-flex items-center gap-2">
@@ -18,8 +25,8 @@ import { ACTIVITIES } from '../consts';
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
         </a>
       </div>
-      <div class="inline-flex items-center gap-3 bg-ink pl-3.5 pr-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(15,23,42,0.5)]">
-        <span class="inline-flex items-center gap-1.5 bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide px-2.5 py-1 rounded-2xl">
+      <div class="inline-flex items-center gap-3 bg-ink pl-3.5 pr-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-pill">
+        <span class="inline-flex items-center gap-1.5 bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide px-2.5 py-1 rounded-full">
           <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow"></span>KOMITMEN
         </span>
         <span id="activity-ticker">{ACTIVITIES[0]}</span>

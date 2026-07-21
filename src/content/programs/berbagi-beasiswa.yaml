@@ -1,0 +1,9 @@
+label: Berbagi Beasiswa
+category: pendidikan
+order: 1
+active: false
+summary: Membantu pendidikan melalui dukungan biaya belajar.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: ''
+  features: []

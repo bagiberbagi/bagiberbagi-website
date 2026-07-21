@@ -27,9 +27,9 @@ bunx astro dev stop
 
 ## Struktur
 
-- `src/pages/` — satu file per route: `index`, `faq`, `tentang`, `jumat-berkah`, halaman legal (`privasi`, `syarat`, `transparansi`), admin Keystatic, dan generator OG image.
+- `src/pages/` — satu file per route: `index`, `faq`, `tentang`, `[program]` (satu route dinamis untuk semua halaman program, mis. `/jumat-berkah/`), halaman legal (`privasi`, `syarat`, `transparansi`), admin Keystatic, dan generator OG image.
 - `src/components/` — satu komponen per section halaman utama.
-- `src/consts.ts` — data UI yang tidak diedit editor (fitur, langkah, dampak, nav, mega-menu program).
+- `src/consts.ts` — data UI yang tidak diedit editor (fitur, langkah, dampak, nav, label+ikon kategori mega-menu). Data program sendiri ada di CMS (**Program**), bukan di sini.
 - `src/content/` — konten yang diedit lewat Keystatic. Dibaca Astro lewat `src/content.config.ts`, ditulis Keystatic lewat `keystatic.config.ts`; **kedua config harus sepakat soal ekstensi file**.
 - `src/lib/` — fungsi murni: format Rupiah & link WhatsApp (`format.ts`, ada unit test), potongan schema.org (`schema.ts`), resolusi SEO per halaman (`seo.ts`).
 - `src/scripts/` — JS interaktif per fitur (mobile nav, ticker, kalkulator donasi, akordeon FAQ, mega-menu, TOC legal).
@@ -57,7 +57,7 @@ Writer tidak pernah menyentuh repo. Developer tidak perlu akses tulis ke konten 
 | Isi halaman legal | **Legal — …** |
 | Isi halaman Tentang Kami | **Halaman Tentang Kami** |
 | Nomor WhatsApp, sosial media, angka statistik | **Site Settings** |
-| Daftar program di kalkulator donasi | **Program** |
+| Program (kartu beranda, mega-menu, kalkulator, halaman detail) | **Program** — satu sumber untuk semua |
 
 Field SEO di halaman legal dan Tentang Kami **boleh dikosongkan** — artinya halaman memakai judul dan paragraf pembukanya sendiri. Isi hanya kalau teks di Google perlu berbeda dari teks di halaman.
 
@@ -79,7 +79,7 @@ Keystatic **tidak punya status draft/published bawaan**. Yang ada:
 
 - **Draft otomatis di browser.** Perubahan yang belum di-Save tersimpan di IndexedDB perangkatmu dan ditawarkan lagi saat kembali ke form yang sama. Sifatnya lokal — rekan kerja tidak bisa melihatnya, dan hilang kalau ganti perangkat atau bersihkan data browser. Ini jaring pengaman terhadap tab tertutup, **bukan** alur draft.
 - **Branch sebagai draft.** Ini cara draft yang sesungguhnya: buat branch, tulis sepuasnya, terbitkan lewat merge. Bisa dilihat orang lain, bisa direview, bisa dibuang.
-- **Flag di data.** Untuk entri yang harus ada tapi belum boleh tampil, pakai field di skemanya — program punya **Nonaktif (belum dibuka)**, halaman SEO punya **Sembunyikan dari mesin pencari**. Cocok untuk "sudah disiapkan, belum diumumkan".
+- **Flag di data.** Untuk entri yang harus ada tapi belum boleh tampil, pakai field di skemanya — program punya **Aktif (sudah dibuka)** yang dibiarkan mati (tampil "Segera Hadir", tanpa halaman detail), halaman SEO punya **Sembunyikan dari mesin pencari**. Cocok untuk "sudah disiapkan, belum diumumkan".
 
 Kalau nanti butuh draft per entri yang sesungguhnya (tersimpan di repo tapi tidak tampil di situs), tambahkan field `status` di skema lalu saring saat build. Belum dikerjakan karena belum dibutuhkan.
 

@@ -1,10 +1,13 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 import { formatProgramOptionLabel, buildWaLink } from '../lib/format';
+import { getProgramsByCategory } from '../lib/programs';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
-const programs = await getCollection('programs');
+// Kalkulator per-pax hanya berlaku untuk program makanan (harga seragam).
+const programs = await getProgramsByCategory('makanan');
+const firstActive = programs.find((p) => p.active)?.label;
 const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
 ---
 
@@ -18,8 +21,8 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
     class="w-full p-4 border border-border rounded-2xl text-body font-semibold text-ink mb-2 bg-white"
   >
     {programs.map((opt) => (
-      <option value={opt.data.label} disabled={opt.data.disabled} selected={opt.data.label === 'Jumat Berkah'}>
-        {formatProgramOptionLabel(opt.data)}
+      <option value={opt.label} disabled={!opt.active} selected={opt.label === firstActive}>
+        {formatProgramOptionLabel(opt)}
       </option>
     ))}
   </select>

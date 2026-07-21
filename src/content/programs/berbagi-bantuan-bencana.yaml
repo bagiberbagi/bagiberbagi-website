@@ -1,0 +1,9 @@
+label: Berbagi Bantuan Bencana
+category: bantuan
+order: 2
+active: false
+summary: Memberikan bantuan darurat bagi korban bencana terdampak.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: ''
+  features: []

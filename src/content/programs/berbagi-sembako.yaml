@@ -1,0 +1,9 @@
+label: Berbagi Sembako
+category: bantuan
+order: 1
+active: false
+summary: Menyalurkan paket sembako bagi keluarga yang membutuhkan.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: ''
+  features: []

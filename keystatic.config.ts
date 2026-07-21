@@ -305,8 +305,45 @@ export default config({
       path: 'src/content/programs/*',
       format: { data: 'yaml' },
       schema: {
-        label: fields.text({ label: 'Nama Program' }),
-        disabled: fields.checkbox({ label: 'Nonaktif (belum dibuka)' }),
+        label: fields.slug({ name: { label: 'Nama Program' } }),
+        category: fields.select({
+          label: 'Kategori',
+          description: 'Menentukan kolom menu tempat program tampil.',
+          options: [
+            { label: '#bagiberbagimakanan', value: 'makanan' },
+            { label: '#bagiberbagibantuan', value: 'bantuan' },
+            { label: '#bagiberbagipendidikan', value: 'pendidikan' },
+          ],
+          defaultValue: 'makanan',
+        }),
+        order: fields.integer({
+          label: 'Urutan',
+          description: 'Makin kecil makin dulu tampil di kategorinya.',
+          defaultValue: 0,
+        }),
+        active: fields.checkbox({
+          label: 'Aktif (sudah dibuka)',
+          description: 'Aktif + isi Detail terisi = program dapat halaman sendiri. Nonaktif tampil "Segera Hadir".',
+        }),
+        summary: fields.text({
+          label: 'Ringkasan',
+          description: 'Deskripsi singkat untuk kartu program & menu.',
+          multiline: true,
+        }),
+        detail: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Eyebrow', defaultValue: 'PROGRAM AKTIF' }),
+            description: fields.text({ label: 'Deskripsi halaman', multiline: true }),
+            features: fields.array(fields.text({ label: 'Poin' }), {
+              label: 'Poin keunggulan',
+              itemLabel: (props) => props.value || 'Poin',
+            }),
+          },
+          {
+            label: 'Detail halaman',
+            description: 'Hanya perlu diisi untuk program aktif yang punya halaman sendiri.',
+          }
+        ),
       },
     }),
   },

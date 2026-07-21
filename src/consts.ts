@@ -20,19 +20,6 @@ export const FEATURES: Feature[] = [
   { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Mudah diulang kapan saja', desc: 'Donasi rutin lewat WhatsApp, tim kami bantu proses dan atur jumlah pax sesuai kebutuhan Anda.' },
 ];
 
-export interface MakananProgram {
-  label: string;
-  desc: string;
-  active: boolean;
-  href?: string;
-}
-
-export const MAKANAN_PROGRAMS: MakananProgram[] = [
-  { label: 'Jumat Berkah', desc: 'Berbagi makanan setiap Jumat untuk masyarakat yang membutuhkan.', active: true, href: '/jumat-berkah/' },
-  { label: 'Ramadhan Berkah', desc: 'Berbagi kebahagiaan Ramadhan melalui makanan dan santunan berkah.', active: false },
-  { label: 'Berbagi Makanan Harian', desc: 'Menyalurkan makanan layak setiap hari bagi yang membutuhkan.', active: false },
-];
-
 export interface Step {
   n: string;
   title: string;
@@ -73,47 +60,29 @@ export const NAV_LINKS = [
   { id: 'faq', label: 'FAQ', href: '/faq/' },
 ];
 
-export interface ProgramMenuItem {
+// Data program kini tinggal di collection `programs` (Keystatic) — lihat
+// `src/lib/programs.ts`. Yang tersisa di sini murni presentasional: label &
+// ikon tiap kategori mega-menu, yang tidak dikelola editor.
+export type IconName = 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
+
+export type ProgramCategoryId = 'makanan' | 'bantuan' | 'pendidikan';
+
+export interface ProgramCategory {
+  id: ProgramCategoryId;
   label: string;
-  desc: string;
-  active: boolean;
-  href?: string;
+  icon: IconName;
 }
 
-export interface ProgramMenuCategory {
-  id: string;
-  label: string;
-  icon: 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
-  items: ProgramMenuItem[];
-}
-
-export const PROGRAM_MENU: ProgramMenuCategory[] = [
-  {
-    id: 'bagiberbagimakanan',
-    label: '#bagiberbagimakanan',
-    icon: 'food',
-    items: [
-      { label: 'Jumat Berkah', desc: 'Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.', active: true, href: '/jumat-berkah/' },
-      { label: 'Ramadhan Berkah', desc: 'Menyalurkan hidangan berbuka, sahur, dan santunan selama bulan Ramadhan penuh berkah.', active: false },
-      { label: 'Berbagi Makanan Harian', desc: 'Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.', active: false },
-    ],
-  },
-  {
-    id: 'bagiberbagibantuan',
-    label: '#bagiberbagibantuan',
-    icon: 'box',
-    items: [
-      { label: 'Berbagi Sembako', desc: 'Menyalurkan paket sembako bagi keluarga yang membutuhkan.', active: false },
-      { label: 'Berbagi Bantuan Bencana', desc: 'Memberikan bantuan darurat bagi korban bencana terdampak.', active: false },
-    ],
-  },
-  {
-    id: 'bagiberbagipendidikan',
-    label: '#bagiberbagipendidikan',
-    icon: 'walk',
-    items: [
-      { label: 'Berbagi Beasiswa', desc: 'Membantu pendidikan melalui dukungan biaya belajar.', active: false },
-      { label: 'Berbagi Buku & Alat Sekolah', desc: 'Menyalurkan perlengkapan belajar untuk pelajar membutuhkan.', active: false },
-    ],
-  },
+export const PROGRAM_CATEGORIES: ProgramCategory[] = [
+  { id: 'makanan', label: '#bagiberbagimakanan', icon: 'food' },
+  { id: 'bantuan', label: '#bagiberbagibantuan', icon: 'box' },
+  { id: 'pendidikan', label: '#bagiberbagipendidikan', icon: 'walk' },
 ];
+
+// Bentuk data yang dikonsumsi ProgramMenuCategory.astro — dirakit di Header
+// dari PROGRAM_CATEGORIES + collection.
+export interface ProgramMenuCategoryData {
+  label: string;
+  icon: IconName;
+  items: { label: string; desc: string; active: boolean; href?: string }[];
+}

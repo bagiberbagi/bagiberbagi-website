@@ -118,7 +118,19 @@ const programs = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/programs' }),
   schema: z.object({
     label: z.string(),
-    disabled: z.boolean(),
+    category: z.enum(['makanan', 'bantuan', 'pendidikan']).default('makanan'),
+    order: z.number().default(0),
+    active: z.boolean().default(false),
+    summary: z.string(),
+    // Diisi hanya untuk program aktif yang punya halaman detail; program
+    // "segera hadir" cukup mengosongkannya (tidak ter-route).
+    detail: z
+      .object({
+        eyebrow: z.string().default('PROGRAM AKTIF'),
+        description: z.string().default(''),
+        features: z.array(z.string()).default([]),
+      })
+      .default({ eyebrow: 'PROGRAM AKTIF', description: '', features: [] }),
   }),
 });
 

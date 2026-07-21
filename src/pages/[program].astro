@@ -1,0 +1,67 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../lib/format';
+import { getProgramPages } from '../lib/programs';
+
+// Satu route untuk semua program aktif ber-halaman — begitu editor mengaktifkan
+// program di Keystatic & mengisi Detail, halamannya ikut ter-generate tanpa
+// perlu membuat file .astro baru.
+export async function getStaticPaths() {
+  const programs = await getProgramPages();
+  return programs.map((program) => ({
+    params: { program: program.slug },
+    props: { program },
+  }));
+}
+
+const { program } = Astro.props;
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+
+const defaultPax = 10;
+const waLink = buildWaLink(
+  site.data.waNumber,
+  buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)))
+);
+---
+
+<BaseLayout>
+  <section class="section bg-white">
+    <div class="max-w-3xl mx-auto">
+      <div class="eyebrow">{program.detail.eyebrow}</div>
+      <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight mb-4">{program.label}</h1>
+      <p class="text-body-sm text-muted leading-relaxed mb-6">{program.detail.description}</p>
+
+      {program.detail.features.length > 0 && (
+        <div class="flex flex-col gap-2.5 mb-7">
+          {program.detail.features.map((feature) => (
+            <div class="flex gap-2 text-sm text-muted">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg>
+              {feature}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div class="bg-brand-orangeTint rounded-card p-6 md:p-7 mb-7">
+        <div class="eyebrow text-brand-orangeDark mb-1.5">HARGA DONASI</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-1.5">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></h2>
+        <p class="text-sm text-muted">Sudah termasuk pengantaran &amp; dokumentasi foto &amp; video penyaluran.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-6">
+        <a href={waLink} target="_blank" rel="noopener" class="inline-block btn-primary">
+          Donasi {program.label} Sekarang
+        </a>
+        <a href="/#donasi" class="inline-block btn-secondary border border-border">
+          Hitung Donasi Anda
+        </a>
+      </div>
+
+      <p class="text-sm text-muted">
+        Ingin menyalurkan bantuan lewat program lain? <a href="/#program" class="font-semibold text-brand-orangeDark underline underline-offset-2">Lihat program lain</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -15,6 +15,6 @@ export function buildDonationMessage(program: string, pax: number, totalFormatte
   return `Halo, saya ingin donasi program "${program}" untuk ${pax} pax (Total: ${totalFormatted}).`;
 }
 
-export function formatProgramOptionLabel(opt: { label: string; disabled: boolean }): string {
-  return opt.disabled ? `${opt.label} (Segera Hadir)` : opt.label;
+export function formatProgramOptionLabel(opt: { label: string; active: boolean }): string {
+  return opt.active ? opt.label : `${opt.label} (Segera Hadir)`;
 }

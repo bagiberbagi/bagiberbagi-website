@@ -1,6 +1,7 @@
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
 import { OGImageRoute } from 'astro-og-canvas';
 import { ogKeyFromPath } from '../../lib/seo';
+import { getProgramPages } from '../../lib/programs';
 
 /**
  * OG image di-generate saat build (bukan file statis yang didesain manual),
@@ -40,27 +41,19 @@ const manualPages: Record<string, { title: string; description: string }> = Obje
 ]);
 
 /**
- * Cuma program yang punya halaman sendiri yang dibikinin OG image — kalau
- * tidak, PNG-nya jadi yatim (tidak pernah direferensikan meta tag mana pun).
- * Route dideteksi dari file `src/pages/*.astro`, jadi begitu halaman program
- * baru dibuat, OG image-nya ikut ter-generate tanpa mengubah file ini.
+ * Cuma program yang punya halaman sendiri (aktif + Detail terisi) yang
+ * dibikinin OG image — kalau tidak, PNG-nya jadi yatim. Sumbernya sama dengan
+ * route dinamis `[program].astro`, jadi begitu editor mengaktifkan program di
+ * Keystatic, share image-nya ikut ter-generate tanpa mengubah file ini.
  */
-const pageRoutes = new Set(
-  Object.keys(import.meta.glob('../*.astro')).map((path) =>
-    path.replace('../', '').replace('.astro', '')
-  )
-);
-
-const programs = await getCollection('programs');
 const programPages = Object.fromEntries(
-  programs
-    .map((entry) => [entry.id.replace(/^\d+-/, ''), entry.data] as const)
-    .filter(([slug]) => pageRoutes.has(slug) && !(slug in manualPages))
-    .map(([slug, data]) => [
-      slug,
+  (await getProgramPages())
+    .filter((program) => !(program.slug in manualPages))
+    .map((program) => [
+      program.slug,
       {
-        title: `${data.label} — bagiberbagi.id`,
-        description: `Program ${data.label} dari bagiberbagi.id — berbagi makanan bersama UMKM lokal, tersalurkan dan terdokumentasi.`,
+        title: `${program.label} — bagiberbagi.id`,
+        description: program.summary,
       },
     ])
 );

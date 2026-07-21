@@ -1,0 +1,9 @@
+label: Berbagi Makanan Harian
+category: makanan
+order: 3
+active: false
+summary: Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: ''
+  features: []

@@ -1,0 +1,16 @@
+label: Jumat Berkah
+category: makanan
+order: 1
+active: true
+summary: Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: >-
+    Berbagi paket makanan setiap hari Jumat bagi masyarakat yang membutuhkan
+    secara langsung. Setiap donasi diproses melalui tim kami di WhatsApp,
+    disalurkan bersama mitra UMKM dan relawan lapangan, dan didokumentasikan
+    dengan foto & video maksimal H+1.
+  features:
+    - Paket makanan sehat bergizi dari UMKM terkurasi
+    - Diantar langsung ke penerima yang tepat setiap hari Jumat
+    - Foto & video penyaluran dikirim maksimal H+1

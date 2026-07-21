@@ -41,10 +41,10 @@ export interface Impact {
 }
 
 export const IMPACTS: Impact[] = [
-  { icon: 'heart', title: 'Penerima Manfaat', desc: 'Makanan sehat bergizi hadir terjadwal — kepastian dan martabat bagi yang membutuhkan.' },
+  { icon: 'heart', title: 'Penerima Manfaat', desc: 'Makanan sehat bergizi hadir terjadwal, memberi kepastian dan martabat bagi yang membutuhkan.' },
   { icon: 'chef', title: 'UMKM Kuliner', desc: 'Dapur kecil mendapat order pasti mingguan, omzet yang membantu usaha keluarga.' },
   { icon: 'walk', title: 'Relawan Lapangan', desc: 'Warga memperoleh penghasilan rutin dalam setiap proses penyaluran lingkungannya sendiri.' },
-  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi & kurir ikut bergerak. Lapangan kerja baru lahir dari satu tradisi.' },
+  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi dan kurir ikut bergerak. Lapangan kerja baru lahir dari satu tradisi.' },
 ];
 
 

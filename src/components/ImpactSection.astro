@@ -4,7 +4,7 @@ import { IMPACTS } from '../consts';
 ---
 
 <section class="section bg-brand-blue text-white">
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-12">
       <div class="eyebrow text-brand-yellow">DAMPAK BERGANDA</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Satu Aksi. Banyak Dampak.</h2>
@@ -13,27 +13,38 @@ import { IMPACTS } from '../consts';
       </p>
     </div>
 
-    {/* Cascade: satu donasi (seed) memancar ke empat dampak. Bentuk aliran
-        menegaskan "berganda" — bukan empat kotak setara yang datar. */}
-    <div class="flex flex-col lg:flex-row lg:items-center gap-7 lg:gap-6">
-      <div class="flex-none mx-auto lg:mx-0 w-32 h-32 md:w-36 md:h-36 rounded-full bg-brand-yellow text-ink flex flex-col items-center justify-center text-center">
+    {/* Cascade: satu donasi (seed) memancar ke empat dampak. Seed diberi halo
+        (ring+glow), konektor berbentuk kipas 1→4 menegaskan "berganda", dan tiap
+        dampak jadi kartu kaca dengan chip ikon kuning — benang warna dari seed
+        menyatukan section. */}
+    <div class="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-7">
+      <div class="flex-none mx-auto lg:mx-0 w-32 h-32 md:w-36 md:h-36 rounded-full bg-brand-yellow text-ink flex flex-col items-center justify-center text-center ring-8 ring-brand-yellow/15 shadow-[0_24px_60px_-20px_rgba(255,217,0,0.55)]">
         <span class="text-eyebrow font-bold uppercase tracking-wide text-ink/55">mulai</span>
         <span class="text-title font-extrabold leading-tight mt-0.5">Satu<br />Donasi</span>
       </div>
 
-      <div aria-hidden="true" class="flex-none self-center text-white/40">
-        <svg class="rotate-90 lg:rotate-0" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      {/* Konektor: kipas 1→4 di desktop, panah turun di mobile. */}
+      <div aria-hidden="true" class="flex-none self-center text-brand-yellow/55">
+        <svg class="hidden lg:block" width="42" height="152" viewBox="0 0 42 152" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="4" cy="76" r="3.2" fill="currentColor" stroke="none"></circle>
+          <path d="M4 76h11"></path>
+          <path d="M15 76C28 76 27 22 40 22"></path>
+          <path d="M15 76C28 76 28 58 40 58"></path>
+          <path d="M15 76C28 76 28 94 40 94"></path>
+          <path d="M15 76C28 76 27 130 40 130"></path>
+        </svg>
+        <svg class="lg:hidden mx-auto" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
       </div>
 
-      <div class="flex-1 grid gap-x-6 gap-y-7 sm:grid-cols-2">
+      <div class="flex-1 grid gap-4 sm:grid-cols-2">
         {IMPACTS.map((im) => (
-          <div class="flex gap-4" data-fade="1">
-            <span class="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center flex-none">
-              <Icon name={im.icon} color="white" size={20} />
+          <div class="flex gap-4 rounded-2xl bg-white/[0.06] border border-white/10 p-4 md:p-5 transition-colors hover:bg-white/[0.1]" data-fade="1">
+            <span class="w-11 h-11 rounded-xl bg-brand-yellow/15 flex items-center justify-center flex-none">
+              <Icon name={im.icon} color="#FFD900" size={20} />
             </span>
             <div>
               <h3 class="text-title-sm font-bold mb-1">{im.title}</h3>
-              <p class="text-body-sm leading-snug text-white/80">{im.desc}</p>
+              <p class="text-body-sm leading-snug text-white/75">{im.desc}</p>
             </div>
           </div>
         ))}

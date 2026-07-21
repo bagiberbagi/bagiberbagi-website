@@ -1,47 +1,74 @@
 ---
+import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
+import bergabungImage from '../assets/images/bergabung.jpg';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 const waMitraLink = buildWaLink(site.data.waNumber, 'Halo, saya tertarik untuk bergabung sebagai Mitra Dapur UMKM di bagiberbagi.id.');
 const waCsrLink = buildWaLink(site.data.waNumber, 'Halo, kami tertarik menjalankan program CSR Korporasi bersama bagiberbagi.id.');
+
+const mitraBenefits = [
+  'Order berulang & bayar tepat waktu',
+  'Pendampingan sertifikasi higiene',
+  'Branding usaha di laporan donatur',
+];
+const csrBenefits = [
+  'Laporan dampak profesional & video',
+  'Branding perusahaan pada kemasan',
+  'Skala fleksibel sesuai kebutuhan',
+];
 ---
 
-<section id="tentang" class="section">
-  <div class="max-w-6xl mx-auto">
+<section id="tentang" class="relative overflow-hidden px-5 md:px-10 py-16 md:py-24 text-white">
+  {/* Foto jadi latar (bukan card) + scrim; dua peran mengambang sebagai kartu
+      kaca. Foto menyatukan keduanya jadi satu band penutup, bukan kotak ke-3. */}
+  <Image src={bergabungImage} alt="" width={748} height={498} class="absolute inset-0 w-full h-full object-cover object-center" />
+  <div aria-hidden="true" class="absolute inset-0 bg-ink/80"></div>
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/70 to-ink/60"></div>
+
+  <div class="relative max-w-6xl mx-auto">
     <div class="max-w-xl mb-10">
-      <div class="eyebrow">BERGABUNG LEBIH JAUH</div>
+      <div class="eyebrow text-brand-yellow">BERGABUNG LEBIH JAUH</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Bangun Dampak Bersama</h2>
-      <p class="text-muted text-base">Tidak hanya sebagai donatur. Anda juga dapat bergabung sebagai:</p>
+      <p class="text-white/85 text-base leading-relaxed">
+        Tidak hanya sebagai donatur. Anda juga dapat menggerakkan ekosistem kebaikan dari sisi lain — sebagai mitra dapur atau lewat program korporasi.
+      </p>
     </div>
 
-    <div class="flex flex-wrap gap-7">
-      <div class="flex-1 basis-[420px] min-w-[280px] bg-brand-orangeTint rounded-card p-7 md:p-9 transition-transform hover:-translate-y-1" data-fade="1">
-        <div class="w-[52px] h-[52px] rounded-2xl bg-ink flex items-center justify-center mb-5 text-brand-yellow">
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="rounded-card bg-white/10 backdrop-blur-md border border-white/15 p-7 md:p-8" data-fade="1">
+        <div class="w-[52px] h-[52px] rounded-2xl bg-white/15 flex items-center justify-center mb-5 text-brand-yellow">
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M9 21v-6M15 21v-6M6 10a4 4 0 0 1 3-6.8A4 4 0 0 1 12 2a4 4 0 0 1 3 1.2A4 4 0 0 1 18 10c0 2-1 3-2 4H8c-1-1-2-2-2-4Z"></path></svg>
         </div>
-        <h3 class="text-xl font-extrabold mb-2.5">Jadi Mitra Dapur UMKM</h3>
-        <p class="text-body text-muted leading-relaxed mb-4">Dapatkan order pasti setiap minggu. Kami bantu standar higienitas dan kemasan. Anda fokus memasak.</p>
-        <div class="flex flex-col gap-2.5 mb-6">
-          <div class="flex gap-2 text-sm text-muted"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg> Order berulang &amp; bayar tepat waktu</div>
-          <div class="flex gap-2 text-sm text-muted"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg> Pendampingan sertifikasi higiene</div>
-          <div class="flex gap-2 text-sm text-muted"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-orange"><path d="M5 13l4 4L19 7"></path></svg> Branding usaha di laporan donatur</div>
-        </div>
+        <h3 class="text-xl font-extrabold mb-2">Jadi Mitra Dapur UMKM</h3>
+        <p class="text-white/80 text-body leading-relaxed mb-4">Dapatkan order pasti setiap minggu. Kami bantu standar higiene &amp; kemasan. Anda fokus memasak.</p>
+        <ul class="flex flex-col gap-2.5 mb-6">
+          {mitraBenefits.map((b) => (
+            <li class="flex gap-2 text-sm text-white/85">
+              <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-yellow"><path d="M5 13l4 4L19 7"></path></svg>
+              {b}
+            </li>
+          ))}
+        </ul>
         <a href={waMitraLink} target="_blank" rel="noopener" class="inline-block btn-primary">Jadi Mitra Dapur UMKM</a>
       </div>
 
-      <div class="flex-1 basis-[420px] min-w-[280px] bg-brand-blue text-white rounded-card p-7 md:p-9 transition-transform hover:-translate-y-1" data-fade="1">
-        <div class="w-[52px] h-[52px] rounded-2xl bg-white/15 flex items-center justify-center mb-5">
-          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01"></path></svg>
+      <div class="rounded-card bg-white/10 backdrop-blur-md border border-white/15 p-7 md:p-8" data-fade="1">
+        <div class="w-[52px] h-[52px] rounded-2xl bg-white/15 flex items-center justify-center mb-5 text-white">
+          <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01"></path></svg>
         </div>
-        <h3 class="text-xl font-extrabold mb-2.5">CSR Korporasi</h3>
-        <p class="text-body leading-relaxed text-white/85 mb-4">Jalankan program Jumat Berkah atas nama perusahaan — kami yang mengeksekusi dari dapur hingga laporan.</p>
-        <div class="flex flex-col gap-2.5 mb-6">
-          <div class="flex gap-2 text-sm"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg> Laporan dampak profesional &amp; video</div>
-          <div class="flex gap-2 text-sm"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg> Branding perusahaan pada kemasan</div>
-          <div class="flex gap-2 text-sm"><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5"><path d="M5 13l4 4L19 7"></path></svg> Skala fleksibel sesuai kebutuhan perusahaan Anda</div>
-        </div>
+        <h3 class="text-xl font-extrabold mb-2">CSR Korporasi</h3>
+        <p class="text-white/80 text-body leading-relaxed mb-4">Jalankan program Jumat Berkah atas nama perusahaan — kami yang mengeksekusi dari dapur hingga laporan.</p>
+        <ul class="flex flex-col gap-2.5 mb-6">
+          {csrBenefits.map((b) => (
+            <li class="flex gap-2 text-sm text-white/85">
+              <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-yellow"><path d="M5 13l4 4L19 7"></path></svg>
+              {b}
+            </li>
+          ))}
+        </ul>
         <a href={waCsrLink} target="_blank" rel="noopener" class="inline-block btn-secondary">Jalankan CSR Korporasi</a>
       </div>
     </div>

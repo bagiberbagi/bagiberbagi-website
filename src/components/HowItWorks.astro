@@ -2,20 +2,27 @@
 import { STEPS } from '../consts';
 ---
 
-<section id="cara-kerja" class="px-5 md:px-10 pb-12 md:pb-[88px]">
+<section id="cara-kerja" class="section bg-gray-50 scroll-mt-24">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-xl mx-auto mb-10">
+    <div class="text-center max-w-xl mx-auto mb-12">
       <div class="eyebrow">CARA KERJA</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Lima Langkah Menciptakan Dampak</h2>
     </div>
-    <div class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+
+    {/* Timeline tersambung — garis menegaskan urutan langkah. Horizontal di
+        desktop, tumpuk vertikal di mobile. Nomor sudah urutan nyata (01–05). */}
+    <ol class="grid gap-8 md:grid-cols-5 md:gap-3">
       {STEPS.map((s, i) => (
-        <div class="bg-gray-50 rounded-card p-6" data-fade="1">
-          <div class={`text-3xl font-extrabold mb-2 ${i % 2 === 0 ? 'text-brand-orange' : 'text-brand-blue'}`}>{s.n}</div>
-          <h3 class="text-base font-bold mb-1.5">{s.title}</h3>
-          <p class="text-sm text-muted leading-relaxed">{s.desc}</p>
-        </div>
+        <li class="relative md:text-center before:content-[''] before:absolute before:hidden md:before:block before:top-[19px] before:right-1/2 before:w-[calc(100%+0.75rem)] before:h-0.5 before:bg-border first:before:hidden">
+          <div class="flex items-center gap-4 md:block">
+            <span class:list={['relative z-10 flex-none w-10 h-10 rounded-full flex items-center justify-center text-white font-extrabold tabular-nums md:mx-auto', i % 2 === 0 ? 'bg-brand-orange' : 'bg-brand-blue']}>{s.n}</span>
+            <div class="md:mt-4">
+              <h3 class="text-base font-bold mb-1 md:mb-1.5">{s.title}</h3>
+              <p class="text-sm text-muted leading-relaxed md:px-1">{s.desc}</p>
+            </div>
+          </div>
+        </li>
       ))}
-    </div>
+    </ol>
   </div>
 </section>

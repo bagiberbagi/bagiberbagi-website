@@ -1,37 +1,56 @@
 ---
 import Icon from './Icon.astro';
 import { PINTU } from '../consts';
+import { getProgramsByPintu } from '../lib/programs';
+
+// Status pintu diturunkan dari data program (single-source): sebuah pintu
+// "sudah jalan" bila punya ≥1 program aktif. Kini hanya Makanan (Jumat Berkah).
+const pintuStatus = await Promise.all(
+  PINTU.map(async (p) => ({
+    ...p,
+    active: (await getProgramsByPintu(p.id)).some((prog) => prog.active),
+  }))
+);
 ---
 
-<section id="pintu" class="section scroll-mt-24">
+<section id="pintu" class="section bg-gray-50 scroll-mt-24">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-      <div class="eyebrow">PINTU BERBAGI</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Lima Pintu Berbagi</h2>
+    <div class="max-w-2xl mb-10">
+      <div class="eyebrow">ARAH KAMI</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Berbagi Tak Berhenti di Makanan</h2>
       <p class="text-base leading-relaxed text-muted">
-        Lima jalan masuk untuk berbagi sumber daya bagi komunitas, sekolah, panti, sampai UMKM. Uang hanya satu di antaranya.
+        Jumat Berkah baru langkah pertama. Kami sedang membuka lima pintu untuk berbagi sumber daya — satu per satu, saat tim &amp; mitra siap.
       </p>
     </div>
 
-    <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      {PINTU.map((pintu) => (
+    {/* Lima kanal setara: ukuran seragam, bukan tangga. Warna identitas tiap
+        pintu; status ("Sudah jalan"/"Segera") ditandai badge, bukan ukuran. */}
+    <div class="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+      {pintuStatus.map((pintu) => (
         <a
           href={`/berbagi/${pintu.slug}/`}
           data-track="pintu_click"
           data-track-pintu={pintu.slug}
-          style={`--cat:${pintu.color};--cat-tint:${pintu.colorTint}`}
-          class="group h-full rounded-card border border-border bg-white p-6 flex flex-col transition-all hover:shadow-[0_20px_40px_-24px_rgba(15,23,42,0.22)] hover:border-[var(--cat)]"
+          style={`--cat:${pintu.color}`}
+          class="group relative overflow-hidden h-full min-h-[168px] rounded-card bg-white border border-border p-5 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
         >
-          <span class="w-12 h-12 rounded-xl flex items-center justify-center flex-none mb-5 bg-[var(--cat-tint)] text-[var(--cat)]">
-            <Icon name={pintu.icon} size={22} />
+          {/* Ikon watermark — glyph besar warna pintu, tembus dari pojok. Ini
+              pembawa identitas warna (bukan tint penuh), foreground tetap netral. */}
+          <span aria-hidden="true" class="pointer-events-none absolute -right-5 -bottom-7 text-[var(--cat)] opacity-[0.13] transition-opacity duration-300 group-hover:opacity-25">
+            <Icon name={pintu.icon} size={150} color="currentColor" />
           </span>
-          <h3 class="text-title-sm font-bold mb-1 group-hover:text-[var(--cat)] transition-colors">{pintu.label}</h3>
-          <div class="eyebrow text-muted mb-3">{pintu.english}</div>
-          <p class="text-sm text-muted leading-relaxed">{pintu.tagline}</p>
-          <span class="mt-4 text-eyebrow font-bold text-[var(--cat)] inline-flex items-center gap-1 group-hover:gap-1.5 transition-all">
-            Jelajahi
-            <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-          </span>
+
+          <h3 class="relative text-title-sm font-bold leading-tight">{pintu.label}</h3>
+          <div class="relative text-eyebrow text-muted mb-4">{pintu.english}</div>
+          {pintu.active ? (
+            <span class="relative mt-auto inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-[#12833F]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>Sudah jalan
+            </span>
+          ) : (
+            <span class="relative mt-auto inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
+              <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
+            </span>
+          )}
         </a>
       ))}
     </div>

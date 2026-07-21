@@ -7,8 +7,10 @@ export default {
         brand: {
           yellow: '#FFD900',
           blue: '#1D46B9',
-          orange: '#C25400',
-          orangeDark: '#A54700',
+          // Satu-satunya brand orange. Nilai vivid ini juga dipakai pintu
+          // Makanan (consts PINTU.food) & ikon FEATURES — jaga tetap sama.
+          orange: '#F4791D',
+          orangeDark: '#C25D0F',
           orangeTint: '#FDEEE1',
           blueTint: '#E3EAFB',
         },
@@ -42,6 +44,16 @@ export default {
       },
       borderRadius: {
         card: '20px',
+      },
+      // Skala shadow terpusat — hindari nilai arbitrary yang sedikit-beda di
+      // tiap komponen. card=permukaan besar, cardSoft=lebih lembut,
+      // cardSm=kartu kecil/hover, menu=panel mega-menu, pill=badge gelap.
+      boxShadow: {
+        card: '0 20px 40px -24px rgba(15,23,42,0.22)',
+        cardSoft: '0 20px 40px -24px rgba(15,23,42,0.18)',
+        cardSm: '0 12px 24px -16px rgba(15,23,42,0.25)',
+        menu: '0 24px 48px -24px rgba(15,23,42,0.22)',
+        pill: '0 8px 20px -8px rgba(15,23,42,0.5)',
       },
       screens: {
         nav: '860px',

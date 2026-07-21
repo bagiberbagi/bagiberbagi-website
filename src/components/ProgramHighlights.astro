@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { getProgramsByPintu } from '../lib/programs';
-import programPromoImage from '../assets/images/program-promo.png';
+import programPromoImage from '../assets/images/jumat-berkah-distribusi.png';
 
 // Featured + rail: program aktif tampil menonjol (pendorong donasi), program
 // food yang belum jalan diturunkan jadi chip "Segera" redup tanpa CTA — memberi
@@ -12,10 +12,10 @@ const active = food.filter((p) => p.active);
 const upcoming = food.filter((p) => !p.active);
 ---
 
-<section class="section">
+<section id="program" class="section scroll-mt-24">
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-xl mx-auto mb-10">
-      <div class="eyebrow">PROGRAM</div>
+      <div class="eyebrow">PROGRAM AKTIF</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
     </div>
 
@@ -24,7 +24,7 @@ const upcoming = food.filter((p) => !p.active);
         {active.map((p) => (
           <div class="relative overflow-hidden rounded-card min-h-[320px] flex flex-col justify-end p-8 md:p-10 text-white" data-fade="1">
             <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-10% via-brand-blue/85 via-55% to-brand-blue/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
             <div class="relative">
               <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
               <p class="text-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
@@ -37,15 +37,14 @@ const upcoming = food.filter((p) => !p.active);
       </div>
 
       {upcoming.length > 0 && (
-        <div class="mt-9">
-          <div class="text-center eyebrow text-muted mb-4">Segera Menyusul</div>
-          <div class="grid gap-4 grid-cols-1 sm:grid-cols-3">
+        <div class="mt-9 text-center">
+          <div class="eyebrow text-muted mb-3">Segera Menyusul</div>
+          <div class="flex flex-wrap justify-center gap-2.5">
             {upcoming.map((p) => (
-              <div class="rounded-2xl border border-border bg-gray-50 p-5">
-                <div class="text-sm font-bold text-ink/55">{p.label}</div>
-                <p class="text-xs text-muted leading-relaxed mt-1">{p.summary}</p>
-                <span class="badge-coming-soon mt-3 inline-block">Segera</span>
-              </div>
+              <span class="inline-flex items-center gap-2 rounded-full border border-border bg-gray-50 pl-4 pr-2.5 py-2 text-sm font-semibold text-ink/70">
+                {p.label}
+                <span class="text-micro font-bold uppercase tracking-wide text-muted bg-gray-100 rounded-full px-2 py-0.5">Segera</span>
+              </span>
             ))}
           </div>
         </div>

@@ -1,55 +1,107 @@
 ---
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { PINTU } from '../consts';
+import { buildWaLink } from '../lib/format';
+import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 const footer = await getEntry('footer', 'footer');
 if (!footer) throw new Error('footer/footer entry not found');
-const footerCols = footer.data.columns;
+
+// Kolom "Program" dari CMS digantikan kolom Pintu Berbagi yang dirender dinamis
+// dari PINTU (single-source) — sisanya (Kemitraan/Perusahaan/Legal) tetap CMS.
+const linkCols = footer.data.columns.filter((c) => !/program/i.test(c.title));
 
 const igLink = `https://instagram.com/${site.data.socials.instagram}`;
 const tiktokLink = `https://tiktok.com/@${site.data.socials.tiktok}`;
 const emailLink = `mailto:${site.data.socials.email}`;
+const waLink = buildWaLink(site.data.waNumber);
 const year = new Date().getFullYear();
+const socialBtn = 'w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted transition-colors hover:bg-brand-blueTint hover:text-brand-blue';
 ---
 
-<footer class="bg-gray-50 border-t border-border px-5 md:px-10 pt-10 md:pt-16 pb-7">
+<footer class="bg-gray-100">
+  {/* Aksen tipis brand di puncak footer — jangkar warna hangat sekaligus pengganti garis atas polos. */}
+  <div aria-hidden="true" class="h-1 bg-gradient-to-r from-brand-orange to-brand-yellow"></div>
+  {/* px di luar, max-w-7xl di dalam — samakan pola section agar tepi konten
+      footer sejajar (bukan ter-inset px-nya di dalam max-w). */}
+  <div class="px-5 md:px-10">
   <div class="max-w-7xl mx-auto">
-    <div class="flex flex-wrap gap-10 mb-10">
-      <div class="flex-1 basis-[260px] min-w-[220px]">
-        <div class="flex gap-2.5 mb-3.5">
-          <a href={igLink} target="_blank" rel="noopener" data-track="outbound_social" data-track-network="instagram" aria-label="Instagram bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+    {/* CTA band — menyatu warna footer, dipisah separator (bukan strip gelap). */}
+    <div class="flex flex-wrap items-center justify-between gap-5 py-7 border-b border-black/10">
+      <div>
+        <h3 class="text-title font-extrabold tracking-tight">Siap berbagi hari ini?</h3>
+        <p class="text-body-sm text-muted mt-1">Satu paket makanan, dampaknya nyata sampai H+1.</p>
+      </div>
+      <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-source="footer" class="inline-flex items-center gap-2 rounded-full border-2 border-ink/15 px-6 py-3 text-body-sm font-bold text-ink whitespace-nowrap transition-colors hover:border-[#25D366] hover:text-[#128C4B]">
+        <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
+        <span class="tabular-nums">{site.data.waNumberDisplay}</span>
+      </a>
+    </div>
+
+    {/* Kolom-kolom */}
+    <div class="grid gap-x-6 gap-y-9 grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.7fr_1fr_1fr_1fr_1fr] pt-10 pb-7">
+      <div class="col-span-2 sm:col-span-3 lg:col-span-1">
+        <a href="/#top" class="inline-flex items-center mb-4">
+          <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto" />
+        </a>
+        <p class="text-body-sm text-muted leading-relaxed mb-4 max-w-[300px]">Gerakan donasi makanan yang transparan, dengan bukti sampai H+1.</p>
+        <div class="flex gap-2.5 mb-3">
+          <a href={igLink} target="_blank" rel="noopener" data-track="outbound_social" data-track-network="instagram" aria-label="Instagram bagiberbagi.id" class={socialBtn}>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
           </a>
-          <a href={tiktokLink} target="_blank" rel="noopener" data-track="outbound_social" data-track-network="tiktok" aria-label="TikTok bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+          <a href={tiktokLink} target="_blank" rel="noopener" data-track="outbound_social" data-track-network="tiktok" aria-label="TikTok bagiberbagi.id" class={socialBtn}>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11a3.2 3.2 0 1 1-3.2-3.2"></path><path d="M14 3a5 5 0 0 0 5 5"></path></svg>
           </a>
-          <a href={emailLink} data-track="contact_email" aria-label="Email bagiberbagi.id" class="w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted">
+          <a href={emailLink} data-track="contact_email" aria-label="Email bagiberbagi.id" class={socialBtn}>
             <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
           </a>
+          <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-source="footer" aria-label="WhatsApp bagiberbagi.id" class={socialBtn}>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
+          </a>
         </div>
-        <p class="text-sm text-muted leading-relaxed mb-4 max-w-[320px]">© {year} bagiberbagi.id. Platform Donasi &amp; Sosial yang menghubungkan kebaikan, komunitas, dan dampak sosial untuk Indonesia.</p>
-        <a href="/#donasi" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-blue mb-4">
-          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
-          {site.data.waNumberDisplay}
-        </a>
       </div>
 
-      {footerCols.map((col) => (
-        <div class="flex-1 basis-[140px] min-w-[140px]">
+      {/* Pintu Berbagi — menggantikan kolom Program (dinamis dari PINTU). */}
+      <div>
+        <div class="font-bold text-body mb-3.5">Pintu Berbagi</div>
+        <div class="flex flex-col -my-0.5">
+          {PINTU.map((p) => (
+            <a href={`/berbagi/${p.slug}/`} class="text-body-sm text-muted py-1.5 hover:text-brand-blue transition-colors">{p.label}</a>
+          ))}
+        </div>
+      </div>
+
+      {linkCols.map((col) => (
+        <div>
           <div class="font-bold text-body mb-3.5">{col.title}</div>
           <div class="flex flex-col -my-0.5">
             {col.links.map((l) => (
-              <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-sm text-muted py-1.5 hover:text-brand-blue transition-colors">{l.label}</a>
+              <a href={l.href} target={l.target ?? '_self'} rel="noopener" class="text-body-sm text-muted py-1.5 hover:text-brand-blue transition-colors">{l.label}</a>
             ))}
           </div>
         </div>
       ))}
     </div>
 
-    <div class="border-t border-border pt-6 text-center">
-      <p class="text-eyebrow text-muted">Dibuat dengan kasih sayang untuk Indonesia</p>
-      <p class="text-xs text-muted mt-1">Soft Launch — bagiberbagi.id</p>
+    {/* Bottom bar — kontak WhatsApp ditaruh di strip utilitas ini. */}
+    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-2 pb-6">
+      <p class="text-body-sm text-muted">© {year} bagiberbagi.id. Dibuat dengan kasih untuk Indonesia.</p>
+      <a href="#top" class="inline-flex items-center gap-1.5 text-body-sm font-semibold text-muted hover:text-brand-blue transition-colors">
+        Kembali ke atas
+        <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"></path></svg>
+      </a>
     </div>
+
+    {/* Blok SEO — teks padat kata kunci untuk mesin pencari. Sengaja paling bawah,
+        kecil, dan redup: ini bukan konten utama untuk dibaca pengguna. */}
+    <div class="pt-5 pb-9 border-t border-black/10">
+      <p class="text-micro leading-relaxed text-muted/65 max-w-6xl">
+        <strong class="font-semibold text-muted/80">Tentang bagiberbagi.id.</strong> bagiberbagi.id adalah platform donasi makanan dan gerakan sosial di Indonesia yang menyalurkan paket makanan bergizi dari dapur UMKM lokal ke panti asuhan, keluarga prasejahtera, dan warga yang membutuhkan, lengkap dengan bukti foto dan video maksimal H+1. Berawal dari program Jumat Berkah dan Ramadhan Berkah, kami membuka lima pintu berbagi: berbagi makanan, berbagi barang, berbagi waktu, berbagi ruang, dan berbagi dana. Donatur, relawan, mitra dapur UMKM, komunitas, hingga perusahaan yang menjalankan program CSR dapat ikut bergerak bersama. Mulai berdonasi, bersedekah, dan berbagi rezeki secara online dengan cara yang mudah, aman, dan transparan bersama komunitas bagiberbagi.id, menjangkau lebih banyak kota di seluruh Indonesia.
+      </p>
+    </div>
+  </div>
   </div>
 </footer>

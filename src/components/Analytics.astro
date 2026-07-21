@@ -121,6 +121,18 @@ const needsConsentMode = analytics.ga4.active || analytics.gtm.active;
 }
 
 {
+  /* Umami — analitik ringan cookieless, tanpa consent. */
+  analytics.umami.active && (
+    <script
+      is:inline
+      async
+      src={`${analytics.umami.host}/script.js`}
+      data-website-id={analytics.umami.websiteId}
+    />
+  )
+}
+
+{
   /* GA4 — Consent Mode menahan cookie/hit sampai consent granted. */
   analytics.ga4.active && (
     <script is:inline define:vars={{ gaId: analytics.ga4.measurementId }}>
@@ -215,6 +227,9 @@ const needsConsentMode = analytics.ga4.active || analytics.gtm.active;
         function track(name, props) {
           try {
             if (window.posthog && window.posthog.capture) window.posthog.capture(name, props);
+          } catch (e) {}
+          try {
+            if (window.umami && window.umami.track) window.umami.track(name, props);
           } catch (e) {}
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push(Object.assign({ event: name }, props));

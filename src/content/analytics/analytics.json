@@ -1,5 +1,6 @@
 {
   "posthog": { "enabled": false, "host": "", "projectKey": "" },
+  "umami": { "enabled": false, "host": "", "websiteId": "" },
   "ga4": { "enabled": false, "measurementId": "" },
   "metaPixel": { "enabled": false, "pixelId": "" },
   "clarity": { "enabled": false, "projectId": "" },

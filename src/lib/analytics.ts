@@ -11,6 +11,7 @@ import { getEntry } from 'astro:content';
 
 export interface ResolvedAnalytics {
   posthog: { active: boolean; host: string; projectKey: string };
+  umami: { active: boolean; host: string; websiteId: string };
   ga4: { active: boolean; measurementId: string };
   metaPixel: { active: boolean; pixelId: string };
   clarity: { active: boolean; projectId: string };
@@ -35,6 +36,11 @@ export async function getAnalytics(): Promise<ResolvedAnalytics> {
     host: c?.posthog.host || 'https://us.i.posthog.com',
     projectKey: c?.posthog.projectKey || '',
   };
+  const umami = {
+    active: !!c?.umami.enabled && !!c?.umami.websiteId,
+    host: (c?.umami.host || '').replace(/\/$/, ''),
+    websiteId: c?.umami.websiteId || '',
+  };
   const ga4 = {
     active: !!c?.ga4.enabled && !!c?.ga4.measurementId,
     measurementId: c?.ga4.measurementId || '',
@@ -54,7 +60,7 @@ export async function getAnalytics(): Promise<ResolvedAnalytics> {
 
   const consentBanner = c?.consentBanner ?? true;
   const anyCookieProvider = ga4.active || metaPixel.active || clarity.active || gtm.active;
-  const anyProvider = anyCookieProvider || posthog.active;
+  const anyProvider = anyCookieProvider || posthog.active || umami.active;
   const misconfigured = anyCookieProvider && !consentBanner;
 
   if (misconfigured) {
@@ -67,6 +73,7 @@ export async function getAnalytics(): Promise<ResolvedAnalytics> {
 
   return {
     posthog,
+    umami,
     ga4,
     metaPixel,
     clarity,

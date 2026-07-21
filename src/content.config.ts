@@ -167,6 +167,13 @@ const analytics = defineCollection({
         projectKey: z.string().default(''),
       })
       .default({ enabled: false, host: '', projectKey: '' }),
+    umami: z
+      .object({
+        enabled: z.boolean().default(false),
+        host: z.string().default(''),
+        websiteId: z.string().default(''),
+      })
+      .default({ enabled: false, host: '', websiteId: '' }),
     ga4: z
       .object({ enabled: z.boolean().default(false), measurementId: z.string().default('') })
       .default({ enabled: false, measurementId: '' }),

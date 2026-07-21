@@ -79,7 +79,8 @@ Gunakan mode kedua untuk perubahan yang berisiko: judul & deskripsi SEO, harga/a
 Panel **Analytics** di `/keystatic` adalah switchboard: tiap alat punya **centang + field ID**. Alat baru muncul di situs hanya kalau **dicentang DAN ID-nya diisi**; semua mati = situs tanpa skrip apa pun. Nyalakan → Save → live ± 2 menit (rebuild).
 
 - **ID = kode publik**, bukan rahasia — memang tampil di HTML. Tempel apa adanya dari dashboard masing-masing.
-- **PostHog** (cookieless): jalan tanpa banner izin, lihat semua pengunjung. Alat baseline yang disarankan.
+- **PostHog** (cookieless): jalan tanpa banner izin, lihat semua pengunjung. Baseline yang disarankan (funnel + session replay).
+- **Umami** (cookieless): alternatif lebih ringan dari PostHog, sama-sama tanpa banner. Pilih salah satu sebagai insight privat — tak perlu dua-duanya.
 - **GA4 / Meta Pixel / GTM / Clarity** (cookie): butuh **consent** — otomatis memunculkan banner "Terima/Tolak"; baru aktif setelah pengunjung menekan Terima. Biarkan "Tampilkan consent banner" menyala.
 - **Kalau pakai GTM**, kelola GA4/Pixel di dalam GTM — jangan dicentang juga di sini (nanti dobel-hitung).
 - **Batasan penting:** donasi selesai di WhatsApp (di luar situs), jadi yang terlacak cuma **klik "Donasi"** (niat), bukan donasi yang benar-benar cair. Iklan mengoptimasi ke klik, bukan konversi asli.

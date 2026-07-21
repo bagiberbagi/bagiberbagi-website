@@ -282,6 +282,20 @@ export default config({
           },
           { label: 'PostHog — insight privat (cookieless, tanpa consent)' }
         ),
+        umami: fields.object(
+          {
+            enabled: fields.checkbox({ label: 'Aktifkan Umami' }),
+            host: fields.text({
+              label: 'Host',
+              description: 'Contoh: https://cloud.umami.is atau URL instans Umami-mu.',
+            }),
+            websiteId: fields.text({
+              label: 'Website ID',
+              description: 'UUID dari dashboard Umami. Kode publik.',
+            }),
+          },
+          { label: 'Umami — analitik ringan (cookieless, tanpa consent)' }
+        ),
         ga4: fields.object(
           {
             enabled: fields.checkbox({ label: 'Aktifkan Google Analytics 4' }),

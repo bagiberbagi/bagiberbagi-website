@@ -2,6 +2,42 @@
 
 bagiberbagi.id is an Astro `output: 'static'` site (no adapter, no backend), content-managed through Keystatic Cloud, deployed to a VPS via GitHub Actions with Cloudflare in front. It deliberately ships ~0 KB of framework JS on the public side. Donations happen off-site: every "Donasi" CTA is a `wa.me` link that hands the visitor to WhatsApp. There is currently no analytics of any kind. The team is starting paid Meta/Google ads and needs to measure donation intent, understand program interest, and share readable reports — without breaking the static/privacy-conscious architecture, and with a non-technical operator able to turn providers on and off.
 
+## Architecture at a glance
+
+```mermaid
+flowchart TD
+  subgraph cfg["Keystatic · analytics singleton (editor toggles)"]
+    TG["checkbox + ID tiap provider"]
+  end
+  TG -->|build-time| BL["BaseLayout · inject skrip HANYA jika ON + ID terisi"]
+
+  subgraph run["Runtime di browser"]
+    V["Pengunjung: klik Donasi WA / program / kontak"] --> HK["data-track hooks di markup"]
+    HK --> EV["analytics.js · event layer 1-file (vanilla)"]
+    EV -->|cookieless, tanpa consent| PH["PostHog (Lapis A)"]
+    EV -->|"window.dataLayer.push"| DL[("dataLayer")]
+    DL --> GTM["GTM"]
+    GTM --> GA4["GA4"]
+    GTM --> PX["Meta Pixel"]
+    CB["Consent banner · Consent Mode v2"] -. "default: denied" .-> GTM
+    CB -. "accept: granted" .-> GA4
+    CB -. "accept: granted" .-> PX
+  end
+
+  BL -.render.-> PH
+  BL -.render.-> CB
+  BL -.render.-> GTM
+  PH --> PHD["Dashboard PostHog: funnel / session replay"]
+  GA4 --> LKR["Looker Studio report (share/export)"]
+
+  classDef cookieless fill:#E3EAFB,stroke:#1D46B9,color:#0f172a;
+  classDef cookie fill:#FDEEE1,stroke:#F4791D,color:#0f172a;
+  class PH,PHD cookieless;
+  class GA4,PX,GTM cookie;
+```
+
+Biru = jalur cookieless tanpa consent (PostHog); oranye = jalur cookie yang di-gate consent (GTM/GA4/Pixel). Semua provider dinyalakan/dimatikan dari satu switchboard Keystatic; event didefinisikan sekali di `analytics.js` lalu di-fan-out ke provider yang aktif. Konversi utama (klik Donasi WA) = `intent`, bukan donasi cair.
+
 ## Goals / Non-Goals
 
 **Goals:**

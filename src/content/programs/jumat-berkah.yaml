@@ -1,8 +1,8 @@
 label: Jumat Berkah
-category: makanan
+pillar: food
 order: 1
 active: true
-summary: Berbagi paket makanan setiap Jumat bagi masyarakat yang membutuhkan secara langsung.
+summary: Paket makanan bergizi setiap Jumat untuk yang membutuhkan.
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

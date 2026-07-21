@@ -1,31 +1,37 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { NAV_LINKS, PROGRAM_CATEGORIES } from '../consts';
+import { NAV_LINKS, PROGRAM_CATEGORIES, PROGRAM_CATEGORIES_LABEL } from '../consts';
 import type { ProgramMenuCategoryData } from '../consts';
-import { getProgramsByCategory } from '../lib/programs';
+import { getProgramsByPillar } from '../lib/programs';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
-import programPromoImage from '../assets/images/program-promo.png';
 import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
-// Mega-menu dirakit dari collection `programs`: kategori (label+ikon)
-// presentasional, isinya program aktual dari CMS.
+// Mega-menu = lima kategori program (Impact dikecualikan, ia lapisan hasil
+// bukan channel donasi). Ditampilkan sebagai satu baris horizontal di bawah
+// label "Pintu Berbagi". Kategori ber-program menampilkan daftar programnya;
+// yang belum jalan menampilkan tagline-nya (lihat ProgramMenuCategory).
 const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PROGRAM_CATEGORIES.map(async (cat) => ({
     label: cat.label,
     icon: cat.icon,
-    items: (await getProgramsByCategory(cat.id)).map((p) => ({
-      label: p.label,
-      desc: p.summary,
-      active: p.active,
-      href: p.href,
-    })),
+    href: '/#program',
+    tagline: cat.tagline,
+    // Aktif dulu, lalu yang belum jalan — keduanya tetap urut `order`
+    // (sort stabil di atas hasil getProgramsByPillar yang sudah ter-order).
+    items: (await getProgramsByPillar(cat.id))
+      .map((p) => ({
+        label: p.label,
+        desc: p.summary,
+        active: p.active,
+        href: p.href,
+      }))
+      .sort((a, b) => Number(b.active) - Number(a.active)),
   }))
 );
-const [makananMenu, bantuanMenu, pendidikanMenu] = PROGRAM_MENU;
 
 // Active-nav: tandai current-page berdasar route (SSR, per-halaman statis).
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -60,18 +66,13 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <div
               id="program-panel"
               data-program-panel
-              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[920px] bg-white rounded-card shadow-[0_24px_48px_-24px_rgba(15,23,42,0.22)] border border-border p-6 grid grid-cols-[1fr_1fr_1fr_240px] gap-6 z-50"
+              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-[0_24px_48px_-24px_rgba(15,23,42,0.22)] border border-border p-6 z-50"
             >
-              <ProgramMenuCategory category={makananMenu} />
-              <ProgramMenuCategory category={bantuanMenu} />
-              <ProgramMenuCategory category={pendidikanMenu} />
-              <div class="bg-gray-50 rounded-card overflow-hidden self-start">
-                <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={480} height={300} class="w-full h-28 object-cover" />
-                <div class="p-4">
-                  <div class="font-bold text-title-sm mb-1.5">Peduli Lewat Makanan</div>
-                  <p class="text-body-sm text-muted leading-relaxed mb-3.5">Setiap donasi makanan yang Anda berikan, kami salurkan langsung kepada mereka yang membutuhkan dengan transparan dan terdokumentasi.</p>
-                  <a href="/jumat-berkah/" class="btn-primary btn-sm text-center block">Lihat Program</a>
-                </div>
+              <div class="eyebrow text-brand-orange mb-1">{PROGRAM_CATEGORIES_LABEL}</div>
+              <div class="divide-y divide-border">
+                {PROGRAM_MENU.map((col) => (
+                  <ProgramMenuCategory category={col} />
+                ))}
               </div>
             </div>
           </div>
@@ -119,6 +120,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <svg aria-hidden="true" data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
           <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
+            <div class="eyebrow text-brand-orange">{PROGRAM_CATEGORIES_LABEL}</div>
             {PROGRAM_MENU.map((cat) => (
               <ProgramMenuCategory category={cat} iconSize={14} />
             ))}

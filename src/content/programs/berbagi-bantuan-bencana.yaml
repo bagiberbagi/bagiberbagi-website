@@ -1,8 +1,8 @@
 label: Berbagi Bantuan Bencana
-category: bantuan
+pillar: goods
 order: 2
 active: false
-summary: Memberikan bantuan darurat bagi korban bencana terdampak.
+summary: Bantuan darurat untuk korban bencana.
 detail:
   eyebrow: PROGRAM AKTIF
   description: ''

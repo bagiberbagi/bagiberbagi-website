@@ -61,28 +61,47 @@ export const NAV_LINKS = [
 ];
 
 // Data program kini tinggal di collection `programs` (Keystatic) — lihat
-// `src/lib/programs.ts`. Yang tersisa di sini murni presentasional: label &
-// ikon tiap kategori mega-menu, yang tidak dikelola editor.
-export type IconName = 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
+// `src/lib/programs.ts`. Yang tersisa di sini murni presentasional: label,
+// ikon, & status tiap pilar, yang tidak dikelola editor.
+export type IconName =
+  | 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box'
+  | 'time' | 'space' | 'money' | 'impact';
 
-export type ProgramCategoryId = 'makanan' | 'bantuan' | 'pendidikan';
+// Enam pilar "berbagi sumber daya" — kerangka besar situs, sumber daya yang
+// kami pegang dan salurkan. Sebuah program menempel pada satu pilar lewat
+// field `pillar`-nya (lihat programs.ts).
+export type PillarId = 'food' | 'goods' | 'time' | 'space' | 'money' | 'impact';
 
-export interface ProgramCategory {
-  id: ProgramCategoryId;
+export interface Pillar {
+  id: PillarId;
   label: string;
+  english: string;
   icon: IconName;
+  tagline: string;
 }
 
-export const PROGRAM_CATEGORIES: ProgramCategory[] = [
-  { id: 'makanan', label: '#bagiberbagimakanan', icon: 'food' },
-  { id: 'bantuan', label: '#bagiberbagibantuan', icon: 'box' },
-  { id: 'pendidikan', label: '#bagiberbagipendidikan', icon: 'walk' },
+export const PILLARS: Pillar[] = [
+  { id: 'food', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.' },
+  { id: 'goods', label: 'Berbagi Barang', english: 'Goods Sharing', icon: 'box', tagline: 'Pakaian, buku, dan perlengkapan layak pakai berpindah ke yang memerlukan.' },
+  { id: 'time', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.' },
+  { id: 'space', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.' },
+  { id: 'money', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.' },
+  { id: 'impact', label: 'Dampak Terukur', english: 'Impact Sharing', icon: 'impact', tagline: 'Setiap kontribusi terukur, dari porsi tersalurkan sampai keluarga terbantu.' },
 ];
 
+// Kategori program yang tampil di mega-menu. Impact dikecualikan — ia lapisan
+// hasil/ukuran, bukan channel resource yang menampung program. Secara teknis
+// disebut "kategori program"; label yang ditampilkan ke pengunjung di bawah.
+export const PROGRAM_CATEGORIES = PILLARS.filter((p) => p.id !== 'impact');
+export const PROGRAM_CATEGORIES_LABEL = 'Pintu Berbagi';
+
 // Bentuk data yang dikonsumsi ProgramMenuCategory.astro — dirakit di Header
-// dari PROGRAM_CATEGORIES + collection.
+// dari PILLARS (yang punya program) + collection.
 export interface ProgramMenuCategoryData {
   label: string;
   icon: IconName;
+  // Tujuan klik kategori. Sementara ke #program (halaman kategori khusus belum ada).
+  href: string;
+  tagline: string;
   items: { label: string; desc: string; active: boolean; href?: string }[];
 }

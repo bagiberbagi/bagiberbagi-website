@@ -1,8 +1,8 @@
 label: Berbagi Makanan Harian
-category: makanan
+pillar: food
 order: 3
 active: false
-summary: Menyediakan makanan bergizi setiap hari bagi masyarakat yang membutuhkan bantuan.
+summary: Makanan bergizi setiap hari untuk yang membutuhkan.
 detail:
   eyebrow: PROGRAM AKTIF
   description: ''

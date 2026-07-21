@@ -335,15 +335,17 @@ export default config({
       format: { data: 'yaml' },
       schema: {
         label: fields.slug({ name: { label: 'Nama Program' } }),
-        category: fields.select({
-          label: 'Kategori',
-          description: 'Menentukan kolom menu tempat program tampil.',
+        pillar: fields.select({
+          label: 'Pilar',
+          description: 'Pilar sumber daya tempat program ini bernaung.',
           options: [
-            { label: '#bagiberbagimakanan', value: 'makanan' },
-            { label: '#bagiberbagibantuan', value: 'bantuan' },
-            { label: '#bagiberbagipendidikan', value: 'pendidikan' },
+            { label: 'Berbagi Makanan (Food)', value: 'food' },
+            { label: 'Berbagi Barang (Goods)', value: 'goods' },
+            { label: 'Berbagi Waktu (Time)', value: 'time' },
+            { label: 'Berbagi Ruang (Space)', value: 'space' },
+            { label: 'Berbagi Dana (Money)', value: 'money' },
           ],
-          defaultValue: 'makanan',
+          defaultValue: 'food',
         }),
         order: fields.integer({
           label: 'Urutan',

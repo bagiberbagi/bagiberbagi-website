@@ -8,31 +8,55 @@ export interface Props {
 }
 
 const { category, iconSize = 16 } = Astro.props;
+
+// Maksimal 3 kartu per pintu; sisanya diakses lewat "Lihat semua".
+const MAX = 3;
+const shown = category.items.slice(0, MAX);
+const hasMore = category.items.length > MAX;
 ---
 
-<div>
-  <div class="flex items-center gap-2.5 mb-3 pb-2.5 border-b border-border">
-    <span class="w-7 h-7 rounded-lg bg-brand-blueTint text-brand-blue flex items-center justify-center flex-none">
+<div class="grid grid-cols-1 nav:grid-cols-[200px_1fr] gap-2.5 nav:gap-5 nav:items-center py-3">
+  <a href={category.href} class="group flex items-start gap-2.5 self-start nav:self-center">
+    <span class="w-8 h-8 rounded-lg bg-brand-blueTint text-brand-blue flex items-center justify-center flex-none">
       <Icon name={category.icon} size={iconSize} />
     </span>
-    <span class="text-brand-blue font-bold text-eyebrow">{category.label}</span>
-  </div>
-  <div class="flex flex-col gap-0.5">
-    {category.items.map((item) => (
+    <div>
+      <div class="font-bold text-sm text-ink group-hover:text-brand-blue transition-colors">{category.label}</div>
+      <div class="text-xs text-muted leading-snug mt-0.5">{category.tagline}</div>
+    </div>
+  </a>
+
+  <div class="flex flex-wrap gap-2 items-stretch">
+    {category.items.length === 0 && (
+      <span class="text-xs text-muted self-center">Segera dibuka</span>
+    )}
+
+    {shown.map((item) =>
       item.active && item.href ? (
-        <a href={item.href} class="group block rounded-lg px-2 py-2 hover:bg-gray-50 transition-colors">
-          <div class="text-sm font-bold text-ink group-hover:text-brand-blue transition-colors">{item.label}</div>
-          <p class="text-xs text-muted leading-relaxed mt-0.5">{item.desc}</p>
+        <a
+          href={item.href}
+          class="group basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-white p-2.5 transition-all hover:border-brand-orange/40 hover:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.25)]"
+        >
+          <div class="text-sm font-bold text-ink leading-snug group-hover:text-brand-blue transition-colors">{item.label}</div>
+          <p class="text-xs text-muted leading-snug mt-1">{item.desc}</p>
         </a>
       ) : (
-        <div class="px-2 py-2">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-sm font-bold text-ink/60">{item.label}</span>
-            <span class="badge-coming-soon">Segera Hadir</span>
-          </div>
-          <p class="text-xs text-muted leading-relaxed mt-0.5">{item.desc}</p>
+        <div class="basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-gray-50 p-2.5">
+          <div class="text-[10px] font-semibold uppercase tracking-wide text-muted/60">Segera</div>
+          <div class="text-sm font-bold text-ink/50 leading-snug">{item.label}</div>
+          <p class="text-xs text-muted leading-snug mt-1">{item.desc}</p>
         </div>
       )
-    ))}
+    )}
+
+    {hasMore && (
+      <a
+        href={category.href}
+        class="group self-stretch flex items-center gap-1 text-sm font-bold text-brand-orange px-2.5 whitespace-nowrap"
+      >
+        Lihat semua
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    )}
   </div>
 </div>

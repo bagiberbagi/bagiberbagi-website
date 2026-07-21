@@ -1,8 +1,8 @@
 label: Berbagi Sembako
-category: bantuan
+pillar: food
 order: 1
 active: false
-summary: Menyalurkan paket sembako bagi keluarga yang membutuhkan.
+summary: Paket sembako untuk keluarga yang membutuhkan.
 detail:
   eyebrow: PROGRAM AKTIF
   description: ''

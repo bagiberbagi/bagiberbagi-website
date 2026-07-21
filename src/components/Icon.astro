@@ -1,6 +1,6 @@
 ---
 export interface Props {
-  name: 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box';
+  name: 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box' | 'time' | 'space' | 'money' | 'impact';
   color?: string;
   size?: number;
 }
@@ -31,4 +31,16 @@ const { name, color = 'currentColor', size = 20 } = Astro.props;
 )}
 {name === 'box' && (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5Z"></path><path d="M3 8v8l9 5 9-5V8"></path><path d="M12 13v8"></path></svg>
+)}
+{name === 'time' && (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.5 2"></path></svg>
+)}
+{name === 'space' && (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M14 21V10h4a1 1 0 0 1 1 1v10"></path><path d="M8 9h2M8 13h2"></path></svg>
+)}
+{name === 'money' && (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"></circle><path d="M14.5 6.4a6 6 0 0 1 0 11.2"></path><path d="M9 9.5v5M7.5 11h3M7.5 13h3"></path></svg>
+)}
+{name === 'impact' && (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"></path><path d="M8 15l3-4 3 2 4-6"></path></svg>
 )}

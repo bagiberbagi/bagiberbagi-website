@@ -1,8 +1,8 @@
-label: Berbagi Buku & Alat Sekolah
-category: pendidikan
+label: Berbagi Buku
+pillar: goods
 order: 2
 active: false
-summary: Menyalurkan perlengkapan belajar untuk pelajar membutuhkan.
+summary: Buku dan perlengkapan belajar untuk pelajar.
 detail:
   eyebrow: PROGRAM AKTIF
   description: ''

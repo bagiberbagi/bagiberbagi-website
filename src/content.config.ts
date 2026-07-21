@@ -119,7 +119,10 @@ const programs = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/programs' }),
   schema: z.object({
     label: z.string(),
-    category: z.enum(['makanan', 'bantuan', 'pendidikan']).default('makanan'),
+    // Impact bukan channel program (lapisan hasil) — tak ada di enum ini.
+    pillar: z
+      .enum(['food', 'goods', 'time', 'space', 'money'])
+      .default('food'),
     order: z.number().default(0),
     active: z.boolean().default(false),
     summary: z.string(),

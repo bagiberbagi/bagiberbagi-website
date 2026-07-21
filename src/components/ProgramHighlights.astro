@@ -1,9 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import { getProgramsByCategory } from '../lib/programs';
+import { getProgramsByPillar } from '../lib/programs';
 import programPromoImage from '../assets/images/program-promo.png';
 
-const programs = await getProgramsByCategory('makanan');
+// Featured + rail: program aktif tampil menonjol (pendorong donasi), program
+// food yang belum jalan diturunkan jadi chip "Segera" redup tanpa CTA — memberi
+// keluasan & memperlihatkan roadmap tanpa bersaing dengan tombol utama. Teaser
+// lintas pilar lain tetap di mega-menu (Header).
+const food = await getProgramsByPillar('food');
+const active = food.filter((p) => p.active);
+const upcoming = food.filter((p) => !p.active);
 ---
 
 <section class="section">
@@ -13,24 +19,41 @@ const programs = await getProgramsByCategory('makanan');
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
     </div>
 
-    <div class="flex flex-wrap gap-7 items-stretch">
-      {programs.map((p) => (
-        <div class="flex-1 basis-[320px] min-w-[260px] relative overflow-hidden rounded-card min-h-[280px] flex flex-col justify-end p-8 text-white" data-fade="1">
-          {p.href && (
-            <Image src={programPromoImage} alt="" width={480} height={300} class="absolute inset-0 w-full h-full object-cover" />
-          )}
-          <div class="absolute inset-0 bg-brand-blue/85"></div>
-          <div class="relative">
-            <h3 class="text-xl font-extrabold mb-2.5">{p.label}</h3>
-            <p class="text-sm leading-relaxed text-white/85 mb-6">{p.summary}</p>
-            {p.href ? (
-              <a href={p.href} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
-            ) : (
-              <span class="badge-coming-soon bg-white/15 text-white">Segera Hadir</span>
-            )}
+    <div class="max-w-4xl mx-auto">
+      <div class="flex flex-col gap-5">
+        {active.map((p) => (
+          <div class="relative overflow-hidden rounded-card min-h-[320px] flex flex-col justify-end p-8 md:p-10 text-white" data-fade="1">
+            <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-10% via-brand-blue/85 via-55% to-brand-blue/30"></div>
+            <div class="relative">
+              <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
+              <p class="text-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
+              {p.href && (
+                <a href={p.href} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {upcoming.length > 0 && (
+        <div class="mt-9">
+          <div class="text-center eyebrow text-muted mb-4">Segera Menyusul</div>
+          <div class="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            {upcoming.map((p) => (
+              <div class="rounded-2xl border border-border bg-gray-50 p-5">
+                <div class="text-sm font-bold text-ink/55">{p.label}</div>
+                <p class="text-xs text-muted leading-relaxed mt-1">{p.summary}</p>
+                <span class="badge-coming-soon mt-3 inline-block">Segera</span>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
+      )}
+
+      <p class="text-center text-sm text-muted mt-8">
+        Jelajahi seluruh rencana lewat menu <span class="font-semibold text-ink">Program</span> di navigasi.
+      </p>
     </div>
   </div>
 </section>

@@ -1,8 +1,8 @@
 label: Berbagi Beasiswa
-category: pendidikan
+pillar: money
 order: 1
 active: false
-summary: Membantu pendidikan melalui dukungan biaya belajar.
+summary: Dukungan biaya belajar bagi yang membutuhkan.
 detail:
   eyebrow: PROGRAM AKTIF
   description: ''

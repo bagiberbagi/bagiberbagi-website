@@ -18,7 +18,9 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PROGRAM_CATEGORIES.map(async (cat) => ({
     label: cat.label,
     icon: cat.icon,
-    href: '/#program',
+    href: `/berbagi/${cat.slug}/`,
+    color: cat.color,
+    colorTint: cat.colorTint,
     tagline: cat.tagline,
     // Aktif dulu, lalu yang belum jalan — keduanya tetap urut `order`
     // (sort stabil di atas hasil getProgramsByPillar yang sudah ter-order).

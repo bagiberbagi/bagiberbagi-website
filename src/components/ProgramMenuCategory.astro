@@ -15,13 +15,13 @@ const shown = category.items.slice(0, MAX);
 const hasMore = category.items.length > MAX;
 ---
 
-<div class="grid grid-cols-1 nav:grid-cols-[200px_1fr] gap-2.5 nav:gap-5 nav:items-center py-3">
+<div class="grid grid-cols-1 nav:grid-cols-[200px_1fr] gap-2.5 nav:gap-5 nav:items-center py-3" style={`--cat:${category.color};--cat-tint:${category.colorTint}`}>
   <a href={category.href} class="group flex items-start gap-2.5 self-start nav:self-center">
-    <span class="w-8 h-8 rounded-lg bg-brand-blueTint text-brand-blue flex items-center justify-center flex-none">
+    <span class="w-8 h-8 rounded-lg bg-[var(--cat-tint)] text-[var(--cat)] flex items-center justify-center flex-none">
       <Icon name={category.icon} size={iconSize} />
     </span>
     <div>
-      <div class="font-bold text-sm text-ink group-hover:text-brand-blue transition-colors">{category.label}</div>
+      <div class="font-bold text-sm text-ink group-hover:text-[var(--cat)] transition-colors">{category.label}</div>
       <div class="text-xs text-muted leading-snug mt-0.5">{category.tagline}</div>
     </div>
   </a>
@@ -35,9 +35,9 @@ const hasMore = category.items.length > MAX;
       item.active && item.href ? (
         <a
           href={item.href}
-          class="group basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-white p-2.5 transition-all hover:border-brand-orange/40 hover:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.25)]"
+          class="group basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-white p-2.5 transition-all hover:border-[var(--cat)] hover:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.25)]"
         >
-          <div class="text-sm font-bold text-ink leading-snug group-hover:text-brand-blue transition-colors">{item.label}</div>
+          <div class="text-sm font-bold text-ink leading-snug group-hover:text-[var(--cat)] transition-colors">{item.label}</div>
           <p class="text-xs text-muted leading-snug mt-1">{item.desc}</p>
         </a>
       ) : (
@@ -52,7 +52,7 @@ const hasMore = category.items.length > MAX;
     {hasMore && (
       <a
         href={category.href}
-        class="group self-stretch flex items-center gap-1 text-sm font-bold text-brand-orange px-2.5 whitespace-nowrap"
+        class="group self-stretch flex items-center gap-1 text-sm font-bold text-[var(--cat)] px-2.5 whitespace-nowrap"
       >
         Lihat semua
         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>

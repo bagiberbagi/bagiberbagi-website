@@ -58,6 +58,7 @@ Writer tidak pernah menyentuh repo. Developer tidak perlu akses tulis ke konten 
 | Isi halaman Tentang Kami | **Halaman Tentang Kami** |
 | Nomor WhatsApp, sosial media, angka statistik | **Site Settings** |
 | Program (kartu beranda, mega-menu, kalkulator, halaman detail) | **Program** — satu sumber untuk semua |
+| Alat ukur / analytics (PostHog, GA4, Meta Pixel, dll) | **Analytics** — centang + isi ID |
 
 Field SEO di halaman legal dan Tentang Kami **boleh dikosongkan** — artinya halaman memakai judul dan paragraf pembukanya sendiri. Isi hanya kalau teks di Google perlu berbeda dari teks di halaman.
 
@@ -72,6 +73,18 @@ Ada dua mode kerja, pilih sesuai kebutuhan:
 **Lewat review** — di `/keystatic`, pakai pemilih branch (kiri atas) untuk pindah/membuat branch, misalnya `content/faq-oktober`. Semua perubahan masuk ke branch itu, produksi tidak tersentuh. Setelah siap, buka Pull Request di GitHub untuk ditinjau, lalu merge. Merge itulah yang menerbitkan.
 
 Gunakan mode kedua untuk perubahan yang berisiko: judul & deskripsi SEO, harga/angka, teks legal, atau apa pun yang ditulis banyak orang sekaligus.
+
+### Analytics & alat ukur
+
+Panel **Analytics** di `/keystatic` adalah switchboard: tiap alat punya **centang + field ID**. Alat baru muncul di situs hanya kalau **dicentang DAN ID-nya diisi**; semua mati = situs tanpa skrip apa pun. Nyalakan → Save → live ± 2 menit (rebuild).
+
+- **ID = kode publik**, bukan rahasia — memang tampil di HTML. Tempel apa adanya dari dashboard masing-masing.
+- **PostHog** (cookieless): jalan tanpa banner izin, lihat semua pengunjung. Alat baseline yang disarankan.
+- **GA4 / Meta Pixel / GTM / Clarity** (cookie): butuh **consent** — otomatis memunculkan banner "Terima/Tolak"; baru aktif setelah pengunjung menekan Terima. Biarkan "Tampilkan consent banner" menyala.
+- **Kalau pakai GTM**, kelola GA4/Pixel di dalam GTM — jangan dicentang juga di sini (nanti dobel-hitung).
+- **Batasan penting:** donasi selesai di WhatsApp (di luar situs), jadi yang terlacak cuma **klik "Donasi"** (niat), bukan donasi yang benar-benar cair. Iklan mengoptimasi ke klik, bukan konversi asli.
+
+Setup akun (Looker Studio untuk laporan, UptimeRobot untuk pantau uptime) di luar repo — dilakukan sekali di dashboard masing-masing.
 
 ### Drafting
 

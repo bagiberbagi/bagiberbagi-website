@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { collection, config, fields, singleton } from '@keystatic/core';
 
 /**
@@ -64,7 +65,18 @@ export default config({
     project: 'bagiberbagi/bagiberbagi-website',
   },
   ui: {
-    brand: { name: 'bagiberbagi.id' },
+    brand: {
+      name: 'bagiberbagi.id',
+      // Logo memakai favicon PNG yang sudah ada; alt kosong karena nama teks
+      // sudah dirender di sebelahnya (hindari duplikat bagi pembaca layar).
+      mark: () =>
+        createElement('img', {
+          src: '/favicon/favicon-32x32.png',
+          alt: '',
+          width: 24,
+          height: 24,
+        }),
+    },
     // Kelompokkan sidebar agar tidak menumpuk datar. Kunci di sini harus sama
     // persis dengan kunci singleton/collection di bawah.
     navigation: {
@@ -82,16 +94,16 @@ export default config({
     // rename atau hapus justru mematahkan route yang sudah ada.
     // Ini juga satu-satunya konten dengan body prose, jadi satu-satunya yang
     // pakai contentField; Keystatic hanya mendukung ekstensi .mdoc untuk itu.
-    privacy: legalPage('privacy', 'Legal — Kebijakan Privasi'),
-    terms: legalPage('terms', 'Legal — Syarat & Ketentuan'),
-    transparency: legalPage('transparency', 'Legal — Transparansi'),
+    privacy: legalPage('privacy', 'Kebijakan Privasi'),
+    terms: legalPage('terms', 'Syarat & Ketentuan'),
+    transparency: legalPage('transparency', 'Transparansi'),
 
     // SEO dipisah dari Site Settings: yang satu identitas & kontak, yang satu
     // teks yang muncul di hasil pencarian dan share preview. Dibaca dua tempat
     // sekaligus — BaseLayout (meta + JSON-LD) dan generator OG image — jadi
     // judul yang diedit di sini ikut terpakai di gambar share-nya.
     seo: singleton({
-      label: 'SEO',
+      label: 'SEO & Share Preview',
       path: 'src/content/seo/seo',
       format: 'json',
       schema: {
@@ -225,7 +237,7 @@ export default config({
     }),
 
     settings: singleton({
-      label: 'Site Settings',
+      label: 'Identitas & Kontak',
       path: 'src/content/settings/site',
       format: 'json',
       schema: {
@@ -249,7 +261,7 @@ export default config({
       },
     }),
     about: singleton({
-      label: 'Halaman Tentang Kami',
+      label: 'Tentang Kami',
       path: 'src/content/about/about',
       format: 'json',
       schema: {

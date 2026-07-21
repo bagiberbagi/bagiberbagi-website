@@ -24,7 +24,7 @@ const upcoming = food.filter((p) => !p.active);
         {active.map((p) => (
           <div class="relative overflow-hidden rounded-card min-h-[320px] flex flex-col justify-end p-8 md:p-10 text-white" data-fade="1">
             <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
-            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-10% via-brand-blue/85 via-55% to-brand-blue/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
             <div class="relative">
               <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
               <p class="text-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>

@@ -33,6 +33,9 @@ if (!site) throw new Error('settings/site entry not found');
       <div class="text-body-sm text-ink/70 mt-1">{site.data.statLabels[3]}</div>
     </div>
   </div>
+  {/* Microcopy kredibilitas: framing angka (akumulatif/periode) supaya tak dibaca
+      sebagai klaim tanpa konteks. */}
+  <p class="max-w-7xl mx-auto text-micro text-ink/55 text-center mt-5">{site.data.statsNote}</p>
 </section>
 
 <script>

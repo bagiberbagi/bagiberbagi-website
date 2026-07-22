@@ -274,6 +274,7 @@ export default config({
           berbagi: fields.number({ label: 'Orang Telah Berbagi' }),
           area: fields.number({ label: 'Area Distribusi' }),
         }),
+        statsNote: fields.text({ label: 'Catatan Statistik (mis. periode/sumber data)' }),
       },
     }),
     // Switchboard analytics: tiap alat = centang + ID. BaseLayout menyuntik

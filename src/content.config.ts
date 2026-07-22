@@ -39,6 +39,7 @@ const settings = defineCollection({
       berbagi: z.number(),
       area: z.number(),
     }),
+    statsNote: z.string(),
   }),
 });
 

@@ -1,6 +1,6 @@
 # bagiberbagi.id
 
-Landing page situs donasi bagiberbagi.id — komunitas penyalur bantuan makanan & dukungan UMKM.
+Landing page bagiberbagi.id — gerakan donasi makanan yang menyalurkan makanan bergizi ke yang membutuhkan lewat UMKM kuliner terkurasi. Lima "Pintu Berbagi" (makanan, barang, waktu, ruang, dana) jadi peta jalan; Berbagi Makanan yang aktif penuh, sisanya menyusul.
 
 Dibangun dengan [Astro](https://astro.build) + Tailwind CSS, static output (tanpa backend). Konten dikelola lewat [Keystatic](https://keystatic.com) di `/keystatic`.
 

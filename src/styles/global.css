@@ -10,20 +10,19 @@
     @apply text-brand-orange font-bold text-eyebrow tracking-wide mb-3;
   }
 
+  /* text-base eksplisit = ukuran CTA besar terkunci (tak bergantung inherit
+     konteks). btn-sm di bawah menimpanya jadi text-body-sm. */
   .btn-primary {
-    @apply bg-brand-orange text-white font-bold px-8 py-4 rounded-full transition-colors hover:bg-brand-orangeDark;
+    @apply bg-brand-orange text-white font-bold text-base px-8 py-4 rounded-full transition-colors hover:bg-brand-orangeDark;
   }
 
   .btn-secondary {
-    @apply bg-white text-brand-blue font-bold px-8 py-4 rounded-full transition-transform hover:-translate-y-0.5;
+    @apply bg-white text-brand-blue font-bold text-base px-8 py-4 rounded-full transition-transform hover:-translate-y-0.5;
   }
 
-  /* Size modifier — pakai bareng .btn-primary/.btn-secondary; override padding besar. */
+  /* Size modifier — pakai bareng .btn-primary/.btn-secondary; override padding
+     besar + turunkan teks ke text-body-sm (didefinisikan setelah btn agar menang). */
   .btn-sm {
     @apply px-5 py-2.5 text-body-sm;
-  }
-
-  .badge-coming-soon {
-    @apply inline-block bg-gray-100 text-muted text-eyebrow font-semibold px-3 py-1 rounded-full;
   }
 }

@@ -21,19 +21,21 @@ const csrBenefits = [
 ];
 ---
 
-<section id="tentang" class="relative overflow-hidden px-5 md:px-10 py-16 md:py-24 text-white">
+<section id="tentang" class="relative overflow-hidden px-5 md:px-10 py-12 md:py-[88px] text-white">
   {/* Foto jadi latar (bukan card) + scrim; dua peran mengambang sebagai kartu
       kaca. Foto menyatukan keduanya jadi satu band penutup, bukan kotak ke-3. */}
   <Image src={bergabungImage} alt="" width={748} height={498} class="absolute inset-0 w-full h-full object-cover object-center" />
-  <div aria-hidden="true" class="absolute inset-0 bg-ink/80"></div>
-  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/70 to-ink/60"></div>
+  {/* Overlay deep-blue (bukan ink netral): melanjutkan biru ImpactSection di
+      atasnya jadi satu gerakan yang mendalam, bukan dua gelap yang bertabrakan. */}
+  <div aria-hidden="true" class="absolute inset-0 bg-[#0b1e4d]/82"></div>
+  <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#0b1e4d]/92 via-[#0b1e4d]/70 to-[#0b1e4d]/58"></div>
 
-  <div class="relative max-w-6xl mx-auto">
-    <div class="max-w-xl mb-10">
+  <div class="relative max-w-7xl mx-auto">
+    <div class="max-w-2xl mb-10">
       <div class="eyebrow text-brand-yellow">BERGABUNG LEBIH JAUH</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Bangun Dampak Bersama</h2>
       <p class="text-white/85 text-base leading-relaxed">
-        Tidak hanya sebagai donatur. Anda juga dapat menggerakkan ekosistem kebaikan dari sisi lain — sebagai mitra dapur atau lewat program korporasi.
+        Tidak hanya sebagai donatur. Anda juga bisa menggerakkan ekosistem kebaikan dari sisi lain, jadi mitra dapur atau lewat program korporasi.
       </p>
     </div>
 
@@ -42,11 +44,11 @@ const csrBenefits = [
         <div class="w-[52px] h-[52px] rounded-2xl bg-white/15 flex items-center justify-center mb-5 text-brand-yellow">
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M9 21v-6M15 21v-6M6 10a4 4 0 0 1 3-6.8A4 4 0 0 1 12 2a4 4 0 0 1 3 1.2A4 4 0 0 1 18 10c0 2-1 3-2 4H8c-1-1-2-2-2-4Z"></path></svg>
         </div>
-        <h3 class="text-xl font-extrabold mb-2">Jadi Mitra Dapur UMKM</h3>
-        <p class="text-white/80 text-body leading-relaxed mb-4">Dapatkan order pasti setiap minggu. Kami bantu standar higiene &amp; kemasan. Anda fokus memasak.</p>
+        <h3 class="text-title font-extrabold mb-2">Jadi Mitra Dapur UMKM</h3>
+        <p class="text-white/80 text-body-sm leading-relaxed mb-4">Dapatkan order pasti setiap minggu. Kami bantu standar higiene dan kemasan. Anda fokus memasak.</p>
         <ul class="flex flex-col gap-2.5 mb-6">
           {mitraBenefits.map((b) => (
-            <li class="flex gap-2 text-sm text-white/85">
+            <li class="flex gap-2 text-body-sm text-white/85">
               <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-yellow"><path d="M5 13l4 4L19 7"></path></svg>
               {b}
             </li>
@@ -59,11 +61,11 @@ const csrBenefits = [
         <div class="w-[52px] h-[52px] rounded-2xl bg-white/15 flex items-center justify-center mb-5 text-white">
           <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h.01M9 12h.01M9 16h.01M15 8h.01M15 12h.01M15 16h.01"></path></svg>
         </div>
-        <h3 class="text-xl font-extrabold mb-2">CSR Korporasi</h3>
-        <p class="text-white/80 text-body leading-relaxed mb-4">Jalankan program Jumat Berkah atas nama perusahaan — kami yang mengeksekusi dari dapur hingga laporan.</p>
+        <h3 class="text-title font-extrabold mb-2">CSR Korporasi</h3>
+        <p class="text-white/80 text-body-sm leading-relaxed mb-4">Jalankan program Jumat Berkah atas nama perusahaan. Kami yang jalankan dari dapur sampai laporan.</p>
         <ul class="flex flex-col gap-2.5 mb-6">
           {csrBenefits.map((b) => (
-            <li class="flex gap-2 text-sm text-white/85">
+            <li class="flex gap-2 text-body-sm text-white/85">
               <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="flex-none mt-0.5 text-brand-yellow"><path d="M5 13l4 4L19 7"></path></svg>
               {b}
             </li>

@@ -14,7 +14,7 @@ const upcoming = food.filter((p) => !p.active);
 
 <section id="program" class="section scroll-mt-24">
   <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-xl mx-auto mb-10">
+    <div class="text-center max-w-2xl mx-auto mb-10">
       <div class="eyebrow">PROGRAM AKTIF</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
     </div>
@@ -27,7 +27,7 @@ const upcoming = food.filter((p) => !p.active);
             <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
             <div class="relative">
               <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
-              <p class="text-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
+              <p class="text-body-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
               {p.href && (
                 <a href={p.href} data-track="program_click" data-track-program={p.label} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
               )}
@@ -41,16 +41,19 @@ const upcoming = food.filter((p) => !p.active);
           <div class="eyebrow text-muted mb-3">Segera Menyusul</div>
           <div class="flex flex-wrap justify-center gap-2.5">
             {upcoming.map((p) => (
-              <span class="inline-flex items-center gap-2 rounded-full border border-border bg-gray-50 pl-4 pr-2.5 py-2 text-sm font-semibold text-ink/70">
+              <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-gray-50 pl-4 pr-4 py-2 text-body-sm font-semibold text-ink/70">
                 {p.label}
-                <span class="text-micro font-bold uppercase tracking-wide text-muted bg-gray-100 rounded-full px-2 py-0.5">Segera</span>
+                {/* Status seragam dgn PintuSection: dot warna + teks micro uppercase. */}
+                <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
+                  <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
+                </span>
               </span>
             ))}
           </div>
         </div>
       )}
 
-      <p class="text-center text-sm text-muted mt-8">
+      <p class="text-center text-body-sm text-muted mt-8">
         Jelajahi seluruh rencana lewat menu <span class="font-semibold text-ink">Program</span> di navigasi.
       </p>
     </div>

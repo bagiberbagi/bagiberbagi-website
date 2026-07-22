@@ -44,13 +44,19 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 };
 ---
 
-<header class="sticky top-0 z-50 bg-white border-b border-border">
-  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-5 md:px-10 py-4">
+<header
+  data-header
+  class="sticky top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+>
+  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-4">
     <a href="/#top" class="flex items-center">
       <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto md:h-9" />
     </a>
 
-    <nav class="hidden nav:flex items-center gap-8">
+    {/* Grup kanan: logo tetap di kiri (justify-between), menu + CTA berkumpul
+        di kanan sebagai satu unit. */}
+    <div class="hidden nav:flex items-center gap-7">
+    <nav class="flex items-center gap-7">
       {NAV_LINKS.map((link) => (
         link.id === 'program' ? (
           <div class="relative" data-program-menu>
@@ -60,7 +66,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               aria-expanded="false"
               aria-haspopup="true"
               aria-controls="program-panel"
-              class="flex items-center gap-1.5 font-medium text-muted transition-colors hover:text-brand-blue"
+              class="flex items-center gap-1.5 text-body-sm font-semibold tracking-tight text-ink transition-colors hover:text-brand-orange"
             >
               {link.label}
               <svg aria-hidden="true" data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
@@ -82,19 +88,23 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
           <a
             href={link.href}
             aria-current={navActive(link) ? 'page' : undefined}
-            class:list={['transition-colors hover:text-brand-blue', navActive(link) ? 'font-bold text-ink' : 'font-medium text-muted']}
+            class:list={['text-body-sm tracking-tight text-ink transition-colors hover:text-brand-orange', navActive(link) ? 'font-extrabold' : 'font-semibold']}
           >
             {link.label}
           </a>
         )
       ))}
     </nav>
+    {/* CTA navbar = level "medium" (btn-sm), lebih kecil dari CTA besar di hero
+        agar hierarki ukuran jelas — bukan semua tombol seukuran. */}
     <a
       href="/#donasi"
-      class="hidden nav:inline-block btn-primary whitespace-nowrap"
+      data-nav-donasi
+      class="btn-primary btn-sm whitespace-nowrap"
     >
       Donasi Sekarang
     </a>
+    </div>
 
     <button
       id="nav-toggle"
@@ -143,7 +153,36 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
   </nav>
 </header>
 
+<style>
+  /* Awal (belum scroll): navbar TRANSPARAN — foto+overlay zona hero (index)
+     menembus di belakangnya, jadi kesan pertama full seamless kuning. Tanpa
+     garis/shadow. Setelah scroll (.is-scrolled) atau saat menu mobile terbuka
+     (.menu-open, agar panel tak transparan menembus foto): putih solid + border
+     + shadow lembut. border selalu ada agar transisi warna halus. */
+  [data-header] {
+    border-bottom: 1px solid transparent;
+  }
+  [data-header].is-scrolled,
+  [data-header].menu-open {
+    background-color: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom-color: #eef0f3;
+    box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.25);
+  }
+
+  /* Di puncak (belum scroll) tombol Donasi jadi FLAT — transparan, teks ink
+     (samakan warna teks umum hero, hindari kesan biru berbeda). Setelah scroll
+     balik ke pill oranye (btn-primary). */
+  [data-header]:not(.is-scrolled) [data-nav-donasi],
+  [data-header]:not(.is-scrolled) [data-nav-donasi]:hover {
+    background-color: transparent;
+    color: #0f172a;
+  }
+</style>
+
 <script>
+  import '../scripts/header-scroll.js';
   import '../scripts/mobile-nav.js';
   import '../scripts/program-menu.js';
 </script>

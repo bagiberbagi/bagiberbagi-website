@@ -5,30 +5,32 @@ const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 ---
 
+{/* Background kuning + foto diwarisi dari wrapper zona (index.astro) — section
+    transparan agar nyambung mulus dengan Hero di atasnya. */}
 <section
   id="stats-section"
-  class="bg-brand-yellow border-t border-black/10 px-5 md:px-10 py-8 md:py-10"
+  class="relative px-5 md:px-10 pt-6 md:pt-8 pb-10 md:pb-14"
   data-target-dana={site.data.statTargets.dana}
   data-target-donatur={site.data.statTargets.donatur}
   data-target-berbagi={site.data.statTargets.berbagi}
   data-target-area={site.data.statTargets.area}
 >
-  <div class="max-w-5xl mx-auto grid gap-6 text-center" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+  <div class="max-w-7xl mx-auto grid gap-6 text-center" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
     <div>
-      <div id="stat-dana" class="text-2xl md:text-heading-lg font-extrabold tabular-nums">Rp 0.0Jt</div>
-      <div class="text-sm text-ink/70 mt-1">{site.data.statLabels[0]}</div>
+      <div id="stat-dana" class="text-heading-sm md:text-heading-lg font-extrabold tabular-nums">Rp 0.0Jt</div>
+      <div class="text-body-sm text-ink/70 mt-1">{site.data.statLabels[0]}</div>
     </div>
     <div>
-      <div id="stat-donatur" class="text-2xl md:text-heading-lg font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-ink/70 mt-1">{site.data.statLabels[1]}</div>
+      <div id="stat-donatur" class="text-heading-sm md:text-heading-lg font-extrabold tabular-nums">0</div>
+      <div class="text-body-sm text-ink/70 mt-1">{site.data.statLabels[1]}</div>
     </div>
     <div>
-      <div id="stat-berbagi" class="text-2xl md:text-heading-lg font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-ink/70 mt-1">{site.data.statLabels[2]}</div>
+      <div id="stat-berbagi" class="text-heading-sm md:text-heading-lg font-extrabold tabular-nums">0</div>
+      <div class="text-body-sm text-ink/70 mt-1">{site.data.statLabels[2]}</div>
     </div>
     <div>
-      <div id="stat-area" class="text-2xl md:text-heading-lg font-extrabold tabular-nums">0</div>
-      <div class="text-sm text-ink/70 mt-1">{site.data.statLabels[3]}</div>
+      <div id="stat-area" class="text-heading-sm md:text-heading-lg font-extrabold tabular-nums">0</div>
+      <div class="text-body-sm text-ink/70 mt-1">{site.data.statLabels[3]}</div>
     </div>
   </div>
 </section>

@@ -81,10 +81,12 @@ export interface Pintu {
   label: string;
   english: string;
   icon: IconName;
-  // tagline = deskripsi panjang (meta description /berbagi/[slug] + hero + mega-menu).
+  // tagline = kalimat hero /berbagi/[slug] + teks mega-menu (ringkas, enak dibaca).
   // blurb = versi ketat khusus kartu homepage "Arah Kami" (padat, sejajar).
+  // seoDescription = meta description /berbagi/[slug] (>=70 char, padat kata kunci).
   tagline: string;
   blurb: string;
+  seoDescription: string;
   // Warna identitas pintu (aksen, bukan full-page). Dipakai halaman /berbagi/[slug]
   // via CSS var --cat. color=aksen, tint=latar lembut, deep=hover/tekan.
   color: string;
@@ -93,11 +95,11 @@ export interface Pintu {
 }
 
 export const PINTU: Pintu[] = [
-  { id: 'food', slug: 'makanan', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.', blurb: 'Makanan bergizi ke yang membutuhkan.', color: '#F4791D', colorTint: '#FDEEE1', colorDeep: '#C25D0F' },
-  { id: 'goods', slug: 'barang', label: 'Berbagi Barang', english: 'Goods Sharing', icon: 'box', tagline: 'Pakaian, buku, dan perlengkapan layak pakai berpindah ke yang memerlukan.', blurb: 'Barang layak pakai berpindah tangan.', color: '#7C4DDA', colorTint: '#ECE6FB', colorDeep: '#5E33B0' },
-  { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', color: '#E0447B', colorTint: '#FBE4EE', colorDeep: '#B22C5C' },
-  { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', color: '#0EA5C4', colorTint: '#DBF2F8', colorDeep: '#0B7E97' },
-  { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', color: '#16A34A', colorTint: '#DCF3E4', colorDeep: '#10803A' },
+  { id: 'food', slug: 'makanan', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.', blurb: 'Makanan bergizi ke yang membutuhkan.', seoDescription: 'Donasi makanan bergizi lewat bagiberbagi.id: dari dapur UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan, dengan bukti foto & video maksimal H+1.', color: '#F4791D', colorTint: '#FDEEE1', colorDeep: '#C25D0F' },
+  { id: 'goods', slug: 'barang', label: 'Berbagi Barang', english: 'Goods Sharing', icon: 'box', tagline: 'Pakaian, buku, dan perlengkapan layak pakai berpindah ke yang memerlukan.', blurb: 'Barang layak pakai berpindah tangan.', seoDescription: 'Berbagi barang lewat bagiberbagi.id: pakaian, buku, dan perlengkapan layak pakai disalurkan ke warga serta komunitas yang membutuhkan secara transparan dan terdokumentasi.', color: '#7C4DDA', colorTint: '#ECE6FB', colorDeep: '#5E33B0' },
+  { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', seoDescription: 'Berbagi waktu bersama bagiberbagi.id: relawan membagikan keahlian dan tenaga — mengajar, konsultasi, hingga pendampingan — untuk kegiatan sosial di berbagai kota.', color: '#E0447B', colorTint: '#FBE4EE', colorDeep: '#B22C5C' },
+  { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', seoDescription: 'Berbagi ruang lewat bagiberbagi.id: aula, gudang, ruang pertemuan, dan kendaraan tersedia untuk mendukung kegiatan sosial serta penyaluran bantuan di komunitas.', color: '#0EA5C4', colorTint: '#DBF2F8', colorDeep: '#0B7E97' },
+  { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', seoDescription: 'Berbagi dana bersama bagiberbagi.id: zakat, sedekah, CSR, dan donasi disalurkan tepat sasaran secara transparan untuk program bantuan makanan dan sosial di Indonesia.', color: '#16A34A', colorTint: '#DCF3E4', colorDeep: '#10803A' },
 ];
 
 // Label yang ditampilkan ke pengunjung untuk keseluruhan pintu.

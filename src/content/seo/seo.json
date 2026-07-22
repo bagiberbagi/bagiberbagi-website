@@ -12,14 +12,14 @@
     {
       "path": "/",
       "title": "bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
-      "description": "Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id. Komunitas penyalur bantuan yang transparan dan terdokumentasi — berbagi jadi lebih mudah, dampaknya lebih nyata.",
+      "description": "Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id — komunitas penyalur bantuan yang transparan dan terdokumentasi, dengan bukti sampai H+1.",
       "image": "/open-graph/home.png",
       "breadcrumbName": "Beranda",
       "noindex": false
     },
     {
       "path": "/faq/",
-      "title": "FAQ — bagiberbagi.id",
+      "title": "FAQ Donasi & Program Berbagi — bagiberbagi.id",
       "description": "Pertanyaan yang sering diajukan seputar donasi, program, penyaluran bantuan, dan cara kerja bagiberbagi.id.",
       "image": "/open-graph/faq.png",
       "breadcrumbName": "FAQ",
@@ -27,7 +27,7 @@
     },
     {
       "path": "/jumat-berkah/",
-      "title": "Jumat Berkah — bagiberbagi.id",
+      "title": "Jumat Berkah — Donasi Makanan Mingguan | bagiberbagi.id",
       "description": "Program Jumat Berkah bagiberbagi.id: berbagi paket makanan sehat dari UMKM terkurasi setiap Jumat, diantar langsung ke penerima, dengan dokumentasi foto & video maksimal H+1.",
       "image": "/open-graph/jumat-berkah.png",
       "breadcrumbName": "Jumat Berkah",

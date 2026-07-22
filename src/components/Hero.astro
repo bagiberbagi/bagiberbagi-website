@@ -20,17 +20,28 @@ const ICON_BRIGHT: Record<string, string> = {
 <section class="relative px-5 md:px-10 pt-8 md:pt-16 pb-6 md:pb-10">
   <div class="relative max-w-7xl mx-auto flex flex-wrap gap-12 items-center">
     <div class="flex-1 basis-[440px] min-w-[280px]">
+      <div class="eyebrow">Program Perdana Jumat Berkah</div>
       <h1 class="text-heading-lg md:text-display-lg leading-[1.08] font-extrabold tracking-tight mb-5 text-ink">
-        Berbagi Makanan.<br />Dampaknya Nyata.
+        Kamu berbagi, <span class="text-brand-orange">kami yang membagi.</span>
       </h1>
       <p class="text-base md:text-lg leading-relaxed text-muted max-w-[520px] mb-7">
-        Donasikan paket makanan bergizi lewat dapur UMKM lokal, sampai ke orang yang membutuhkan. Kamu dapat bukti foto dan videonya, maksimal H+1.
+        Sedekah Jumat kamu kami masak lewat UMKM lokal, lalu antar langsung ke jamaah, petugas kebersihan, dan panti asuhan. Dokumentasinya balik ke kamu maksimal H+1.
       </p>
       <div class="flex flex-wrap gap-4 mb-7">
         <a href="#cara-kerja" class="text-brand-blue font-bold text-base inline-flex items-center gap-2">
           Lihat Cara Kerjanya
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
         </a>
+      </div>
+      {/* Chip hitung mundur ke Jumat Berkah berikutnya (Jumat 06:00). Gaya chip
+          terang konsisten hero: bg putih, border tipis, dot pulse oranye kecil.
+          Nilai diisi client-side oleh countdown.js ke #jb-countdown. */}
+      <div class="inline-flex items-center gap-2 bg-white border border-border pl-3 pr-4 py-2 rounded-full text-body-sm font-semibold text-ink shadow-pill mb-4">
+        <span class="relative flex h-2 w-2" aria-hidden="true">
+          <span class="jb-dot-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-60"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-brand-orange"></span>
+        </span>
+        Jumat Berkah berikutnya: <span id="jb-countdown" class="text-brand-orange">…</span>
       </div>
       {/* Ticker 5 pintu: badge statis "YUK BAGI", lalu slot bergulir berisi ikon
           (warna identitas pintu) + label — fade-slide bergantian untuk menarik mata. */}
@@ -69,8 +80,27 @@ const ICON_BRIGHT: Record<string, string> = {
     opacity: 1;
     transform: none;
   }
+
+  /* Dot pulse chip countdown — meniru animate-ping Tailwind, dimatikan bila
+     user minta reduce-motion. */
+  .jb-dot-ping {
+    animation: jb-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes jb-ping {
+    75%,
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jb-dot-ping {
+      animation: none;
+    }
+  }
 </style>
 
 <script>
   import '../scripts/ticker.js';
+  import '../scripts/countdown.js';
 </script>

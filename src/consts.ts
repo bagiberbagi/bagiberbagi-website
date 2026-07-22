@@ -14,10 +14,10 @@ const BRAND_BLUE = '#1D46B9';
 const BRAND_BLUE_TINT = '#E3EAFB';
 
 export const FEATURES: Feature[] = [
-  { icon: 'food', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Makanan sehat & higienis', desc: 'Menu bergizi lengkap dimasak UMKM kuliner terkurasi dengan standar laik higiene.' },
-  { icon: 'map', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan dengan seksama, merata, tidak menumpuk di satu tempat.' },
-  { icon: 'camera', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Bukti nyata setiap pekan', desc: 'Foto dan video geotagged dari lapangan dikirim ke donatur maksimal H+1 setelah distribusi.' },
-  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Mudah diulang kapan saja', desc: 'Donasi rutin lewat WhatsApp, tim kami bantu proses dan atur jumlah pax sesuai kebutuhan Anda.' },
+  { icon: 'food', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Makanan sehat dan higienis', desc: 'Menu bergizi dimasak UMKM kuliner dengan standar laik higiene.' },
+  { icon: 'map', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan bareng DKM masjid dan komunitas, jadi merata, tidak menumpuk di satu tempat.' },
+  { icon: 'camera', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Bukti nyata tiap pekan', desc: 'Foto dan video dari lapangan dikirim ke kamu maksimal H+1.' },
+  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Rutin tiap Jumat', desc: 'Bukan kampanye sekali jalan, penyaluran jalan konsisten tiap pekan.' },
 ];
 
 export interface Step {
@@ -41,10 +41,10 @@ export interface Impact {
 }
 
 export const IMPACTS: Impact[] = [
-  { icon: 'heart', title: 'Penerima Manfaat', desc: 'Makanan sehat bergizi hadir terjadwal, memberi kepastian dan martabat bagi yang membutuhkan.' },
-  { icon: 'chef', title: 'UMKM Kuliner', desc: 'Dapur kecil mendapat order pasti mingguan, omzet yang membantu usaha keluarga.' },
-  { icon: 'walk', title: 'Relawan Lapangan', desc: 'Warga memperoleh penghasilan rutin dalam setiap proses penyaluran lingkungannya sendiri.' },
-  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi dan kurir ikut bergerak. Lapangan kerja baru lahir dari satu tradisi.' },
+  { icon: 'heart', title: 'Mustahik', desc: 'Makanan bergizi hadir terjadwal tiap Jumat. Bukan sekadar kenyang, tapi kepastian buat jamaah, petugas kebersihan, dan anak panti.' },
+  { icon: 'chef', title: 'UMKM Kuliner', desc: 'Dapur kecil dapat order pasti tiap minggu dengan bayaran tepat waktu. Usaha keluarga terus jalan.' },
+  { icon: 'walk', title: 'Agen Lapangan', desc: 'Warga sekitar yang mengantar dapat penghasilan tambahan rutin tiap Jumat. Kerja bermakna di lingkungan sendiri.' },
+  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi, kurir, sampai penyedia kemasan lokal ikut bergerak. Lapangan kerja baru dari satu tradisi berbagi.' },
 ];
 
 

@@ -1,0 +1,46 @@
+---
+import { getEntry } from 'astro:content';
+
+const faqEntry = await getEntry('faq', 'faq');
+if (!faqEntry) throw new Error('faq/faq entry not found');
+// Ambil 3 pertanyaan teratas; urutannya = urutan array di Keystatic.
+// Daftar lengkap tetap di halaman /faq.
+const faqs = faqEntry.data.items.slice(0, 3);
+---
+
+<section class="section bg-white">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="eyebrow">Pertanyaan Umum</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Yang sering ditanyakan.</h2>
+    </div>
+
+    <div class="flex flex-col">
+      {faqs.map((faq, i) => (
+        <div class="faq-item border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>
+          <button
+            type="button"
+            class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"
+            aria-expanded="false"
+            aria-controls={`faq-home-answer-${i}`}
+          >
+            <span class="text-base font-bold text-ink m-0">{faq.q}</span>
+            <svg aria-hidden="true" class="faq-chevron flex-none transition-transform duration-200 text-muted" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <p id={`faq-home-answer-${i}`} class="faq-answer hidden text-body-sm text-muted leading-relaxed pb-5 -mt-1">{faq.a}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="/faq/" class="btn-secondary btn-sm inline-flex items-center justify-center gap-2">
+        Lihat semua pertanyaan
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/faq.js';
+</script>

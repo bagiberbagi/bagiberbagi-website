@@ -7,16 +7,16 @@
     "email": "bagiberbagi.official@gmail.com"
   },
   "statLabels": [
-    "Total Dana Tersalurkan",
-    "Donatur Terdaftar",
-    "Orang Telah Berbagi",
-    "Area Distribusi"
+    "porsi tersalurkan",
+    "titik penyaluran",
+    "donasi tersalurkan",
+    "terdokumentasi"
   ],
   "statTargets": {
-    "dana": 8.5,
-    "donatur": 42,
-    "berbagi": 210,
-    "area": 5
+    "dana": 100,
+    "donatur": 4,
+    "berbagi": 2.5,
+    "area": 100
   },
-  "statsNote": "Angka akumulatif sejak Jumat Berkah berjalan, diperbarui berkala."
+  "statsNote": "Kami baru melangkah. Tiap angka di sini bisa kamu telusuri sendiri di laporan penyaluran."
 }

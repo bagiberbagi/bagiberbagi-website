@@ -14,10 +14,13 @@ function animate(targets) {
     const t = Math.min(1, (now - start) / duration);
     const eased = 1 - Math.pow(1 - t, 3);
 
-    danaEl.textContent = 'Rp ' + (targets.dana * eased).toFixed(1) + 'Jt';
+    // Kolom 1 (porsi) & 2 (titik): bilangan bulat polos.
+    danaEl.textContent = Math.round(targets.dana * eased).toLocaleString('id-ID');
     donaturEl.textContent = Math.round(targets.donatur * eased).toLocaleString('id-ID');
-    berbagiEl.textContent = Math.round(targets.berbagi * eased).toLocaleString('id-ID');
-    areaEl.textContent = Math.round(targets.area * eased).toLocaleString('id-ID');
+    // Kolom 3 (donasi): prefix "Rp" + suffix "jt", desimal koma (id-ID).
+    berbagiEl.textContent = 'Rp ' + (targets.berbagi * eased).toFixed(1).replace('.', ',') + ' jt';
+    // Kolom 4 (terdokumentasi): suffix persen.
+    areaEl.textContent = Math.round(targets.area * eased) + '%';
 
     if (t < 1) requestAnimationFrame(tick);
   }

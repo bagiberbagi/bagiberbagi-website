@@ -34,6 +34,8 @@ bunx astro dev stop
 - `src/lib/` — fungsi murni: format Rupiah & link WhatsApp (`format.ts`, ada unit test), potongan schema.org (`schema.ts`), resolusi SEO per halaman (`seo.ts`).
 - `src/scripts/` — JS interaktif per fitur (mobile nav, ticker, kalkulator donasi, akordeon FAQ, mega-menu, TOC legal).
 
+**Design system** — warna, skala teks, radius, shadow, breakpoint, dan class komponen bersama didefinisikan di `tailwind.config.mjs` + `src/styles/global.css`, didokumentasikan di [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) (termasuk warna identitas 5 "Pintu Berbagi"). Baca itu sebelum menambah nilai visual baru — jangan pakai bracket arbitrary (`text-[17px]`, `bg-[#hex]`) untuk permukaan bersama.
+
 ## Alur kerja konten
 
 ### Siapa mengedit apa

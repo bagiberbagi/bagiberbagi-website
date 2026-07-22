@@ -17,6 +17,9 @@ dist/
 # Claude Code local-only settings (personal permission allowlist)
 .claude/settings.local.json
 
+# Claude Code git worktrees — transient per-session checkouts, never committed.
+.claude/worktrees/
+
 # Design mockups / site-builder exports — local reference only, never imported
 # or deployed. Kept on disk for evaluation/iteration; deleted manually when spent.
 # All mockups live under mockup/ (legacy/, newpage/, stray *.dc.html exports).

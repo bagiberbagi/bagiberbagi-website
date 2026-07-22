@@ -3,6 +3,9 @@ import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../lib/format';
 import { getProgramPages } from '../lib/programs';
+import { getJejakByProgram } from '../lib/jejak';
+import { getProgramImpact } from '../lib/impact';
+import { PINTU } from '../consts';
 
 // Satu route untuk semua program aktif ber-halaman — begitu editor mengaktifkan
 // program di Keystatic & mengisi Detail, halamannya ikut ter-generate tanpa
@@ -24,6 +27,17 @@ const waLink = buildWaLink(
   site.data.waNumber,
   buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)))
 );
+
+// Rekam jejak pelaksanaan program ini (terbaru dulu) + agregat dampaknya.
+// Blok disembunyikan penuh bila belum ada jejak (lihat guard di markup).
+const jejak = await getJejakByProgram(program.slug);
+const impact = await getProgramImpact(program.slug);
+const mainMetric = impact.metrics[0];
+// Rail & aksen memakai warna identitas pintu program (via CSS var --cat),
+// sama seperti halaman /berbagi/[category]. Fallback oranye brand bila tak ketemu.
+const pintuColor = PINTU.find((p) => p.id === program.pintu)?.color ?? '#F4791D';
+// Tanggal ISO ('2026-07-18') diformat ke id-ID; timeZone UTC agar tak bergeser hari.
+const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <BaseLayout>
@@ -64,4 +78,52 @@ const waLink = buildWaLink(
       </p>
     </div>
   </section>
+
+  {jejak.length > 0 && (
+    <section class="section bg-gray-50" style={`--cat:${pintuColor}`}>
+      <div class="max-w-3xl mx-auto">
+        <div class="eyebrow" style="color:var(--cat)">REKAM JEJAK</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Jejak {program.label}</h2>
+        <p class="text-body-sm text-muted leading-relaxed mb-7">
+          Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
+            <Fragment>, dengan total <strong class="text-ink">{mainMetric.value.toLocaleString('id-ID')} {mainMetric.label}</strong></Fragment>
+          )}. Berikut dokumentasi tiap pelaksanaannya beserta angka dampaknya.
+        </p>
+
+        {impact.metrics.length > 0 && (
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-9">
+            {impact.metrics.map((m) => (
+              <div class="rounded-card bg-white border border-border p-4 md:p-5">
+                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums" style="color:var(--cat)">{m.value.toLocaleString('id-ID')}</div>
+                <div class="text-body-sm text-muted mt-0.5">{m.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div class="flex flex-col gap-3">
+          {jejak.map((j) => (
+            <a href={j.href} class="group relative flex overflow-hidden rounded-card bg-white border border-border transition-shadow hover:shadow-md">
+              <span class="absolute inset-y-0 left-0 w-1.5" style="background:var(--cat)" aria-hidden="true"></span>
+              <div class="flex-1 pl-6 pr-5 py-5 md:pl-7 md:pr-6 md:py-6">
+                <div class="text-micro font-bold uppercase tracking-wide text-muted mb-1.5">{jejakDateFmt.format(new Date(j.date))}</div>
+                <h3 class="text-title-sm font-bold mb-1.5 transition-colors group-hover:text-brand-orangeDark">{j.title}</h3>
+                <p class="text-body-sm text-muted leading-snug mb-3">{j.summary}</p>
+                {j.metrics.length > 0 && (
+                  <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-body-sm">
+                    {j.metrics.map((m) => (
+                      <span class="inline-flex items-baseline gap-1.5">
+                        <strong class="font-extrabold tabular-nums text-ink">{m.value.toLocaleString('id-ID')}</strong>
+                        <span class="text-muted">{m.label}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </BaseLayout>

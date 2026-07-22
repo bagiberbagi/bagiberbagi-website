@@ -1,0 +1,61 @@
+import type { PintuId } from '../consts';
+import type { JejakMetric } from './jejak';
+
+// jejak.ts di-import lazy (dynamic import di dalam fungsi async) supaya
+// aggregateMetrics — fungsi murni — bisa diuji unit tanpa menarik `astro:content`
+// (yang hanya tersedia dalam runtime Astro, bukan `bun test`).
+
+export interface Impact {
+  metrics: { label: string; value: number }[];
+  jejakCount: number;
+  programCount: number;
+}
+
+/**
+ * Agregasi metrik lintas jejak: group by label ternormalisasi (trim +
+ * lowercase) lalu jumlahkan value. Label asli yang dipertahankan adalah casing
+ * pertama yang ditemui, dan urutan hasil mengikuti urutan kemunculan pertama.
+ *
+ * Fungsi murni — tak menyentuh collection — agar bisa diuji unit.
+ */
+export function aggregateMetrics(lists: JejakMetric[][]): { label: string; value: number }[] {
+  const acc = new Map<string, { label: string; value: number }>();
+  for (const list of lists) {
+    for (const { label, value } of list) {
+      const key = label.trim().toLowerCase();
+      const existing = acc.get(key);
+      if (existing) {
+        existing.value += value;
+      } else {
+        acc.set(key, { label, value });
+      }
+    }
+  }
+  return [...acc.values()];
+}
+
+/** Agregat dampak satu program: sum-by-label + jumlah jejak-nya. */
+export async function getProgramImpact(programSlug: string): Promise<Impact> {
+  const { getJejakByProgram } = await import('./jejak');
+  const jejakList = await getJejakByProgram(programSlug);
+  return {
+    metrics: aggregateMetrics(jejakList.map((j) => j.metrics)),
+    jejakCount: jejakList.length,
+    programCount: jejakList.length > 0 ? 1 : 0,
+  };
+}
+
+/**
+ * Agregat dampak satu pintu: sum-by-label lintas semua program di pintu itu.
+ * programCount = jumlah program unik yang benar-benar punya jejak di pintu ini.
+ */
+export async function getPintuImpact(pintuId: PintuId): Promise<Impact> {
+  const { getJejakByPintu } = await import('./jejak');
+  const jejakList = await getJejakByPintu(pintuId);
+  const programs = new Set(jejakList.map((j) => j.program));
+  return {
+    metrics: aggregateMetrics(jejakList.map((j) => j.metrics)),
+    jejakCount: jejakList.length,
+    programCount: programs.size,
+  };
+}

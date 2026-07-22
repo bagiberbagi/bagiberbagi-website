@@ -1,0 +1,121 @@
+---
+import Icon from './Icon.astro';
+import { getJejak } from '../lib/jejak';
+import { getPrograms } from '../lib/programs';
+import { PINTU } from '../consts';
+
+// Tiga jejak terbaru lintas pintu sebagai bukti nyata di beranda. Sumber tunggal
+// getJejak() (sudah published + program valid + terurut tanggal desc); kartu
+// dibatasi tiga agar beranda tak memanjang. Aksen warna tiap kartu diturunkan
+// dari pintu program-nya (PINTU.color via var --cat), bukan diketik ulang.
+const jejak = (await getJejak()).slice(0, 3);
+
+const programs = await getPrograms();
+const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+const pintuById = new Map(PINTU.map((p) => [p.id, p]));
+const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
+
+// Tombol "lihat semua" menaut ke rekam jejak pintu dari jejak terbaru (pintu yang
+// sedang berjalan), reuse route /berbagi/[category]/jejak.
+const leadPintu = jejak.length > 0 ? pintuOf(jejak[0].program) : undefined;
+
+const fmtDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+---
+
+{jejak.length > 0 && (
+  <section id="jejak" class="section scroll-mt-24">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <div class="eyebrow">JEJAK TERBARU</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Bukti Nyata dari Lapangan</h2>
+        <p class="text-body-sm md:text-body text-muted leading-relaxed">
+          Setiap kali program berjalan, kami rekam angkanya, fotonya, dan ceritanya.
+        </p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {jejak.map((j) => {
+          const pintu = pintuOf(j.program);
+          const color = pintu?.color ?? '#F4791D';
+          return (
+            <a
+              href={j.href}
+              data-fade="1"
+              data-track="jejak_click"
+              data-track-jejak={j.slug}
+              style={`--cat:${color}`}
+              class="group flex flex-col overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-transform hover:-translate-y-1"
+            >
+              {/* Cover: foto lapangan bila ada, jika tidak fallback banner ber-aksen pintu. */}
+              {j.cover ? (
+                <img src={j.cover} alt="" loading="lazy" class="aspect-[16/10] w-full object-cover" />
+              ) : (
+                <div
+                  class="aspect-[16/10] w-full flex items-center justify-center"
+                  style={`background:linear-gradient(135deg, color-mix(in srgb, var(--cat) 16%, #fff), color-mix(in srgb, var(--cat) 6%, #fff))`}
+                >
+                  {pintu && (
+                    <span
+                      class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-cardSm"
+                      style={`color:var(--cat)`}
+                    >
+                      <Icon name={pintu.icon} size={26} />
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <div class="flex flex-1 flex-col p-5">
+                {pintu && (
+                  <div class="mb-3">
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-bold uppercase tracking-wide"
+                      style={`color:var(--cat);background:${pintu.colorTint}`}
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full" style={`background:var(--cat)`}></span>
+                      {pintu.label}
+                    </span>
+                  </div>
+                )}
+
+                <div class="text-micro font-semibold text-muted mb-2">
+                  {fmtDate(j.date)} &middot; {j.location}
+                </div>
+
+                <h3 class="text-title-sm font-bold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">
+                  {j.title}
+                </h3>
+
+                {j.metrics.length > 0 && (
+                  <div class="mt-auto grid grid-cols-3 gap-2">
+                    {j.metrics.slice(0, 3).map((m) => (
+                      <div class="rounded-xl bg-gray-50 px-2 py-2.5 text-center">
+                        <div class="text-title-sm font-extrabold tabular-nums leading-none" style={`color:var(--cat)`}>
+                          {m.value.toLocaleString('id-ID')}
+                        </div>
+                        <div class="text-micro text-muted mt-1 truncate">{m.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      {leadPintu && (
+        <div class="mt-10 text-center">
+          <a href={`/berbagi/${leadPintu.slug}/jejak/`} class="btn-secondary btn-sm inline-flex items-center border border-border shadow-cardSm">
+            Lihat semua jejak
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+)}

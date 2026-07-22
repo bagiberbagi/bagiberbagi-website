@@ -139,6 +139,22 @@ const programs = defineCollection({
   }),
 });
 
+const jejak = defineCollection({
+  loader: glob({ pattern: '*.mdoc', base: './src/content/jejak' }),
+  schema: z.object({
+    title: z.string(),
+    program: z.string(), // slug program induk (relationship)
+    date: z.string(), // ISO YYYY-MM-DD
+    location: z.string(),
+    summary: z.string(),
+    metrics: z.array(z.object({ label: z.string(), value: z.number() })).default([]),
+    // fields.image menulis null saat dikosongkan; nullish() menerima null & undefined.
+    cover: z.string().nullish(),
+    gallery: z.array(z.string().nullish()).default([]),
+    published: z.boolean().default(false),
+  }),
+});
+
 const footer = defineCollection({
   loader: glob({ pattern: '*.json', base: './src/content/footer' }),
   schema: z.object({
@@ -190,4 +206,4 @@ const analytics = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, footer, analytics };
+export const collections = { legal, settings, seo, about, faq, programs, jejak, footer, analytics };

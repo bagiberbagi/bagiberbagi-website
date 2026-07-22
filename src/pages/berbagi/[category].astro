@@ -5,6 +5,8 @@ import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
 import { buildWaLink } from '../../lib/format';
 import { getProgramsByPintu } from '../../lib/programs';
+import { getJejakByPintu } from '../../lib/jejak';
+import { getPintuImpact } from '../../lib/impact';
 import { PINTU, CATEGORY_CONTENT } from '../../consts';
 import programPromoImage from '../../assets/images/program-promo.png';
 
@@ -26,6 +28,13 @@ const programs = await getProgramsByPintu(pintu.id);
 const active = programs.filter((p) => p.active);
 const upcoming = programs.filter((p) => !p.active);
 const otherPintu = PINTU.filter((p) => p.id !== pintu.id);
+
+// Dampak nyata dari jejak pintu ini. Bila sudah ada jejak, statbar memakai
+// angka agregat (impact.metrics); bila belum, fallback ke CATEGORY_CONTENT.stats
+// statis agar pintu yang belum berjalan tetap tampil rapi.
+const jejakPintu = await getJejakByPintu(pintu.id);
+const impact = await getPintuImpact(pintu.id);
+const hasImpact = jejakPintu.length > 0 && impact.metrics.length > 0;
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -59,12 +68,27 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
         </div>
       </header>
 
-      <!-- statistik (mengambang) -->
-      {content?.stats && content.stats.length > 0 && (
+      <!-- statistik (mengambang): dampak REAL dari jejak bila ada, jika belum fallback ke stats statis -->
+      {hasImpact ? (
+        <div class="statbar">
+          {impact.metrics.map((m) => (
+            <div class="st"><div class="st-n">{m.value.toLocaleString('id-ID')}</div><div class="st-l">{m.label}</div></div>
+          ))}
+        </div>
+      ) : (content?.stats && content.stats.length > 0 && (
         <div class="statbar">
           {content.stats.map((s) => (
             <div class="st"><div class="st-n">{s.value}</div><div class="st-l">{s.label}</div></div>
           ))}
+        </div>
+      ))}
+
+      <!-- teaser rekam jejak (hanya bila pintu ini punya jejak) -->
+      {jejakPintu.length > 0 && (
+        <div class="jt-wrap">
+          <a class="jt" href={`/berbagi/${pintu.slug}/jejak/`} data-track="jejak_teaser" data-track-pintu={pintu.slug}>
+            Sudah berjalan {impact.jejakCount.toLocaleString('id-ID')} kali. Lihat rekam jejak →
+          </a>
         </div>
       )}
 
@@ -243,6 +267,11 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
   .st-n { font-size: 27px; font-weight: 800; letter-spacing: -.02em; color: var(--ci); font-variant-numeric: tabular-nums; line-height: 1.05; }
   .st-n::after { content: ""; display: block; width: 20px; height: 3px; border-radius: 2px; background: var(--cat); margin: 7px auto 0; }
   .st-l { font-size: 11.5px; color: var(--cm); margin-top: 7px; }
+
+  /* teaser rekam jejak */
+  .jt-wrap { text-align: center; margin-top: 16px; }
+  .jt { display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 999px; background: var(--cat-tint); color: var(--cat-deep); font-size: 12.5px; font-weight: 800; text-decoration: none; font-variant-numeric: tabular-nums; transition: .16s; }
+  .jt:hover { background: color-mix(in srgb, var(--cat) 16%, #fff); transform: translateY(-1px); }
 
   /* section header */
   .sh { display: flex; align-items: center; gap: 10px; margin: 46px 0 20px; }

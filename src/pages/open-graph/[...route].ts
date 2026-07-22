@@ -2,6 +2,7 @@ import { getEntry } from 'astro:content';
 import { OGImageRoute } from 'astro-og-canvas';
 import { ogKeyFromPath } from '../../lib/seo';
 import { getProgramPages } from '../../lib/programs';
+import { getJejakPages } from '../../lib/jejak';
 
 /**
  * OG image di-generate saat build (bukan file statis yang didesain manual),
@@ -58,8 +59,26 @@ const programPages = Object.fromEntries(
     ])
 );
 
+/**
+ * Tiap halaman detail jejak (`/jejak/{slug}/`) kebagian share image sendiri,
+ * di-namespace `jejak/{slug}` supaya route-nya `/open-graph/jejak/{slug}.png`
+ * dan tak bentrok dengan slug program. Sumbernya `getJejakPages()` — sama
+ * dengan route dinamis `[slug].astro` — jadi begitu editor menerbitkan jejak
+ * baru di Keystatic, OG image-nya ikut ter-generate tanpa mengubah file ini.
+ * Judul = `title` display jejak, deskripsi = `summary`.
+ */
+const jejakPages = Object.fromEntries(
+  (await getJejakPages()).map((jejak) => [
+    `jejak/${jejak.slug}`,
+    {
+      title: `${jejak.title} — bagiberbagi.id`,
+      description: jejak.summary,
+    },
+  ])
+);
+
 export const { getStaticPaths, GET } = await OGImageRoute({
-  pages: { ...programPages, ...manualPages },
+  pages: { ...programPages, ...jejakPages, ...manualPages },
   getImageOptions: (_path, page: { title: string; description: string }) => ({
     title: page.title,
     description: page.description,

@@ -101,7 +101,7 @@ export default config({
     // Kelompokkan sidebar agar tidak menumpuk datar. Kunci di sini harus sama
     // persis dengan kunci singleton/collection di bawah.
     navigation: {
-      Halaman: ['about', 'programs'],
+      Halaman: ['about', 'programs', 'jejak'],
       'Konten Situs': ['faq', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
       'Pengaturan Situs': ['settings', 'seo', 'analytics'],
@@ -460,6 +460,72 @@ export default config({
             description: 'Hanya perlu diisi untuk program aktif yang punya halaman sendiri.',
           }
         ),
+      },
+    }),
+
+    // Jejak = lapisan eksekusi di atas program: satu program berjalan berkali-
+    // kali, tiap kali menghasilkan foto, angka, dan cerita. Body naratif pakai
+    // Markdoc (.mdoc) — ekstensi ini WAJIB sepakat dengan content.config.ts,
+    // kalau mismatch Keystatic diam menampilkan nol entry.
+    jejak: collection({
+      label: 'Jejak',
+      slugField: 'title',
+      path: 'src/content/jejak/*',
+      format: { contentField: 'body' },
+      schema: {
+        title: fields.slug({
+          name: { label: 'Judul' },
+          slug: {
+            label: 'Slug',
+            description: 'Ikuti konvensi program-slug-YYYY-MM-DD, contoh: jumat-berkah-2026-07-18.',
+          },
+        }),
+        program: fields.relationship({
+          label: 'Program induk',
+          description: 'Program yang jejak ini merupakan pelaksanaannya.',
+          collection: 'programs',
+        }),
+        date: fields.date({ label: 'Tanggal' }),
+        location: fields.text({ label: 'Lokasi' }),
+        summary: fields.text({ label: 'Ringkasan', multiline: true }),
+        metrics: fields.array(
+          fields.object({
+            label: fields.text({ label: 'Label', description: 'Contoh: porsi, penerima, relawan.' }),
+            value: fields.integer({ label: 'Nilai' }),
+          }),
+          {
+            label: 'Metrik',
+            description: 'Angka hasil. Label senada digabung saat agregasi (huruf besar/kecil diabaikan).',
+            itemLabel: (props) =>
+              props.fields.label.value
+                ? `${props.fields.label.value}: ${props.fields.value.value ?? ''}`
+                : 'Metrik',
+          }
+        ),
+        cover: fields.image({
+          label: 'Gambar sampul',
+          directory: 'public/uploads/jejak',
+          publicPath: '/uploads/jejak/',
+        }),
+        gallery: fields.array(
+          fields.image({
+            label: 'Foto',
+            directory: 'public/uploads/jejak',
+            publicPath: '/uploads/jejak/',
+          }),
+          {
+            label: 'Galeri',
+            itemLabel: (props) => props.value?.filename || 'Foto',
+          }
+        ),
+        published: fields.checkbox({
+          label: 'Terbit',
+          description: 'Hanya jejak terbit yang tampil di situs dan ikut agregasi dampak.',
+        }),
+        body: fields.markdoc({
+          label: 'Cerita',
+          options: { image: false, codeBlock: false, table: false },
+        }),
       },
     }),
   },

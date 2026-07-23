@@ -54,6 +54,10 @@ export const IMPACTS: Impact[] = [
 // Tanpa link "Home" — logo di navbar yang jadi jalan pulang ke beranda.
 export const NAV_LINKS = [
   { id: 'program', label: 'Pintu Berbagi', href: '/#program' },
+  { id: 'cara-kerja', label: 'Cara Kerja', href: '/#cara-kerja' },
+  // "Jejak & Dampak" sementara ke home #dampak (Stats angka jejak-agregat +
+  // ImpactSection narasi). Retarget ke halaman global /jejak/ begitu landing.
+  { id: 'dampak', label: 'Jejak & Dampak', href: '/#dampak' },
   { id: 'tentang', label: 'Tentang Kami', href: '/tentang/' },
   { id: 'faq', label: 'FAQ', href: '/faq/' },
 ];

@@ -8,7 +8,9 @@ import ProgramHighlights from '../components/ProgramHighlights.astro';
 import ProgramFeatures from '../components/ProgramFeatures.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import ImpactSection from '../components/ImpactSection.astro';
-import JejakTerbaru from '../components/JejakTerbaru.astro';
+// JejakTerbaru disembunyikan sementara di beranda (desain belum solid dengan
+// home saat ini). Komponen & data tetap ada; showcase penuh di /jejak.
+// import JejakTerbaru from '../components/JejakTerbaru.astro';
 import FaqHome from '../components/FaqHome.astro';
 import JoinUs from '../components/JoinUs.astro';
 import heroImage from '../assets/images/hero-jumat-berkah.png';
@@ -47,7 +49,7 @@ import heroImage from '../assets/images/hero-jumat-berkah.png';
   <ProgramHighlights />
   <HowItWorks />
   <ImpactSection />
-  <JejakTerbaru />
+  {/* <JejakTerbaru /> disembunyikan sementara (desain belum selaras home). */}
   <FaqHome />
   <JoinUs />
   <PintuSection />

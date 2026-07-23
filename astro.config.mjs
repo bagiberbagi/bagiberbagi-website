@@ -15,6 +15,13 @@ export default defineConfig({
   site: 'https://www.bagiberbagi.id',
   output: 'static',
 
+  // `/program` (tanpa slug) tak punya index — program dibrowse lewat halaman
+  // pintu + beranda, jadi URL telanjang diarahkan ke #program. Path persis saja,
+  // tidak mengganggu route dinamis `/program/[program]/`.
+  redirects: {
+    '/program': '/#program',
+  },
+
   // Keystatic Cloud's local-dev auth flow redirects to 127.0.0.1 specifically
   // (not "localhost") — bind the dev server there so that redirect resolves.
   // Matches what @keystatic/astro's own integration does internally.

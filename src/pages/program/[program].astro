@@ -39,6 +39,10 @@ const waLink = buildWaLink(
   buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)))
 );
 
+// Kemitraan menempel ke program (mis. dapur mitra Jumat Berkah), jadi CTA mitra
+// hidup di halaman program. Sekunder: satu tautan halus, tak menyaingi Donasi.
+const mitraWa = buildWaLink(site.data.waNumber, `Halo, saya ingin menjadi mitra untuk program ${program.label}.`);
+
 // Langkah "cara kerja" spesifik pintu (mis. Makanan: Order, Kurasi, Penyaluran,
 // Laporan). Kosong untuk pintu yang belum diisi, blok-nya lalu disembunyikan.
 const steps = CATEGORY_CONTENT[program.pintu]?.howItWorks ?? [];
@@ -122,6 +126,10 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
             <div class="text-center mt-3">
               <a href="/#donasi" data-track="hitung_donasi" class="text-body-sm font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Hitung donasi dulu</a>
             </div>
+            <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
+              Mitra UMKM atau relawan?
+              <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
+            </p>
           </div>
         </div>
 

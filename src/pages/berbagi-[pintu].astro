@@ -51,7 +51,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
       <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-[var(--cat)] mb-4">
         <Icon name={pintu.icon} size={30} />
       </span>
-      <div class="eyebrow text-[var(--cat)]">{pintu.english}</div>
+      <div class="eyebrow text-[var(--cat-deep)]">{pintu.english}</div>
       <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight mb-3">{pintu.label}</h1>
       <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-2xl mx-auto mb-7">{pintu.tagline}</p>
 
@@ -93,7 +93,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
   <!-- PROGRAM di channel ini: aktif + segera -->
   <section class="section bg-gray-50" style={styleVars}>
     <div class="max-w-5xl mx-auto">
-      <div class="eyebrow text-[var(--cat)]">Program</div>
+      <div class="eyebrow text-[var(--cat-deep)]">Program</div>
       <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-8">Cara berbagi lewat pintu {pintu.label}</h2>
 
       {active.length > 0 && (
@@ -140,7 +140,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
   {content?.forWhom && content.forWhom.length > 0 && (
     <section class="section bg-white" style={styleVars}>
       <div class="max-w-5xl mx-auto">
-        <div class="eyebrow text-[var(--cat)]">Untuk Siapa</div>
+        <div class="eyebrow text-[var(--cat-deep)]">Untuk Siapa</div>
         <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-6">Siapa yang terbantu</h2>
         <div class="flex flex-wrap gap-2.5">
           {content.forWhom.map((who) => (
@@ -157,15 +157,19 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
   {content?.env && (
     <section class="section bg-gray-50" style={styleVars}>
       <div class="max-w-5xl mx-auto">
-        <div class="rounded-card p-7 md:p-9 text-white flex flex-col md:flex-row md:items-center gap-6" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
+        {/* Field GELAP NETRAL (ink), warna pintu jadi AKSEN pada angka. Beri
+            relief lawan hero+CTA yang sudah ber-warna-pintu penuh, dan cegah
+            monoton (di Makanan warna pintu = brand oranye, kalau band ini ikut
+            oranye halaman jadi satu nada). */}
+        <div class="rounded-card p-7 md:p-9 text-white flex flex-col md:flex-row md:items-center gap-6" style="background:linear-gradient(135deg,#1f2a3d,#0f172a)">
           <div class="flex-1">
-            <div class="eyebrow text-white/80">Bonus Dampak</div>
+            <div class="eyebrow text-white/70">Bonus Dampak</div>
             <h2 class="text-title md:text-heading-sm font-extrabold tracking-tight">{content.env.headline}</h2>
           </div>
           <div class="flex gap-8">
             {content.env.stats.map((s) => (
               <div>
-                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums">{s.value}</div>
+                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums text-[var(--cat)]">{s.value}</div>
                 <div class="text-body-sm text-white/80">{s.label}</div>
               </div>
             ))}

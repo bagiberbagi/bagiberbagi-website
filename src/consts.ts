@@ -1,5 +1,5 @@
 export interface Feature {
-  icon: 'food' | 'map' | 'camera' | 'repeat';
+  icon: 'food' | 'map' | 'camera' | 'repeat' | 'heart';
   bg: string;
   color: string;
   title: string;
@@ -13,11 +13,14 @@ const BRAND_ORANGE_TINT = '#FDEEE1';
 const BRAND_BLUE = '#1D46B9';
 const BRAND_BLUE_TINT = '#E3EAFB';
 
+// Pembeda level PLATFORM (kenapa bagiberbagi), bukan fitur satu program. Berlaku
+// untuk penyaluran apa pun, jadi tetap relevan saat program selain Jumat Berkah
+// aktif. Hindari kata khusus makanan/Jumat di sini.
 export const FEATURES: Feature[] = [
-  { icon: 'food', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Makanan sehat & higienis', desc: 'Menu bergizi lengkap dimasak UMKM kuliner terkurasi dengan standar laik higiene.' },
-  { icon: 'map', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Penerima terdata, bukan tebak-tebakan', desc: 'Titik penyaluran dipetakan dengan seksama, merata, tidak menumpuk di satu tempat.' },
-  { icon: 'camera', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Bukti nyata setiap pekan', desc: 'Foto dan video geotagged dari lapangan dikirim ke donatur maksimal H+1 setelah distribusi.' },
-  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Mudah diulang kapan saja', desc: 'Donasi rutin lewat WhatsApp, tim kami bantu proses dan atur jumlah pax sesuai kebutuhan Anda.' },
+  { icon: 'map', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Tepat sasaran', desc: 'Penerima terdata dan dipetakan bareng komunitas, bukan tebak-tebakan.' },
+  { icon: 'camera', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Terbukti, bukan janji', desc: 'Foto dan video dari lapangan kembali ke kamu maksimal H+1 tiap penyaluran.' },
+  { icon: 'heart', bg: BRAND_ORANGE_TINT, color: BRAND_ORANGE, title: 'Terkurasi dan layak', desc: 'Kami kurasi mitra penyalur dan kelayakannya, jadi bantuan benar-benar tepat sampai.' },
+  { icon: 'repeat', bg: BRAND_BLUE_TINT, color: BRAND_BLUE, title: 'Berjalan konsisten', desc: 'Terjadwal dan rutin, bukan kampanye sekali jalan.' },
 ];
 
 export interface Step {
@@ -41,10 +44,10 @@ export interface Impact {
 }
 
 export const IMPACTS: Impact[] = [
-  { icon: 'heart', title: 'Penerima Manfaat', desc: 'Makanan sehat bergizi hadir terjadwal, memberi kepastian dan martabat bagi yang membutuhkan.' },
-  { icon: 'chef', title: 'UMKM Kuliner', desc: 'Dapur kecil mendapat order pasti mingguan, omzet yang membantu usaha keluarga.' },
-  { icon: 'walk', title: 'Relawan Lapangan', desc: 'Warga memperoleh penghasilan rutin dalam setiap proses penyaluran lingkungannya sendiri.' },
-  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi dan kurir ikut bergerak. Lapangan kerja baru lahir dari satu tradisi.' },
+  { icon: 'heart', title: 'Mustahik', desc: 'Makanan bergizi hadir terjadwal tiap Jumat. Bukan sekadar kenyang, tapi kepastian buat jamaah, petugas kebersihan, dan anak panti.' },
+  { icon: 'chef', title: 'UMKM Kuliner', desc: 'Dapur kecil dapat order pasti tiap minggu dengan bayaran tepat waktu. Usaha keluarga terus jalan.' },
+  { icon: 'walk', title: 'Agen Lapangan', desc: 'Warga sekitar yang mengantar dapat penghasilan tambahan rutin tiap Jumat. Kerja bermakna di lingkungan sendiri.' },
+  { icon: 'box', title: 'Pekerja Pendukung', desc: 'Dokumentasi, kurir, sampai penyedia kemasan lokal ikut bergerak. Lapangan kerja baru dari satu tradisi berbagi.' },
 ];
 
 

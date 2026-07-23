@@ -1,15 +1,21 @@
 ---
 import Icon from './Icon.astro';
 import { IMPACTS } from '../consts';
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waLaporanLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin melihat laporan penyaluran Jumat Berkah.');
 ---
 
 <section class="section bg-brand-blue text-white">
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-12">
-      <div class="eyebrow text-brand-yellow">DAMPAK BERGANDA</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Satu Aksi. Banyak Dampak.</h2>
+      <div class="eyebrow text-brand-yellow">Dampak Berputar</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Satu paket, dampak yang berputar.</h2>
       <p class="text-base leading-relaxed text-white/85">
-        <strong>Sekali berbagi, dampaknya menjangkau jauh melampaui penerima bantuan.</strong> Satu donasi turut menghidupkan UMKM sekitar, menciptakan lapangan kerja, dan mempererat ikatan warga.
+        Donasi kamu tidak berhenti di satu tangan. Tiap paket Jumat Berkah menggerakkan rantai sosial-ekonomi di lingkungan tempat ia disalurkan.
       </p>
     </div>
 
@@ -56,8 +62,14 @@ import { IMPACTS } from '../consts';
     <div class="mt-12 text-center">
       <div class="w-11 h-0.75 rounded bg-brand-yellow/85 mx-auto mb-4"></div>
       <p class="max-w-150 mx-auto text-body-sm leading-relaxed text-white/90">
-        <strong class="text-white">Ekonomi kebaikan yang berputar lokal:</strong> dana dari donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dan dinikmati penerima yang tepat.
+        <strong class="text-white">Ekonomi kebaikan yang berputar lokal.</strong> Dana donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dinikmati mustahik setempat. Berkahnya tinggal di lingkungan itu.
       </p>
+      {/* Kaitan tipis ke halaman laporan, bukan blok CTA. Masih dalam konteks
+          Dampak Berputar. Target sementara WA sampai halaman laporan ada. */}
+      <a href={waLaporanLink} target="_blank" rel="noopener" data-track="laporan_click" data-track-source="impact_penutup" class="inline-flex items-center gap-1.5 mt-5 text-brand-yellow font-bold text-body-sm hover:gap-2.5 transition-[gap]">
+        Lihat laporan penyaluran
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </a>
     </div>
   </div>
 </section>

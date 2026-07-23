@@ -19,16 +19,17 @@ const csrBenefits = [
 ];
 ---
 
-{/* Ground biru MELANJUTKAN ImpactSection di atas (top flush = satu bidang biru
-    nyambung). Rounded-bottom + shadow biru-dalam bikin blok ini "mengambang" di
-    atas PintuSection putih — sudut rounded menampilkan bg-white body di belakang. */}
-<section id="tentang" class="section relative z-10 bg-brand-blue text-white rounded-b-[28px] shadow-[0_34px_52px_-26px_rgba(11,30,77,0.55)]">
+{/* Seksi SEKUNDER di LUAR narasi donatur (jalan korporat/mitra). Karena bukan
+    bagian busur donatur, ia TIDAK memakai warna biru narasi dan TIDAK memegang
+    radius bind (radius bind = penutup narasi, ada di FAQ di atas). Ground netral
+    putih; identitas visual datang dari dua kartu (orange + slate) di dalamnya. */}
+<section id="tentang" class="section bg-white">
   <div class="max-w-7xl mx-auto">
     <div class="max-w-2xl mb-10">
-      <div class="text-brand-yellow font-bold text-eyebrow tracking-wide mb-3">BERGABUNG LEBIH JAUH</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Bangun Dampak Bersama</h2>
-      <p class="text-white/85 text-base leading-relaxed">
-        Tidak hanya sebagai donatur. Anda juga bisa menggerakkan ekosistem kebaikan dari sisi lain, jadi mitra dapur atau lewat program korporasi.
+      <div class="eyebrow">BERGABUNG LEBIH JAUH</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3 text-ink">Bangun Dampak Bersama</h2>
+      <p class="text-muted text-base leading-relaxed">
+        Tidak hanya sebagai donatur. Kamu juga bisa menggerakkan ekosistem kebaikan dari sisi lain, jadi mitra dapur atau lewat program korporasi.
       </p>
     </div>
 

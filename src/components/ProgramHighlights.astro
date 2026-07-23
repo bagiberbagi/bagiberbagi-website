@@ -12,7 +12,7 @@ const active = food.filter((p) => p.active);
 const upcoming = food.filter((p) => !p.active);
 ---
 
-<section id="program" class="section scroll-mt-24">
+<section id="program" class="section bg-gray-50 scroll-mt-24">
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-10">
       <div class="eyebrow">PROGRAM AKTIF</div>
@@ -41,7 +41,7 @@ const upcoming = food.filter((p) => !p.active);
           <div class="eyebrow text-muted mb-3">Segera Menyusul</div>
           <div class="flex flex-wrap justify-center gap-2.5">
             {upcoming.map((p) => (
-              <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-gray-50 pl-4 pr-4 py-2 text-body-sm font-semibold text-ink/70">
+              <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-white pl-4 pr-4 py-2 text-body-sm font-semibold text-ink/70">
                 {p.label}
                 {/* Status seragam dgn PintuSection: dot warna + teks micro uppercase. */}
                 <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">

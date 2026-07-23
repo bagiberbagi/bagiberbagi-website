@@ -1,0 +1,64 @@
+---
+import { getEntry } from 'astro:content';
+
+const faqEntry = await getEntry('faq', 'faq');
+if (!faqEntry) throw new Error('faq/faq entry not found');
+// Ambil 3 pertanyaan teratas; urutannya = urutan array di Keystatic.
+// Daftar lengkap tetap di halaman /faq.
+const faqs = faqEntry.data.items.slice(0, 3);
+---
+
+{/* PENUTUP NARASI DONATUR (lanjutan Dampak): warna & aksen ikut ImpactSection
+    (bg-brand-blue, teks putih, aksen kuning) supaya bidang biru donatur nyambung
+    utuh. Di sinilah satu-satunya radius bind di home: rounded-bottom + shadow
+    biru-dalam menutup busur donatur, mengambang di atas seksi netral di bawahnya
+    (JoinUs, di luar narasi). Layout 2 kolom editorial (kiri framing, kanan
+    accordion + baris aksi) supaya ringan. */}
+<section class="section relative z-10 bg-brand-blue text-white rounded-b-[28px] shadow-[0_34px_52px_-26px_rgba(11,30,77,0.55)]">
+  <div class="max-w-7xl mx-auto grid gap-10 lg:gap-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start">
+    <div>
+      <div class="text-brand-yellow font-bold text-eyebrow tracking-wide mb-3">Masih Ada Pertanyaan?</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Yang sering ditanyakan.</h2>
+      <p class="text-white/85 text-body-sm leading-relaxed max-w-sm">
+        Beberapa hal yang paling sering ditanyakan sebelum berdonasi. Kalau masih ada yang mengganjal, kami siap bantu.
+      </p>
+    </div>
+
+    <div class="flex flex-col border-t border-white/15">
+      {faqs.map((faq, i) => (
+        <div class="faq-item border-b border-white/15" data-faq data-q={faq.q} data-a={faq.a}>
+          <button
+            type="button"
+            class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"
+            aria-expanded="false"
+            aria-controls={`faq-home-answer-${i}`}
+          >
+            <span class="text-base font-bold text-white m-0">{faq.q}</span>
+            <svg aria-hidden="true" class="faq-chevron flex-none transition-transform duration-200 text-white/60" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <p id={`faq-home-answer-${i}`} class="faq-answer hidden text-body-sm text-white/75 leading-relaxed pb-5 -mt-1">{faq.a}</p>
+        </div>
+      ))}
+
+      {/* Baris aksi di kanan: donasi (primer, kuning menonjol) + link ke FAQ penuh
+          (sekunder, putih redup) supaya tidak saling rebut. */}
+      <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-6">
+        <p class="text-body-sm text-white/85 m-0">
+          Sudah mantap?
+          <a href="#donasi" data-track="donate_click" data-track-source="faq_nudge" class="text-brand-yellow font-bold inline-flex items-center gap-1 hover:gap-2 transition-[gap] align-baseline">
+            Donasi sekarang
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+          </a>
+        </p>
+        <a href="/faq/" class="text-white/65 font-semibold text-body-sm inline-flex items-center gap-1.5 hover:text-white hover:gap-2.5 transition-all">
+          Lihat semua pertanyaan
+          <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/faq.js';
+</script>

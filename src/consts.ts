@@ -30,7 +30,7 @@ export interface Step {
 }
 
 export const STEPS: Step[] = [
-  { n: '01', title: 'Pilih Program', desc: 'Pilih program dan jumlah pax sesuai kebutuhan Anda.' },
+  { n: '01', title: 'Pilih Program', desc: 'Pilih program dan jumlah pax sesuai kebutuhan kamu.' },
   { n: '02', title: 'Lakukan Pembayaran', desc: 'Lakukan pembayaran dengan aman melalui mekanisme pada platform.' },
   { n: '03', title: 'Mitra Menjalankan', desc: 'Order diteruskan ke UMKM partner dengan standar higienitas.' },
   { n: '04', title: 'Penyaluran', desc: 'Panti asuhan, petugas kebersihan dan fakir miskin sesuai pemetaan.' },
@@ -53,7 +53,11 @@ export const IMPACTS: Impact[] = [
 
 // Tanpa link "Home" — logo di navbar yang jadi jalan pulang ke beranda.
 export const NAV_LINKS = [
-  { id: 'program', label: 'Program', href: '/#program' },
+  { id: 'program', label: 'Pintu Berbagi', href: '/#program' },
+  { id: 'cara-kerja', label: 'Cara Kerja', href: '/#cara-kerja' },
+  // "Jejak & Dampak" menuju showcase global /jejak/ (angka dampak agregat +
+  // feed kegiatan + galeri). Dulu sementara ke home #dampak sebelum showcase ada.
+  { id: 'dampak', label: 'Jejak & Dampak', href: '/jejak/' },
   { id: 'tentang', label: 'Tentang Kami', href: '/tentang/' },
   { id: 'faq', label: 'FAQ', href: '/faq/' },
 ];
@@ -156,7 +160,7 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
     faq: [
       { q: 'Bagaimana kebersihan & kelayakan makanan dijamin?', a: 'Makanan dimasak mitra dapur terkurasi dengan standar laik higiene, dicek sebelum penyaluran, dan tak pernah menyimpan yang basi atau kedaluwarsa.' },
       { q: 'Ke mana saja makanan disalurkan?', a: 'Ke titik penerima yang sudah terdata dan dipetakan — panti, warga prasejahtera, hingga petugas kebersihan — merata, tidak menumpuk di satu tempat.' },
-      { q: 'Bisakah saya berdonasi rutin setiap pekan?', a: 'Bisa. Hubungi kami via WhatsApp, tim membantu mengatur donasi rutin dan jumlah pax sesuai kebutuhan Anda.' },
+      { q: 'Bisakah saya berdonasi rutin setiap pekan?', a: 'Bisa. Hubungi kami via WhatsApp, tim membantu mengatur donasi rutin dan jumlah pax sesuai kebutuhan kamu.' },
     ],
     ctaTitle: 'Punya surplus makanan atau ingin jadi mitra penyalur?',
     ctaText: 'Tim kami bantu salurkan ke titik yang tepat. Donasi per program ada di halaman masing-masing.',

@@ -10,10 +10,10 @@ import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
-// Mega-menu = lima kategori program (Impact dikecualikan, ia lapisan hasil
-// bukan channel donasi). Ditampilkan sebagai satu baris horizontal di bawah
-// label "Pintu Berbagi". Kategori ber-program menampilkan daftar programnya;
-// yang belum jalan menampilkan tagline-nya (lihat ProgramMenuCategory).
+// Mega-menu desktop = panel 2 kolom: kiri promo "Pintu Berbagi" + kartu flagship
+// program aktif (Jumat Berkah), kanan grid lima kartu pintu (ProgramMenuCategory)
+// + strip trust/dampak. PROGRAM_MENU dirakit dari PINTU + program per pintu;
+// items[].active dipakai kartu untuk menentukan status Aktif/Segera.
 const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PINTU.map(async (cat) => ({
     label: cat.label,
@@ -35,6 +35,11 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   }))
 );
 
+// Kartu flagship di panel desktop = program pintu Makanan yang aktif
+// (Jumat Berkah). CTA-nya "Pelajari ..." mengarah ke halaman program, bukan
+// tombol donasi — navbar sudah punya CTA donasi sendiri.
+const flagship = (await getProgramsByPintu('food')).find((p) => p.active);
+
 // Active-nav: tandai current-page berdasar route (SSR, per-halaman statis).
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const navActive = (link: (typeof NAV_LINKS)[number]) => {
@@ -46,27 +51,25 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 
 <header
   data-header
-  class="sticky top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300"
+  class="sticky top-0 z-50 px-3 sm:px-4 pt-3 relative"
 >
-  <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-4">
-    <a href="/#top" class="flex items-center">
+  <div data-nav-pill class="max-w-7xl mx-auto flex items-center gap-5 rounded-full border border-transparent px-4 md:px-5 py-2.5 transition-all duration-300">
+    <a href="/#top" class="flex items-center shrink-0">
       <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto md:h-9" />
     </a>
 
-    {/* Grup kanan: logo tetap di kiri (justify-between), menu + CTA berkumpul
-        di kanan sebagai satu unit. */}
-    <div class="hidden nav:flex items-center gap-7">
-    <nav class="flex items-center gap-7">
+    {/* Nav links di kiri dekat logo; CTA Donasi didorong ke kanan pil (ml-auto). */}
+    <nav class="hidden nav:flex items-center gap-6">
       {NAV_LINKS.map((link) => (
         link.id === 'program' ? (
-          <div class="relative" data-program-menu>
+          <div data-program-menu>
             <button
               type="button"
               data-program-trigger
               aria-expanded="false"
               aria-haspopup="true"
               aria-controls="program-panel"
-              class="flex items-center gap-1.5 text-body-sm font-semibold tracking-tight text-ink transition-colors hover:text-brand-orange"
+              class="nav-link flex items-center gap-1.5 text-body-sm font-semibold tracking-tight text-ink transition-colors hover:text-brand-orange"
             >
               {link.label}
               <svg aria-hidden="true" data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
@@ -74,16 +77,56 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <div
               id="program-panel"
               data-program-panel
-              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-menu border border-border p-6 z-50"
+              class="hidden absolute left-0 right-0 top-full mt-2 max-w-7xl mx-auto bg-white rounded-card shadow-menu border border-border p-5 z-50 grid grid-cols-[288px_1fr] gap-6"
             >
-              <a href="/#pintu" class="eyebrow text-brand-orange mb-1 inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
-                {PINTU_LABEL}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
-              </a>
-              <div class="divide-y divide-border">
-                {PROGRAM_MENU.map((col) => (
-                  <ProgramMenuCategory category={col} />
-                ))}
+              {/* KIRI: promo pintu + kartu flagship program aktif */}
+              <div class="flex flex-col">
+                <div class="eyebrow text-brand-orange">{PINTU_LABEL}</div>
+                <h3 class="text-title font-extrabold tracking-tight leading-tight mt-2 mb-2">Lima pintu, satu gerakan berbagi.</h3>
+                <p class="text-body-sm text-muted leading-relaxed mb-4">Mulai dari makanan, meluas ke barang, waktu, ruang, dan dana. Satu tempat untuk semua cara berbagi sumber daya.</p>
+
+                {flagship && (
+                  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-orange to-brand-orangeDark text-white p-4 mt-auto">
+                    <span aria-hidden="true" class="pointer-events-none absolute -right-8 -bottom-10 w-32 h-32 rounded-full bg-white/10"></span>
+                    <span class="inline-block rounded-full bg-white/20 px-2.5 py-1 text-micro font-extrabold uppercase tracking-wider">Program Aktif</span>
+                    <h4 class="text-title-sm font-extrabold mt-2.5 mb-1.5">{flagship.label}</h4>
+                    <p class="text-body-sm leading-relaxed text-white/85 mb-3.5">{flagship.summary}</p>
+                    {flagship.href && (
+                      <a
+                        href={flagship.href}
+                        data-track="program_click"
+                        data-track-program={flagship.label}
+                        class="group inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-body-sm font-extrabold text-brand-orangeDark"
+                      >
+                        Pelajari {flagship.label}
+                        <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* KANAN: lima kartu pintu + strip trust/dampak */}
+              <div class="flex flex-col">
+                <div class="flex items-center justify-between gap-4 mb-3.5">
+                  <span class="text-micro font-extrabold uppercase tracking-wider text-muted">Lima Pintu Berbagi</span>
+                  <a href="/#program" class="group inline-flex items-center gap-1 text-body-sm font-bold text-ink transition-colors hover:text-brand-orange">
+                    Lihat semua program
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </a>
+                </div>
+                <div class="grid grid-cols-5 gap-2 flex-1">
+                  {PROGRAM_MENU.map((col) => (
+                    <ProgramMenuCategory category={col} />
+                  ))}
+                </div>
+                <div class="mt-4 border-t border-border pt-3.5 flex items-center justify-between gap-4 flex-wrap">
+                  <span class="text-body-sm text-muted">Setiap donasi terdokumentasi dan sampai ke yang tepat.</span>
+                  <a href="/jejak/" class="group inline-flex items-center gap-1.5 text-body-sm font-extrabold text-brand-orange">
+                    Lihat jejak & dampak
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -91,36 +134,34 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
           <a
             href={link.href}
             aria-current={navActive(link) ? 'page' : undefined}
-            class:list={['text-body-sm tracking-tight text-ink transition-colors hover:text-brand-orange', navActive(link) ? 'font-extrabold' : 'font-semibold']}
+            class:list={['nav-link text-body-sm tracking-tight text-ink transition-colors hover:text-brand-orange', navActive(link) ? 'font-extrabold' : 'font-semibold']}
           >
             {link.label}
           </a>
         )
       ))}
     </nav>
-    {/* CTA navbar = level "medium" (btn-sm), lebih kecil dari CTA besar di hero
-        agar hierarki ukuran jelas — bukan semua tombol seukuran. */}
+    {/* CTA navbar btn-sm; didorong ke kanan pil (ml-auto), disembunyikan di mobile. */}
     <a
       href="/#donasi"
       data-nav-donasi
-      class="btn-primary btn-sm whitespace-nowrap"
+      class="hidden nav:inline-flex btn-primary btn-sm whitespace-nowrap ml-auto"
     >
       Donasi Sekarang
     </a>
-    </div>
 
     <button
       id="nav-toggle"
       aria-label="Menu"
       aria-expanded="false"
       aria-controls="mobile-nav-panel"
-      class="nav:hidden bg-gray-50 border-0 w-11 h-11 rounded-xl flex items-center justify-center text-ink"
+      class="nav:hidden ml-auto bg-gray-50 border-0 w-11 h-11 rounded-xl flex items-center justify-center text-ink"
     >
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
     </button>
   </div>
 
-  <nav id="mobile-nav-panel" class="hidden nav:hidden flex-col gap-0.5 px-5 md:px-10 pb-5 pt-2 border-t border-border">
+  <nav id="mobile-nav-panel" class="hidden nav:hidden max-w-7xl mx-auto mt-2 flex-col gap-0.5 bg-white border border-border rounded-2xl shadow-cardSm px-5 pb-5 pt-3">
     {NAV_LINKS.map((link) => (
       link.id === 'program' ? (
         <div data-program-menu-mobile>
@@ -160,30 +201,58 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 </header>
 
 <style>
-  /* Awal (belum scroll): navbar TRANSPARAN — foto+overlay zona hero (index)
-     menembus di belakangnya, jadi kesan pertama full seamless kuning. Tanpa
-     garis/shadow. Setelah scroll (.is-scrolled) atau saat menu mobile terbuka
-     (.menu-open, agar panel tak transparan menembus foto): putih solid + border
-     + shadow lembut. border selalu ada agar transisi warna halus. */
-  [data-header] {
-    border-bottom: 1px solid transparent;
-  }
-  [data-header].is-scrolled,
-  [data-header].menu-open {
+  /* Navbar HYBRID: di puncak halaman pil TRANSPARAN/flat supaya konteks hero
+     kuning tembus (seamless, seperti sebelumnya). Setelah scroll (.is-scrolled)
+     atau saat menu mobile terbuka (.menu-open) skin pil muncul: putih + blur +
+     border + shadow, jadi pil mengambang. Transisi halus (transition-all di kelas). */
+  [data-header].is-scrolled [data-nav-pill],
+  [data-header].menu-open [data-nav-pill] {
     background-color: rgba(255, 255, 255, 0.95);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    border-bottom-color: #eef0f3;
-    box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.25);
+    border-color: #eef0f3;
+    box-shadow: 0 14px 28px -18px rgba(15, 23, 42, 0.3);
   }
 
-  /* Di puncak (belum scroll) tombol Donasi jadi FLAT — transparan, teks ink
-     (samakan warna teks umum hero, hindari kesan biru berbeda). Setelah scroll
-     balik ke pill oranye (btn-primary). */
+  /* Tombol Donasi: di puncak jadi OUTLINE (transparan, teks ink) agar kebaca di
+     hero kuning; setelah scroll (pil putih) balik ke pill oranye solid. Border
+     selalu 1.5px agar tak ada layout shift dan warnanya bertransisi halus. */
+  [data-nav-donasi] {
+    border: 1.5px solid transparent;
+  }
   [data-header]:not(.is-scrolled) [data-nav-donasi],
   [data-header]:not(.is-scrolled) [data-nav-donasi]:hover {
     background-color: transparent;
     color: #0f172a;
+    border-color: rgba(15, 23, 42, 0.28);
+  }
+
+  /* Nav link: indikator hover/fokus selain warna — garis bawah yang tumbuh dari
+     kiri. Hadir juga saat focus-visible (keyboard), bukan cuma hover. */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link::after {
+      transition: none;
+    }
   }
 </style>
 

@@ -74,23 +74,23 @@ const websiteUrl = Astro.site!.href.replace(/\/$/, '');
           <slot />
 
           <div class="flex flex-col gap-3 mt-2">
-            <a href={emailLink} class="flex items-center gap-3 text-ink hover:text-brand-blue">
+            <a href={emailLink} class="group flex items-center gap-3 text-ink hover:text-brand-blue">
               <span class="w-8 h-8 rounded-full bg-brand-orange/15 text-brand-orange flex items-center justify-center flex-none">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
               </span>
-              Email: {site.data.socials.email}
+              <span class="underline decoration-transparent underline-offset-2 transition-colors group-hover:decoration-current">Email: {site.data.socials.email}</span>
             </a>
-            <a href={waLink} target="_blank" rel="noopener" class="flex items-center gap-3 text-ink hover:text-brand-blue">
+            <a href={waLink} target="_blank" rel="noopener" class="group flex items-center gap-3 text-ink hover:text-brand-blue">
               <span class="w-8 h-8 rounded-full bg-brand-orange/15 text-brand-orange flex items-center justify-center flex-none">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path></svg>
               </span>
-              WhatsApp: {site.data.waNumberDisplay}
+              <span class="underline decoration-transparent underline-offset-2 transition-colors group-hover:decoration-current">WhatsApp: {site.data.waNumberDisplay}</span>
             </a>
-            <a href={websiteUrl} class="flex items-center gap-3 text-ink hover:text-brand-blue">
+            <a href={websiteUrl} class="group flex items-center gap-3 text-ink hover:text-brand-blue">
               <span class="w-8 h-8 rounded-full bg-brand-orange/15 text-brand-orange flex items-center justify-center flex-none">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg>
               </span>
-              Website: {websiteUrl}
+              <span class="underline decoration-transparent underline-offset-2 transition-colors group-hover:decoration-current">Website: {websiteUrl}</span>
             </a>
           </div>
 

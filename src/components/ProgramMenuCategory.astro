@@ -7,58 +7,55 @@ export interface Props {
   iconSize?: number;
 }
 
-const { category, iconSize = 16 } = Astro.props;
+const { category, iconSize = 19 } = Astro.props;
 
-// Maksimal 3 kartu per pintu; sisanya diakses lewat "Lihat semua".
-const MAX = 3;
-const shown = category.items.slice(0, MAX);
-const hasMore = category.items.length > MAX;
+// Pintu aktif kalau minimal satu program di dalamnya aktif.
+const isActive = category.items.some((i) => i.active);
 ---
 
-<div class="grid grid-cols-1 nav:grid-cols-[200px_1fr] gap-2.5 nav:gap-5 nav:items-center py-3" style={`--cat:${category.color};--cat-tint:${category.colorTint}`}>
-  <a href={category.href} data-track="menu_category" data-track-category={category.label} class="group flex items-start gap-2.5 self-start nav:self-center">
-    <span class="w-8 h-8 rounded-lg bg-[var(--cat-tint)] text-[var(--cat)] flex items-center justify-center flex-none">
-      <Icon name={category.icon} size={iconSize} />
-    </span>
-    <div>
-      <div class="font-bold text-sm text-ink group-hover:text-[var(--cat)] transition-colors">{category.label}</div>
-      <div class="text-xs text-muted leading-snug mt-0.5">{category.tagline}</div>
-    </div>
-  </a>
+<a
+  href={category.href}
+  data-track="menu_category"
+  data-track-category={category.label}
+  class="group flex flex-col rounded-xl border border-border bg-white p-3 transition-all hover:border-[var(--cat)] hover:bg-[var(--cat-tint)] hover:shadow-cardSm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
+  style={`--cat:${category.color};--cat-tint:${category.colorTint}`}
+>
+  <span class="w-9 h-9 rounded-lg bg-[var(--cat-tint)] text-[var(--cat)] grid place-items-center mb-2.5 transition-colors group-hover:bg-white">
+    <Icon name={category.icon} size={iconSize} />
+  </span>
 
-  <div class="flex flex-wrap gap-2 items-stretch">
-    {category.items.length === 0 && (
-      <span class="text-xs text-muted self-center">Segera dibuka</span>
-    )}
+  <span class="flex items-center gap-1 font-bold text-sm text-ink leading-tight transition-colors group-hover:text-[var(--cat)]">
+    {category.label}
+    <svg
+      aria-hidden="true"
+      class="ml-auto flex-none opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M9 6l6 6-6 6"></path>
+    </svg>
+  </span>
 
-    {shown.map((item) =>
-      item.active && item.href ? (
-        <a
-          href={item.href}
-          data-track="menu_click"
-          data-track-item={item.label}
-          class="group basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-white p-2.5 transition-all hover:border-[var(--cat)] hover:shadow-cardSm"
-        >
-          <div class="text-sm font-bold text-ink leading-snug group-hover:text-[var(--cat)] transition-colors">{item.label}</div>
-          <p class="text-xs text-muted leading-snug mt-1">{item.desc}</p>
-        </a>
-      ) : (
-        <div class="basis-[200px] grow-0 min-w-[168px] rounded-xl border border-border bg-gray-50 p-2.5">
-          <div class="text-[10px] font-semibold uppercase tracking-wide text-muted/60">Segera</div>
-          <div class="text-sm font-bold text-ink/50 leading-snug">{item.label}</div>
-          <p class="text-xs text-muted leading-snug mt-1">{item.desc}</p>
-        </div>
-      )
-    )}
+  <span class="flex-1 text-xs text-muted leading-snug mt-1.5">{category.tagline}</span>
 
-    {hasMore && (
-      <a
-        href={category.href}
-        class="group self-stretch flex items-center gap-1 text-sm font-bold text-[var(--cat)] px-2.5 whitespace-nowrap"
-      >
-        Lihat semua
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-      </a>
-    )}
-  </div>
-</div>
+  <span
+    class:list={[
+      'inline-flex items-center gap-1.5 mt-2.5 text-[10px] font-bold uppercase tracking-wider',
+      isActive ? 'text-[var(--cat)]' : 'text-gray-400',
+    ]}
+  >
+    <span
+      class:list={[
+        'w-1.5 h-1.5 rounded-full',
+        isActive ? 'bg-[var(--cat)]' : 'bg-gray-300',
+      ]}
+    ></span>
+    {isActive ? 'Aktif' : 'Segera'}
+  </span>
+</a>

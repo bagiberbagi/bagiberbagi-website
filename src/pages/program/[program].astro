@@ -4,7 +4,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
-import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../../lib/format';
+import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah, formatMetric } from '../../lib/format';
 import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
@@ -172,7 +172,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Jejak {program.label}</h2>
         <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-2xl">
           Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
-            <Fragment>, dengan total <strong class="text-ink">{mainMetric.value.toLocaleString('id-ID')} {mainMetric.label}</strong></Fragment>
+            <Fragment>, dengan total <strong class="text-ink">{formatMetric(mainMetric)} {mainMetric.label}</strong></Fragment>
           )}. Berikut dokumentasi tiap pelaksanaannya beserta angka dampaknya.
         </p>
 
@@ -180,7 +180,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-9">
             {impact.metrics.map((m) => (
               <div class="rounded-card bg-[var(--cat-tint)] p-5">
-                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums text-[var(--cat-deep)]">{m.value.toLocaleString('id-ID')}</div>
+                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums text-[var(--cat-deep)]">{formatMetric(m)}</div>
                 <div class="text-body-sm text-[var(--cat-deep)]/70 mt-0.5">{m.label}</div>
               </div>
             ))}
@@ -199,7 +199,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                   <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-body-sm">
                     {j.metrics.map((m) => (
                       <span class="inline-flex items-baseline gap-1.5">
-                        <strong class="font-extrabold tabular-nums text-ink">{m.value.toLocaleString('id-ID')}</strong>
+                        <strong class="font-extrabold tabular-nums text-ink">{formatMetric(m)}</strong>
                         <span class="text-muted">{m.label}</span>
                       </span>
                     ))}

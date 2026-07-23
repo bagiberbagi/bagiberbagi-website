@@ -1,0 +1,33 @@
+---
+// Overlay lightbox galeri, dipakai bersama oleh halaman detail jejak dan halaman
+// rekam jejak pintu. Dikendalikan jejak-gallery.js yang membaca semua tombol
+// [data-gallery-item] di halaman lalu menampilkan gambarnya di sini. Render
+// hanya bila memang ada foto (lihat guard di pemanggil). Prev/next & counter
+// otomatis disembunyikan skrip saat cuma satu foto.
+---
+
+<div
+  data-lightbox
+  role="dialog"
+  aria-modal="true"
+  aria-label="Galeri foto"
+  aria-hidden="true"
+  class="fixed inset-0 z-[100] hidden items-center justify-center"
+>
+  <div class="absolute inset-0 bg-ink/90 backdrop-blur-sm" data-lightbox-close></div>
+  <button type="button" data-lightbox-close aria-label="Tutup galeri" class="absolute top-4 right-4 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+  </button>
+  <button type="button" data-lightbox-prev aria-label="Foto sebelumnya" class="absolute left-3 md:left-6 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 9 12l6-6"></path></svg>
+  </button>
+  <img data-lightbox-img src="" alt="" class="relative max-h-[85vh] max-w-[92vw] object-contain rounded-lg shadow-2xl" />
+  <button type="button" data-lightbox-next aria-label="Foto berikutnya" class="absolute right-3 md:right-6 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+  </button>
+  <div data-lightbox-counter class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-ink/70 text-white text-body-sm font-semibold tabular-nums px-3.5 py-1.5"></div>
+</div>
+
+<script>
+  import '../scripts/jejak-gallery.js';
+</script>

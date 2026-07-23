@@ -2,6 +2,18 @@ export function formatRupiah(amount: number): string {
   return 'Rp ' + amount.toLocaleString('id-ID');
 }
 
+/**
+ * Format nilai metrik jejak untuk ditampilkan. Metrik berlabel dana/donasi
+ * ditampilkan sebagai Rupiah; selain itu angka biasa berpemisah ribuan.
+ * Satu sumber supaya kartu beranda, halaman pintu, program, dan detail jejak
+ * konsisten (dulu logika ini ter-duplikat dan sempat terlewat di beranda).
+ */
+export function formatMetric(metric: { label: string; value: number }): string {
+  return /dana|rupiah|donasi/i.test(metric.label)
+    ? formatRupiah(metric.value)
+    : metric.value.toLocaleString('id-ID');
+}
+
 export function calcTotal(pax: number): number {
   return pax * 25000;
 }

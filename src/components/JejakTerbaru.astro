@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { formatMetric } from '../lib/format';
 import { getJejak } from '../lib/jejak';
 import { getPrograms } from '../lib/programs';
 import { PINTU } from '../consts';
@@ -96,7 +97,7 @@ const fmtDate = (iso: string) =>
                     {j.metrics.slice(0, 3).map((m) => (
                       <div class="rounded-xl bg-gray-50 px-2 py-2.5 text-center">
                         <div class="text-title-sm font-extrabold tabular-nums leading-none" style={`color:var(--cat)`}>
-                          {m.value.toLocaleString('id-ID')}
+                          {formatMetric(m)}
                         </div>
                         <div class="text-micro text-muted mt-1 truncate">{m.label}</div>
                       </div>

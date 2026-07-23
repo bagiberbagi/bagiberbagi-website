@@ -27,19 +27,23 @@ export default {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
       },
+      // Skala tipografi tunggal — step dirapatkan agar hierarki jelas & selaras
+      // dengan ukuran default Tailwind (biar `text-base`/`text-sm`/`text-xs`
+      // yang tercecer melebur ke nilai token, bukan dua sistem yang beda 0.5-1px).
+      // Body 16 = text-base; body-sm 14 = text-sm; micro 12 = text-xs. Heading
+      // naik rata 22→26→30→34→40. `heading-md`/`heading-xl` dipensiun (duplikat/
+      // tak terpakai) — angka stat kini responsif heading-sm→heading-lg.
       fontSize: {
-        micro: '11px',
+        micro: '12px',
         eyebrow: '13px',
-        'body-sm': '14.5px',
-        body: '15px',
-        'title-sm': '17px',
+        'body-sm': '14px',
+        body: '16px',
+        'title-sm': '18px',
         title: '22px',
         'heading-sm': '26px',
-        heading: '28px',
-        'heading-md': '30px',
-        'heading-lg': '32px',
-        'heading-xl': '34px',
-        display: '38px',
+        heading: '30px',
+        'heading-lg': '34px',
+        display: '40px',
         'display-lg': '56px',
       },
       borderRadius: {

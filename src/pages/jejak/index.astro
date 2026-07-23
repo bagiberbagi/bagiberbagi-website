@@ -64,13 +64,13 @@ const fmtDate = (iso: string) =>
           {/* counter agregat global */}
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-12">
             <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-              <div class="text-heading-md font-extrabold tracking-tight text-brand-orangeDark tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
+              <div class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-brand-orangeDark tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
               <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
               <div class="text-body-sm text-brand-orangeDark/70">kali kegiatan</div>
             </div>
             {impact.metrics.map((m) => (
               <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-                <div class="text-heading-md font-extrabold tracking-tight text-brand-orangeDark tabular-nums leading-none">{formatMetric(m)}</div>
+                <div class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-brand-orangeDark tabular-nums leading-none">{formatMetric(m)}</div>
                 <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
                 <div class="text-body-sm text-brand-orangeDark/70">{m.label}</div>
               </div>
@@ -150,7 +150,7 @@ const fmtDate = (iso: string) =>
                       </div>
                     )}
                     <div class="text-micro font-semibold text-muted mb-2">{fmtDate(j.date)} &middot; {j.location}</div>
-                    <h3 class="text-title-sm font-bold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">{j.title}</h3>
+                    <h3 class="text-title-sm font-extrabold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">{j.title}</h3>
                     {j.metrics.length > 0 && (
                       <div class="mt-auto grid grid-cols-3 gap-2">
                         {j.metrics.slice(0, 3).map((m) => (

@@ -70,12 +70,12 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
       <div class="max-w-4xl mx-auto">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-[var(--cat-tint)] p-5 text-center">
-            <div class="text-heading-md font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
+            <div class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
             <div class="text-body-sm text-[var(--cat-deep)]/70 mt-1.5">kali kegiatan</div>
           </div>
           {impact.metrics.slice(0, 3).map((m) => (
             <div class="rounded-card bg-[var(--cat-tint)] p-5 text-center">
-              <div class="text-heading-md font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{formatMetric(m)}</div>
+              <div class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{formatMetric(m)}</div>
               <div class="text-body-sm text-[var(--cat-deep)]/70 mt-1.5">{m.label}</div>
             </div>
           ))}
@@ -104,7 +104,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
               <div class="inline-flex items-center gap-2 text-micro font-bold uppercase tracking-wide text-[var(--cat-deep)] mb-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span> Program aktif
               </div>
-              <h3 class="text-title-sm font-bold text-ink mb-1.5">{p.label}</h3>
+              <h3 class="text-title-sm font-extrabold text-ink mb-1.5">{p.label}</h3>
               <p class="text-body-sm text-muted leading-snug flex-1">{p.summary}</p>
               <span class="mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm text-[var(--cat-deep)]">
                 Lihat program

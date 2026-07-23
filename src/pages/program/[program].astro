@@ -1,0 +1,259 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import Share from '../../components/Share.astro';
+import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah } from '../../lib/format';
+import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
+import { getJejakByProgram } from '../../lib/jejak';
+import { getProgramImpact } from '../../lib/impact';
+import { PINTU, CATEGORY_CONTENT } from '../../consts';
+import programPromo from '../../assets/images/program-promo.png';
+
+// Satu route untuk semua program aktif ber-halaman, di bawah /program/[slug]/.
+// Begitu editor mengaktifkan program di Keystatic & mengisi Detail, halamannya
+// ikut ter-generate tanpa membuat file .astro baru.
+export async function getStaticPaths() {
+  const programs = await getProgramPages();
+  return programs.map((program) => ({
+    params: { program: program.slug },
+    props: { program },
+  }));
+}
+
+const { program } = Astro.props;
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+
+// Identitas pintu induk: warna aksen (CSS var --cat) + tautan hub pintu, supaya
+// halaman jelas "dari pintu apa". Fallback ke pintu pertama bila tak ketemu.
+const pintu = PINTU.find((p) => p.id === program.pintu) ?? PINTU[0];
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
+const pintuHref = `/berbagi/${pintu.slug}/`;
+const jejakHref = `/berbagi/${pintu.slug}/jejak/`;
+
+const defaultPax = 10;
+const waLink = buildWaLink(
+  site.data.waNumber,
+  buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)))
+);
+
+// Langkah "cara kerja" spesifik pintu (mis. Makanan: Order, Kurasi, Penyaluran,
+// Laporan). Kosong untuk pintu yang belum diisi, blok-nya lalu disembunyikan.
+const steps = CATEGORY_CONTENT[program.pintu]?.howItWorks ?? [];
+
+// Program lain di pintu yang sama, untuk memperlihatkan keterkaitan. Ditampilkan
+// maksimal 3 (yang aktif/ber-halaman didahulukan); selebihnya lewat tautan
+// "lihat semua" ke halaman pintu yang mendaftar seluruh programnya.
+const siblings = (await getProgramsByPintu(program.pintu)).filter((p) => p.slug !== program.slug);
+const siblingsShown = [...siblings].sort((a, b) => Number(!!b.href) - Number(!!a.href)).slice(0, 3);
+
+// Rekam jejak pelaksanaan program ini (terbaru dulu) + agregat dampaknya.
+const jejak = await getJejakByProgram(program.slug);
+const impact = await getProgramImpact(program.slug);
+const mainMetric = impact.metrics[0];
+const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+// Foto hero: dokumentasi jejak terbaru bila ada, kalau tidak pakai gambar promo.
+const heroCover = jejak.find((j) => j.cover)?.cover ?? null;
+
+// URL kanonik penuh untuk tombol bagikan.
+const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<BaseLayout>
+  <!-- HERO: dua kolom, latar hangat tint pintu, foto ber-glow warna pintu -->
+  <section class="section" style={`${styleVars};background:linear-gradient(150deg,var(--cat-tint),#ffffff 58%)`}>
+    <div class="max-w-5xl mx-auto">
+      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <a href={pintuHref} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <span class="text-[var(--cat-deep)]">{program.label}</span>
+      </nav>
+
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <a href={pintuHref} class="inline-flex items-center gap-1.5 rounded-full border border-[var(--cat)]/40 bg-white/70 text-[var(--cat-deep)] font-semibold text-eyebrow tracking-wide px-3 py-1 transition-colors hover:bg-white">
+          <Icon name={pintu.icon} size={13} />
+          {pintu.label}
+        </a>
+        <span class="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 text-ink font-bold text-micro tracking-wide px-3 py-1.5">
+          <span class="relative flex w-2 h-2" aria-hidden="true">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-green-500/70 motion-safe:animate-ping"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
+          </span>
+          {program.detail.eyebrow}
+        </span>
+      </div>
+
+      <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 mb-8">
+        <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight">{program.label}</h1>
+        <Share url={shareUrl} title={program.label} text={program.summary} compact class="flex-none mt-1.5" />
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10 md:gap-12 items-stretch">
+        <div>
+          <p class="text-body-sm text-muted leading-relaxed mb-6">{program.detail.description}</p>
+
+          {program.detail.features.length > 0 && (
+            <div class="flex flex-col gap-2.5 mb-7">
+              {program.detail.features.map((feature) => (
+                <div class="flex gap-2.5 text-sm text-ink/80">
+                  <span class="flex-none mt-0.5 grid place-items-center w-5 h-5 rounded-full bg-[var(--cat-tint)] text-[var(--cat-deep)]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg>
+                  </span>
+                  {feature}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <!-- Panel donasi: harga (nilai) dan tombol (aksi) menyatu; hierarki
+               dijaga lewat peran, bukan dua kotak bersaing. -->
+          <div class="rounded-card p-6 md:p-7 bg-white shadow-cardSoft border border-border">
+            <div class="eyebrow text-[var(--cat-deep)]">HARGA DONASI</div>
+            <div class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-ink mt-1">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></div>
+            <p class="text-sm text-muted mt-1.5 mb-5">Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran.</p>
+            <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-program={program.label} data-track-source="program_page" data-track-pax="10" class="btn-primary w-full flex items-center justify-center">
+              Donasi Sekarang
+            </a>
+            <div class="text-center mt-3">
+              <a href="/#donasi" data-track="hitung_donasi" class="text-body-sm font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Hitung donasi dulu</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-first md:order-last">
+          {heroCover ? (
+            <img src={heroCover} alt={`Dokumentasi ${program.label}`} loading="eager" class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card" style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)" />
+          ) : (
+            <Image src={programPromo} alt={program.label} class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card" style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)" />
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARA KERJA: timeline tersambung, nomor bulat selang-seling pintu/biru -->
+  {steps.length > 0 && (
+    <section class="section bg-white" style={styleVars}>
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <div class="eyebrow text-[var(--cat)]">Cara Kerja</div>
+          <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Dari donasi sampai ke penerima</h2>
+        </div>
+        <ol class="grid gap-8 md:grid-cols-4 md:gap-3">
+          {steps.map((step, i) => (
+            <li class="relative md:text-center before:content-[''] before:absolute before:hidden md:before:block before:top-[23px] before:right-1/2 before:w-[calc(100%+0.75rem)] before:h-0.5 before:bg-border first:before:hidden">
+              <div class="flex items-center gap-4 md:block">
+                <span
+                  class="relative z-10 flex-none w-12 h-12 rounded-full flex items-center justify-center text-white text-title-sm font-extrabold tabular-nums md:mx-auto shadow-cardSm"
+                  style={i % 2 === 0 ? 'background:var(--cat)' : 'background:#1D46B9'}
+                >{i + 1}</span>
+                <div class="md:mt-4">
+                  <h3 class="text-title-sm font-bold mb-1 md:mb-1.5">{step.title}</h3>
+                  <p class="text-body-sm text-muted leading-relaxed md:px-1">{step.desc}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  <!-- REKAM JEJAK -->
+  {jejak.length > 0 && (
+    <section class="section bg-gray-50" style={styleVars}>
+      <div class="max-w-5xl mx-auto">
+        <div class="eyebrow text-[var(--cat)]">Rekam Jejak</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-3">Jejak {program.label}</h2>
+        <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-2xl">
+          Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
+            <Fragment>, dengan total <strong class="text-ink">{mainMetric.value.toLocaleString('id-ID')} {mainMetric.label}</strong></Fragment>
+          )}. Berikut dokumentasi tiap pelaksanaannya beserta angka dampaknya.
+        </p>
+
+        {impact.metrics.length > 0 && (
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-9">
+            {impact.metrics.map((m) => (
+              <div class="rounded-card bg-[var(--cat-tint)] p-5">
+                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums text-[var(--cat-deep)]">{m.value.toLocaleString('id-ID')}</div>
+                <div class="text-body-sm text-[var(--cat-deep)]/70 mt-0.5">{m.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div class="flex flex-col gap-3">
+          {jejak.map((j) => (
+            <a href={j.href} class="group relative flex overflow-hidden rounded-card bg-white border border-border transition hover:shadow-card hover:-translate-y-0.5">
+              <span class="absolute inset-y-0 left-0 w-1.5 bg-[var(--cat)]" aria-hidden="true"></span>
+              <div class="flex-1 pl-6 pr-5 py-5 md:pl-7 md:pr-6 md:py-6">
+                <div class="text-micro font-bold uppercase tracking-wide text-muted mb-1.5">{jejakDateFmt.format(new Date(j.date))}</div>
+                <h3 class="text-title-sm font-bold mb-1.5 transition-colors group-hover:text-[var(--cat-deep)]">{j.title}</h3>
+                <p class="text-body-sm text-muted leading-snug mb-3">{j.summary}</p>
+                {j.metrics.length > 0 && (
+                  <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-body-sm">
+                    {j.metrics.map((m) => (
+                      <span class="inline-flex items-baseline gap-1.5">
+                        <strong class="font-extrabold tabular-nums text-ink">{m.value.toLocaleString('id-ID')}</strong>
+                        <span class="text-muted">{m.label}</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div class="mt-8">
+          <a href={jejakHref} class="inline-flex items-center gap-2 rounded-full border border-[var(--cat)] text-[var(--cat-deep)] font-bold text-body-sm px-5 py-2.5 hover:bg-[var(--cat)] hover:text-white transition-colors">
+            Lihat semua jejak
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- PROGRAM LAIN SEPINTU -->
+  {siblings.length > 0 && (
+    <section class="section bg-white" style={styleVars}>
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <div class="eyebrow text-[var(--cat)]">Masih di {pintu.label}</div>
+          <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Program lain satu pintu</h2>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {siblingsShown.map((p) => {
+            const Tag = (p.href ? 'a' : 'div') as any;
+            return (
+              <Tag href={p.href} class:list={['group flex flex-col rounded-card border border-border bg-white p-6', p.href && 'transition hover:shadow-card hover:-translate-y-0.5']}>
+                <span class="w-11 h-11 rounded-xl grid place-items-center bg-[var(--cat-tint)] text-[var(--cat)] mb-4">
+                  <Icon name={pintu.icon} size={20} />
+                </span>
+                <h3 class="text-title-sm font-bold text-ink mb-1.5">{p.label}</h3>
+                <p class="text-body-sm text-muted leading-snug flex-1">{p.summary}</p>
+                <span class:list={['mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm', p.href ? 'text-[var(--cat-deep)]' : 'text-muted']}>
+                  {p.href ? 'Lihat program' : 'Segera hadir'}
+                  {p.href && <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>}
+                </span>
+              </Tag>
+            );
+          })}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href={pintuHref} class="inline-flex items-center gap-2 rounded-full border border-[var(--cat)] text-[var(--cat-deep)] font-bold text-body-sm px-5 py-2.5 hover:bg-[var(--cat)] hover:text-white transition-colors">
+            Lihat semua program {pintu.label}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>

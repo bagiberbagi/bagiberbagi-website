@@ -23,7 +23,7 @@ export async function getPrograms(): Promise<Program[]> {
   return entries
     .map((e) => {
       const hasPage = e.data.active && e.data.detail.description.trim() !== '';
-      return { slug: e.id, ...e.data, href: hasPage ? `/${e.id}/` : undefined };
+      return { slug: e.id, ...e.data, href: hasPage ? `/program/${e.id}/` : undefined };
     })
     .sort((a, b) => a.order - b.order);
 }

@@ -5,6 +5,7 @@ import { PINTU } from '../../../consts';
 import { getProgramsByPintu } from '../../../lib/programs';
 import { getJejakByPintu } from '../../../lib/jejak';
 import { getPintuImpact, getProgramImpact } from '../../../lib/impact';
+import { formatRupiah } from '../../../lib/format';
 
 // Halaman rekam jejak agregat per pintu di /berbagi/[slug]/jejak, nested di
 // bawah pintu agar menyatu dengan taksonomi. Detail tiap jejak hidup di route
@@ -69,6 +70,9 @@ const kaliWord = pintu.id === 'food' ? 'penyaluran' : 'kegiatan';
 
 const hasJejak = jejakList.length > 0;
 const fmt = (n: number) => n.toLocaleString('id-ID');
+// Metrik berlabel dana/donasi ditampilkan sebagai Rupiah.
+const fmtMetric = (m: { label: string; value: number }) =>
+  /dana|rupiah|donasi/i.test(m.label) ? formatRupiah(m.value) : fmt(m.value);
 
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 ---
@@ -114,21 +118,26 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
             </div>
             {pintuImpact.metrics.map((m) => (
               <div class="rounded-card border border-border bg-gray-50 p-5 text-center">
-                <div class="text-heading-md font-extrabold tracking-tight text-ink tabular-nums leading-none">{fmt(m.value)}</div>
+                <div class="text-heading-md font-extrabold tracking-tight text-ink tabular-nums leading-none">{fmtMetric(m)}</div>
                 <div class="w-5 h-0.75 rounded bg-[var(--cat)] mx-auto my-2.5"></div>
                 <div class="text-body-sm text-muted">{m.label}</div>
               </div>
             ))}
           </div>
 
-          {/* galeri gabungan */}
-          {gallery.length > 0 && (
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 mb-12">
-              {gallery.map((src) => (
-                <img src={src} alt="" loading="lazy" decoding="async" width="400" height="300" class="w-full aspect-[4/3] object-cover rounded-xl bg-gray-100" />
-              ))}
-            </div>
-          )}
+          {/* galeri gabungan (placeholder kalau foto belum diunggah) */}
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 mb-12">
+            {gallery.length > 0
+              ? gallery.map((src) => (
+                  <img src={src} alt="" loading="lazy" decoding="async" width="400" height="300" class="w-full aspect-[4/3] object-cover rounded-xl bg-gray-100" />
+                ))
+              : Array.from({ length: 4 }).map(() => (
+                  <div class="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-border bg-gray-50 grid place-items-center gap-1.5 text-gray-300">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <span class="text-micro font-semibold text-gray-400">Foto menyusul</span>
+                  </div>
+                ))}
+          </div>
 
           {/* breakdown per program */}
           <div class="eyebrow text-[var(--cat)] mb-5">Per Program</div>
@@ -151,7 +160,7 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
                   </div>
                   {b.primary && (
                     <div class="flex-none text-right">
-                      <div class="text-heading-sm font-extrabold text-ink tabular-nums leading-none">{fmt(b.primary.value)}</div>
+                      <div class="text-heading-sm font-extrabold text-ink tabular-nums leading-none">{fmtMetric(b.primary)}</div>
                       <div class="text-micro text-muted mt-1">{b.primary.label}</div>
                     </div>
                   )}

@@ -49,9 +49,9 @@ const manualPages: Record<string, { title: string; description: string }> = Obje
  */
 const programPages = Object.fromEntries(
   (await getProgramPages())
-    .filter((program) => !(program.slug in manualPages))
+    .filter((program) => !(`program/${program.slug}` in manualPages))
     .map((program) => [
-      program.slug,
+      `program/${program.slug}`,
       {
         title: `${program.label} — bagiberbagi.id`,
         description: program.summary,

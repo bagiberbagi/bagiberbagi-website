@@ -1,6 +1,7 @@
 ---
 import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
 import { formatRupiah } from '../../lib/format';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
@@ -44,32 +45,48 @@ const dateLabel = new Date(jejak.date).toLocaleDateString('id-ID', {
 
 // Metrik dengan label berbau dana/rupiah diformat Rupiah; selain itu angka biasa.
 function formatMetric(m: { label: string; value: number }): string {
-  return /dana|rupiah/i.test(m.label) ? formatRupiah(m.value) : m.value.toLocaleString('id-ID');
+  return /dana|rupiah|donasi/i.test(m.label) ? formatRupiah(m.value) : m.value.toLocaleString('id-ID');
 }
 
+// Featured = gambar besar (cover, atau foto pertama bila cover kosong); carousel
+// = sisanya. allImages (dedup) jadi sumber lightbox, urut featured lalu sisanya.
 const galleryImages = jejak.gallery.filter((g): g is string => Boolean(g));
+const allImages = [...new Set([jejak.cover, ...galleryImages].filter((s): s is string => Boolean(s)))];
+const featured = allImages[0] ?? null;
+const carousel = allImages.slice(1);
 ---
 
 <BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
   <section class="section bg-white" style={styleVars}>
     <div class="max-w-3xl mx-auto">
-      <!-- breadcrumb -->
+      <!-- breadcrumb: Beranda / Pintu / Rekam Jejak / judul -->
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href={ctaHref} class="hover:text-[var(--cat-deep)]">Jejak</a>
+        <a href={`/berbagi/${pintu.slug}/`} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <a href={`/berbagi/${pintu.slug}/jejak/`} class="hover:text-[var(--cat-deep)]">Rekam Jejak</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-[var(--cat-deep)]">{jejak.title}</span>
       </nav>
 
-      <!-- badge program (warna pintu) -->
-      <a
-        href={ctaHref}
-        class="inline-flex items-center gap-2 rounded-full bg-[var(--cat-tint)] text-[var(--cat-deep)] font-bold text-eyebrow tracking-wide px-3.5 py-1.5 mb-4"
-      >
-        <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span>
-        {programLabel}
-      </a>
+      <!-- konteks: pintu (induk) + program (spesifik) -->
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <a
+          href={`/berbagi/${pintu.slug}/`}
+          class="inline-flex items-center gap-1.5 rounded-full bg-[var(--cat)] text-white font-bold text-eyebrow tracking-wide px-3.5 py-1.5"
+        >
+          <Icon name={pintu.icon} size={14} />
+          {pintu.label}
+        </a>
+        <a
+          href={ctaHref}
+          class="inline-flex items-center gap-2 rounded-full bg-[var(--cat-tint)] text-[var(--cat-deep)] font-bold text-eyebrow tracking-wide px-3.5 py-1.5"
+        >
+          <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span>
+          {programLabel}
+        </a>
+      </div>
 
       <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight text-ink mb-4">
         {jejak.title}
@@ -91,11 +108,58 @@ const galleryImages = jejak.gallery.filter((g): g is string => Boolean(g));
 
       <p class="text-body-sm text-muted leading-relaxed mb-7">{jejak.summary}</p>
 
-      {jejak.cover && (
-        <img src={jejak.cover} alt={jejak.title} loading="lazy" class="w-full rounded-card object-cover mb-8" />
+      <!-- featured image (besar): klik untuk perbesar -->
+      {featured ? (
+        <button
+          type="button"
+          data-gallery-item
+          data-src={featured}
+          aria-label="Buka foto 1"
+          class="group relative block w-full rounded-card overflow-hidden bg-gray-100 mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
+        >
+          <img src={featured} alt={jejak.title} loading="eager" class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+          <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
+          <span aria-hidden="true" class="absolute bottom-3 right-3 grid place-items-center w-9 h-9 rounded-full bg-ink/55 text-white opacity-0 transition-opacity group-hover:opacity-100">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
+          </span>
+        </button>
+      ) : (
+        <div class="w-full aspect-[16/10] rounded-card border-2 border-dashed border-border bg-gray-50 grid place-items-center gap-2 text-gray-300 mb-8">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          <span class="text-body-sm font-semibold text-gray-400">Foto menyusul</span>
+        </div>
       )}
 
-      <!-- grid metrik -->
+      <!-- carousel foto lain: strip scroll horizontal (nampung berapa pun), klik untuk perbesar -->
+      {carousel.length > 0 && (
+        <div class="relative mb-8" data-carousel>
+          <div
+            data-carousel-track
+            class="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {carousel.map((src, i) => (
+              <button
+                type="button"
+                data-gallery-item
+                data-src={src}
+                aria-label={`Buka foto ${i + 2}`}
+                class="snap-start shrink-0 grow-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] group relative block rounded-2xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
+              >
+                <img src={src} alt="" loading="lazy" class="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105" />
+                <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
+              </button>
+            ))}
+          </div>
+          <button type="button" data-carousel-prev aria-label="Geser ke kiri" hidden class="absolute left-1 top-1/2 -translate-y-1/2 grid place-items-center w-9 h-9 rounded-full bg-white text-ink shadow-cardSm hover:shadow-card transition disabled:opacity-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 9 12l6-6"></path></svg>
+          </button>
+          <button type="button" data-carousel-next aria-label="Geser ke kanan" hidden class="absolute right-1 top-1/2 -translate-y-1/2 grid place-items-center w-9 h-9 rounded-full bg-white text-ink shadow-cardSm hover:shadow-card transition disabled:opacity-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </div>
+      )}
+
+      <!-- statistik -->
       {jejak.metrics.length > 0 && (
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
           {jejak.metrics.map((m) => (
@@ -104,15 +168,6 @@ const galleryImages = jejak.gallery.filter((g): g is string => Boolean(g));
               <div class="mt-1.5 h-0.75 w-6 rounded bg-[var(--cat)]"></div>
               <div class="text-sm text-muted mt-2.5">{m.label}</div>
             </div>
-          ))}
-        </div>
-      )}
-
-      <!-- galeri -->
-      {galleryImages.length > 0 && (
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-9">
-          {galleryImages.map((src) => (
-            <img src={src} alt="" loading="lazy" class="w-full aspect-square rounded-2xl object-cover" />
           ))}
         </div>
       )}
@@ -146,4 +201,33 @@ const galleryImages = jejak.gallery.filter((g): g is string => Boolean(g));
       </a>
     </div>
   </section>
+
+  {galleryImages.length > 0 && (
+    <div
+      id="jejak-lightbox"
+      data-lightbox
+      role="dialog"
+      aria-modal="true"
+      aria-label="Galeri foto jejak"
+      aria-hidden="true"
+      class="fixed inset-0 z-[100] hidden items-center justify-center"
+    >
+      <div class="absolute inset-0 bg-ink/90 backdrop-blur-sm" data-lightbox-close></div>
+      <button type="button" data-lightbox-close aria-label="Tutup galeri" class="absolute top-4 right-4 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+      <button type="button" data-lightbox-prev aria-label="Foto sebelumnya" class="absolute left-3 md:left-6 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 9 12l6-6"></path></svg>
+      </button>
+      <img data-lightbox-img src="" alt="" class="relative max-h-[85vh] max-w-[92vw] object-contain rounded-lg shadow-2xl" />
+      <button type="button" data-lightbox-next aria-label="Foto berikutnya" class="absolute right-3 md:right-6 z-10 grid place-items-center w-11 h-11 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <div data-lightbox-counter class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-ink/70 text-white text-body-sm font-semibold tabular-nums px-3.5 py-1.5"></div>
+    </div>
+  )}
 </BaseLayout>
+
+<script>
+  import '../../scripts/jejak-gallery.js';
+</script>

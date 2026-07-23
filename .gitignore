@@ -27,3 +27,6 @@ mockup/
 *.dc.html
 image-slot.js
 support.js
+
+# screenshot playwright ad-hoc di root
+/*.png

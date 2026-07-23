@@ -8,15 +8,13 @@ import ProgramHighlights from '../components/ProgramHighlights.astro';
 import ProgramFeatures from '../components/ProgramFeatures.astro';
 import HowItWorks from '../components/HowItWorks.astro';
 import ImpactSection from '../components/ImpactSection.astro';
-import LaporanSection from '../components/LaporanSection.astro';
 import FaqHome from '../components/FaqHome.astro';
-import FinalCta from '../components/FinalCta.astro';
 import JoinUs from '../components/JoinUs.astro';
 import heroImage from '../assets/images/hero-jumat-berkah.png';
 ---
 
 <BaseLayout>
-  {/* Alur food-first: hook → proof → flagship → cara → kenapa → dampak → gabung → arah */}
+  {/* Alur narasi donatur: hook+aksi (hero+stats) → kenapa percaya (Mengapa) → program aktif (apa) → cara kerja (gimana) → dampak → tuntasin ragu (FAQ, tutup narasi via radius bind). Lalu di luar narasi: sekunder (gabung) → arah gerakan (pintu). */}
   {/* Layar pertama = satu zona kuning: navbar (seamless), Hero, dan Stats berbagi
       SATU foto lapangan di belakang overlay. Overlay opaque di kiri (teks kebaca),
       memudar ke kanan agar foto menembus — keterbacaan angka stats tetap terjaga. */}
@@ -44,13 +42,11 @@ import heroImage from '../assets/images/hero-jumat-berkah.png';
       <Stats />
     </div>
   </div>
+  <ProgramFeatures />
   <ProgramHighlights />
   <HowItWorks />
-  <ProgramFeatures />
   <ImpactSection />
-  <LaporanSection />
   <FaqHome />
-  <FinalCta />
   <JoinUs />
   <PintuSection />
 </BaseLayout>

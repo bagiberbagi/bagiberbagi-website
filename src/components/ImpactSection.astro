@@ -1,6 +1,12 @@
 ---
 import Icon from './Icon.astro';
 import { IMPACTS } from '../consts';
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const waLaporanLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin melihat laporan penyaluran Jumat Berkah.');
 ---
 
 <section class="section bg-brand-blue text-white">
@@ -58,6 +64,12 @@ import { IMPACTS } from '../consts';
       <p class="max-w-150 mx-auto text-body-sm leading-relaxed text-white/90">
         <strong class="text-white">Ekonomi kebaikan yang berputar lokal.</strong> Dana donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dinikmati mustahik setempat. Berkahnya tinggal di lingkungan itu.
       </p>
+      {/* Kaitan tipis ke halaman laporan, bukan blok CTA. Masih dalam konteks
+          Dampak Berputar. Target sementara WA sampai halaman laporan ada. */}
+      <a href={waLaporanLink} target="_blank" rel="noopener" data-track="laporan_click" data-track-source="impact_penutup" class="inline-flex items-center gap-1.5 mt-5 text-brand-yellow font-bold text-body-sm hover:gap-2.5 transition-[gap]">
+        Lihat laporan penyaluran
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      </a>
     </div>
   </div>
 </section>

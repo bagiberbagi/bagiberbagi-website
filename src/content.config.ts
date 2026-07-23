@@ -40,6 +40,12 @@ const settings = defineCollection({
       area: z.number(),
     }),
     statsNote: z.string(),
+    // Jadwal program berulang mingguan; menyetir hitung mundur di hero.
+    // weekday: '0'=Minggu … '6'=Sabtu (nilai select Keystatic = string).
+    schedule: z.object({
+      weekday: z.string(),
+      time: z.string(),
+    }),
   }),
 });
 

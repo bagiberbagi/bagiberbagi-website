@@ -1,41 +1,33 @@
 ---
-import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { FEATURES } from '../consts';
-import programPromoImage from '../assets/images/program-promo.png';
 ---
 
+{/* Seksi "Kenapa Bagiberbagi": esensi PLATFORM (apa & kenapa bagiberbagi), bukan
+    narasi satu program. Jumat Berkah cuma program yang kebetulan aktif sekarang,
+    jadi heading + pembeda dijaga level platform. Murni 4 pembeda dalam grid ikon,
+    SENGAJA tanpa kartu foto biru supaya tidak kembar dengan ProgramHighlights
+    (etalase kartu foto program) dan tidak menyerempet pesan ImpactSection. */}
 <section class="section">
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-14">
-      <div class="eyebrow">Program Utama</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Jumat Berkah: tradisi mulia, kini dengan infrastruktur.</h2>
-      <p class="text-muted text-base leading-relaxed">Tiap Jumat jutaan orang ingin berbagi makanan. Kami pastikan niat baik itu sampai ke yang tepat, terjadwal, higienis, dan terdokumentasi.</p>
+      <div class="eyebrow">Kenapa Bagiberbagi</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">Niat baik butuh infrastruktur.</h2>
+      <p class="text-muted text-base leading-relaxed">bagiberbagi menyalurkan niat baikmu ke orang yang tepat lewat mitra terkurasi, penerima terdata, dan bukti yang kembali ke kamu. Jumat Berkah program yang aktif sekarang, dan standar yang sama berlaku untuk program berikutnya.</p>
     </div>
 
-    <div class="flex flex-wrap gap-10 items-stretch">
-      <div class="flex-1 basis-[400px] min-w-[280px] relative rounded-card overflow-hidden flex flex-col justify-end min-h-[340px] text-white">
-        <Image src={programPromoImage} alt="Relawan bagiberbagi.id menyalurkan bantuan langsung ke masyarakat" width={800} height={600} class="absolute inset-0 w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-15% via-brand-blue/90 via-50% to-transparent"></div>
-        <div class="relative p-9">
-          <h3 class="text-title font-extrabold mb-2.5">Dari Kebaikan Anda Menjadi Dampak Nyata</h3>
-          <p class="text-body-sm leading-relaxed text-white/85">Setiap program menggerakkan ekosistem lokal mulai dari UMKM, relawan, komunitas, hingga penerima manfaat.</p>
-        </div>
-      </div>
-
-      <div class="flex-1 basis-[400px] min-w-[280px] flex flex-col gap-7 justify-center">
-        {FEATURES.map((f) => (
-          <div class="flex gap-4" data-fade="1">
-            <div class="w-11 h-11 flex-none rounded-xl flex items-center justify-center" style={{ background: f.bg }}>
-              <Icon name={f.icon} color={f.color} />
-            </div>
-            <div>
-              <h3 class="text-title-sm font-bold mb-1">{f.title}</h3>
-              <p class="text-body-sm text-muted leading-snug">{f.desc}</p>
-            </div>
+    <div class="grid gap-x-10 gap-y-9 sm:grid-cols-2 max-w-4xl mx-auto">
+      {FEATURES.map((f) => (
+        <div class="flex gap-4" data-fade="1">
+          <div class="w-11 h-11 flex-none rounded-xl flex items-center justify-center" style={{ background: f.bg }}>
+            <Icon name={f.icon} color={f.color} />
           </div>
-        ))}
-      </div>
+          <div>
+            <h3 class="text-title-sm font-bold mb-1">{f.title}</h3>
+            <p class="text-body-sm text-muted leading-snug">{f.desc}</p>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </section>

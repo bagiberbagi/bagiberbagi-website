@@ -1,18 +1,11 @@
 ---
 import DonationCalculator from './DonationCalculator.astro';
-import Icon from './Icon.astro';
-import { PINTU } from '../consts';
+import { getEntry } from 'astro:content';
 
-// Versi lebih terang dari warna identitas tiap pintu — hue sama, lightness
-// dinaikkan agar ikon kontras di atas pill gelap (bg ink). Lokal ke ticker ini;
-// warna pintu global (consts) tetap dipakai apa adanya di tempat lain.
-const ICON_BRIGHT: Record<string, string> = {
-  food: '#FF9E4D',
-  goods: '#A98BF0',
-  time: '#F56D9A',
-  space: '#3DC6E3',
-  money: '#3FD07A',
-};
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+// Jadwal program dari Keystatic menyetir target hitung mundur (bukan hardcode).
+const schedule = site.data.schedule;
 ---
 
 {/* Foto lapangan + overlay kuning kini hidup di wrapper zona (index.astro) yang
@@ -33,32 +26,21 @@ const ICON_BRIGHT: Record<string, string> = {
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
         </a>
       </div>
-      {/* Chip hitung mundur ke Jumat Berkah berikutnya (Jumat 06:00). Gaya chip
-          terang konsisten hero: bg putih, border tipis, dot pulse oranye kecil.
-          Nilai diisi client-side oleh countdown.js ke #jb-countdown. */}
-      <div class="inline-flex items-center gap-2 bg-white border border-border pl-3 pr-4 py-2 rounded-full text-body-sm font-semibold text-ink shadow-pill mb-4">
-        <span class="relative flex h-2 w-2" aria-hidden="true">
-          <span class="jb-dot-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-60"></span>
-          <span class="relative inline-flex h-2 w-2 rounded-full bg-brand-orange"></span>
-        </span>
-        Jumat Berkah berikutnya: <span id="jb-countdown" class="text-brand-orange">…</span>
-      </div>
-      {/* Ticker 5 pintu: badge statis "YUK BAGI", lalu slot bergulir berisi ikon
-          (warna identitas pintu) + label — fade-slide bergantian untuk menarik mata. */}
-      <div class="inline-flex items-center gap-3 bg-ink pl-3.5 pr-5 py-2.5 rounded-full text-body-sm font-semibold text-white shadow-pill">
-        <span class="bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide uppercase px-2.5 py-1 rounded-full">
-          Yuk Bagi
-        </span>
-        <span id="pintu-ticker" class="relative block h-5 min-w-[142px]">
-          {PINTU.map((p, i) => (
-            <span
-              class:list={['pintu-item absolute inset-0 inline-flex items-center gap-1.5 whitespace-nowrap', i === 0 && 'is-active']}
-              data-pintu-item
-            >
-              <Icon name={p.icon} color={ICON_BRIGHT[p.id] ?? p.color} size={16} />
-              {p.label}
-            </span>
-          ))}
+      {/* Chip hitung mundur ke Jumat Berkah berikutnya (Jumat 06:00). Pill gelap
+          khas hero: badge "JUMAT BERKAH BERIKUTNYA", lalu empat segmen angka tebal
+          (opsi B) sebagai elemen dinamisnya. countdown.js mengisi tiap segmen dan
+          meredupkan unit nol di depan (class .jb-dim) agar fokus ke waktu tersisa. */}
+      <div
+        class="inline-flex items-center gap-2.5 bg-ink pl-2 pr-4 py-1.5 rounded-full font-semibold text-white shadow-pill"
+        data-jb-weekday={schedule.weekday}
+        data-jb-time={schedule.time}
+      >
+        <span class="bg-brand-orange/25 text-brand-yellow text-micro font-extrabold tracking-wide uppercase px-2.5 py-1 rounded-full">Jumat Berkah Berikutnya</span>
+        <span class="inline-flex items-baseline gap-1.5 text-[13px] text-white/70">
+          <span class="jb-unit"><b id="jb-d" class="text-title-sm font-extrabold text-brand-yellow tabular-nums">00</b>hari</span>
+          <span class="jb-unit"><b id="jb-h" class="text-title-sm font-extrabold text-brand-yellow tabular-nums">00</b>jam</span>
+          <span class="jb-unit"><b id="jb-m" class="text-title-sm font-extrabold text-brand-yellow tabular-nums">00</b>mnt</span>
+          <span class="jb-unit"><b id="jb-s" class="text-title-sm font-extrabold text-brand-yellow tabular-nums">00</b>dtk</span>
         </span>
       </div>
     </div>
@@ -68,39 +50,21 @@ const ICON_BRIGHT: Record<string, string> = {
 </section>
 
 <style>
-  /* Tiap item pintu (ikon + label) menumpuk absolute di slot; hanya .is-active
-     yang tampil, masuk fade + slide naik agar pergantiannya menarik mata. */
-  .pintu-item {
-    opacity: 0;
-    transform: translateY(0.4rem);
-    transition: opacity 0.45s ease, transform 0.45s ease;
-    pointer-events: none;
+  /* Tiap segmen unit countdown. Unit nol di depan diberi .jb-dim oleh countdown.js
+     supaya meredup dan mata fokus ke waktu yang benar-benar tersisa. */
+  .jb-unit {
+    transition: opacity 0.3s ease;
   }
-  .pintu-item.is-active {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Dot pulse chip countdown — meniru animate-ping Tailwind, dimatikan bila
-     user minta reduce-motion. */
-  .jb-dot-ping {
-    animation: jb-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-  @keyframes jb-ping {
-    75%,
-    100% {
-      transform: scale(2);
-      opacity: 0;
-    }
+  .jb-dim {
+    opacity: 0.3;
   }
   @media (prefers-reduced-motion: reduce) {
-    .jb-dot-ping {
-      animation: none;
+    .jb-unit {
+      transition: none;
     }
   }
 </style>
 
 <script>
-  import '../scripts/ticker.js';
   import '../scripts/countdown.js';
 </script>

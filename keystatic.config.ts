@@ -275,6 +275,25 @@ export default config({
           area: fields.number({ label: 'Area Distribusi' }),
         }),
         statsNote: fields.text({ label: 'Catatan Statistik (mis. periode/sumber data)' }),
+        schedule: fields.object(
+          {
+            weekday: fields.select({
+              label: 'Hari',
+              options: [
+                { label: 'Minggu', value: '0' },
+                { label: 'Senin', value: '1' },
+                { label: 'Selasa', value: '2' },
+                { label: 'Rabu', value: '3' },
+                { label: 'Kamis', value: '4' },
+                { label: 'Jumat', value: '5' },
+                { label: 'Sabtu', value: '6' },
+              ],
+              defaultValue: '5',
+            }),
+            time: fields.text({ label: 'Jam (format 24 jam, contoh 06:00)', defaultValue: '06:00' }),
+          },
+          { label: 'Jadwal Program (hitung mundur hero)' }
+        ),
       },
     }),
     // Switchboard analytics: tiap alat = centang + ID. BaseLayout menyuntik

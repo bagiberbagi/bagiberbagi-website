@@ -53,7 +53,7 @@ export const IMPACTS: Impact[] = [
 
 // Tanpa link "Home" — logo di navbar yang jadi jalan pulang ke beranda.
 export const NAV_LINKS = [
-  { id: 'program', label: 'Program', href: '/#program' },
+  { id: 'program', label: 'Pintu Berbagi', href: '/#program' },
   { id: 'tentang', label: 'Tentang Kami', href: '/tentang/' },
   { id: 'faq', label: 'FAQ', href: '/faq/' },
 ];

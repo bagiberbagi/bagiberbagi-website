@@ -10,10 +10,10 @@ import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
-// Mega-menu = lima kategori program (Impact dikecualikan, ia lapisan hasil
-// bukan channel donasi). Ditampilkan sebagai satu baris horizontal di bawah
-// label "Pintu Berbagi". Kategori ber-program menampilkan daftar programnya;
-// yang belum jalan menampilkan tagline-nya (lihat ProgramMenuCategory).
+// Mega-menu desktop = panel 2 kolom: kiri promo "Pintu Berbagi" + kartu flagship
+// program aktif (Jumat Berkah), kanan grid lima kartu pintu (ProgramMenuCategory)
+// + strip trust/dampak. PROGRAM_MENU dirakit dari PINTU + program per pintu;
+// items[].active dipakai kartu untuk menentukan status Aktif/Segera.
 const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PINTU.map(async (cat) => ({
     label: cat.label,
@@ -34,6 +34,11 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
       .sort((a, b) => Number(b.active) - Number(a.active)),
   }))
 );
+
+// Kartu flagship di panel desktop = program pintu Makanan yang aktif
+// (Jumat Berkah). CTA-nya "Pelajari ..." mengarah ke halaman program, bukan
+// tombol donasi — navbar sudah punya CTA donasi sendiri.
+const flagship = (await getProgramsByPintu('food')).find((p) => p.active);
 
 // Active-nav: tandai current-page berdasar route (SSR, per-halaman statis).
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -74,13 +79,56 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <div
               id="program-panel"
               data-program-panel
-              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-menu border border-border p-6 z-50"
+              class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1180px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-menu border border-border p-5 z-50 grid grid-cols-[288px_1fr] gap-6"
             >
-              <div class="eyebrow text-brand-orange mb-1">{PINTU_LABEL}</div>
-              <div class="divide-y divide-border">
-                {PROGRAM_MENU.map((col) => (
-                  <ProgramMenuCategory category={col} />
-                ))}
+              {/* KIRI: promo pintu + kartu flagship program aktif */}
+              <div class="flex flex-col">
+                <div class="eyebrow text-brand-orange">{PINTU_LABEL}</div>
+                <h3 class="text-title font-extrabold tracking-tight leading-tight mt-2 mb-2">Lima pintu, satu gerakan berbagi.</h3>
+                <p class="text-body-sm text-muted leading-relaxed mb-4">Mulai dari makanan, meluas ke barang, waktu, ruang, dan dana. Satu tempat untuk semua cara berbagi sumber daya.</p>
+
+                {flagship && (
+                  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-orange to-brand-orangeDark text-white p-4 mt-auto">
+                    <span aria-hidden="true" class="pointer-events-none absolute -right-8 -bottom-10 w-32 h-32 rounded-full bg-white/10"></span>
+                    <span class="inline-block rounded-full bg-white/20 px-2.5 py-1 text-micro font-extrabold uppercase tracking-wider">Program Aktif</span>
+                    <h4 class="text-title-sm font-extrabold mt-2.5 mb-1.5">{flagship.label}</h4>
+                    <p class="text-body-sm leading-relaxed text-white/85 mb-3.5">{flagship.summary}</p>
+                    {flagship.href && (
+                      <a
+                        href={flagship.href}
+                        data-track="program_click"
+                        data-track-program={flagship.label}
+                        class="group inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-body-sm font-extrabold text-brand-orangeDark"
+                      >
+                        Pelajari {flagship.label}
+                        <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* KANAN: lima kartu pintu + strip trust/dampak */}
+              <div class="flex flex-col">
+                <div class="flex items-center justify-between gap-4 mb-3.5">
+                  <span class="text-micro font-extrabold uppercase tracking-wider text-muted">Lima Pintu Berbagi</span>
+                  <a href="/#program" class="group inline-flex items-center gap-1 text-body-sm font-bold text-ink transition-colors hover:text-brand-orange">
+                    Lihat semua program
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </a>
+                </div>
+                <div class="grid grid-cols-5 gap-2 flex-1">
+                  {PROGRAM_MENU.map((col) => (
+                    <ProgramMenuCategory category={col} />
+                  ))}
+                </div>
+                <div class="mt-4 border-t border-border pt-3.5 flex items-center justify-between gap-4 flex-wrap">
+                  <span class="text-body-sm text-muted">Setiap donasi terdokumentasi dan sampai ke yang tepat.</span>
+                  <a href="/#dampak" class="group inline-flex items-center gap-1.5 text-body-sm font-extrabold text-brand-orange">
+                    Lihat dampak kami
+                    <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

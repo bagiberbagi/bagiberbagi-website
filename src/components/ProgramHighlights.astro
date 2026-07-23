@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import { getProgramsByPintu } from '../lib/programs';
+import { getProgramImpact } from '../lib/impact';
+import { formatMetric } from '../lib/format';
 import programPromoImage from '../assets/images/jumat-berkah-distribusi.png';
 
 // Featured + rail: program aktif tampil menonjol (pendorong donasi), program
@@ -8,8 +10,15 @@ import programPromoImage from '../assets/images/jumat-berkah-distribusi.png';
 // keluasan & memperlihatkan roadmap tanpa bersaing dengan tombol utama. Teaser
 // lintas pintu lain tetap di mega-menu (Header).
 const food = await getProgramsByPintu('food');
-const active = food.filter((p) => p.active);
 const upcoming = food.filter((p) => !p.active);
+
+// Kartu flagship dipadatkan dengan metrik dampak nyata (dari jejak program)
+// supaya bidang foto tak melompong: badge status di atas, chip angka di bawah.
+const active = await Promise.all(
+  food
+    .filter((p) => p.active)
+    .map(async (p) => ({ ...p, impact: await getProgramImpact(p.slug) }))
+);
 ---
 
 <section id="program" class="section bg-gray-50 scroll-mt-24">
@@ -22,12 +31,30 @@ const upcoming = food.filter((p) => !p.active);
     <div class="max-w-4xl mx-auto">
       <div class="flex flex-col gap-5">
         {active.map((p) => (
-          <div class="relative overflow-hidden rounded-card min-h-[320px] flex flex-col justify-end p-8 md:p-10 text-white" data-fade="1">
+          <div class="relative overflow-hidden rounded-card min-h-[360px] flex flex-col justify-end p-8 md:p-10 text-white" data-fade="1">
             <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
             <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
+            {/* Badge status di atas — mengisi bidang foto yang tadinya kosong. */}
+            <div class="relative mb-auto">
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-micro font-extrabold uppercase tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow"></span>Sedang Berjalan
+              </span>
+            </div>
             <div class="relative">
               <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
-              <p class="text-body-sm leading-relaxed text-white/85 mb-6 max-w-md">{p.summary}</p>
+              <p class="text-body-sm leading-relaxed text-white/85 mb-5 max-w-md">{p.summary}</p>
+              {p.impact.jejakCount > 0 && (
+                <div class="flex flex-wrap gap-2 mb-6">
+                  <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
+                    {p.impact.jejakCount.toLocaleString('id-ID')} kegiatan
+                  </span>
+                  {p.impact.metrics.slice(0, 2).map((m) => (
+                    <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
+                      {formatMetric(m)} {m.label}
+                    </span>
+                  ))}
+                </div>
+              )}
               {p.href && (
                 <a href={p.href} data-track="program_click" data-track-program={p.label} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
               )}

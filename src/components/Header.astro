@@ -55,11 +55,13 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 >
   <div data-nav-pill class="max-w-7xl mx-auto flex items-center gap-5 rounded-full border border-transparent px-4 md:px-5 py-2.5 transition-all duration-300">
     <a href="/#top" class="flex items-center shrink-0">
-      <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto md:h-9" />
+      <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-7 w-auto md:h-8" />
     </a>
 
-    {/* Nav links di kiri dekat logo; CTA Donasi didorong ke kanan pil (ml-auto). */}
-    <nav class="hidden nav:flex items-center gap-6">
+    {/* Nav links di kiri dekat logo; CTA Donasi didorong ke kanan pil (ml-auto).
+        nav:ml-4 kasih napas ekstra antara logo dan menu pertama (gap pil sendiri
+        terasa sempit relatif lebar logo). */}
+    <nav class="hidden nav:flex items-center gap-6 nav:ml-4">
       {NAV_LINKS.map((link) => (
         link.id === 'program' ? (
           <div data-program-menu>

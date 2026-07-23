@@ -34,6 +34,31 @@ export function aggregateMetrics(lists: JejakMetric[][]): { label: string; value
   return [...acc.values()];
 }
 
+export interface GlobalImpact extends Impact {
+  /** Jumlah pintu unik yang sudah punya jejak. */
+  pintuCount: number;
+}
+
+/**
+ * Agregat dampak seluruh situs: sum-by-label lintas SEMUA jejak (semua pintu,
+ * semua program). Dasar halaman showcase /jejak.
+ */
+export async function getGlobalImpact(): Promise<GlobalImpact> {
+  const { getJejak } = await import('./jejak');
+  const { getPrograms } = await import('./programs');
+  const [jejakList, programs] = await Promise.all([getJejak(), getPrograms()]);
+  const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+  const pintuSet = new Set(
+    jejakList.map((j) => pintuBySlug.get(j.program)).filter((p): p is PintuId => Boolean(p))
+  );
+  return {
+    metrics: aggregateMetrics(jejakList.map((j) => j.metrics)),
+    jejakCount: jejakList.length,
+    programCount: new Set(jejakList.map((j) => j.program)).size,
+    pintuCount: pintuSet.size,
+  };
+}
+
 /** Agregat dampak satu program: sum-by-label + jumlah jejak-nya. */
 export async function getProgramImpact(programSlug: string): Promise<Impact> {
   const { getJejakByProgram } = await import('./jejak');

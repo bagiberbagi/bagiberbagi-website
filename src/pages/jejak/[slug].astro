@@ -28,7 +28,7 @@ const pintu = PINTU.find((p) => p.id === program?.pintu) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 
 const programLabel = program?.label ?? jejak.program;
-const ctaHref = program?.href ?? `/berbagi/${pintu.slug}/`;
+const ctaHref = program?.href ?? `/berbagi-${pintu.slug}/`;
 
 // Body naratif Markdoc.
 const entry = await getEntry('jejak', jejak.slug);
@@ -59,9 +59,9 @@ const carousel = allImages.slice(1);
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href={`/berbagi/${pintu.slug}/`} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
+        <a href={`/berbagi-${pintu.slug}/`} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href={`/berbagi/${pintu.slug}/jejak/`} class="hover:text-[var(--cat-deep)]">Rekam Jejak</a>
+        <a href={`/jejak/?pintu=${pintu.id}`} class="hover:text-[var(--cat-deep)]">Rekam Jejak</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-[var(--cat-deep)]">{jejak.title}</span>
       </nav>
@@ -69,7 +69,7 @@ const carousel = allImages.slice(1);
       <!-- konteks: pintu (induk) + program (spesifik) -->
       <div class="flex flex-wrap items-center gap-2 mb-4">
         <a
-          href={`/berbagi/${pintu.slug}/`}
+          href={`/berbagi-${pintu.slug}/`}
           class="inline-flex items-center gap-1.5 rounded-full bg-[var(--cat)] text-white font-bold text-eyebrow tracking-wide px-3.5 py-1.5"
         >
           <Icon name={pintu.icon} size={14} />

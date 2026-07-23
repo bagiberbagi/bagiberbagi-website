@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+import { getProgramsByPintu } from '../lib/programs';
+import { getPintuImpact } from '../lib/impact';
+import { formatMetric } from '../lib/format';
+import { PINTU, CATEGORY_CONTENT } from '../consts';
+
+// Landing pintu (flat /berbagi-[pintu]). Pintu = kategori: halaman ini memikul
+// KONSEP/cerita channel + SEO + daftar program + status roadmap. Cara kerja TIDAK
+// di sini (itu milik program, karena bisa beda antar program sepintu). Angka
+// dampak cuma teaser yang melempar ke showcase /jejak. Tidak ada /berbagi/ hub;
+// index pintu = PintuSection di beranda.
+export async function getStaticPaths() {
+  return PINTU.map((pintu) => ({ params: { pintu: pintu.slug }, props: { pintu } }));
+}
+
+const { pintu } = Astro.props;
+const content = CATEGORY_CONTENT[pintu.id];
+const programs = await getProgramsByPintu(pintu.id);
+const active = programs.filter((p) => p.active);
+const upcoming = programs.filter((p) => !p.active);
+const otherPintu = PINTU.filter((p) => p.id !== pintu.id);
+
+const impact = await getPintuImpact(pintu.id);
+const hasImpact = impact.jejakCount > 0 && impact.metrics.length > 0;
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribusi di pintu ${pintu.label}.`);
+const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pintu.label} dibuka.`);
+
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
+const jejakHref = `/jejak/?pintu=${pintu.id}`;
+---
+
+<BaseLayout title={`Pintu ${pintu.label} | bagiberbagi.id`} description={pintu.seoDescription} breadcrumbName={pintu.label}>
+  <!-- HERO channel: identitas + konsep, latar hangat warna pintu -->
+  <section class="section" style={`${styleVars};background:linear-gradient(160deg,var(--cat-tint),#ffffff 60%)`}>
+    <div class="max-w-4xl mx-auto text-center">
+      <nav class="text-sm font-semibold text-muted mb-6 text-left" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <a href="/#pintu" class="hover:text-[var(--cat-deep)]">Pintu Berbagi</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <span class="text-[var(--cat-deep)]">{pintu.label}</span>
+      </nav>
+
+      <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-[var(--cat)] mb-4">
+        <Icon name={pintu.icon} size={30} />
+      </span>
+      <div class="eyebrow text-[var(--cat)]">{pintu.english}</div>
+      <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight mb-3">{pintu.label}</h1>
+      <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-2xl mx-auto mb-7">{pintu.tagline}</p>
+
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href={contactWa} target="_blank" rel="noopener" data-track="contact_wa" data-track-pintu={pintu.slug} class="btn-primary" style="background:var(--cat)">Hubungi Kami</a>
+        {hasImpact && (
+          <a href={jejakHref} class="btn-secondary border border-border">Lihat Rekam Jejak</a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- TEASER DAMPAK: angka ringkas → lempar ke showcase /jejak -->
+  {hasImpact && (
+    <section class="section bg-white" style={styleVars}>
+      <div class="max-w-4xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+          <div class="rounded-card bg-[var(--cat-tint)] p-5 text-center">
+            <div class="text-heading-md font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
+            <div class="text-body-sm text-[var(--cat-deep)]/70 mt-1.5">kali kegiatan</div>
+          </div>
+          {impact.metrics.slice(0, 3).map((m) => (
+            <div class="rounded-card bg-[var(--cat-tint)] p-5 text-center">
+              <div class="text-heading-md font-extrabold tracking-tight text-[var(--cat-deep)] tabular-nums leading-none">{formatMetric(m)}</div>
+              <div class="text-body-sm text-[var(--cat-deep)]/70 mt-1.5">{m.label}</div>
+            </div>
+          ))}
+        </div>
+        <div class="text-center mt-6">
+          <a href={jejakHref} class="inline-flex items-center gap-1.5 font-bold text-body-sm text-[var(--cat-deep)] hover:gap-2.5 transition-all">
+            Telusuri semua jejak {pintu.label}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- PROGRAM di channel ini: aktif + segera -->
+  <section class="section bg-gray-50" style={styleVars}>
+    <div class="max-w-5xl mx-auto">
+      <div class="eyebrow text-[var(--cat)]">Program</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-8">Cara berbagi lewat pintu {pintu.label}</h2>
+
+      {active.length > 0 && (
+        <div class="grid gap-4 sm:grid-cols-2 mb-6">
+          {active.map((p) => (
+            <a href={p.href} class="group relative flex flex-col rounded-card bg-white border border-border p-6 pl-7 transition-shadow hover:shadow-card">
+              <span class="absolute inset-y-0 left-0 w-1.5 rounded-l-card bg-[var(--cat)]" aria-hidden="true"></span>
+              <div class="inline-flex items-center gap-2 text-micro font-bold uppercase tracking-wide text-[var(--cat-deep)] mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span> Program aktif
+              </div>
+              <h3 class="text-title-sm font-bold text-ink mb-1.5">{p.label}</h3>
+              <p class="text-body-sm text-muted leading-snug flex-1">{p.summary}</p>
+              <span class="mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm text-[var(--cat-deep)]">
+                Lihat program
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        <div class="flex flex-col gap-1">
+          {upcoming.map((p) => (
+            <div class="flex items-center gap-4 rounded-card bg-white/60 border border-border px-6 py-4">
+              <span class="flex-none w-2.5 h-2.5 rounded-full border-2 border-gray-300" aria-hidden="true"></span>
+              <div class="min-w-0 flex-1">
+                <div class="text-body-sm font-bold text-ink/70 truncate">{p.label}</div>
+                <div class="text-micro text-muted truncate">{p.summary}</div>
+              </div>
+              <span class="flex-none text-micro font-bold uppercase tracking-wide text-muted bg-gray-100 rounded-full px-3 py-1">Segera</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {active.length === 0 && upcoming.length === 0 && (
+        <p class="text-muted">Program untuk pintu ini sedang kami siapkan.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- UNTUK SIAPA (konsep channel) -->
+  {content?.forWhom && content.forWhom.length > 0 && (
+    <section class="section bg-white" style={styleVars}>
+      <div class="max-w-5xl mx-auto">
+        <div class="eyebrow text-[var(--cat)]">Untuk Siapa</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-6">Siapa yang terbantu</h2>
+        <div class="flex flex-wrap gap-2.5">
+          {content.forWhom.map((who) => (
+            <span class="inline-flex items-center gap-2 rounded-full bg-[var(--cat-tint)] text-[var(--cat-deep)] font-semibold text-body-sm px-4 py-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span> {who}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- DAMPAK LINGKUNGAN (cerita channel, kalau ada) -->
+  {content?.env && (
+    <section class="section bg-gray-50" style={styleVars}>
+      <div class="max-w-5xl mx-auto">
+        <div class="rounded-card p-7 md:p-9 text-white flex flex-col md:flex-row md:items-center gap-6" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
+          <div class="flex-1">
+            <div class="eyebrow text-white/80">Bonus Dampak</div>
+            <h2 class="text-title md:text-heading-sm font-extrabold tracking-tight">{content.env.headline}</h2>
+          </div>
+          <div class="flex gap-8">
+            {content.env.stats.map((s) => (
+              <div>
+                <div class="text-heading-sm font-extrabold tracking-tight tabular-nums">{s.value}</div>
+                <div class="text-body-sm text-white/80">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- PINTU LAIN -->
+  <section class="section bg-white">
+    <div class="max-w-5xl mx-auto">
+      <div class="eyebrow">Pintu Lainnya</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-6">Jalan berbagi yang lain</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {otherPintu.map((p) => (
+          <a href={`/berbagi-${p.slug}/`} style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`} class="group flex items-center gap-3 rounded-card border border-border p-4 transition-shadow hover:shadow-cardSm">
+            <span class="flex-none w-10 h-10 rounded-xl grid place-items-center bg-[var(--cat-tint)] text-[var(--cat)]">
+              <Icon name={p.icon} size={20} />
+            </span>
+            <span class="font-bold text-body-sm text-ink group-hover:text-[var(--cat-deep)] transition-colors">{p.label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="section bg-gray-50" style={styleVars}>
+    <div class="max-w-5xl mx-auto">
+      <a href={contactWa} target="_blank" rel="noopener" data-track="pintu_cta" data-track-pintu={pintu.slug} class="flex flex-wrap items-center gap-4 rounded-card p-6 md:p-8 text-white no-underline" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
+        <div class="flex-1 min-w-0">
+          <h2 class="text-title md:text-heading-sm font-extrabold tracking-tight">{content?.ctaTitle ?? `Ingin berkontribusi lewat ${pintu.label}?`}</h2>
+          <p class="text-body-sm text-white/90 mt-1">{content?.ctaText ?? 'Tim kami bantu wujudkan. Hubungi lewat WhatsApp.'}</p>
+        </div>
+        <span class="flex-none rounded-full bg-white text-[var(--cat-deep)] font-bold text-body-sm px-6 py-3 whitespace-nowrap">Hubungi Kami</span>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

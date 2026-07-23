@@ -30,8 +30,8 @@ if (!site) throw new Error('settings/site entry not found');
 // halaman jelas "dari pintu apa". Fallback ke pintu pertama bila tak ketemu.
 const pintu = PINTU.find((p) => p.id === program.pintu) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
-const pintuHref = `/berbagi/${pintu.slug}/`;
-const jejakHref = `/berbagi/${pintu.slug}/jejak/`;
+const pintuHref = `/berbagi-${pintu.slug}/`;
+const jejakHref = `/jejak/?pintu=${pintu.id}`;
 
 const defaultPax = 10;
 const waLink = buildWaLink(

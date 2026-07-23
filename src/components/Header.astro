@@ -18,7 +18,7 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PINTU.map(async (cat) => ({
     label: cat.label,
     icon: cat.icon,
-    href: `/berbagi/${cat.slug}/`,
+    href: `/berbagi-${cat.slug}/`,
     color: cat.color,
     colorTint: cat.colorTint,
     tagline: cat.tagline,
@@ -76,7 +76,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               data-program-panel
               class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-3 w-[1120px] max-w-[calc(100vw-2rem)] bg-white rounded-card shadow-menu border border-border p-6 z-50"
             >
-              <a href="/berbagi/" class="eyebrow text-brand-orange mb-1 inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
+              <a href="/#pintu" class="eyebrow text-brand-orange mb-1 inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
                 {PINTU_LABEL}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
               </a>
@@ -135,7 +135,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             <svg aria-hidden="true" data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
           <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
-            <a href="/berbagi/" class="eyebrow text-brand-orange inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
+            <a href="/#pintu" class="eyebrow text-brand-orange inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
               {PINTU_LABEL}
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
             </a>

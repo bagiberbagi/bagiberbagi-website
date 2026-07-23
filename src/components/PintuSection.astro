@@ -34,7 +34,7 @@ const pintuStatus = await Promise.all(
     <div class="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
       {pintuStatus.map((pintu) => (
         <a
-          href={`/berbagi/${pintu.slug}/`}
+          href={`/berbagi-${pintu.slug}/`}
           data-track="pintu_click"
           data-track-pintu={pintu.slug}
           style={`--cat:${pintu.color}`}

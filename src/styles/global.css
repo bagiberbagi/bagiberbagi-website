@@ -7,13 +7,13 @@
   }
 
   .eyebrow {
-    @apply text-brand-orange font-bold text-eyebrow tracking-wide mb-3;
+    @apply text-brand-orange font-bold text-eyebrow tracking-wide uppercase mb-3;
   }
 
   /* text-base eksplisit = ukuran CTA besar terkunci (tak bergantung inherit
      konteks). btn-sm di bawah menimpanya jadi text-body-sm. */
   .btn-primary {
-    @apply bg-brand-orange text-white font-bold text-base px-8 py-4 rounded-full transition-colors hover:bg-brand-orangeDark;
+    @apply bg-brand-orange text-white font-bold text-base px-8 py-4 rounded-full transition hover:bg-brand-orangeDark hover:-translate-y-0.5;
   }
 
   .btn-secondary {
@@ -24,5 +24,15 @@
      besar + turunkan teks ke text-body-sm (didefinisikan setelah btn agar menang). */
   .btn-sm {
     @apply px-5 py-2.5 text-body-sm;
+  }
+
+  /* Link teks inline/utility: afordance klikable non-warna. Garis bawah selalu
+     ada tapi transparan (tanpa layout shift), muncul saat hover/focus-visible. */
+  .link {
+    @apply underline decoration-transparent underline-offset-2 transition-colors;
+  }
+  .link:hover,
+  .link:focus-visible {
+    @apply decoration-current;
   }
 }

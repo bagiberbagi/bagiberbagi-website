@@ -21,7 +21,7 @@ const hasMore = category.items.length > MAX;
       <Icon name={category.icon} size={iconSize} />
     </span>
     <div>
-      <div class="font-bold text-sm text-ink group-hover:text-[var(--cat)] transition-colors">{category.label}</div>
+      <div class="w-fit font-bold text-sm text-ink underline decoration-transparent underline-offset-2 group-hover:text-[var(--cat)] group-hover:decoration-current transition-colors">{category.label}</div>
       <div class="text-xs text-muted leading-snug mt-0.5">{category.tagline}</div>
     </div>
   </a>

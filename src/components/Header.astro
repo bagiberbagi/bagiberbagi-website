@@ -66,7 +66,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               aria-expanded="false"
               aria-haspopup="true"
               aria-controls="program-panel"
-              class="flex items-center gap-1.5 text-body-sm font-semibold tracking-tight text-ink transition-colors hover:text-brand-orange"
+              class="nav-link flex items-center gap-1.5 text-body-sm font-semibold tracking-tight text-ink transition-colors hover:text-brand-orange"
             >
               {link.label}
               <svg aria-hidden="true" data-program-chevron width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
@@ -88,7 +88,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
           <a
             href={link.href}
             aria-current={navActive(link) ? 'page' : undefined}
-            class:list={['text-body-sm tracking-tight text-ink transition-colors hover:text-brand-orange', navActive(link) ? 'font-extrabold' : 'font-semibold']}
+            class:list={['nav-link text-body-sm tracking-tight text-ink transition-colors hover:text-brand-orange', navActive(link) ? 'font-extrabold' : 'font-semibold']}
           >
             {link.label}
           </a>
@@ -171,13 +171,46 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
     box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.25);
   }
 
-  /* Di puncak (belum scroll) tombol Donasi jadi FLAT — transparan, teks ink
-     (samakan warna teks umum hero, hindari kesan biru berbeda). Setelah scroll
-     balik ke pill oranye (btn-primary). */
+  /* Di puncak (belum scroll) tombol Donasi jadi OUTLINE: transparan, teks ink,
+     garis ink tipis. Border selalu ada 1.5px (transparan saat scroll) agar tak
+     ada layout shift dan warnanya bertransisi halus. Setelah scroll balik ke pill
+     oranye (btn-primary). */
+  [data-nav-donasi] {
+    border: 1.5px solid transparent;
+  }
   [data-header]:not(.is-scrolled) [data-nav-donasi],
   [data-header]:not(.is-scrolled) [data-nav-donasi]:hover {
     background-color: transparent;
     color: #0f172a;
+    border-color: rgba(15, 23, 42, 0.28);
+  }
+
+  /* Nav link: indikator hover/fokus selain warna — garis bawah yang tumbuh dari
+     kiri. Hadir juga saat focus-visible (keyboard), bukan cuma hover. */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link::after {
+      transition: none;
+    }
   }
 </style>
 

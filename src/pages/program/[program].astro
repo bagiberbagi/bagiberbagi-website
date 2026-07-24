@@ -116,7 +116,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
           <!-- Panel donasi: harga (nilai) dan tombol (aksi) menyatu; hierarki
                dijaga lewat peran, bukan dua kotak bersaing. -->
-          <div class="rounded-card p-6 md:p-7 bg-white shadow-cardSoft border border-border">
+          <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
             <div class="eyebrow text-[var(--cat-deep)]">HARGA DONASI</div>
             <div class="text-heading-sm md:text-heading-lg font-bold text-ink mt-1">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></div>
             <p class="text-sm text-muted mt-1.5 mb-5">Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran.</p>
@@ -177,7 +177,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     <section class="section bg-gray-50" style={styleVars}>
       <div class="max-w-5xl mx-auto">
         <div class="eyebrow text-[var(--cat)]">Rekam Jejak</div>
-        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-3">Jejak {program.label}</h2>
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Jejak {program.label}</h2>
         <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-2xl">
           Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
             <Fragment>, dengan total <strong class="text-ink">{formatMetric(mainMetric)} {mainMetric.label}</strong></Fragment>
@@ -232,7 +232,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   {siblings.length > 0 && (
     <section class="section bg-white" style={styleVars}>
       <div class="max-w-5xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-10">
+        <div class="text-center max-w-2xl mx-auto mb-12">
           <div class="eyebrow text-[var(--cat)]">Masih di {pintu.label}</div>
           <h2 class="text-heading-sm md:text-heading-lg font-semibold">Program lain satu pintu</h2>
         </div>

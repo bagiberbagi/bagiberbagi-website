@@ -94,7 +94,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
   <section class="section bg-gray-50" style={styleVars}>
     <div class="max-w-5xl mx-auto">
       <div class="eyebrow text-[var(--cat-deep)]">Program</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-8">Cara berbagi lewat pintu {pintu.label}</h2>
+      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara berbagi lewat pintu {pintu.label}</h2>
 
       {active.length > 0 && (
         <div class="grid gap-4 sm:grid-cols-2 mb-6">
@@ -161,7 +161,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
             relief lawan hero+CTA yang sudah ber-warna-pintu penuh, dan cegah
             monoton (di Makanan warna pintu = brand oranye, kalau band ini ikut
             oranye halaman jadi satu nada). */}
-        <div class="rounded-card p-7 md:p-9 text-white flex flex-col md:flex-row md:items-center gap-6" style="background:linear-gradient(135deg,#1f2a3d,#0f172a)">
+        <div class="rounded-card p-7 md:p-8 text-white flex flex-col md:flex-row md:items-center gap-6" style="background:linear-gradient(135deg,#1f2a3d,#0f172a)">
           <div class="flex-1">
             <div class="eyebrow text-white/70">Bonus Dampak</div>
             <h2 class="text-title md:text-heading-sm font-semibold">{content.env.headline}</h2>
@@ -200,7 +200,7 @@ const jejakHref = `/jejak/?pintu=${pintu.id}`;
   <!-- CTA band -->
   <section class="section bg-gray-50" style={styleVars}>
     <div class="max-w-5xl mx-auto">
-      <a href={contactWa} target="_blank" rel="noopener" data-track="pintu_cta" data-track-pintu={pintu.slug} class="flex flex-wrap items-center gap-4 rounded-card p-6 md:p-8 text-white no-underline" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
+      <a href={contactWa} target="_blank" rel="noopener" data-track="pintu_cta" data-track-pintu={pintu.slug} class="flex flex-wrap items-center gap-4 rounded-card p-7 md:p-8 text-white no-underline" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
         <div class="flex-1 min-w-0">
           <h2 class="text-title md:text-heading-sm font-semibold">{content?.ctaTitle ?? `Ingin berkontribusi lewat ${pintu.label}?`}</h2>
           <p class="text-body-sm text-white/90 mt-1">{content?.ctaText ?? 'Tim kami bantu wujudkan. Hubungi lewat WhatsApp.'}</p>

@@ -53,7 +53,7 @@ const fmtDate = (iso: string) =>
 
       <div class="text-center max-w-2xl mx-auto mb-10">
         <div class="eyebrow">Jejak &amp; Dampak</div>
-        <h1 class="text-heading md:text-display font-bold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
+        <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
         <p class="text-body-sm md:text-body text-muted leading-relaxed">
           Angka di bawah bukan janji, tapi hasil yang tercatat dari tiap kali program kami berjalan di lapangan. Lengkap dengan foto dan ceritanya.
         </p>
@@ -64,13 +64,13 @@ const fmtDate = (iso: string) =>
           {/* counter agregat global */}
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-12">
             <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-              <div class="text-heading-sm md:text-heading-lg font-bold text-brand-orangeDark tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
+              <div class="text-heading-sm md:text-heading-lg font-semibold text-brand-orangeDark tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
               <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
               <div class="text-body-sm text-brand-orangeDark/70">kali kegiatan</div>
             </div>
             {impact.metrics.map((m) => (
               <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-                <div class="text-heading-sm md:text-heading-lg font-bold text-brand-orangeDark tabular-nums leading-none">{formatMetric(m)}</div>
+                <div class="text-heading-sm md:text-heading-lg font-semibold text-brand-orangeDark tabular-nums leading-none">{formatMetric(m)}</div>
                 <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
                 <div class="text-body-sm text-brand-orangeDark/70">{m.label}</div>
               </div>
@@ -150,7 +150,7 @@ const fmtDate = (iso: string) =>
                       </div>
                     )}
                     <div class="text-micro font-semibold text-muted mb-2">{fmtDate(j.date)} &middot; {j.location}</div>
-                    <h3 class="text-title-sm font-bold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">{j.title}</h3>
+                    <h3 class="text-title-sm font-semibold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">{j.title}</h3>
                     {j.metrics.length > 0 && (
                       <div class="mt-auto grid grid-cols-3 gap-2">
                         {j.metrics.slice(0, 3).map((m) => (

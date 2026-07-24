@@ -84,14 +84,14 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               {/* KIRI: promo pintu + kartu flagship program aktif */}
               <div class="flex flex-col">
                 <div class="eyebrow text-brand-orange">{PINTU_LABEL}</div>
-                <h3 class="text-title font-bold mt-2 mb-2">Lima pintu, satu gerakan berbagi.</h3>
+                <h3 class="text-title font-semibold mt-2 mb-2">Lima pintu, satu gerakan berbagi.</h3>
                 <p class="text-body-sm text-muted leading-relaxed mb-4">Mulai dari makanan, meluas ke barang, waktu, ruang, dan dana. Satu tempat untuk semua cara berbagi sumber daya.</p>
 
                 {flagship && (
                   <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-orange to-brand-orangeDark text-white p-4 mt-auto">
                     <span aria-hidden="true" class="pointer-events-none absolute -right-8 -bottom-10 w-32 h-32 rounded-full bg-white/10"></span>
                     <span class="inline-block rounded-full bg-white/20 px-2.5 py-1 text-micro font-bold uppercase tracking-wider">Program Aktif</span>
-                    <h4 class="text-title-sm font-bold mt-2.5 mb-1.5">{flagship.label}</h4>
+                    <h4 class="text-title-sm font-semibold mt-2.5 mb-1.5">{flagship.label}</h4>
                     <p class="text-body-sm leading-relaxed text-white/85 mb-3.5">{flagship.summary}</p>
                     {flagship.href && (
                       <a

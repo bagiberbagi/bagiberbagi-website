@@ -31,7 +31,7 @@ if (!site) throw new Error('settings/site entry not found');
 const pintu = PINTU.find((p) => p.id === program.pintu) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 const pintuHref = `/berbagi-${pintu.slug}/`;
-const jejakHref = `/jejak/?pintu=${pintu.id}`;
+const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
 
 const defaultPax = 10;
 const waLink = buildWaLink(

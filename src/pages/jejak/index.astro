@@ -102,7 +102,7 @@ const fmtDate = (iso: string) =>
               {filterPintu.map((p) => (
                 <button
                   type="button"
-                  data-jfilter={p.id}
+                  data-jfilter={p.slug}
                   aria-pressed="false"
                   style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
                   class="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 text-body-sm font-bold text-muted transition-colors aria-pressed:bg-[var(--cat)] aria-pressed:text-white aria-pressed:border-[var(--cat)] hover:border-gray-300"
@@ -123,7 +123,7 @@ const fmtDate = (iso: string) =>
                 <a
                   href={j.href}
                   data-jcard
-                  data-pintu={pintu?.id}
+                  data-pintu={pintu?.slug}
                   data-track="jejak_click"
                   data-track-jejak={j.slug}
                   style={`--cat:${color}`}
@@ -193,7 +193,7 @@ const fmtDate = (iso: string) =>
     cards.forEach((card) => { card.hidden = !(f === 'all' || card.dataset.pintu === f); });
   }
   chips.forEach((chip) => chip.addEventListener('click', () => apply(chip.dataset.jfilter as string)));
-  // Deep-link: /jejak/?pintu=food langsung terapkan filter itu bila chip-nya ada.
-  const q = new URLSearchParams(location.search).get('pintu');
+  // Deep-link: /jejak/?berbagi=makanan langsung terapkan filter itu bila chip-nya ada.
+  const q = new URLSearchParams(location.search).get('berbagi');
   if (q && chips.some((c) => c.dataset.jfilter === q)) apply(q);
 </script>

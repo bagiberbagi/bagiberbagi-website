@@ -33,7 +33,7 @@ const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribus
 const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pintu.label} dibuka.`);
 
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
-const jejakHref = `/jejak/?pintu=${pintu.id}`;
+const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
 ---
 
 <BaseLayout title={`Pintu ${pintu.label} | bagiberbagi.id`} description={pintu.seoDescription} breadcrumbName={pintu.label}>

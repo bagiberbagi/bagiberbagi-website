@@ -36,7 +36,7 @@ const VALUE_ICONS = {
   <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-10 lg:gap-14">
     <div class="flex-1 basis-[340px] min-w-0">
       <div class="eyebrow">{hero.eyebrow}</div>
-      <h1 class="font-sans text-heading md:text-display font-extrabold tracking-tight text-ink leading-tight mb-5">
+      <h1 class="font-sans text-heading md:text-display font-bold text-ink mb-5">
         {hero.title}
       </h1>
       {hero.paragraphs.map((p) => (
@@ -64,7 +64,7 @@ const VALUE_ICONS = {
     <div class="flex flex-wrap gap-10 lg:gap-14" data-fade="1">
       <div class="flex-1 basis-[280px] min-w-0">
         <div class="eyebrow text-brand-orangeDark">{mission.eyebrow}</div>
-        <h2 class="font-sans text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-ink leading-snug">
+        <h2 class="font-sans text-heading-sm md:text-heading-lg font-bold text-ink leading-snug">
           {mission.title}
         </h2>
       </div>
@@ -77,7 +77,7 @@ const VALUE_ICONS = {
 
     <div class="flex flex-wrap gap-10 lg:gap-14" data-fade="1">
       <div class="flex-1 basis-[280px] min-w-0">
-        <h2 class="font-sans text-title md:text-heading-sm font-extrabold tracking-tight text-ink leading-snug">
+        <h2 class="font-sans text-title md:text-heading-sm font-bold text-ink leading-snug">
           {mission.growTitle}
         </h2>
       </div>
@@ -95,7 +95,7 @@ const VALUE_ICONS = {
   <div class="max-w-6xl mx-auto">
     <div class="text-center max-w-[640px] mx-auto mb-12">
       <div class="eyebrow">{values.eyebrow}</div>
-      <h2 class="font-sans text-heading-sm md:text-heading-lg font-extrabold tracking-tight text-ink">
+      <h2 class="font-sans text-heading-sm md:text-heading-lg font-bold text-ink">
         {values.title}
       </h2>
     </div>
@@ -109,7 +109,7 @@ const VALUE_ICONS = {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={VALUE_ICONS[v.icon]} />
             </span>
             <div>
-              <div class="font-extrabold text-base text-ink mb-1.5">{v.title}</div>
+              <div class="font-bold text-base text-ink mb-1.5">{v.title}</div>
               <p class="text-body-sm text-muted leading-relaxed">{v.desc}</p>
             </div>
           </div>
@@ -122,7 +122,7 @@ const VALUE_ICONS = {
 <!-- CTA -->
 <section class="px-5 md:px-10 pb-12 md:pb-[88px]">
   <div class="max-w-6xl mx-auto bg-brand-blue rounded-card px-6 py-14 md:px-12 md:py-16 text-center text-white" data-fade="1">
-    <h2 class="font-sans text-heading-sm md:text-heading-lg font-extrabold tracking-tight mb-4">{cta.title}</h2>
+    <h2 class="font-sans text-heading-sm md:text-heading-lg font-bold mb-4">{cta.title}</h2>
     <p class="text-body text-white/85 leading-relaxed max-w-[640px] mx-auto mb-8">{cta.text}</p>
     <div class="flex flex-wrap gap-4 justify-center">
       <a href={waMitraLink} target="_blank" rel="noopener" class="btn-primary">Jadi Mitra Dapur UMKM</a>

@@ -84,7 +84,7 @@ const carousel = allImages.slice(1);
         </a>
       </div>
 
-      <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight text-ink mb-4">
+      <h1 class="text-heading md:text-display font-bold text-ink mb-4">
         {jejak.title}
       </h1>
 
@@ -160,7 +160,7 @@ const carousel = allImages.slice(1);
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
           {jejak.metrics.map((m) => (
             <div class="rounded-card border border-border p-5">
-              <div class="text-heading-sm font-extrabold tracking-tight text-ink tabular-nums leading-none">{formatMetric(m)}</div>
+              <div class="text-heading-sm font-bold text-ink tabular-nums leading-none">{formatMetric(m)}</div>
               <div class="mt-1.5 h-0.75 w-6 rounded bg-[var(--cat)]"></div>
               <div class="text-sm text-muted mt-2.5">{m.label}</div>
             </div>
@@ -171,7 +171,7 @@ const carousel = allImages.slice(1);
       <!-- cerita (body Markdoc) -->
       <div
         class="text-body text-muted leading-relaxed
-          [&_h2]:text-title-sm [&_h2]:font-extrabold [&_h2]:text-ink [&_h2]:mt-9 [&_h2]:mb-3 [&_h2:first-child]:mt-0
+          [&_h2]:text-title-sm [&_h2]:font-bold [&_h2]:text-ink [&_h2]:mt-9 [&_h2]:mb-3 [&_h2:first-child]:mt-0
           [&_h3]:text-body [&_h3]:font-bold [&_h3]:text-ink [&_h3]:mt-6 [&_h3]:mb-2
           [&_p]:mb-4 [&_p:last-child]:mb-0
           [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1.5
@@ -188,7 +188,7 @@ const carousel = allImages.slice(1);
         style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))"
       >
         <div class="min-w-0">
-          <h2 class="text-title-sm md:text-title font-extrabold tracking-tight">Dukung {programLabel} berikutnya</h2>
+          <h2 class="text-title-sm md:text-title font-bold">Dukung {programLabel} berikutnya</h2>
           <p class="text-body-sm text-white/90 mt-1">Jejak seperti ini bisa terus berjalan berkat donasi Anda.</p>
         </div>
         <span class="ml-auto flex-none rounded-full bg-white text-[var(--cat-deep)] font-bold text-body-sm px-6 py-3 whitespace-nowrap">

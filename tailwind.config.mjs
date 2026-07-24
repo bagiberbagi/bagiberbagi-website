@@ -33,18 +33,26 @@ export default {
       // Body 16 = text-base; body-sm 14 = text-sm; micro 12 = text-xs. Heading
       // naik rata 22→26→30→34→40. `heading-md`/`heading-xl` dipensiun (duplikat/
       // tak terpakai) — angka stat kini responsif heading-sm→heading-lg.
+      // Tiap token bawa lineHeight + letterSpacing sendiri (skala = sumber tunggal
+      // ritme vertikal & tracking, bukan util tersebar). Prinsip diadopsi dari
+      // tipografi OpenAI (bukan font-nya — tetap Plus Jakarta Sans): tracking
+      // OPTIK menyempit seiring ukuran (display -0.03em, heading -0.02, body
+      // -0.01), leading KONTRAS (display nyaris solid ~1.05, body lega ~1.6).
+      // Karena token sudah atur ini, util `tracking-tight`/`leading-tight` dibuang
+      // agar token yang berlaku; weight heading turun ke bold (700), hierarki
+      // dari ukuran+tracking bukan ketebalan.
       fontSize: {
-        micro: '12px',
-        eyebrow: '13px',
-        'body-sm': '14px',
-        body: '16px',
-        'title-sm': '18px',
-        title: '22px',
-        'heading-sm': '26px',
-        heading: '30px',
-        'heading-lg': '34px',
-        display: '40px',
-        'display-lg': '56px',
+        micro: ['12px', { lineHeight: '1.4', letterSpacing: '-0.01em' }],
+        eyebrow: ['13px', { lineHeight: '1.2', letterSpacing: '0' }],
+        'body-sm': ['14px', { lineHeight: '1.55', letterSpacing: '-0.01em' }],
+        body: ['16px', { lineHeight: '1.6', letterSpacing: '-0.01em' }],
+        'title-sm': ['18px', { lineHeight: '1.35', letterSpacing: '-0.015em' }],
+        title: ['22px', { lineHeight: '1.3', letterSpacing: '-0.015em' }],
+        'heading-sm': ['26px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        heading: ['30px', { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+        'heading-lg': ['34px', { lineHeight: '1.12', letterSpacing: '-0.025em' }],
+        display: ['40px', { lineHeight: '1.08', letterSpacing: '-0.03em' }],
+        'display-lg': ['56px', { lineHeight: '1.04', letterSpacing: '-0.03em' }],
       },
       borderRadius: {
         card: '20px',

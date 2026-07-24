@@ -25,7 +25,7 @@ const active = await Promise.all(
   <div class="max-w-7xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-10">
       <div class="eyebrow">PROGRAM AKTIF</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-extrabold tracking-tight">Salurkan Kebaikan Melalui Program Kami</h2>
+      <h2 class="text-heading-sm md:text-heading-lg font-bold">Salurkan Kebaikan Melalui Program Kami</h2>
     </div>
 
     <div class="max-w-4xl mx-auto">
@@ -36,12 +36,12 @@ const active = await Promise.all(
             <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
             {/* Badge status di atas — mengisi bidang foto yang tadinya kosong. */}
             <div class="relative mb-auto">
-              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-micro font-extrabold uppercase tracking-wider">
+              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-micro font-bold uppercase tracking-wider">
                 <span class="w-1.5 h-1.5 rounded-full bg-brand-yellow"></span>Sedang Berjalan
               </span>
             </div>
             <div class="relative">
-              <h3 class="text-title md:text-heading-sm font-extrabold mb-2.5">{p.label}</h3>
+              <h3 class="text-title md:text-heading-sm font-bold mb-2.5">{p.label}</h3>
               <p class="text-body-sm leading-relaxed text-white/85 mb-5 max-w-md">{p.summary}</p>
               {p.impact.jejakCount > 0 && (
                 <div class="flex flex-wrap gap-2 mb-6">

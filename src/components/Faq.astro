@@ -30,7 +30,7 @@ const waLink = buildWaLink(site.data.waNumber);
   <div class="max-w-6xl mx-auto">
     <div class="text-center max-w-[720px] mx-auto mb-10">
       <div class="eyebrow">FAQ</div>
-      <h1 class="text-heading md:text-display font-extrabold tracking-tight leading-tight text-ink mb-4">
+      <h1 class="text-heading md:text-display font-bold text-ink mb-4">
         Pertanyaan Sering Diajukan
       </h1>
       <p class="text-body text-muted leading-relaxed">
@@ -54,7 +54,7 @@ const waLink = buildWaLink(site.data.waNumber);
       </div>
 
       <div class="bg-brand-blue rounded-card p-6 md:px-9 text-white text-center flex flex-col justify-center md:min-w-[240px]">
-        <div class="font-extrabold text-title-sm mb-1">Masih ada pertanyaan?</div>
+        <div class="font-bold text-title-sm mb-1">Masih ada pertanyaan?</div>
         <p class="text-body-sm text-white/85 mb-4">Tim kami siap membantu lewat WhatsApp.</p>
         <a
           href={waLink}
@@ -89,7 +89,7 @@ const waLink = buildWaLink(site.data.waNumber);
       <div class="flex-1 min-w-0">
         {groups.map((g) => (
           <div class="faq-cat mb-10 last:mb-0 scroll-mt-24" id={g.slug} data-cat={g.slug}>
-            <h2 class="text-title-sm font-extrabold text-brand-blue mb-2">{g.label}</h2>
+            <h2 class="text-title-sm font-bold text-brand-blue mb-2">{g.label}</h2>
             <div class="flex flex-col">
               {g.items.map((faq, i) => (
                 <div class="faq-item border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>

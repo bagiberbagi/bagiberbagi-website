@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run build)",
+      "Bash(bun run dev)",
+      "Bash(bun run preview)",
+      "Bash(bunx astro check)",
+      "Bash(bunx astro sync)",
+      "Bash(bun test)",
+      "Bash(openspec instructions)",
+      "Bash(openspec status)",
+      "Bash(openspec validate)"
+    ]
+  }
+}

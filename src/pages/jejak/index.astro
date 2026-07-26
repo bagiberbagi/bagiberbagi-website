@@ -1,22 +1,26 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import JejakCard from '../../components/JejakCard.astro';
 import { getJejak } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getGlobalImpact } from '../../lib/impact';
-import { formatMetric } from '../../lib/format';
+import { buildWaLink, formatMetric } from '../../lib/format';
 import { PINTU } from '../../consts';
 
 // Showcase global "Jejak & Dampak": angka agregat seluruh situs + feed semua
 // kegiatan + filter per pintu. Menjawab pengunjung yang cari bukti/transparansi
 // sekaligus yang mau membagikannya. Dampak di sini = agregat jejak (bukan
 // entitas tersendiri). Sekaligus mengisi index /jejak (dulu ghost 404).
-const [jejak, programs, impact] = await Promise.all([
+const [jejak, programs, impact, site] = await Promise.all([
   getJejak(),
   getPrograms(),
   getGlobalImpact(),
+  getEntry('settings', 'site'),
 ]);
+if (!site) throw new Error('settings/site entry not found');
 
 const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
 const pintuById = new Map(PINTU.map((p) => [p.id, p]));
@@ -27,15 +31,89 @@ const labelBySlug = new Map(programs.map((p) => [p.slug, p.label]));
 const activePintuIds = [...new Set(jejak.map((j) => pintuBySlug.get(j.program)).filter(Boolean))];
 const filterPintu = PINTU.filter((p) => activePintuIds.includes(p.id));
 
-// Galeri gabungan: cover + gallery dari jejak terbaru, buang kosong, batasi.
-const gallery = jejak
-  .flatMap((j) => [j.cover, ...j.gallery])
-  .filter((src): src is string => !!src)
-  .slice(0, 12);
+// Saat baru satu pintu yang berjejak, chip filter tak berguna (cuma "Semua" +
+// satu tombol). Ruangnya dipakai baris meta yang menerangkan cakupan feed;
+// isinya diturunkan dari data, jadi ikut berubah saat pintu/program bertambah.
+const soloPintu = filterPintu.length === 1 ? filterPintu[0] : null;
+const recordedPrograms = [...new Set(jejak.map((j) => labelBySlug.get(j.program) ?? j.program))];
+
+// Galeri gabungan: cover + gallery dari semua jejak. DEDUP dulu (foto yang sama
+// sering dipakai sebagai cover satu jejak dan isi galeri jejak lain), baru
+// dibatasi supaya seksi ini tak jadi dinding foto kembar.
+const gallery = [
+  ...new Set(jejak.flatMap((j) => [j.cover, ...j.gallery]).filter((src): src is string => !!src)),
+].slice(0, 8);
+
+// Jumlah kolom mengikuti jumlah foto unik supaya baris terakhir tak bolong saat
+// dokumentasinya masih sedikit. Di mobile selalu maksimal 2 kolom: 3 kolom di
+// layar 390px membuat thumbnail menyusut jadi sekitar 110px dan fotonya tak
+// terbaca. Penambahan kolom baru mulai dari sm.
+const galleryCols =
+  gallery.length <= 2
+    ? 'grid-cols-2'
+    : gallery.length === 3
+      ? 'grid-cols-2 sm:grid-cols-3'
+      : gallery.length % 4 === 0
+        ? 'grid-cols-2 sm:grid-cols-4'
+        : gallery.length % 3 === 0
+          ? 'grid-cols-2 sm:grid-cols-3'
+          : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
+
+// Grid 2 kolom selalu menyisakan satu sel bolong di baris terakhir kalau jumlah
+// fotonya ganjil, jadi item terakhir dilebarkan penuh khusus di mobile. Aturannya
+// diturunkan dari paritas jumlah foto, bukan dari angka tertentu, supaya tetap
+// benar saat dokumentasi bertambah.
+const galleryOddTail = gallery.length % 2 === 1;
+
+// Nilai metrik panjang (mis. "Rp 5.500.000") membungkus jadi 2 baris di layar
+// sempit dan bikin tinggi kartu angka tak seragam. Sizing sadar-panjang: string
+// lebih dari 8 karakter turun satu tingkat ukuran dan dipaksa satu baris, yang
+// pendek tetap pakai ukuran besar.
+const numClass = (s: string) =>
+  s.length > 8 ? 'text-title-sm md:text-title whitespace-nowrap' : 'text-heading-sm md:text-heading-lg';
+
+// Bentuk feed diturunkan dari jumlah jejak supaya tak ada kartu yatim:
+//  1 jejak   -> satu kartu unggulan lebar (grid 3 kolom bikin bolong),
+//  2 jejak   -> dua kartu setara berdampingan, tanpa unggulan (kalau yang ke-2
+//               dilempar ke grid 3 kolom, ia tampak kecil dan yatim di kiri),
+//  >=3 jejak -> kartu unggulan lebar (terbaru) + grid ringkas sisanya.
+const feedMode: 'single' | 'pair' | 'feature' =
+  jejak.length === 2 ? 'pair' : jejak.length >= 3 ? 'feature' : 'single';
+// Mode "pair" sengaja tak punya kartu lebar; dua-duanya masuk grid setara.
+const wideJejak = feedMode === 'pair' ? undefined : jejak[0];
+const gridJejak = feedMode === 'pair' ? jejak : feedMode === 'feature' ? jejak.slice(1) : [];
+const gridClass = feedMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
+// Kartu setara memuat isi lengkap (termasuk summary); kartu grid panjang ringkas.
+const gridVariant = feedMode === 'pair' ? 'stack' : 'compact';
+
+// Maksimal 4 kartu angka (1 kali-kegiatan + 3 metrik teratas) supaya grid tak
+// pecah kalau editor menambah label metrik baru.
+const topMetrics = impact.metrics.slice(0, 3);
+
+const donateWa = buildWaLink(
+  site.data.waNumber,
+  'Halo, saya ingin ikut mendukung penyaluran berikutnya setelah melihat halaman Jejak & Dampak.'
+);
 
 const hasJejak = jejak.length > 0;
-const fmtDate = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const STEPS_PENCATATAN = [
+  {
+    icon: 'camera' as const,
+    title: 'Dokumentasi di lapangan',
+    desc: 'Foto dan catatan diambil saat penyaluran berjalan, bukan dirapikan setelahnya.',
+  },
+  {
+    icon: 'impact' as const,
+    title: 'Angka dicatat per kegiatan',
+    desc: 'Porsi, penerima, dan dana tersalur dicatat satu per satu, lalu dijumlahkan jadi angka di halaman ini.',
+  },
+  {
+    icon: 'repeat' as const,
+    title: 'Laporan ke donatur',
+    desc: 'Bukti penyaluran dikirim ke donatur. Tiap kegiatan punya halaman sendiri yang bisa ditelusuri.',
+  },
+];
 ---
 
 <BaseLayout
@@ -43,140 +121,207 @@ const fmtDate = (iso: string) =>
   description="Rekam jejak nyata bagiberbagi.id: angka dampak terhitung dari setiap kegiatan, galeri lapangan, dan dokumentasi tiap penyaluran. Transparan, bisa ditelusuri."
   breadcrumbName="Jejak & Dampak"
 >
-  <section class="section bg-white">
-    <div class="max-w-6xl mx-auto">
-      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
+  <!-- HERO: latar hangat brand (senada hero pintu), teks tengah -->
+  <section class="section bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
+    <div class="max-w-4xl mx-auto text-center">
+      <nav class="text-sm font-semibold text-muted mb-6 text-left" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-orangeDark">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-ink">Jejak &amp; Dampak</span>
       </nav>
 
-      <div class="text-center max-w-2xl mx-auto mb-12">
-        <div class="eyebrow">Jejak &amp; Dampak</div>
-        <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
-        <p class="text-body-sm md:text-body text-muted leading-relaxed">
-          Angka di bawah bukan janji, tapi hasil yang tercatat dari tiap kali program kami berjalan di lapangan. Lengkap dengan foto dan ceritanya.
-        </p>
+      <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-brand-orange mb-4">
+        <Icon name="impact" size={30} />
+      </span>
+      <div class="eyebrow">Jejak &amp; Dampak</div>
+      <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
+      <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-2xl mx-auto">
+        Angka di halaman ini dihitung dari tiap kegiatan yang sudah berjalan, lengkap dengan foto lapangan dan catatan penyalurannya.
+      </p>
+    </div>
+  </section>
+
+  {/* ANGKA AGREGAT: kartu pertama gelap (kali kegiatan = konteks pengali), metrik ber-tint */}
+  {hasJejak && (
+    <section class="px-5 md:px-10 py-10 md:py-14 bg-white">
+      <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+          <div class="rounded-card bg-ink p-5 text-center text-white">
+            <div class:list={['font-semibold tabular-nums leading-none', numClass(impact.jejakCount.toLocaleString('id-ID'))]}>{impact.jejakCount.toLocaleString('id-ID')}</div>
+            <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
+            <div class="text-body-sm text-white/70">kali kegiatan</div>
+          </div>
+          {topMetrics.map((m) => (
+            <div class="rounded-card bg-brand-orangeTint p-5 text-center">
+              <div class:list={['font-semibold text-brand-orangeDark tabular-nums leading-none', numClass(formatMetric(m))]}>{formatMetric(m)}</div>
+              <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
+              <div class="text-body-sm text-brand-orangeDark/70">{m.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
+    </section>
+  )}
+
+  <!-- FEED JEJAK: bentuknya ikut feedMode (1 kartu lebar / 2 kartu setara /
+       unggulan + grid), dengan filter pintu -->
+  <section class="section bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+      <div class="eyebrow">Rekam Jejak</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Dokumentasi tiap kegiatan</h2>
 
       {hasJejak ? (
         <>
-          {/* counter agregat global */}
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-12">
-            <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-              <div class="text-heading-sm md:text-heading-lg font-semibold text-brand-orangeDark tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
-              <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
-              <div class="text-body-sm text-brand-orangeDark/70">kali kegiatan</div>
-            </div>
-            {impact.metrics.map((m) => (
-              <div class="rounded-card bg-brand-orangeTint p-5 text-center">
-                <div class="text-heading-sm md:text-heading-lg font-semibold text-brand-orangeDark tabular-nums leading-none">{formatMetric(m)}</div>
-                <div class="w-5 h-0.75 rounded bg-brand-orange mx-auto my-2.5"></div>
-                <div class="text-body-sm text-brand-orangeDark/70">{m.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* galeri gabungan: klik untuk perbesar */}
-          {gallery.length > 0 && (
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 mb-12">
-              {gallery.map((src, i) => (
-                <button
-                  type="button"
-                  data-gallery-item
-                  data-src={src}
-                  aria-label={`Buka foto ${i + 1} dari ${gallery.length}`}
-                  class="group relative block w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2"
-                >
-                  <img src={src} alt="" loading="lazy" decoding="async" width="400" height="300" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                  <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* filter pintu (client-side) */}
-          {filterPintu.length > 1 && (
+          {filterPintu.length > 1 ? (
             <div class="flex flex-wrap items-center gap-2 mb-6" role="group" aria-label="Filter pintu">
-              <button type="button" data-jfilter="all" aria-pressed="true" class="rounded-full border border-border px-4 py-1.5 text-body-sm font-bold text-ink transition-colors aria-pressed:bg-ink aria-pressed:text-white hover:border-gray-300">Semua</button>
+              <button type="button" data-jfilter="all" aria-pressed="true" class="rounded-full border border-border bg-white px-4 py-1.5 text-body-sm font-bold text-ink transition-colors aria-pressed:bg-ink aria-pressed:text-white hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2">Semua</button>
               {filterPintu.map((p) => (
                 <button
                   type="button"
                   data-jfilter={p.slug}
                   aria-pressed="false"
                   style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
-                  class="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 text-body-sm font-bold text-muted transition-colors aria-pressed:bg-[var(--cat)] aria-pressed:text-white aria-pressed:border-[var(--cat)] hover:border-gray-300"
+                  class="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-1.5 text-body-sm font-bold text-muted transition-colors aria-pressed:bg-[var(--cat)] aria-pressed:text-white aria-pressed:border-[var(--cat)] hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2"
                 >
                   <Icon name={p.icon} size={13} />
                   {p.label}
                 </button>
               ))}
             </div>
+          ) : (
+            soloPintu && (
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-body-sm text-muted mb-6">
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-bold uppercase tracking-wide"
+                  style={`color:${soloPintu.color};background:${soloPintu.colorTint}`}
+                >
+                  <span class="w-1.5 h-1.5 rounded-full" style={`background:${soloPintu.color}`}></span>
+                  {soloPintu.label}
+                </span>
+                <span class="font-semibold text-ink">{jejak.length} jejak</span>
+                <span aria-hidden="true" class="text-gray-300">&middot;</span>
+                <span>program {recordedPrograms.join(', ')}</span>
+              </div>
+            )
           )}
 
-          {/* feed jejak */}
-          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {jejak.map((j) => {
-              const pintu = pintuOf(j.program);
-              const color = pintu?.color ?? '#F4791D';
-              return (
-                <a
-                  href={j.href}
-                  data-jcard
-                  data-pintu={pintu?.slug}
-                  data-track="jejak_click"
-                  data-track-jejak={j.slug}
-                  style={`--cat:${color}`}
-                  class="group flex flex-col overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-transform hover:-translate-y-1"
-                >
-                  {j.cover ? (
-                    <img src={j.cover} alt="" loading="lazy" class="aspect-[16/10] w-full object-cover" />
-                  ) : (
-                    <div class="aspect-[16/10] w-full flex items-center justify-center" style={`background:linear-gradient(135deg, color-mix(in srgb, var(--cat) 16%, #fff), color-mix(in srgb, var(--cat) 6%, #fff))`}>
-                      {pintu && (
-                        <span class="w-14 h-14 rounded-2xl bg-white flex items-center justify-center shadow-cardSm" style={`color:var(--cat)`}>
-                          <Icon name={pintu.icon} size={26} />
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div class="flex flex-1 flex-col p-5">
-                    {pintu && (
-                      <div class="mb-3">
-                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-bold uppercase tracking-wide" style={`color:var(--cat);background:${pintu.colorTint}`}>
-                          <span class="w-1.5 h-1.5 rounded-full" style={`background:var(--cat)`}></span>
-                          {pintu.label}
-                        </span>
-                      </div>
-                    )}
-                    <div class="text-micro font-semibold text-muted mb-2">{fmtDate(j.date)} &middot; {j.location}</div>
-                    <h3 class="text-title-sm font-semibold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors">{j.title}</h3>
-                    {j.metrics.length > 0 && (
-                      <div class="mt-auto grid grid-cols-3 gap-2">
-                        {j.metrics.slice(0, 3).map((m) => (
-                          <div class="rounded-xl bg-gray-50 px-2 py-2.5 text-center">
-                            <div class="text-title-sm font-bold tabular-nums leading-none" style={`color:var(--cat)`}>{formatMetric(m)}</div>
-                            <div class="text-micro text-muted mt-1 truncate">{m.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </a>
-              );
-            })}
+          {/* Kartu lebar (unggulan) hanya dirender di mode single & feature; di
+              mode pair kedua jejak masuk grid setara supaya tak ada yang yatim.
+              Wadah flex-col memberi jarak antar blok tanpa margin di kartu,
+              jadi gap ikut hilang saat kartu disembunyikan filter. */}
+          <div class="flex flex-col gap-5">
+            {wideJejak && (
+              <JejakCard
+                jejak={wideJejak}
+                pintu={pintuOf(wideJejak.program)}
+                variant="wide"
+                featured={feedMode === 'feature'}
+                eager
+              />
+            )}
+
+            {gridJejak.length > 0 && (
+              <div class:list={['grid gap-5', gridClass]}>
+                {gridJejak.map((j, i) => (
+                  <JejakCard
+                    jejak={j}
+                    pintu={pintuOf(j.program)}
+                    variant={gridVariant}
+                    eager={!wideJejak && i === 0}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* jembatan ke transparansi formal (#4) */}
-          <p class="mt-12 text-center text-body-sm text-muted">
-            Butuh kebijakan &amp; laporan formal? Lihat <a href="/transparansi/" class="font-bold text-brand-orangeDark hover:underline underline-offset-2">halaman Transparansi</a>.
+          {/* Hasil filter kosong: dimunculkan oleh script saat tak ada kartu lolos */}
+          <p data-jempty hidden class="rounded-card border border-border bg-white p-8 text-center text-body-sm text-muted">
+            Belum ada jejak untuk pintu ini.
           </p>
         </>
       ) : (
-        <div class="rounded-card border border-border bg-gray-50 p-10 text-center text-muted">
-          Belum ada jejak terpublikasi. Nantikan dokumentasi kegiatan pertama kami.
-        </div>
+        <p class="rounded-card border border-border bg-white p-10 text-center text-muted">
+          Belum ada jejak terpublikasi. Dokumentasi kegiatan pertama akan tampil di sini.
+        </p>
       )}
+    </div>
+  </section>
+
+  {/* GALERI LAPANGAN: foto unik dari seluruh jejak, klik untuk perbesar */}
+  {gallery.length > 0 && (
+    <section class="px-5 md:px-10 py-10 md:py-14 bg-white">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-wrap items-baseline justify-between gap-2 mb-5">
+          <h2 class="text-title font-semibold text-ink">Galeri lapangan</h2>
+          <p class="text-body-sm text-muted">Klik foto untuk perbesar.</p>
+        </div>
+        <div class:list={['grid gap-2.5', galleryCols]}>
+          {gallery.map((src, i) => (
+            <button
+              type="button"
+              data-gallery-item
+              data-src={src}
+              aria-label={`Buka foto ${i + 1} dari ${gallery.length}`}
+              class:list={[
+                'group relative block w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2',
+                galleryOddTail && i === gallery.length - 1 && 'max-sm:col-span-2',
+              ]}
+            >
+              <img src={src} alt="" loading="lazy" decoding="async" width="400" height="300" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CARA KAMI MENCATAT: menjelaskan asal angka di atas, tetap tampil walau jejak nol -->
+  <section class="section bg-gray-50">
+    <div class="max-w-5xl mx-auto">
+      <div class="eyebrow">Cara Pencatatan</div>
+      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara kami mencatat</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        {STEPS_PENCATATAN.map((s) => (
+          <div class="rounded-card bg-white border border-border p-6">
+            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-brand-orangeTint text-brand-orange mb-4">
+              <Icon name={s.icon} size={22} />
+            </span>
+            <h3 class="text-title-sm font-semibold text-ink mb-1.5">{s.title}</h3>
+            <p class="text-body-sm text-muted leading-relaxed">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA penutup: donasi (primer) + transparansi formal (sekunder) -->
+  <section class="section bg-white">
+    <div class="max-w-5xl mx-auto">
+      <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
+        <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Dukung penyaluran berikutnya</h2>
+        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-xl mx-auto mb-6">
+          Donasi kamu masuk ke kegiatan berikutnya, dan hasilnya dicatat di halaman ini seperti jejak di atas.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a
+            href={donateWa}
+            target="_blank"
+            rel="noopener"
+            data-track="donate_click"
+            data-track-source="jejak_page"
+            class="btn-secondary text-brand-orangeDark"
+          >
+            Donasi lewat WhatsApp
+          </a>
+          <a
+            href="/transparansi/"
+            class="inline-flex items-center rounded-full border-2 border-white/60 px-8 py-4 font-bold text-base text-white transition hover:bg-white/15 hover:-translate-y-0.5"
+          >
+            Kebijakan &amp; Laporan
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -185,12 +330,21 @@ const fmtDate = (iso: string) =>
 
 <script>
   // Filter feed jejak per pintu (client-side; halaman statis, semua kartu
-  // dirender lalu disembunyikan sesuai chip aktif).
-  const chips = [...document.querySelectorAll('[data-jfilter]')] as HTMLElement[];
-  const cards = [...document.querySelectorAll('[data-jcard]')] as HTMLElement[];
+  // dirender lalu disembunyikan sesuai chip aktif). Kartu unggulan ikut tersaring
+  // karena memakai kontrak data-jcard/data-pintu yang sama.
+  const chips = [...document.querySelectorAll<HTMLElement>('[data-jfilter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-jcard]')];
+  const empty = document.querySelector<HTMLElement>('[data-jempty]');
   function apply(f: string) {
     chips.forEach((c) => c.setAttribute('aria-pressed', c.dataset.jfilter === f ? 'true' : 'false'));
-    cards.forEach((card) => { card.hidden = !(f === 'all' || card.dataset.pintu === f); });
+    let shown = 0;
+    cards.forEach((card) => {
+      const match = f === 'all' || card.dataset.pintu === f;
+      card.hidden = !match;
+      if (match) shown += 1;
+    });
+    // Pesan kosong hanya relevan saat filter menyaring habis isi feed.
+    if (empty) empty.hidden = shown > 0;
   }
   chips.forEach((chip) => chip.addEventListener('click', () => apply(chip.dataset.jfilter as string)));
   // Deep-link: /jejak/?berbagi=makanan langsung terapkan filter itu bila chip-nya ada.

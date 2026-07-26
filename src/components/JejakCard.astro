@@ -1,0 +1,137 @@
+---
+import Icon from './Icon.astro';
+import { formatMetric } from '../lib/format';
+import type { Jejak } from '../lib/jejak';
+import type { Pintu } from '../consts';
+
+export interface Props {
+  jejak: Jejak;
+  /** Pintu induk (lewat program). Opsional karena relasi bisa belum terpetakan. */
+  pintu?: Pintu;
+  /**
+   * wide    = kartu unggulan lebar, dua kolom di md+ (foto sejajar isi).
+   * stack   = kartu setara, foto menumpuk di atas isi, isi lengkap + tautan.
+   * compact = kartu grid ringkas (tanpa summary, tanpa tautan).
+   * Satu markup untuk tiga mode feed supaya kartu tak diduplikasi per mode.
+   */
+  variant: 'wide' | 'stack' | 'compact';
+  /** Badge "Terbaru" hanya benar saat kartu ini memang unggulan di feed panjang. */
+  featured?: boolean;
+  /** Kartu pertama saja: cover-nya di atas fold, jadi tak perlu di-lazy. */
+  eager?: boolean;
+}
+
+const { jejak, pintu, variant, featured = false, eager = false } = Astro.props;
+
+// Fallback oranye brand supaya --cat selalu terisi: kartu tetap punya aksen
+// walau relasi pintu-nya belum ketemu. Warna datang dari data, tak di-hardcode
+// per pintu.
+const color = pintu?.color ?? '#F4791D';
+const tint = pintu?.colorTint ?? '#FDEEE1';
+
+const isWide = variant === 'wide';
+const isCompact = variant === 'compact';
+const metrics = jejak.metrics.slice(0, 3);
+
+// Chip metrik cuma selebar sepertiga kartu, jadi nilai panjang (mis.
+// "Rp 5.500.000") membungkus jadi 2 baris dan tinggi kartu antar jejak jadi tak
+// seragam. Sizing sadar-panjang: string lebih dari 8 karakter turun satu tingkat
+// ukuran dan dipaksa satu baris, yang pendek tetap ukuran sekarang.
+const numClass = (s: string) => (s.length > 8 ? 'text-body-sm whitespace-nowrap' : 'text-title-sm');
+
+const fmtDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+
+// `[&[hidden]]:hidden` menjaga kontrak filter: script menyembunyikan kartu lewat
+// atribut `hidden`, tapi utility display (grid/flex) menimpa default UA sheet.
+// Selector class+atribut ini menang tanpa bergantung urutan CSS.
+const rootClass = isWide
+  ? 'group grid overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-shadow hover:shadow-card md:grid-cols-2 [&[hidden]]:hidden'
+  : 'group flex flex-col overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-transform hover:-translate-y-1 [&[hidden]]:hidden';
+
+const bodyClass = isWide ? 'flex flex-col p-6 md:p-8' : isCompact ? 'flex flex-1 flex-col p-5' : 'flex flex-1 flex-col p-6';
+const titleClass = isWide
+  ? 'text-title md:text-heading-sm font-semibold text-ink leading-snug mb-2.5 group-hover:text-brand-orange transition-colors'
+  : isCompact
+    ? 'text-title-sm font-semibold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors'
+    : 'text-title font-semibold text-ink leading-snug mb-2.5 group-hover:text-brand-orange transition-colors';
+
+const placeholderBadge = isWide ? 'w-16 h-16' : 'w-14 h-14';
+const placeholderIcon = isWide ? 30 : 26;
+const placeholderBg =
+  'background:linear-gradient(135deg, color-mix(in srgb, var(--cat) 16%, #fff), color-mix(in srgb, var(--cat) 6%, #fff))';
+---
+
+<a
+  href={jejak.href}
+  data-jcard
+  data-pintu={pintu?.slug}
+  data-track="jejak_click"
+  data-track-jejak={jejak.slug}
+  style={`--cat:${color}`}
+  class={rootClass}
+>
+  {jejak.cover ? (
+    isWide ? (
+      /* Aspect-ratio dipakai di mobile; di md+ dilepas agar sel grid ikut
+         tinggi kolom isi (foto di-crop lewat object-cover). */
+      <div class="relative w-full aspect-[16/10] md:aspect-auto bg-gray-100">
+        <img src={jejak.cover} alt="" loading={eager ? 'eager' : 'lazy'} class="absolute inset-0 h-full w-full object-cover" />
+      </div>
+    ) : (
+      <img src={jejak.cover} alt="" loading={eager ? 'eager' : 'lazy'} class="aspect-[16/10] w-full object-cover" />
+    )
+  ) : (
+    <div
+      class:list={['w-full flex items-center justify-center', isWide ? 'aspect-[16/10] md:aspect-auto' : 'aspect-[16/10]']}
+      style={placeholderBg}
+    >
+      {pintu && (
+        <span class:list={['rounded-2xl bg-white flex items-center justify-center shadow-cardSm', placeholderBadge]} style="color:var(--cat)">
+          <Icon name={pintu.icon} size={placeholderIcon} />
+        </span>
+      )}
+    </div>
+  )}
+
+  <div class={bodyClass}>
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      {pintu && (
+        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-micro font-bold uppercase tracking-wide" style={`color:var(--cat);background:${tint}`}>
+          <span class="w-1.5 h-1.5 rounded-full" style="background:var(--cat)"></span>
+          {pintu.label}
+        </span>
+      )}
+      {featured && (
+        <span class="rounded-full bg-gray-100 px-2.5 py-1 text-micro font-bold uppercase tracking-wide text-muted">Terbaru</span>
+      )}
+    </div>
+
+    <div class="text-micro font-semibold text-muted mb-2">{fmtDate(jejak.date)} &middot; {jejak.location}</div>
+    <h3 class={titleClass}>{jejak.title}</h3>
+    {!isCompact && <p class="text-body-sm text-muted leading-relaxed mb-5">{jejak.summary}</p>}
+
+    {metrics.length > 0 && (
+      <div class:list={['grid grid-cols-3 gap-2', isCompact ? 'mt-auto' : 'mb-5']}>
+        {metrics.map((m) => {
+          const value = formatMetric(m);
+          return (
+            /* Label boleh 2 baris (truncate dulu memotong jadi "donasi tersa..."):
+               chip tetap rata tinggi karena sel grid saling stretch. */
+            <div class="flex h-full flex-col rounded-xl bg-gray-50 px-2 py-2.5 text-center">
+              <div class:list={['font-bold tabular-nums leading-none', numClass(value)]} style="color:var(--cat)">{value}</div>
+              <div class="text-micro text-muted leading-tight mt-1 line-clamp-2">{m.label}</div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+
+    {!isCompact && (
+      <span class="mt-auto inline-flex items-center gap-1.5 font-bold text-body-sm" style="color:var(--cat)">
+        Lihat dokumentasi lengkap
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+      </span>
+    )}
+  </div>
+</a>

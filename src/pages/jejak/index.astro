@@ -1,5 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
@@ -48,24 +49,65 @@ const recordedPrograms = [...new Set(jejak.map((j) => labelBySlug.get(j.program)
 // Galeri gabungan: cover + gallery dari semua jejak. DEDUP dulu (foto yang sama
 // sering dipakai sebagai cover satu jejak dan isi galeri jejak lain), baru
 // dibatasi supaya seksi ini tak jadi dinding foto kembar.
+//
+// Dedup memakai identitas objek, BUKAN `img.src`. import.meta.glob eager
+// mengembalikan modul yang sama untuk path yang sama, jadi Set sudah cukup.
+// Membaca properti modul gambar justru berbahaya: Astro membungkusnya dengan
+// Proxy dan menandai berkas aslinya "terpakai langsung" begitu ada properti
+// yang dibaca di luar pipeline gambar, sehingga PNG mentahnya ikut disalin ke
+// dist dan seluruh gunanya optimasi ini hilang.
 const gallery = [
-  ...new Set(jejak.flatMap((j) => [j.cover, ...j.gallery]).filter((src): src is string => !!src)),
+  ...new Set(jejak.flatMap((j) => [j.cover, ...j.gallery]).filter((img) => img !== null)),
 ].slice(0, 8);
+
+// Thumbnail dan sumber lightbox sengaja BEDA berkas: thumbnail hanya beberapa
+// ratus piksel, sementara lightbox membuka foto sampai memenuhi layar. Versi
+// besar tetap lewat pipeline (webp seukuran aslinya), bukan PNG mentah, supaya
+// membuka lightbox tak menarik berkas satu sampai dua megabyte. getImage
+// dipanggil saat build, jadi tak ada biaya di sisi pengunjung.
+const galleryItems = await Promise.all(
+  gallery.map(async (img) => ({
+    img,
+    full: (await getImage({ src: img, format: 'webp', quality: 80 })).src,
+  }))
+);
 
 // Jumlah kolom mengikuti jumlah foto unik supaya baris terakhir tak bolong saat
 // dokumentasinya masih sedikit. Di mobile selalu maksimal 2 kolom: 3 kolom di
 // layar 390px membuat thumbnail menyusut jadi sekitar 110px dan fotonya tak
 // terbaca. Penambahan kolom baru mulai dari sm.
-const galleryCols =
+//
+// `sizes` thumbnail WAJIB ikut cabang yang sama. Kalau dipatok satu nilai,
+// grid 3 kolom (sel 377px) tetap disuguhi berkas 280px dan fotonya terlihat
+// buram. Jadi kelas grid dan sizes lahir dari satu variabel yang sama.
+// Angka desktop = (1152px kontainer max-w-6xl - gap 10px) / jumlah kolom;
+// 1232px = 1152 + padding md:px-10 kiri-kanan.
+const galleryLayout =
   gallery.length <= 2
-    ? 'grid-cols-2'
-    : gallery.length === 3
-      ? 'grid-cols-2 sm:grid-cols-3'
+    ? {
+        cols: 'grid-cols-2',
+        sizes: '(min-width: 1232px) 571px, 50vw',
+        widths: [380, 571, 760, 1142],
+      }
+    : gallery.length === 3 || (gallery.length % 4 !== 0 && gallery.length % 3 === 0)
+      ? {
+          cols: 'grid-cols-2 sm:grid-cols-3',
+          sizes: '(min-width: 1232px) 377px, (min-width: 640px) 33vw, 50vw',
+          widths: [280, 377, 560, 754],
+        }
       : gallery.length % 4 === 0
-        ? 'grid-cols-2 sm:grid-cols-4'
-        : gallery.length % 3 === 0
-          ? 'grid-cols-2 sm:grid-cols-3'
-          : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
+        ? {
+            cols: 'grid-cols-2 sm:grid-cols-4',
+            sizes: '(min-width: 1232px) 280px, (min-width: 640px) 25vw, 50vw',
+            widths: [200, 280, 420, 560],
+          }
+        : {
+            cols: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4',
+            sizes:
+              '(min-width: 1232px) 280px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw',
+            widths: [200, 280, 420, 560],
+          };
+const galleryCols = galleryLayout.cols;
 
 // Grid 2 kolom selalu menyisakan satu sel bolong di baris terakhir kalau jumlah
 // fotonya ganjil, jadi item terakhir dilebarkan penuh khusus di mobile. Aturannya
@@ -346,18 +388,26 @@ const STEPS_PENCATATAN = [
           <p class="text-body-sm text-muted">Klik foto untuk perbesar.</p>
         </div>
         <div class:list={['grid gap-2.5', galleryCols]}>
-          {gallery.map((src, i) => (
+          {galleryItems.map(({ img, full }, i) => (
             <button
               type="button"
               data-gallery-item
-              data-src={src}
-              aria-label={`Buka foto ${i + 1} dari ${gallery.length}`}
+              data-src={full}
+              aria-label={`Buka foto ${i + 1} dari ${galleryItems.length}`}
               class:list={[
                 'group relative block w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2',
-                galleryOddTail && i === gallery.length - 1 && 'max-sm:col-span-2',
+                galleryOddTail && i === galleryItems.length - 1 && 'max-sm:col-span-2',
               ]}
             >
-              <img src={src} alt="" loading="lazy" decoding="async" width="400" height="300" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+              <Image
+                src={img}
+                alt=""
+                widths={galleryLayout.widths}
+                sizes={galleryLayout.sizes}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
               <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
             </button>
           ))}

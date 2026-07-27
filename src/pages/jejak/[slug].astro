@@ -1,5 +1,7 @@
 ---
 import { getEntry, render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
@@ -45,11 +47,28 @@ const dateLabel = new Date(jejak.date).toLocaleDateString('id-ID', {
 });
 
 // Featured = gambar besar (cover, atau foto pertama bila cover kosong); carousel
-// = sisanya. allImages (dedup) jadi sumber lightbox, urut featured lalu sisanya.
-const galleryImages = jejak.gallery.filter((g): g is string => Boolean(g));
-const allImages = [...new Set([jejak.cover, ...galleryImages].filter((s): s is string => Boolean(s)))];
+// = sisanya. allImages jadi sumber lightbox, urut featured lalu sisanya.
+//
+// Dedup lewat identitas objek, bukan `img.src`: import.meta.glob eager memberi
+// modul yang sama untuk path yang sama, dan membaca properti modul gambar
+// menandai berkas aslinya "terpakai langsung" sehingga PNG mentahnya ikut
+// disalin ke dist.
+const galleryImages = jejak.gallery;
+const allImages = [...new Set([jejak.cover, ...galleryImages].filter((img) => img !== null))];
 const featured = allImages[0] ?? null;
 const carousel = allImages.slice(1);
+
+// Lightbox membuka foto sampai memenuhi layar, jadi sumbernya berkas terpisah
+// dari yang tampil di halaman: webp seukuran aslinya, bukan PNG mentah. Dibuat
+// saat build lewat getImage, satu berkas per foto dan dipakai ulang oleh semua
+// tombol yang menunjuk foto sama.
+const lightboxSrc = new Map<ImageMetadata, string>(
+  await Promise.all(
+    allImages.map(
+      async (img) => [img, (await getImage({ src: img, format: 'webp', quality: 80 })).src] as const
+    )
+  )
+);
 ---
 
 <BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
@@ -109,11 +128,20 @@ const carousel = allImages.slice(1);
         <button
           type="button"
           data-gallery-item
-          data-src={featured}
+          data-src={lightboxSrc.get(featured)}
           aria-label="Buka foto 1"
           class="group relative block w-full rounded-card overflow-hidden bg-gray-100 mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
         >
-          <img src={featured} alt={jejak.title} loading="eager" class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+          {/* Kolom artikel max-w-3xl (768px). Lebar terbesar 1440px menutup
+              layar 2x DPR sekaligus batas resolusi asli foto lapangan. */}
+          <Image
+            src={featured}
+            alt={jejak.title}
+            widths={[480, 768, 1100, 1440]}
+            sizes="(min-width: 768px) 768px, 100vw"
+            loading="eager"
+            class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
           <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
           <span aria-hidden="true" class="absolute bottom-3 right-3 grid place-items-center w-9 h-9 rounded-full bg-ink/55 text-white opacity-0 transition-opacity group-hover:opacity-100">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
@@ -133,15 +161,24 @@ const carousel = allImages.slice(1);
             data-carousel-track
             class="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {carousel.map((src, i) => (
+            {carousel.map((img, i) => (
               <button
                 type="button"
                 data-gallery-item
-                data-src={src}
+                data-src={lightboxSrc.get(img)}
                 aria-label={`Buka foto ${i + 2}`}
                 class="snap-start shrink-0 grow-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] group relative block rounded-2xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
               >
-                <img src={src} alt="" loading="lazy" class="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105" />
+                {/* Kartu carousel: separuh kolom di mobile, sepertiga di sm+
+                    (kolom 768px), jadi sekitar 250px. */}
+                <Image
+                  src={img}
+                  alt=""
+                  widths={[250, 380, 500, 700]}
+                  sizes="(min-width: 640px) 250px, 45vw"
+                  loading="lazy"
+                  class="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
+                />
                 <span aria-hidden="true" class="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/10"></span>
               </button>
             ))}

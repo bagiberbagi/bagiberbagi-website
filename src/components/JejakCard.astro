@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import { formatMetric } from '../lib/format';
 import type { Jejak } from '../lib/jejak';
@@ -62,6 +63,25 @@ const titleClass = isWide
     ? 'text-title-sm font-semibold text-ink leading-snug mb-4 group-hover:text-brand-orange transition-colors'
     : 'text-title font-semibold text-ink leading-snug mb-2.5 group-hover:text-brand-orange transition-colors';
 
+// Lebar render cover berbeda jauh antar varian, jadi `sizes` tak boleh seragam:
+// tanpa ini browser mengunduh berkas selebar kartu unggulan untuk kartu grid
+// yang cuma sepertiga lebarnya. Angkanya diturunkan dari kontainer feed
+// `max-w-6xl` (1152px) dikurangi gap:
+//   wide  -> kolom foto = separuh grid 2 kolom, sekitar 576px di md+
+//   stack -> kartu mode "pair", juga separuh grid 2 kolom, sekitar 566px di md+
+//   compact -> sepertiga grid 3 kolom, sekitar 365px di lg+
+// Lebar terbesar dipilih dua kali lebar render supaya layar 2x DPR tetap tajam.
+const coverSizes = isWide
+  ? '(min-width: 768px) 576px, 100vw'
+  : isCompact
+    ? '(min-width: 1024px) 365px, (min-width: 640px) 50vw, 100vw'
+    : '(min-width: 768px) 566px, 100vw';
+const coverWidths = isCompact ? [360, 480, 730, 960] : [420, 576, 860, 1152];
+
+// Narrowing untuk template: properti opsional di dalam ternary bersarang tak
+// dipersempit otomatis oleh TypeScript.
+const cover = jejak.cover;
+
 const placeholderBadge = isWide ? 'w-16 h-16' : 'w-14 h-14';
 const placeholderIcon = isWide ? 30 : 26;
 const placeholderBg =
@@ -77,15 +97,29 @@ const placeholderBg =
   style={`--cat:${color}`}
   class={rootClass}
 >
-  {jejak.cover ? (
+  {cover ? (
     isWide ? (
       /* Aspect-ratio dipakai di mobile; di md+ dilepas agar sel grid ikut
          tinggi kolom isi (foto di-crop lewat object-cover). */
       <div class="relative w-full aspect-[16/10] md:aspect-auto bg-gray-100">
-        <img src={jejak.cover} alt="" loading={eager ? 'eager' : 'lazy'} class="absolute inset-0 h-full w-full object-cover" />
+        <Image
+          src={cover}
+          alt=""
+          widths={coverWidths}
+          sizes={coverSizes}
+          loading={eager ? 'eager' : 'lazy'}
+          class="absolute inset-0 h-full w-full object-cover"
+        />
       </div>
     ) : (
-      <img src={jejak.cover} alt="" loading={eager ? 'eager' : 'lazy'} class="aspect-[16/10] w-full object-cover" />
+      <Image
+        src={cover}
+        alt=""
+        widths={coverWidths}
+        sizes={coverSizes}
+        loading={eager ? 'eager' : 'lazy'}
+        class="aspect-[16/10] w-full object-cover"
+      />
     )
   ) : (
     <div

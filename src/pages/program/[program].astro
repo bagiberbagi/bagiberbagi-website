@@ -135,7 +135,17 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
         <div class="order-first md:order-last">
           {heroCover ? (
-            <img src={heroCover} alt={`Dokumentasi ${program.label}`} loading="eager" class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card" style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)" />
+            /* Kolom foto = separuh grid 2 kolom di kontainer max-w-5xl (1024px)
+               dikurangi gap 48px, sekitar 488px di md+; penuh di mobile. */
+            <Image
+              src={heroCover}
+              alt={`Dokumentasi ${program.label}`}
+              widths={[480, 640, 980, 1024]}
+              sizes="(min-width: 768px) 488px, 100vw"
+              loading="eager"
+              class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card"
+              style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)"
+            />
           ) : (
             <Image src={programPromo} alt={program.label} class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card" style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)" />
           )}

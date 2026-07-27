@@ -521,16 +521,26 @@ export default config({
                 : 'Metrik',
           }
         ),
+        // Foto jejak disimpan di src/assets/jejak, BUKAN public/: hanya berkas
+        // di dalam src/ yang lewat pipeline astro:assets (webp, beberapa lebar,
+        // dimensi terbaca). Yang perlu dijaga cuma dua hal:
+        //   directory  = lokasi berkas sungguhan di repo (tempat unggah/hapus),
+        //   publicPath = awalan string yang ditulis ke frontmatter.
+        // publicPath sengaja '/src/assets/jejak/' supaya nilai di .mdoc persis
+        // sama dengan kunci import.meta.glob di src/lib/jejak.ts. Kalau salah
+        // satu diubah, ubah keduanya bersamaan atau pemetaan foto putus.
+        // Pratinjau di admin tetap jalan: Keystatic membaca isi berkas lewat
+        // API-nya sendiri (blob URL), bukan lewat URL publik situs.
         cover: fields.image({
           label: 'Gambar sampul',
-          directory: 'public/uploads/jejak',
-          publicPath: '/uploads/jejak/',
+          directory: 'src/assets/jejak',
+          publicPath: '/src/assets/jejak/',
         }),
         gallery: fields.array(
           fields.image({
             label: 'Foto',
-            directory: 'public/uploads/jejak',
-            publicPath: '/uploads/jejak/',
+            directory: 'src/assets/jejak',
+            publicPath: '/src/assets/jejak/',
           }),
           {
             label: 'Galeri',

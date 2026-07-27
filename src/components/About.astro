@@ -128,12 +128,16 @@ const VALUE_ICONS = {
 
 <!-- CTA -->
 <section class="section">
-  <Container class="bg-brand-blue rounded-card px-6 py-14 md:px-12 md:py-16 text-center text-white" data-fade="1">
-    <h2 class="font-sans text-heading-sm md:text-heading-lg font-semibold mb-4">{cta.title}</h2>
-    <p class="text-body text-white/85 leading-relaxed max-w-text mx-auto mb-8">{cta.text}</p>
-    <div class="flex flex-wrap gap-4 justify-center">
-      <a href={waMitraLink} target="_blank" rel="noopener" class="btn-primary">Jadi Mitra Dapur UMKM</a>
-      <a href={waRelawanLink} target="_blank" rel="noopener" class="btn-secondary">Jadi Relawan</a>
+  {/* Kartu biru dibungkus Container, bukan dijadikan Container: padding sendiri
+      (px-6 md:px-12) milik kartu, gutter halaman tetap urusan Container. */}
+  <Container>
+    <div class="bg-brand-blue rounded-card px-6 py-14 md:px-12 md:py-16 text-center text-white" data-fade="1">
+      <h2 class="font-sans text-heading-sm md:text-heading-lg font-semibold mb-4">{cta.title}</h2>
+      <p class="text-body text-white/85 leading-relaxed max-w-text mx-auto mb-8">{cta.text}</p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href={waMitraLink} target="_blank" rel="noopener" class="btn-primary">Jadi Mitra Dapur UMKM</a>
+        <a href={waRelawanLink} target="_blank" rel="noopener" class="btn-secondary">Jadi Relawan</a>
+      </div>
     </div>
   </Container>
 </section>

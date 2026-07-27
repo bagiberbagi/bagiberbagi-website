@@ -132,8 +132,10 @@ const programs = defineCollection({
     pintu: z.enum(PINTU_IDS).default('food'),
     order: z.number().default(0),
     active: z.boolean().default(false),
-    // Foto kartu sorotan (unggahan Keystatic). Kosong = pakai foto bawaan.
-    // fields.image menulis null saat dikosongkan, jadi nullish().
+    // Foto kartu sorotan (unggahan Keystatic ke src/assets/programs). Isinya
+    // path string; lib/programs.ts yang memetakannya ke modul astro:assets.
+    // Kosong = pakai foto bawaan. fields.image menulis null saat dikosongkan,
+    // jadi nullish().
     image: z.string().nullish(),
     summary: z.string(),
     // Diisi hanya untuk program aktif yang punya halaman detail; program

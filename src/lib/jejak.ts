@@ -1,6 +1,7 @@
 import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
+import { createImageResolver } from './assets';
 import { getPrograms } from './programs';
 
 export interface JejakMetric {
@@ -25,54 +26,25 @@ export interface Jejak {
 }
 
 /**
- * Peta path string -> modul gambar untuk seluruh foto jejak.
+ * Peta path string -> modul gambar untuk seluruh foto jejak. Pola glob wajib
+ * literal, jadi tiap domain konten memanggil globnya sendiri lalu menyerahkan
+ * hasilnya ke `createImageResolver` (lihat `lib/assets.ts` untuk alasan foto
+ * unggahan tinggal di `src/assets/`, bukan `public/`).
  *
- * Foto jejak tinggal di `src/assets/jejak/`, bukan `public/`: cuma berkas di
- * dalam `src/` yang lewat pipeline `astro:assets` (dikonversi ke webp, dibuatkan
- * beberapa lebar, dan dimensi aslinya terbaca sehingga `<Image>` bisa menulis
- * width/height). Berkas di `public/` disajikan mentah apa adanya, dan foto
- * lapangan berukuran satu sampai dua megabyte per keping membuat halaman
- * `/jejak/` membengkak begitu kegiatan yang dilaporkan bertambah.
- *
- * Keystatic menyimpan nilai field gambar sebagai string biasa, jadi string itu
- * perlu dipetakan balik ke modul gambar. `import.meta.glob` eager mengerjakannya
- * saat build: kuncinya adalah path absolut dari root proyek, persis sama dengan
- * yang ditulis Keystatic lewat `publicPath: '/src/assets/jejak/'`. Kalau salah
- * satu sisi diubah, ubah keduanya bersamaan.
+ * Kunci glob ini persis sama dengan `publicPath: '/src/assets/jejak/'` di
+ * keystatic.config.ts. Kalau salah satu sisi diubah, ubah keduanya bersamaan.
  */
 const JEJAK_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/jejak/*.{png,jpg,jpeg,webp,avif,gif}',
   { eager: true }
 );
 
-// Satu peringatan per path, bukan per pemakaian: foto yang sama bisa dipakai
-// beberapa jejak dan beberapa halaman sekaligus.
-const missingWarned = new Set<string>();
-
 /**
  * Ubah path dari frontmatter menjadi modul gambar. Mengembalikan null kalau
- * berkasnya tak ada di `src/assets/jejak/`.
- *
- * Sengaja tidak melempar error. Entri jejak dan berkas fotonya bisa lepas
- * sinkron di luar kendali kode ini: editor menghapus berkas lewat Git,
- * frontmatter lama menunjuk path yang sudah dipindah, atau nama berkas diubah
- * manual. Kalau kasus itu menggagalkan build, satu foto hilang mematikan
- * seluruh situs. Yang benar: jejaknya tetap terbit, fotonya diganti placeholder
- * ikon pintu yang memang sudah ada di tiap konsumen, dan build menulis
- * peringatan supaya ketahuan saat deploy.
+ * berkasnya tak ada di `src/assets/jejak/`; konsumen sudah punya placeholder
+ * ikon pintu untuk kasus itu.
  */
-export function resolveJejakImage(path?: string | null): ImageMetadata | null {
-  if (!path) return null;
-  const mod = JEJAK_IMAGES[path];
-  if (!mod) {
-    if (!missingWarned.has(path)) {
-      missingWarned.add(path);
-      console.warn(`[jejak] foto tidak ditemukan, dilewati: ${path}`);
-    }
-    return null;
-  }
-  return mod.default;
-}
+export const resolveJejakImage = createImageResolver('jejak', JEJAK_IMAGES);
 
 /**
  * Satu sumber kebenaran untuk semua jejak — kartu beranda, halaman rekam jejak

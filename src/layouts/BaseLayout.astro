@@ -3,6 +3,7 @@ import { getEntry } from 'astro:content';
 import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
 import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';
 import { findPageSeo } from '../lib/seo';
+import { resolveShareImage } from '../lib/share-image';
 import {
   assembleGraph,
   buildBreadcrumbList,
@@ -69,7 +70,9 @@ const title = rawTitle.replace(/[<>]/g, '');
 
 const siteUrl = Astro.site!.href.replace(/\/$/, '');
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+// Satu-satunya tempat nilai gambar share diselesaikan: unggahan editor lewat
+// astro:assets, path tetap & route OG generate diteruskan apa adanya.
+const shareImage = await resolveShareImage(image, Astro.site);
 
 const site = await getEntry('settings', 'site');
 const ids = makeIds({ siteUrl });
@@ -146,11 +149,11 @@ const graph = organization
     canonical={canonical}
     siteName={seo.siteName}
     locale="id_ID"
-    ogImage={imageUrl}
+    ogImage={shareImage?.url}
     ogImageAlt={title}
-    ogImageWidth={imageUrl ? 1200 : undefined}
-    ogImageHeight={imageUrl ? 630 : undefined}
-    twitter={{ card: imageUrl ? 'summary_large_image' : 'summary' }}
+    ogImageWidth={shareImage?.width}
+    ogImageHeight={shareImage?.height}
+    twitter={{ card: shareImage ? 'summary_large_image' : 'summary' }}
     noindex={noindex}
     nofollow={noindex}
     graph={graph}

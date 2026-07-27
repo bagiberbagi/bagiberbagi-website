@@ -46,6 +46,18 @@ const metrics = jejak.metrics.slice(0, 3);
 // ukuran dan dipaksa satu baris, yang pendek tetap ukuran sekarang.
 const numClass = (s: string) => (s.length > 8 ? 'text-body-sm whitespace-nowrap' : 'text-title-sm');
 
+// Kartu compact cuma sepertiga grid 3 kolom (sekitar 301px di lebar Container
+// `standard`), jadi satu chip hanya menyisakan ~65px untuk angkanya, sementara
+// "Rp 2.500.000" butuh ~89px dan meluber keluar kotak. Mengecilkan font tak
+// menyelesaikan: di 12px pun angkanya masih lebih lebar dari chip, dan ukuran
+// segitu sudah tak terbaca. Jadi chip-nya yang dilebarkan, cuma saat memang ada
+// nilai panjang: dua kolom, dan chip terakhir mengisi sisa baris kalau jumlah
+// metriknya ganjil supaya tak ada sel bolong. Varian lain (wide/stack) chip-nya
+// sudah >110px, tetap 3 kolom.
+const hasLongMetric = metrics.some((m) => formatMetric(m).length > 8);
+const metricCols = isCompact && hasLongMetric ? 'grid-cols-2' : 'grid-cols-3';
+const spanLastMetric = isCompact && hasLongMetric && metrics.length % 2 === 1;
+
 const fmtDate = (iso: string) =>
   new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -65,18 +77,21 @@ const titleClass = isWide
 
 // Lebar render cover berbeda jauh antar varian, jadi `sizes` tak boleh seragam:
 // tanpa ini browser mengunduh berkas selebar kartu unggulan untuk kartu grid
-// yang cuma sepertiga lebarnya. Angkanya diturunkan dari kontainer feed
-// `max-w-6xl` (1152px) dikurangi gap:
-//   wide  -> kolom foto = separuh grid 2 kolom, sekitar 576px di md+
-//   stack -> kartu mode "pair", juga separuh grid 2 kolom, sekitar 566px di md+
-//   compact -> sepertiga grid 3 kolom, sekitar 365px di lg+
-// Lebar terbesar dipilih dua kali lebar render supaya layar 2x DPR tetap tajam.
+// yang cuma sepertiga lebarnya. Angkanya diturunkan dari isi Container tier
+// `standard` di /jejak (1024 dikurangi padding md:px-10 = 944px), dikurangi gap
+// grid feed:
+//   wide    -> kolom foto = separuh grid 2 kolom kartu (tanpa gap), ~472px
+//   stack   -> kartu mode "pair", separuh grid 2 kolom gap-5, ~462px
+//   compact -> sepertiga grid 3 kolom gap-5, ~301px di lg+
+// Di antara md dan lg kontainer masih ikut lebar layar, jadi ada langkah vw
+// sebelum angka tetapnya. Lebar terbesar dipilih dua kali lebar render supaya
+// layar 2x DPR tetap tajam.
 const coverSizes = isWide
-  ? '(min-width: 768px) 576px, 100vw'
+  ? '(min-width: 1024px) 472px, (min-width: 768px) 50vw, 100vw'
   : isCompact
-    ? '(min-width: 1024px) 365px, (min-width: 640px) 50vw, 100vw'
-    : '(min-width: 768px) 566px, 100vw';
-const coverWidths = isCompact ? [360, 480, 730, 960] : [420, 576, 860, 1152];
+    ? '(min-width: 1024px) 301px, (min-width: 640px) 50vw, 100vw'
+    : '(min-width: 1024px) 462px, (min-width: 768px) 50vw, 100vw';
+const coverWidths = isCompact ? [240, 301, 460, 602] : [360, 472, 700, 944];
 
 // Narrowing untuk template: properti opsional di dalam ternary bersarang tak
 // dipersempit otomatis oleh TypeScript.
@@ -159,13 +174,18 @@ const placeholderBg =
     {!isCompact && <p class="text-body-sm text-muted leading-relaxed mb-5">{jejak.summary}</p>}
 
     {metrics.length > 0 && (
-      <div class:list={['grid grid-cols-3 gap-2', isCompact ? 'mt-auto' : 'mb-5']}>
-        {metrics.map((m) => {
+      <div class:list={['grid gap-2', metricCols, isCompact ? 'mt-auto' : 'mb-5']}>
+        {metrics.map((m, i) => {
           const value = formatMetric(m);
           return (
             /* Label boleh 2 baris (truncate dulu memotong jadi "donasi tersa..."):
                chip tetap rata tinggi karena sel grid saling stretch. */
-            <div class="flex h-full flex-col rounded-xl bg-gray-50 px-2 py-2.5 text-center">
+            <div
+              class:list={[
+                'flex h-full flex-col rounded-xl bg-gray-50 px-2 py-2.5 text-center',
+                spanLastMetric && i === metrics.length - 1 && 'col-span-2',
+              ]}
+            >
               <div class:list={['font-bold tabular-nums leading-none', numClass(value)]} style="color:var(--cat)">{value}</div>
               <div class="text-micro text-muted leading-tight mt-1 line-clamp-2">{m.label}</div>
             </div>

@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import Container from './Container.astro';
 import { FEATURES } from '../consts';
 ---
 
@@ -9,14 +10,16 @@ import { FEATURES } from '../consts';
     SENGAJA tanpa kartu foto biru supaya tidak kembar dengan ProgramHighlights
     (etalase kartu foto program) dan tidak menyerempet pesan ImpactSection. */}
 <section class="section">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-2xl mx-auto mb-12">
+  <Container width="wide">
+    <div class="text-center max-w-text mx-auto mb-12">
       <div class="eyebrow">Kenapa Bagiberbagi</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Niat baik butuh infrastruktur.</h2>
       <p class="text-muted text-base leading-relaxed">bagiberbagi menyalurkan niat baikmu ke orang yang tepat lewat mitra terkurasi, penerima terdata, dan bukti yang kembali ke kamu. Jumat Berkah program yang aktif sekarang, dan standar yang sama berlaku untuk program berikutnya.</p>
     </div>
 
-    <div class="grid gap-x-10 gap-y-9 sm:grid-cols-2 max-w-4xl mx-auto">
+    {/* Grid pembeda sengaja lebih rapat dari lebar seksi — empat blok ikon
+        tetap terbaca berpasangan, tak melebar jadi baris panjang. */}
+    <div class="grid gap-x-10 gap-y-9 sm:grid-cols-2 max-w-standard mx-auto">
       {FEATURES.map((f) => (
         <div class="flex gap-4" data-fade="1">
           <div class="w-11 h-11 flex-none rounded-xl flex items-center justify-center" style={{ background: f.bg }}>
@@ -29,5 +32,5 @@ import { FEATURES } from '../consts';
         </div>
       ))}
     </div>
-  </div>
+  </Container>
 </section>

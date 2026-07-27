@@ -1,5 +1,6 @@
 ---
 import DonationCalculator from './DonationCalculator.astro';
+import Container from './Container.astro';
 import { getEntry } from 'astro:content';
 
 const site = await getEntry('settings', 'site');
@@ -10,8 +11,8 @@ const schedule = site.data.schedule;
 
 {/* Foto lapangan + overlay kuning kini hidup di wrapper zona (index.astro) yang
     dibagi bersama Stats — section ini transparan agar background tembus. */}
-<section class="relative px-5 md:px-10 pt-8 md:pt-16 pb-6 md:pb-10">
-  <div class="relative max-w-7xl mx-auto flex flex-wrap gap-12 items-center">
+<section class="relative pt-8 md:pt-16 pb-6 md:pb-10">
+  <Container width="wide" class="relative flex flex-wrap gap-12 items-center">
     <div class="flex-1 basis-[440px] min-w-[280px]">
       <div class="eyebrow">Program Perdana Jumat Berkah</div>
       <h1 class="text-heading-lg md:text-display-lg leading-[1.08] font-semibold mb-5 text-ink">
@@ -46,7 +47,7 @@ const schedule = site.data.schedule;
     </div>
 
     <DonationCalculator />
-  </div>
+  </Container>
 </section>
 
 <style>

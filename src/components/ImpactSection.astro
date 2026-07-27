@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import Container from './Container.astro';
 import { IMPACTS } from '../consts';
 import { getEntry } from 'astro:content';
 import { buildWaLink, formatMetric } from '../lib/format';
@@ -17,8 +18,8 @@ const hasFigures = impact.jejakCount > 0 && Boolean(topMetric);
 ---
 
 <section id="dampak" class="section bg-brand-blue text-white scroll-mt-24">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-2xl mx-auto mb-12">
+  <Container width="wide">
+    <div class="text-center max-w-text mx-auto mb-12">
       <div class="eyebrow text-brand-yellow">Dampak Berputar</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Satu paket, dampak yang berputar.</h2>
       <p class="text-base leading-relaxed text-white/85">
@@ -77,7 +78,7 @@ const hasFigures = impact.jejakCount > 0 && Boolean(topMetric);
         full-width yang motong) + kalimat intisari. */}
     <div class="mt-12 text-center">
       <div class="w-11 h-0.75 rounded bg-brand-yellow/85 mx-auto mb-4"></div>
-      <p class="max-w-150 mx-auto text-body-sm leading-relaxed text-white/90">
+      <p class="max-w-text mx-auto text-body-sm leading-relaxed text-white/90">
         <strong class="text-white">Ekonomi kebaikan yang berputar lokal.</strong> Dana donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dinikmati mustahik setempat. Berkahnya tinggal di lingkungan itu.
       </p>
       {/* Kaitan tipis ke halaman laporan, bukan blok CTA. Masih dalam konteks
@@ -87,5 +88,5 @@ const hasFigures = impact.jejakCount > 0 && Boolean(topMetric);
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
       </a>
     </div>
-  </div>
+  </Container>
 </section>

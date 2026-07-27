@@ -1,9 +1,23 @@
 @import "tailwindcss";
 @config "../../tailwind.config.mjs";
 
+/* Kosakata lebar konten — lihat Container.astro. Tier `prose` memakai util
+   `max-w-text`, bukan `max-w-prose`: nama bawaan itu dikunci Tailwind v4 ke 65ch
+   dan menang atas nilai tema apa pun, jadi menimpanya cuma bikin jebakan senyap. */
+@theme {
+  --container-wide: 80rem;
+  --container-standard: 64rem;
+  --container-article: 48rem;
+  --container-text: 42rem;
+  --container-form: 28rem;
+}
+
 @layer components {
+  /* Ritme vertikal seksi saja. Padding horizontal + lebar konten dipegang
+     Container.astro, supaya seksi full-bleed (band foto/warna) tak perlu
+     melawan padding yang sudah terlanjur menempel di sini. */
   .section {
-    @apply px-5 md:px-10 py-12 md:py-[88px];
+    @apply py-12 md:py-[88px];
   }
 
   .eyebrow {

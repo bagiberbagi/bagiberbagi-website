@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/Container.astro';
 import Icon from '../components/Icon.astro';
 import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
@@ -39,7 +40,7 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
 <BaseLayout title={`Pintu ${pintu.label} | bagiberbagi.id`} description={pintu.seoDescription} breadcrumbName={pintu.label}>
   <!-- HERO channel: identitas + konsep, latar hangat warna pintu -->
   <section class="section" style={`${styleVars};background:linear-gradient(160deg,var(--cat-tint),#ffffff 60%)`}>
-    <div class="max-w-4xl mx-auto text-center">
+    <Container class="text-center">
       <nav class="text-sm font-semibold text-muted mb-6 text-left" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
@@ -53,7 +54,7 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
       </span>
       <div class="eyebrow text-[var(--cat-deep)]">{pintu.english}</div>
       <h1 class="text-heading md:text-display font-semibold mb-3">{pintu.label}</h1>
-      <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-2xl mx-auto mb-7">{pintu.tagline}</p>
+      <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-text mx-auto mb-7">{pintu.tagline}</p>
 
       <div class="flex flex-wrap justify-center gap-3">
         <a href={contactWa} target="_blank" rel="noopener" data-track="contact_wa" data-track-pintu={pintu.slug} class="btn-primary" style="background:var(--cat)">Hubungi Kami</a>
@@ -61,13 +62,13 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
           <a href={jejakHref} class="btn-secondary border border-border">Lihat Rekam Jejak</a>
         )}
       </div>
-    </div>
+    </Container>
   </section>
 
   <!-- TEASER DAMPAK: angka ringkas → lempar ke showcase /jejak -->
   {hasImpact && (
     <section class="section bg-white" style={styleVars}>
-      <div class="max-w-4xl mx-auto">
+      <Container>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-[var(--cat-tint)] p-5 text-center">
             <div class="text-heading-sm md:text-heading-lg font-semibold text-[var(--cat-deep)] tabular-nums leading-none">{impact.jejakCount.toLocaleString('id-ID')}</div>
@@ -86,13 +87,13 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
           </a>
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- PROGRAM di channel ini: aktif + segera -->
   <section class="section bg-gray-50" style={styleVars}>
-    <div class="max-w-5xl mx-auto">
+    <Container>
       <div class="eyebrow text-[var(--cat-deep)]">Program</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara berbagi lewat pintu {pintu.label}</h2>
 
@@ -133,13 +134,13 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
       {active.length === 0 && upcoming.length === 0 && (
         <p class="text-muted">Program untuk pintu ini sedang kami siapkan.</p>
       )}
-    </div>
+    </Container>
   </section>
 
   <!-- UNTUK SIAPA (konsep channel) -->
   {content?.forWhom && content.forWhom.length > 0 && (
     <section class="section bg-white" style={styleVars}>
-      <div class="max-w-5xl mx-auto">
+      <Container>
         <div class="eyebrow text-[var(--cat-deep)]">Untuk Siapa</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Siapa yang terbantu</h2>
         <div class="flex flex-wrap gap-2.5">
@@ -149,14 +150,14 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
             </span>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- DAMPAK LINGKUNGAN (cerita channel, kalau ada) -->
   {content?.env && (
     <section class="section bg-gray-50" style={styleVars}>
-      <div class="max-w-5xl mx-auto">
+      <Container>
         {/* Field GELAP NETRAL (ink), warna pintu jadi AKSEN pada angka. Beri
             relief lawan hero+CTA yang sudah ber-warna-pintu penuh, dan cegah
             monoton (di Makanan warna pintu = brand oranye, kalau band ini ikut
@@ -175,13 +176,13 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
             ))}
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- PINTU LAIN -->
   <section class="section bg-white">
-    <div class="max-w-5xl mx-auto">
+    <Container>
       <div class="eyebrow">Pintu Lainnya</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jalan berbagi yang lain</h2>
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -194,12 +195,12 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
           </a>
         ))}
       </div>
-    </div>
+    </Container>
   </section>
 
   <!-- CTA band -->
   <section class="section bg-gray-50" style={styleVars}>
-    <div class="max-w-5xl mx-auto">
+    <Container>
       <a href={contactWa} target="_blank" rel="noopener" data-track="pintu_cta" data-track-pintu={pintu.slug} class="flex flex-wrap items-center gap-4 rounded-card p-7 md:p-8 text-white no-underline" style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))">
         <div class="flex-1 min-w-0">
           <h2 class="text-title md:text-heading-sm font-semibold">{content?.ctaTitle ?? `Ingin berkontribusi lewat ${pintu.label}?`}</h2>
@@ -207,6 +208,6 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
         </div>
         <span class="flex-none rounded-full bg-white text-[var(--cat-deep)] font-bold text-body-sm px-6 py-3 whitespace-nowrap">Hubungi Kami</span>
       </a>
-    </div>
+    </Container>
   </section>
 </BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
+import Container from './Container.astro';
 import { formatMetric } from '../lib/format';
 import { getJejak } from '../lib/jejak';
 import { getPrograms } from '../lib/programs';
@@ -28,17 +29,17 @@ const fmtDate = (iso: string) =>
     year: 'numeric',
   });
 
-// Kontainer max-w-7xl (1280px) dengan grid 3 kolom gap-5: tiap kartu sekitar
-// 400px di lg+, separuh layar di sm, penuh di mobile. Lebar terbesar dua kali
-// lebar render untuk layar 2x DPR.
-const COVER_SIZES = '(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw';
-const COVER_WIDTHS = [400, 560, 800, 1040];
+// Container tier `wide` (1280 termasuk padding, isi 1200px di layar lebar)
+// dengan grid 3 kolom gap-5: tiap kartu sekitar 386px di lg+, separuh layar di
+// sm, penuh di mobile. Lebar terbesar dua kali lebar render untuk layar 2x DPR.
+const COVER_SIZES = '(min-width: 1280px) 386px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw';
+const COVER_WIDTHS = [320, 386, 580, 772];
 ---
 
 {jejak.length > 0 && (
   <section id="jejak" class="section scroll-mt-24">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center max-w-2xl mx-auto mb-12">
+    <Container width="wide">
+      <div class="text-center max-w-text mx-auto mb-12">
         <div class="eyebrow">JEJAK TERBARU</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Bukti Nyata dari Lapangan</h2>
         <p class="text-body-sm md:text-body text-muted leading-relaxed">
@@ -131,6 +132,6 @@ const COVER_WIDTHS = [400, 560, 800, 1040];
           </a>
         </div>
       )}
-    </div>
+    </Container>
   </section>
 )}

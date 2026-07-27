@@ -1,6 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import BaseLayout from './BaseLayout.astro';
+import Container from '../components/Container.astro';
 import { buildWaLink } from '../lib/format';
 
 export interface Props {
@@ -34,13 +35,13 @@ const websiteUrl = Astro.site!.href.replace(/\/$/, '');
   breadcrumbName={title}
 >
   <section class="section bg-white">
-    <div class="max-w-6xl mx-auto">
+    <Container>
       <div class="eyebrow mb-2">{eyebrow}</div>
       <h1 class="text-heading md:text-display font-semibold text-ink mb-2">{title}</h1>
       <p class="text-sm text-muted mb-8">Terakhir diperbarui: {updatedAt}</p>
 
       <h2 class="text-title-sm font-semibold text-ink mb-2">Selamat datang di <span class="text-brand-blue">bagiberbagi.id</span></h2>
-      <div class="max-w-3xl mb-8">
+      <div class="max-w-text mb-8">
         {introParagraphs.map((para) => (
           <p class="text-body-sm text-muted leading-relaxed mb-3 last:mb-0">{para}</p>
         ))}
@@ -97,7 +98,7 @@ const websiteUrl = Astro.site!.href.replace(/\/$/, '');
           <p class="text-sm text-muted mt-6">{closing}</p>
         </div>
       </div>
-    </div>
+    </Container>
   </section>
 </BaseLayout>
 

@@ -5,6 +5,7 @@ import type { ImageMetadata } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
@@ -73,7 +74,10 @@ const lightboxSrc = new Map<ImageMetadata, string>(
 
 <BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
   <section class="section bg-white" style={styleVars}>
-    <div class="max-w-3xl mx-auto">
+    {/* Tier `article`: foto besar, carousel, grid metrik, dan teks cerita berbagi
+        satu kolom. Mencampur lebar di halaman ini (media lebar, teks sempit) bikin
+        blok teks terlihat menggantung, jadi semuanya dijaga satu tepi. */}
+    <Container width="article">
       <!-- breadcrumb: Beranda / Pintu / Rekam Jejak / judul -->
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
@@ -132,13 +136,14 @@ const lightboxSrc = new Map<ImageMetadata, string>(
           aria-label="Buka foto 1"
           class="group relative block w-full rounded-card overflow-hidden bg-gray-100 mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
         >
-          {/* Kolom artikel max-w-3xl (768px). Lebar terbesar 1440px menutup
-              layar 2x DPR sekaligus batas resolusi asli foto lapangan. */}
+          {/* Container tier `article`: 768px termasuk padding md:px-10, jadi isi
+              688px di layar lebar. Lebar terbesar 1376px menutup layar 2x DPR
+              sekaligus batas resolusi asli foto lapangan. */}
           <Image
             src={featured}
             alt={jejak.title}
-            widths={[480, 768, 1100, 1440]}
-            sizes="(min-width: 768px) 768px, 100vw"
+            widths={[480, 688, 1000, 1376]}
+            sizes="(min-width: 768px) 688px, 100vw"
             loading="eager"
             class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
@@ -170,12 +175,12 @@ const lightboxSrc = new Map<ImageMetadata, string>(
                 class="snap-start shrink-0 grow-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] group relative block rounded-2xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
               >
                 {/* Kartu carousel: separuh kolom di mobile, sepertiga di sm+
-                    (kolom 768px), jadi sekitar 250px. */}
+                    (isi kolom 688px dikurangi 2 gap 12px), jadi sekitar 221px. */}
                 <Image
                   src={img}
                   alt=""
-                  widths={[250, 380, 500, 700]}
-                  sizes="(min-width: 640px) 250px, 45vw"
+                  widths={[221, 340, 442, 640]}
+                  sizes="(min-width: 640px) 221px, 45vw"
                   loading="lazy"
                   class="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -232,7 +237,7 @@ const lightboxSrc = new Map<ImageMetadata, string>(
           Lihat Program
         </span>
       </a>
-    </div>
+    </Container>
   </section>
 
   {galleryImages.length > 0 && <Lightbox />}

@@ -7,6 +7,8 @@ export interface Program {
   pintu: PintuId;
   order: number;
   active: boolean;
+  /** Foto kartu sorotan hasil unggahan Keystatic; null = pakai foto bawaan. */
+  image?: string | null;
   summary: string;
   detail: { eyebrow: string; description: string; features: string[] };
   /** Terisi hanya jika program punya halaman detail (aktif + deskripsi terisi). */

@@ -1,6 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
+import Container from './Container.astro';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -24,8 +25,8 @@ const csrBenefits = [
     radius bind (radius bind = penutup narasi, ada di FAQ di atas). Ground netral
     putih; identitas visual datang dari dua kartu (orange + slate) di dalamnya. */}
 <section id="tentang" class="section bg-white">
-  <div class="max-w-7xl mx-auto">
-    <div class="max-w-2xl mb-12">
+  <Container width="wide">
+    <div class="max-w-text mb-12">
       <div class="eyebrow">BERGABUNG LEBIH JAUH</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4 text-ink">Bangun Dampak Bersama</h2>
       <p class="text-muted text-base leading-relaxed">
@@ -87,5 +88,5 @@ const csrBenefits = [
         </div>
       </div>
     </div>
-  </div>
+  </Container>
 </section>

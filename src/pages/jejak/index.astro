@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import JejakCard from '../../components/JejakCard.astro';
+import Container from '../../components/Container.astro';
 import { getJejak } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getGlobalImpact } from '../../lib/impact';
@@ -16,13 +17,16 @@ import { PINTU } from '../../consts';
 // sekaligus yang mau membagikannya. Dampak di sini = agregat jejak (bukan
 // entitas tersendiri). Sekaligus mengisi index /jejak (dulu ghost 404).
 //
-// LEBAR KONTAINER: sengaja cuma dua keluarga, jangan tambah varian baru supaya
-// tepi kiri/kanan tak goyang tiap seksi saat halaman ini diedit lagi:
-//   hero   -> `max-w-4xl`  (kolom teks tengah, sama seperti hero berbagi-[pintu])
-//   konten -> `max-w-6xl`  (angka, feed, galeri, cara pencatatan, CTA; senada
-//                           About/Faq/LegalLayout)
-// Paragraf di dalam hero/CTA tetap boleh dipersempit (`max-w-xl`/`max-w-2xl`):
-// itu batas panjang baris demi kenyamanan baca, bukan batas kontainer.
+// LEBAR KONTAINER: seluruh seksi halaman ini memakai Container tier `standard`
+// (1024, default halaman non-beranda) tanpa kecuali, supaya tepi kiri/kanan tak
+// goyang tiap seksi saat halaman ini diedit lagi. Jangan tulis `max-w` mentah di
+// markup: kosakata lebar dipegang Container.astro, lihat doc-comment di sana.
+// Blok teks di dalam hero/CTA tetap boleh dipersempit ke `max-w-text`, itu batas
+// panjang baris demi kenyamanan baca, bukan batas kontainer.
+//
+// Lebar konten efektif di layar lebar = 1024 dikurangi padding Container
+// (md:px-10 kiri-kanan) = 944px. Angka itu yang jadi dasar semua hitungan
+// `sizes`/`widths` gambar di bawah; kalau tier seksi diubah, hitung ulang.
 const [jejak, programs, impact, site] = await Promise.all([
   getJejak(),
   getPrograms(),
@@ -78,34 +82,35 @@ const galleryItems = await Promise.all(
 // terbaca. Penambahan kolom baru mulai dari sm.
 //
 // `sizes` thumbnail WAJIB ikut cabang yang sama. Kalau dipatok satu nilai,
-// grid 3 kolom (sel 377px) tetap disuguhi berkas 280px dan fotonya terlihat
+// grid 3 kolom (sel 308px) tetap disuguhi berkas 228px dan fotonya terlihat
 // buram. Jadi kelas grid dan sizes lahir dari satu variabel yang sama.
-// Angka desktop = (1152px kontainer max-w-6xl - gap 10px) / jumlah kolom;
-// 1232px = 1152 + padding md:px-10 kiri-kanan.
+// Angka desktop = (944px isi Container `standard` - total gap 10px) / jumlah
+// kolom; ambang 1024px = titik kontainer berhenti melebar (lihat catatan lebar
+// di atas). Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR.
 const galleryLayout =
   gallery.length <= 2
     ? {
         cols: 'grid-cols-2',
-        sizes: '(min-width: 1232px) 571px, 50vw',
-        widths: [380, 571, 760, 1142],
+        sizes: '(min-width: 1024px) 467px, 50vw',
+        widths: [320, 467, 640, 934],
       }
     : gallery.length === 3 || (gallery.length % 4 !== 0 && gallery.length % 3 === 0)
       ? {
           cols: 'grid-cols-2 sm:grid-cols-3',
-          sizes: '(min-width: 1232px) 377px, (min-width: 640px) 33vw, 50vw',
-          widths: [280, 377, 560, 754],
+          sizes: '(min-width: 1024px) 308px, (min-width: 640px) 33vw, 50vw',
+          widths: [240, 308, 460, 616],
         }
       : gallery.length % 4 === 0
         ? {
             cols: 'grid-cols-2 sm:grid-cols-4',
-            sizes: '(min-width: 1232px) 280px, (min-width: 640px) 25vw, 50vw',
-            widths: [200, 280, 420, 560],
+            sizes: '(min-width: 1024px) 228px, (min-width: 640px) 25vw, 50vw',
+            widths: [180, 228, 340, 456],
           }
         : {
             cols: 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4',
             sizes:
-              '(min-width: 1232px) 280px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw',
-            widths: [200, 280, 420, 560],
+              '(min-width: 1024px) 228px, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw',
+            widths: [180, 228, 340, 456],
           };
 const galleryCols = galleryLayout.cols;
 
@@ -208,28 +213,32 @@ const STEPS_PENCATATAN = [
 >
   <!-- HERO: latar hangat brand (senada hero pintu), teks tengah -->
   <section class="section bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
-    <div class="max-w-4xl mx-auto text-center">
-      <nav class="text-sm font-semibold text-muted mb-6 text-left" aria-label="Breadcrumb">
+    <Container>
+      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-orangeDark">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-ink">Jejak &amp; Dampak</span>
       </nav>
 
-      <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-brand-orange mb-4">
-        <Icon name="impact" size={30} />
-      </span>
-      <div class="eyebrow">Jejak &amp; Dampak</div>
-      <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
-      <p class="text-body md:text-title-sm text-muted leading-relaxed max-w-2xl mx-auto">
-        Angka di halaman ini dihitung dari tiap kegiatan yang sudah berjalan, lengkap dengan foto lapangan dan catatan penyalurannya.
-      </p>
-    </div>
+      {/* Blok judul dipersempit ke lebar baca; kontainer seksinya tetap
+          `standard` supaya tepi kiri breadcrumb segaris dengan seksi lain. */}
+      <div class="text-center max-w-text mx-auto">
+        <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-brand-orange mb-4">
+          <Icon name="impact" size={30} />
+        </span>
+        <div class="eyebrow">Jejak &amp; Dampak</div>
+        <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
+        <p class="text-body md:text-title-sm text-muted leading-relaxed">
+          Angka di halaman ini dihitung dari tiap kegiatan yang sudah berjalan, lengkap dengan foto lapangan dan catatan penyalurannya.
+        </p>
+      </div>
+    </Container>
   </section>
 
   {/* ANGKA AGREGAT: kartu pertama gelap (kali kegiatan = konteks pengali), metrik ber-tint */}
   {hasJejak && (
-    <section class="px-5 md:px-10 py-10 md:py-14 bg-white">
-      <div class="max-w-6xl mx-auto">
+    <section class="py-10 md:py-14 bg-white">
+      <Container>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-ink p-5 text-center text-white">
             <div class:list={['font-semibold tabular-nums leading-none', numClass(impact.jejakCount.toLocaleString('id-ID'))]}>{impact.jejakCount.toLocaleString('id-ID')}</div>
@@ -244,14 +253,14 @@ const STEPS_PENCATATAN = [
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- FEED JEJAK: bentuknya ikut feedMode (1 kartu lebar / 2 kartu setara /
        unggulan + grid), dengan filter pintu -->
   <section class="section bg-gray-50">
-    <div class="max-w-6xl mx-auto">
+    <Container>
       <div class="eyebrow">Rekam Jejak</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Dokumentasi tiap kegiatan</h2>
 
@@ -376,13 +385,13 @@ const STEPS_PENCATATAN = [
           Belum ada jejak terpublikasi. Dokumentasi kegiatan pertama akan tampil di sini.
         </p>
       )}
-    </div>
+    </Container>
   </section>
 
   {/* GALERI LAPANGAN: foto unik dari seluruh jejak, klik untuk perbesar */}
   {gallery.length > 0 && (
-    <section class="px-5 md:px-10 py-10 md:py-14 bg-white">
-      <div class="max-w-6xl mx-auto">
+    <section class="py-10 md:py-14 bg-white">
+      <Container>
         <div class="flex flex-wrap items-baseline justify-between gap-2 mb-5">
           <h2 class="text-title font-semibold text-ink">Galeri lapangan</h2>
           <p class="text-body-sm text-muted">Klik foto untuk perbesar.</p>
@@ -412,13 +421,13 @@ const STEPS_PENCATATAN = [
             </button>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- CARA KAMI MENCATAT: menjelaskan asal angka di atas, tetap tampil walau jejak nol -->
   <section class="section bg-gray-50">
-    <div class="max-w-6xl mx-auto">
+    <Container>
       <div class="eyebrow">Cara Pencatatan</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara kami mencatat</h2>
       <div class="grid gap-4 sm:grid-cols-3">
@@ -432,15 +441,15 @@ const STEPS_PENCATATAN = [
           </div>
         ))}
       </div>
-    </div>
+    </Container>
   </section>
 
   <!-- CTA penutup: donasi (primer) + transparansi formal (sekunder) -->
   <section class="section bg-white">
-    <div class="max-w-6xl mx-auto">
+    <Container>
       <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
         <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Dukung penyaluran berikutnya</h2>
-        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-xl mx-auto mb-6">
+        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-text mx-auto mb-6">
           Donasi kamu masuk ke kegiatan berikutnya, dan hasilnya dicatat di halaman ini seperti jejak di atas.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
@@ -462,7 +471,7 @@ const STEPS_PENCATATAN = [
           </a>
         </div>
       </div>
-    </div>
+    </Container>
   </section>
 
   {gallery.length > 0 && <Lightbox />}

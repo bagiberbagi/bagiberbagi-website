@@ -101,7 +101,7 @@ export default config({
     // Kelompokkan sidebar agar tidak menumpuk datar. Kunci di sini harus sama
     // persis dengan kunci singleton/collection di bawah.
     navigation: {
-      Halaman: ['about', 'programs', 'jejak'],
+      Halaman: ['home', 'about', 'programs', 'jejak'],
       'Konten Situs': ['faq', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
       'Pengaturan Situs': ['settings', 'seo', 'analytics'],
@@ -374,6 +374,33 @@ export default config({
         }),
       },
     }),
+    // Beranda memegang penempatan, bukan isi: program mana yang disorot dan
+    // dengan urutan apa. Isi programnya sendiri tetap di koleksi Program, jadi
+    // satu program bisa disorot tanpa datanya diduplikasi ke sini.
+    home: singleton({
+      label: 'Beranda',
+      path: 'src/content/home/home',
+      format: 'json',
+      schema: {
+        programSection: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Eyebrow', defaultValue: 'PROGRAM AKTIF' }),
+            title: fields.text({ label: 'Judul bagian' }),
+            items: fields.array(fields.relationship({ label: 'Program', collection: 'programs' }), {
+              label: 'Program yang disorot',
+              description:
+                'Seret untuk mengurutkan. Kartu di beranda tampil persis seurutan daftar ini. Kosongkan daftarnya kalau bagian ini tidak ingin ditampilkan sama sekali. Foto tiap kartu diatur di entri programnya.',
+              itemLabel: (props) => props.value || 'Pilih program',
+            }),
+          },
+          {
+            label: 'Bagian Program Aktif',
+            description: 'Kartu besar berisi program pilihan, tepat di bawah cara kerja.',
+          }
+        ),
+      },
+    }),
+
     about: singleton({
       label: 'Tentang Kami',
       path: 'src/content/about/about',
@@ -459,6 +486,13 @@ export default config({
         active: fields.checkbox({
           label: 'Aktif (sudah dibuka)',
           description: 'Aktif + isi Detail terisi = program dapat halaman sendiri. Nonaktif tampil "Segera Hadir".',
+        }),
+        image: fields.image({
+          label: 'Foto kartu beranda',
+          description:
+            'Dipakai saat program ini disorot di beranda (atur di menu Beranda). Rasio lanskap, minimal 900x560. Kosongkan untuk memakai foto bawaan.',
+          directory: 'public/uploads/programs',
+          publicPath: '/uploads/programs',
         }),
         summary: fields.text({
           label: 'Ringkasan',

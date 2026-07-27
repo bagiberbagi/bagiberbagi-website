@@ -132,6 +132,9 @@ const programs = defineCollection({
     pintu: z.enum(PINTU_IDS).default('food'),
     order: z.number().default(0),
     active: z.boolean().default(false),
+    // Foto kartu sorotan (unggahan Keystatic). Kosong = pakai foto bawaan.
+    // fields.image menulis null saat dikosongkan, jadi nullish().
+    image: z.string().nullish(),
     summary: z.string(),
     // Diisi hanya untuk program aktif yang punya halaman detail; program
     // "segera hadir" cukup mengosongkannya (tidak ter-route).
@@ -142,6 +145,24 @@ const programs = defineCollection({
         features: z.array(z.string()).default([]),
       })
       .default({ eyebrow: 'PROGRAM AKTIF', description: '', features: [] }),
+  }),
+});
+
+/**
+ * Penempatan di beranda, dipisah dari isi program: program menjawab "apa ini",
+ * beranda menjawab "mana yang dipajang dan urutannya". Slug di `items` adalah
+ * referensi ke koleksi programs, jadi konsumen wajib membuang slug yang sudah
+ * tak ada (program dihapus/rename) alih-alih percaya begitu saja.
+ * fields.relationship menulis null saat entri dikosongkan.
+ */
+const home = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/home' }),
+  schema: z.object({
+    programSection: z.object({
+      eyebrow: z.string().default('PROGRAM AKTIF'),
+      title: z.string(),
+      items: z.array(z.string().nullish()).default([]),
+    }),
   }),
 });
 
@@ -212,4 +233,4 @@ const analytics = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, jejak, footer, analytics };
+export const collections = { legal, settings, seo, about, faq, programs, home, jejak, footer, analytics };

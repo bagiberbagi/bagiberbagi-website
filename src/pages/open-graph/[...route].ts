@@ -33,7 +33,7 @@ const manualPages: Record<string, { title: string; description: string }> = Obje
         [
           'tentang',
           {
-            title: aboutEntry.data.seo?.title || `${aboutEntry.data.hero.title} — bagiberbagi.id`,
+            title: aboutEntry.data.seo?.title || `${aboutEntry.data.hero.title} | bagiberbagi.id`,
             description: aboutEntry.data.seo?.description || aboutEntry.data.hero.paragraphs[0],
           },
         ],
@@ -53,7 +53,7 @@ const programPages = Object.fromEntries(
     .map((program) => [
       `program/${program.slug}`,
       {
-        title: `${program.label} — bagiberbagi.id`,
+        title: `${program.label} | bagiberbagi.id`,
         description: program.summary,
       },
     ])
@@ -71,7 +71,7 @@ const jejakPages = Object.fromEntries(
   (await getJejakPages()).map((jejak) => [
     `jejak/${jejak.slug}`,
     {
-      title: `${jejak.title} — bagiberbagi.id`,
+      title: `${jejak.title} | bagiberbagi.id`,
       description: jejak.summary,
     },
   ])

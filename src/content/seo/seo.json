@@ -1,7 +1,7 @@
 {
   "siteName": "bagiberbagi.id",
-  "defaultTitle": "bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
-  "defaultDescription": "bagiberbagi.id — platform donasi & sosial yang menghubungkan kebaikan, komunitas, dan dampak nyata untuk Indonesia. Salurkan bantuan makanan dan dukung UMKM secara transparan.",
+  "defaultTitle": "bagiberbagi.id: Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
+  "defaultDescription": "bagiberbagi.id adalah platform donasi & sosial yang menghubungkan kebaikan, komunitas, dan dampak nyata untuk Indonesia. Salurkan bantuan makanan dan dukung UMKM secara transparan.",
   "defaultImage": "/og-image.png",
   "organization": {
     "type": "NGO",
@@ -11,15 +11,15 @@
   "pages": [
     {
       "path": "/",
-      "title": "bagiberbagi.id — Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
-      "description": "Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id — komunitas penyalur bantuan yang transparan dan terdokumentasi, dengan bukti sampai H+1.",
+      "title": "bagiberbagi.id: Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
+      "description": "Salurkan donasi makanan & dukungan UMKM lewat bagiberbagi.id, komunitas penyalur bantuan yang transparan dan terdokumentasi, dengan bukti sampai H+1.",
       "image": "/open-graph/home.png",
       "breadcrumbName": "Beranda",
       "noindex": false
     },
     {
       "path": "/faq/",
-      "title": "FAQ Donasi & Program Berbagi — bagiberbagi.id",
+      "title": "FAQ Donasi & Program Berbagi | bagiberbagi.id",
       "description": "Pertanyaan yang sering diajukan seputar donasi, program, penyaluran bantuan, dan cara kerja bagiberbagi.id.",
       "image": "/open-graph/faq.png",
       "breadcrumbName": "FAQ",

@@ -18,7 +18,7 @@ export interface Props {
 const { title, eyebrow, intro, closing, updatedAt, headings, seo } = Astro.props;
 const toc = headings.filter((h) => h.depth === 2);
 const introParagraphs = intro.split('\n\n');
-const metaDescription = `${title} bagiberbagi.id — ${introParagraphs[0]}`.slice(0, 160);
+const metaDescription = `${title} bagiberbagi.id: ${introParagraphs[0]}`.slice(0, 160);
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -29,7 +29,7 @@ const websiteUrl = Astro.site!.href.replace(/\/$/, '');
 ---
 
 <BaseLayout
-  title={seo?.title || `${title} — bagiberbagi.id`}
+  title={seo?.title || `${title} | bagiberbagi.id`}
   description={seo?.description || metaDescription}
   image={seo?.image || undefined}
   breadcrumbName={title}

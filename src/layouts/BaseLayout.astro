@@ -74,9 +74,9 @@ const imageUrl = image ? new URL(image, Astro.site).href : undefined;
 const site = await getEntry('settings', 'site');
 const ids = makeIds({ siteUrl });
 
-// Judul datang sebagai "Halaman — bagiberbagi.id"; breadcrumb cuma mau bagian
-// halamannya.
-const pageName = breadcrumbName || title.split('—')[0].trim();
+// Judul datang sebagai "Halaman | bagiberbagi.id" (atau "Halaman: Subjudul");
+// breadcrumb cuma mau bagian halamannya.
+const pageName = breadcrumbName || title.split(/\s[|:]\s/)[0].trim();
 
 const organization = site
   ? buildPiece({

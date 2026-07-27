@@ -60,7 +60,7 @@ export function getStaticPaths() {
 // memindai semua HTML di dist dan tidak punya opsi exclude. Dipotong di 65
 // karakter dengan alasan yang sama.
 const section = Astro.params.params ?? 'admin';
-const adminTitle = `Keystatic ${section} — bagiberbagi.id`.slice(0, 65);
+const adminTitle = `Keystatic ${section} | bagiberbagi.id`.slice(0, 65);
 ---
 
 <!doctype html>
@@ -76,7 +76,7 @@ const adminTitle = `Keystatic ${section} — bagiberbagi.id`.slice(0, 65);
          sendiri. Judul ini disembunyikan secara visual, tapi memberi halaman
          landmark untuk pembaca layar. -->
     <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">
-      Keystatic — panel admin bagiberbagi.id
+      Keystatic: panel admin bagiberbagi.id
     </h1>
     <KeystaticAdmin client:only="react" />
   </body>

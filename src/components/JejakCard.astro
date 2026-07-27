@@ -19,9 +19,15 @@ export interface Props {
   featured?: boolean;
   /** Kartu pertama saja: cover-nya di atas fold, jadi tak perlu di-lazy. */
   eager?: boolean;
+  /**
+   * Tingkat heading judul kartu. Turun ke 4 saat feed pemanggil menyisipkan
+   * heading grup (mis. heading bulan di arsip /jejak) yang sudah memakai h3,
+   * supaya urutan h2 -> h3 -> h4 tak melompat.
+   */
+  titleLevel?: 3 | 4;
 }
 
-const { jejak, pintu, variant, featured = false, eager = false } = Astro.props;
+const { jejak, pintu, variant, featured = false, eager = false, titleLevel = 3 } = Astro.props;
 
 // Fallback oranye brand supaya --cat selalu terisi: kartu tetap punya aksen
 // walau relasi pintu-nya belum ketemu. Warna datang dari data, tak di-hardcode
@@ -108,7 +114,14 @@ const placeholderBg =
     </div>
 
     <div class="text-micro font-semibold text-muted mb-2">{fmtDate(jejak.date)} &middot; {jejak.location}</div>
-    <h3 class={titleClass}>{jejak.title}</h3>
+    {/* Tag ditulis eksplisit, bukan lewat variabel tag dinamis: nama komponen
+        berhuruf besar yang isinya string bikin inferensi tipe sisa template ini
+        runtuh (metrics.map jadi implicit any). Dua cabang lebih murah. */}
+    {titleLevel === 4 ? (
+      <h4 class={titleClass}>{jejak.title}</h4>
+    ) : (
+      <h3 class={titleClass}>{jejak.title}</h3>
+    )}
     {!isCompact && <p class="text-body-sm text-muted leading-relaxed mb-5">{jejak.summary}</p>}
 
     {metrics.length > 0 && (

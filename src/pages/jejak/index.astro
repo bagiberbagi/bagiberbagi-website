@@ -14,6 +14,14 @@ import { PINTU } from '../../consts';
 // kegiatan + filter per pintu. Menjawab pengunjung yang cari bukti/transparansi
 // sekaligus yang mau membagikannya. Dampak di sini = agregat jejak (bukan
 // entitas tersendiri). Sekaligus mengisi index /jejak (dulu ghost 404).
+//
+// LEBAR KONTAINER: sengaja cuma dua keluarga, jangan tambah varian baru supaya
+// tepi kiri/kanan tak goyang tiap seksi saat halaman ini diedit lagi:
+//   hero   -> `max-w-4xl`  (kolom teks tengah, sama seperti hero berbagi-[pintu])
+//   konten -> `max-w-6xl`  (angka, feed, galeri, cara pencatatan, CTA; senada
+//                           About/Faq/LegalLayout)
+// Paragraf di dalam hero/CTA tetap boleh dipersempit (`max-w-xl`/`max-w-2xl`):
+// itu batas panjang baris demi kenyamanan baca, bukan batas kontainer.
 const [jejak, programs, impact, site] = await Promise.all([
   getJejak(),
   getPrograms(),
@@ -73,18 +81,53 @@ const numClass = (s: string) =>
   s.length > 8 ? 'text-title-sm md:text-title whitespace-nowrap' : 'text-heading-sm md:text-heading-lg';
 
 // Bentuk feed diturunkan dari jumlah jejak supaya tak ada kartu yatim:
-//  1 jejak   -> satu kartu unggulan lebar (grid 3 kolom bikin bolong),
-//  2 jejak   -> dua kartu setara berdampingan, tanpa unggulan (kalau yang ke-2
-//               dilempar ke grid 3 kolom, ia tampak kecil dan yatim di kiri),
-//  >=3 jejak -> kartu unggulan lebar (terbaru) + grid ringkas sisanya.
-const feedMode: 'single' | 'pair' | 'feature' =
-  jejak.length === 2 ? 'pair' : jejak.length >= 3 ? 'feature' : 'single';
-// Mode "pair" sengaja tak punya kartu lebar; dua-duanya masuk grid setara.
-const wideJejak = feedMode === 'pair' ? undefined : jejak[0];
+//  1 jejak    -> satu kartu unggulan lebar (grid 3 kolom bikin bolong),
+//  2 jejak    -> dua kartu setara berdampingan, tanpa unggulan (kalau yang ke-2
+//                dilempar ke grid 3 kolom, ia tampak kecil dan yatim di kiri),
+//  3-6 jejak  -> kartu unggulan lebar (terbaru) + grid ringkas sisanya,
+//  >6 jejak   -> arsip: grid seragam yang dikelompokkan per bulan, TANPA kartu
+//                unggulan (satu kartu lebar di tengah arsip berkelompok bikin
+//                ritme feed pecah, dan "terbaru" sudah jelas dari heading bulan).
+const ARCHIVE_MIN_JEJAK = 7;
+const feedMode: 'single' | 'pair' | 'feature' | 'archive' =
+  jejak.length >= ARCHIVE_MIN_JEJAK
+    ? 'archive'
+    : jejak.length >= 3
+      ? 'feature'
+      : jejak.length === 2
+        ? 'pair'
+        : 'single';
+// Mode "pair" & "archive" sengaja tak punya kartu lebar.
+const wideJejak = feedMode === 'single' || feedMode === 'feature' ? jejak[0] : undefined;
 const gridJejak = feedMode === 'pair' ? jejak : feedMode === 'feature' ? jejak.slice(1) : [];
 const gridClass = feedMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
 // Kartu setara memuat isi lengkap (termasuk summary); kartu grid panjang ringkas.
 const gridVariant = feedMode === 'pair' ? 'stack' : 'compact';
+
+// Arsip dipecah per bulan. `jejak` sudah urut tanggal desc dari getJejak(), jadi
+// grup terbentuk sekali jalan tanpa sort ulang.
+const monthLabel = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+const monthGroups: { key: string; label: string; items: typeof jejak }[] = [];
+if (feedMode === 'archive') {
+  for (const j of jejak) {
+    const key = j.date.slice(0, 7);
+    const last = monthGroups.at(-1);
+    if (last && last.key === key) last.items.push(j);
+    else monthGroups.push({ key, label: monthLabel(j.date), items: [j] });
+  }
+}
+// Kalau seluruh arsip jatuh di satu bulan, headingnya mubazir: satu label untuk
+// semua kartu tak menambah informasi apa pun.
+const showMonthHeadings = monthGroups.length > 1;
+// Heading bulan mengisi tingkat h3, jadi judul kartu di dalamnya turun ke h4
+// supaya hierarki h2 -> h3 -> h4 tak melompat.
+const cardTitleLevel = showMonthHeadings ? 4 : 3;
+
+// Batas jumlah kartu yang TERLIHAT saat feed pertama dibuka, sekaligus besar
+// satu batch "tampilkan lebih banyak". Semua kartu tetap ada di HTML (SEO +
+// deep-link filter); yang dibatasi cuma yang tampil. Ubah satu angka ini saja.
+const FEED_REVEAL_STEP = 9;
 
 // Maksimal 4 kartu angka (1 kali-kegiatan + 3 metrik teratas) supaya grid tak
 // pecah kalau editor menambah label metrik baru.
@@ -144,7 +187,7 @@ const STEPS_PENCATATAN = [
   {/* ANGKA AGREGAT: kartu pertama gelap (kali kegiatan = konteks pengali), metrik ber-tint */}
   {hasJejak && (
     <section class="px-5 md:px-10 py-10 md:py-14 bg-white">
-      <div class="max-w-5xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-ink p-5 text-center text-white">
             <div class:list={['font-semibold tabular-nums leading-none', numClass(impact.jejakCount.toLocaleString('id-ID'))]}>{impact.jejakCount.toLocaleString('id-ID')}</div>
@@ -206,7 +249,8 @@ const STEPS_PENCATATAN = [
           )}
 
           {/* Kartu lebar (unggulan) hanya dirender di mode single & feature; di
-              mode pair kedua jejak masuk grid setara supaya tak ada yang yatim.
+              mode pair kedua jejak masuk grid setara supaya tak ada yang yatim,
+              di mode archive semuanya seragam per grup bulan.
               Wadah flex-col memberi jarak antar blok tanpa margin di kartu,
               jadi gap ikut hilang saat kartu disembunyikan filter. */}
           <div class="flex flex-col gap-5">
@@ -232,12 +276,58 @@ const STEPS_PENCATATAN = [
                 ))}
               </div>
             )}
+
+            {/* Arsip per bulan. Tiap grup dibungkus [data-jgroup] supaya script
+                bisa menyembunyikan headingnya begitu filter/limit mengosongkan
+                grup itu: heading bulan menggantung tanpa kartu bikin bingung.
+                `[&[hidden]]:hidden` dipakai karena wadah induknya flex dan
+                atribut hidden dari UA sheet bisa ditimpa utility display. */}
+            {monthGroups.map((g, gi) => (
+              <div data-jgroup class="[&[hidden]]:hidden">
+                {showMonthHeadings && (
+                  <h3 class="text-title-sm font-semibold text-muted mb-3">{g.label}</h3>
+                )}
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {g.items.map((j, i) => (
+                    <JejakCard
+                      jejak={j}
+                      pintu={pintuOf(j.program)}
+                      variant="compact"
+                      titleLevel={cardTitleLevel}
+                      eager={gi === 0 && i === 0}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Hasil filter kosong: dimunculkan oleh script saat tak ada kartu lolos */}
           <p data-jempty hidden class="rounded-card border border-border bg-white p-8 text-center text-body-sm text-muted">
             Belum ada jejak untuk pintu ini.
           </p>
+
+          {/* Tombol sengaja dirender `hidden` dan baru dimunculkan script kalau
+              memang ada kartu yang disembunyikan. Alasannya: tanpa JS tak ada
+              satu kartu pun yang dibatasi (pembatasan dikerjakan script saat
+              load), jadi tombol yang tampil justru menyesatkan. Efek sampingnya
+              persis yang diminta: saat total kartu <= batas awal, tombol tetap
+              tersembunyi. Besar batch ikut lewat data-jstep supaya angkanya
+              hidup di satu tempat (FEED_REVEAL_STEP di frontmatter). */}
+          <button
+            type="button"
+            data-jmore
+            data-jstep={FEED_REVEAL_STEP}
+            hidden
+            class="mx-auto mt-7 flex w-fit items-center gap-2 rounded-full border border-border bg-white px-6 py-3 text-body-sm font-bold text-ink transition-colors hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 [&[hidden]]:hidden"
+          >
+            <span data-jmore-label>Tampilkan lebih banyak</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          {/* Region sr-only: hasil klik tombol/chip dibacakan pembaca layar tanpa
+              memindahkan apa pun secara visual (position:absolute, tak menambah
+              tinggi feed). */}
+          <p data-jstatus aria-live="polite" class="sr-only"></p>
         </>
       ) : (
         <p class="rounded-card border border-border bg-white p-10 text-center text-muted">
@@ -278,7 +368,7 @@ const STEPS_PENCATATAN = [
 
   <!-- CARA KAMI MENCATAT: menjelaskan asal angka di atas, tetap tampil walau jejak nol -->
   <section class="section bg-gray-50">
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
       <div class="eyebrow">Cara Pencatatan</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara kami mencatat</h2>
       <div class="grid gap-4 sm:grid-cols-3">
@@ -297,7 +387,7 @@ const STEPS_PENCATATAN = [
 
   <!-- CTA penutup: donasi (primer) + transparansi formal (sekunder) -->
   <section class="section bg-white">
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
       <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
         <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Dukung penyaluran berikutnya</h2>
         <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-xl mx-auto mb-6">
@@ -329,25 +419,77 @@ const STEPS_PENCATATAN = [
 </BaseLayout>
 
 <script>
-  // Filter feed jejak per pintu (client-side; halaman statis, semua kartu
-  // dirender lalu disembunyikan sesuai chip aktif). Kartu unggulan ikut tersaring
-  // karena memakai kontrak data-jcard/data-pintu yang sama.
+  // Feed jejak (client-side; halaman statis, semua kartu dirender lalu
+  // disembunyikan). Ada DUA lapis penyaringan yang wajib dihitung bersama:
+  //   1. filter pintu lewat chip, dan
+  //   2. jendela "tampilkan lebih banyak" (limit) atas kartu yang LOLOS filter.
+  // Aturannya: kartu terlihat kalau lolos filter DAN urutannya di antara
+  // kartu-kartu yang lolos (urut tanggal desc, sama dengan urutan DOM) masih di
+  // dalam limit. Karena limit dihitung terhadap hasil filter, ganti chip selalu
+  // me-reset limit: sisa "n lagi" harus dihitung ulang terhadap hasil baru.
+  // Kartu unggulan ikut tersaring karena memakai kontrak data-jcard/data-pintu.
   const chips = [...document.querySelectorAll<HTMLElement>('[data-jfilter]')];
   const cards = [...document.querySelectorAll<HTMLElement>('[data-jcard]')];
+  const groups = [...document.querySelectorAll<HTMLElement>('[data-jgroup]')];
   const empty = document.querySelector<HTMLElement>('[data-jempty]');
-  function apply(f: string) {
-    chips.forEach((c) => c.setAttribute('aria-pressed', c.dataset.jfilter === f ? 'true' : 'false'));
-    let shown = 0;
+  const more = document.querySelector<HTMLButtonElement>('[data-jmore]');
+  const moreLabel = document.querySelector<HTMLElement>('[data-jmore-label]');
+  const status = document.querySelector<HTMLElement>('[data-jstatus]');
+
+  // Fallback ke jumlah kartu: kalau tombol tak ada, limit tak pernah membatasi
+  // apa pun, jadi jalur logikanya tetap satu (tak perlu cabang khusus).
+  const step = Number(more?.dataset.jstep) || cards.length;
+  let filter = 'all';
+  let limit = step;
+
+  function render(announce: boolean) {
+    chips.forEach((c) => c.setAttribute('aria-pressed', c.dataset.jfilter === filter ? 'true' : 'false'));
+    let matched = 0;
     cards.forEach((card) => {
-      const match = f === 'all' || card.dataset.pintu === f;
-      card.hidden = !match;
-      if (match) shown += 1;
+      const pass = filter === 'all' || card.dataset.pintu === filter;
+      card.hidden = !(pass && matched < limit);
+      if (pass) matched += 1;
     });
+    // Heading bulan ikut hilang kalau seluruh kartu di grupnya tak terlihat,
+    // entah karena filter atau karena masih di luar jendela reveal.
+    groups.forEach((g) => {
+      g.hidden = ![...g.querySelectorAll<HTMLElement>('[data-jcard]')].some((c) => !c.hidden);
+    });
+    const shown = Math.min(matched, limit);
+    const rest = matched - shown;
     // Pesan kosong hanya relevan saat filter menyaring habis isi feed.
-    if (empty) empty.hidden = shown > 0;
+    if (empty) empty.hidden = matched > 0;
+    if (more) {
+      more.hidden = rest === 0;
+      if (moreLabel) moreLabel.textContent = `Tampilkan lebih banyak (${rest} lagi)`;
+    }
+    // Diumumkan hanya setelah interaksi; pada load awal tak ada perubahan yang
+    // perlu dibacakan dan region live justru berisik.
+    if (announce && status) status.textContent = `Menampilkan ${shown} dari ${matched} jejak.`;
   }
-  chips.forEach((chip) => chip.addEventListener('click', () => apply(chip.dataset.jfilter as string)));
+
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      filter = chip.dataset.jfilter as string;
+      limit = step; // jendela reveal balik ke batas awal tiap ganti pintu
+      render(true);
+    })
+  );
+
+  more?.addEventListener('click', () => {
+    const before = new Set(cards.filter((c) => !c.hidden));
+    limit += step;
+    render(true);
+    // Fokus dipindah ke kartu baru pertama: pada klik terakhir tombolnya jadi
+    // hidden, dan tanpa ini fokus keyboard terlempar ke <body>. preventScroll
+    // supaya pengguna tetikus tak dilompatkan posisi scroll-nya.
+    cards.find((c) => !c.hidden && !before.has(c))?.focus({ preventScroll: true });
+  });
+
   // Deep-link: /jejak/?berbagi=makanan langsung terapkan filter itu bila chip-nya ada.
   const q = new URLSearchParams(location.search).get('berbagi');
-  if (q && chips.some((c) => c.dataset.jfilter === q)) apply(q);
+  if (q && chips.some((c) => c.dataset.jfilter === q)) filter = q;
+  // Render awal juga yang menerapkan pembatasan kartu; markup server tak pernah
+  // menyembunyikan kartu, jadi tanpa JS semua jejak tetap terbaca.
+  render(false);
 </script>

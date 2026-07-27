@@ -11,7 +11,7 @@ bun install
 bun run dev       # dev server, http://127.0.0.1:4321
 bun run build     # build ke dist/
 bun run preview   # preview hasil build
-bun test          # unit test src/lib/format.ts
+bun test          # unit test src/lib (format.ts, impact.ts)
 bunx astro check  # type-check file .astro
 ```
 
@@ -27,12 +27,13 @@ bunx astro dev stop
 
 ## Struktur
 
-- `src/pages/` — satu file per route: `index`, `faq`, `tentang`, `[program]` (satu route dinamis untuk semua halaman program, mis. `/jumat-berkah/`), halaman legal (`privasi`, `syarat`, `transparansi`), admin Keystatic, dan generator OG image.
-- `src/components/` — satu komponen per section halaman utama.
-- `src/consts.ts` — data UI yang tidak diedit editor (fitur, langkah, dampak, nav, label+ikon kategori mega-menu). Data program sendiri ada di CMS (**Program**), bukan di sini.
-- `src/content/` — konten yang diedit lewat Keystatic. Dibaca Astro lewat `src/content.config.ts`, ditulis Keystatic lewat `keystatic.config.ts`; **kedua config harus sepakat soal ekstensi file**.
-- `src/lib/` — fungsi murni: format Rupiah & link WhatsApp (`format.ts`, ada unit test), potongan schema.org (`schema.ts`), resolusi SEO per halaman (`seo.ts`).
-- `src/scripts/` — JS interaktif per fitur (mobile nav, ticker, kalkulator donasi, akordeon FAQ, mega-menu, TOC legal).
+- `src/pages/`: satu file per route, yaitu `index`, `faq`, `tentang`, `program/[program]` (satu route dinamis untuk semua halaman program, mis. `/program/jumat-berkah/`), `berbagi-[pintu]` (satu halaman per Pintu Berbagi, mis. `/berbagi-makanan/`), `jejak/` + `jejak/[slug]` (showcase dan detail rekam jejak), halaman legal (`privasi`, `syarat`, `transparansi`), admin Keystatic, dan generator OG image.
+- `src/components/`: satu komponen per section halaman utama, plus komponen pakai-ulang lintas halaman (`Container`, `Icon`, `JejakCard`, `Lightbox`, `Share`).
+- `src/consts.ts`: data UI yang tidak diedit editor (fitur, langkah, dampak, nav, dan daftar Pintu Berbagi berikut warna & ikonnya). Data program dan rekam jejak ada di CMS (**Program**, **Jejak**), bukan di sini.
+- `src/content/`: konten yang diedit lewat Keystatic. Dibaca Astro lewat `src/content.config.ts`, ditulis Keystatic lewat `keystatic.config.ts`; **kedua config harus sepakat soal ekstensi file**.
+- `src/assets/`: gambar yang lewat pipeline `astro:assets` (dioptimasi saat build). Foto rekam jejak sengaja diunggah ke `src/assets/jejak/`, bukan `public/`, supaya tidak disajikan mentah.
+- `src/lib/`: pembaca data & fungsi murni: program (`programs.ts`), rekam jejak (`jejak.ts`), agregasi dampak (`impact.ts`), sorotan beranda (`home.ts`), format Rupiah & link WhatsApp (`format.ts`), potongan schema.org (`schema.ts`), resolusi SEO per halaman (`seo.ts`), switchboard analytics (`analytics.ts`). `format.ts` dan `impact.ts` punya unit test.
+- `src/scripts/`: JS interaktif per fitur (mobile nav, hitung mundur hero, kalkulator donasi, akordeon FAQ, mega-menu, lightbox galeri, tombol share, TOC legal).
 
 **Design system** — warna, skala teks, radius, shadow, breakpoint, dan class komponen bersama didefinisikan di `tailwind.config.mjs` + `src/styles/global.css`, didokumentasikan di [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) (termasuk warna identitas 5 "Pintu Berbagi"). Baca itu sebelum menambah nilai visual baru — jangan pakai bracket arbitrary (`text-[17px]`, `bg-[#hex]`) untuk permukaan bersama.
 
@@ -60,6 +61,8 @@ Writer tidak pernah menyentuh repo. Developer tidak perlu akses tulis ke konten 
 | Isi halaman Tentang Kami | **Halaman Tentang Kami** |
 | Nomor WhatsApp, sosial media, angka statistik | **Site Settings** |
 | Program (kartu beranda, mega-menu, kalkulator, halaman detail) | **Program** — satu sumber untuk semua |
+| Program mana yang disorot di beranda + urutannya | **Beranda** |
+| Dokumentasi kegiatan: foto, angka, cerita per penyaluran | **Jejak** (angka dampak dijumlahkan otomatis dari sini) |
 | Alat ukur / analytics (PostHog, GA4, Meta Pixel, dll) | **Analytics** — centang + isi ID |
 
 Field SEO di halaman legal dan Tentang Kami **boleh dikosongkan** — artinya halaman memakai judul dan paragraf pembukanya sendiri. Isi hanya kalau teks di Google perlu berbeda dari teks di halaman.
@@ -95,7 +98,7 @@ Keystatic **tidak punya status draft/published bawaan**. Yang ada:
 
 - **Draft otomatis di browser.** Perubahan yang belum di-Save tersimpan di IndexedDB perangkatmu dan ditawarkan lagi saat kembali ke form yang sama. Sifatnya lokal — rekan kerja tidak bisa melihatnya, dan hilang kalau ganti perangkat atau bersihkan data browser. Ini jaring pengaman terhadap tab tertutup, **bukan** alur draft.
 - **Branch sebagai draft.** Ini cara draft yang sesungguhnya: buat branch, tulis sepuasnya, terbitkan lewat merge. Bisa dilihat orang lain, bisa direview, bisa dibuang.
-- **Flag di data.** Untuk entri yang harus ada tapi belum boleh tampil, pakai field di skemanya — program punya **Aktif (sudah dibuka)** yang dibiarkan mati (tampil "Segera Hadir", tanpa halaman detail), halaman SEO punya **Sembunyikan dari mesin pencari**. Cocok untuk "sudah disiapkan, belum diumumkan".
+- **Flag di data.** Untuk entri yang harus ada tapi belum boleh tampil, pakai field di skemanya — program punya **Aktif (sudah dibuka)** yang dibiarkan mati (tampil "Segera Hadir", tanpa halaman detail), jejak punya **Terbit** (yang mati tidak tampil dan tidak ikut dihitung ke angka dampak), halaman SEO punya **Sembunyikan dari mesin pencari**. Cocok untuk "sudah disiapkan, belum diumumkan".
 
 Kalau nanti butuh draft per entri yang sesungguhnya (tersimpan di repo tapi tidak tampil di situs), tambahkan field `status` di skema lalu saring saat build. Belum dikerjakan karena belum dibutuhkan.
 

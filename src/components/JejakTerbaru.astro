@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import Container from './Container.astro';
 import { formatMetric } from '../lib/format';
 import { getJejak } from '../lib/jejak';
 import { getPrograms } from '../lib/programs';
@@ -30,8 +31,8 @@ const fmtDate = (iso: string) =>
 
 {jejak.length > 0 && (
   <section id="jejak" class="section scroll-mt-24">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center max-w-2xl mx-auto mb-12">
+    <Container width="wide">
+      <div class="text-center max-w-text mx-auto mb-12">
         <div class="eyebrow">JEJAK TERBARU</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Bukti Nyata dari Lapangan</h2>
         <p class="text-body-sm md:text-body text-muted leading-relaxed">
@@ -117,6 +118,6 @@ const fmtDate = (iso: string) =>
           </a>
         </div>
       )}
-    </div>
+    </Container>
   </section>
 )}

@@ -3,6 +3,7 @@ import { getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
@@ -54,7 +55,8 @@ const carousel = allImages.slice(1);
 
 <BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
   <section class="section bg-white" style={styleVars}>
-    <div class="max-w-3xl mx-auto">
+    {/* Halaman baca: tier `prose`, bukan `standard` — teks jejak dibaca lurus. */}
+    <Container width="prose">
       <!-- breadcrumb: Beranda / Pintu / Rekam Jejak / judul -->
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
@@ -195,7 +197,7 @@ const carousel = allImages.slice(1);
           Lihat Program
         </span>
       </a>
-    </div>
+    </Container>
   </section>
 
   {galleryImages.length > 0 && <Lightbox />}

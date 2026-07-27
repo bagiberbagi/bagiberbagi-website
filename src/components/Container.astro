@@ -1,0 +1,52 @@
+---
+/**
+ * Pemilik tunggal lebar konten + padding horizontal.
+ *
+ * Lebar per halaman itu DEFAULT, bukan kunci: beranda `wide`, halaman lain
+ * `standard`. Seksi mana pun boleh menyimpang demi estetika seksi itu (galeri
+ * lebar, band foto full-bleed, kutipan sempit), tapi HANYA ke tier bernama di
+ * bawah. Variasi boleh, kosakatanya tetap terbatas — jangan bikin max-w mentah
+ * baru di markup.
+ *
+ * - full     lebar penuh tanpa padding (hero, band warna/foto, galeri edge-to-edge)
+ * - wide     1280 — default beranda, juga seksi non-beranda yang sengaja lebih lega
+ * - standard 1024 — default halaman non-beranda
+ * - prose    672  — teks untuk dibaca
+ * - form     448  — panel input
+ *
+ * Isi teks di dalam seksi `full` tetap boleh dibungkus Container `prose` lagi.
+ *
+ * Kalau markup terlalu dalam untuk dibungkus komponen (pil navbar, panel
+ * mega-menu, banner fixed, panel donasi), pakai token util-nya langsung:
+ * `max-w-wide` / `max-w-standard` / `max-w-text` / `max-w-form`. Tier `prose`
+ * sengaja bernama `max-w-text` di util karena `max-w-prose` sudah dipakai
+ * Tailwind (65ch) dan tak bisa ditimpa — lihat catatan di global.css.
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+export type ContainerWidth = 'full' | 'wide' | 'standard' | 'prose' | 'form';
+
+interface Props extends HTMLAttributes<'div'> {
+  width?: ContainerWidth;
+  /** Tag pembungkus, default `div`. */
+  as?: string;
+}
+
+const { width = 'standard', as: Tag = 'div', class: className, ...rest } = Astro.props;
+
+// Padding horizontal seragam untuk semua tier kecuali `full` — angkanya sama
+// dengan ritme lama `.section` supaya tepi konten tetap sejajar di seluruh situs.
+const PAD = 'px-5 md:px-10';
+
+const WIDTH: Record<ContainerWidth, string> = {
+  full: 'w-full',
+  wide: `max-w-wide mx-auto ${PAD}`,
+  standard: `max-w-standard mx-auto ${PAD}`,
+  prose: `max-w-text mx-auto ${PAD}`,
+  form: `max-w-form mx-auto ${PAD}`,
+};
+---
+
+<Tag class:list={[WIDTH[width], className]} {...rest}>
+  <slot />
+</Tag>

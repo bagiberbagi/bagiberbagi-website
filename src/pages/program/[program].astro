@@ -2,6 +2,7 @@
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
 import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah, formatMetric } from '../../lib/format';
@@ -69,7 +70,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 <BaseLayout>
   <!-- HERO: dua kolom, latar hangat tint pintu, foto ber-glow warna pintu -->
   <section class="section" style={`${styleVars};background:linear-gradient(150deg,var(--cat-tint),#ffffff 58%)`}>
-    <div class="max-w-5xl mx-auto">
+    <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
@@ -141,14 +142,14 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           )}
         </div>
       </div>
-    </div>
+    </Container>
   </section>
 
   <!-- CARA KERJA: timeline tersambung, nomor bulat selang-seling pintu/biru -->
   {steps.length > 0 && (
     <section class="section bg-white" style={styleVars}>
-      <div class="max-w-5xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
+      <Container>
+        <div class="text-center max-w-text mx-auto mb-12">
           <div class="eyebrow text-[var(--cat)]">Cara Kerja</div>
           <h2 class="text-heading-sm md:text-heading-lg font-semibold">Dari donasi sampai ke penerima</h2>
         </div>
@@ -168,17 +169,17 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
             </li>
           ))}
         </ol>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- REKAM JEJAK -->
   {jejak.length > 0 && (
     <section class="section bg-gray-50" style={styleVars}>
-      <div class="max-w-5xl mx-auto">
+      <Container>
         <div class="eyebrow text-[var(--cat)]">Rekam Jejak</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Jejak {program.label}</h2>
-        <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-2xl">
+        <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-text">
           Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
             <Fragment>, dengan total <strong class="text-ink">{formatMetric(mainMetric)} {mainMetric.label}</strong></Fragment>
           )}. Berikut dokumentasi tiap pelaksanaannya beserta angka dampaknya.
@@ -224,15 +225,15 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
           </a>
         </div>
-      </div>
+      </Container>
     </section>
   )}
 
   <!-- PROGRAM LAIN SEPINTU -->
   {siblings.length > 0 && (
     <section class="section bg-white" style={styleVars}>
-      <div class="max-w-5xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
+      <Container>
+        <div class="text-center max-w-text mx-auto mb-12">
           <div class="eyebrow text-[var(--cat)]">Masih di {pintu.label}</div>
           <h2 class="text-heading-sm md:text-heading-lg font-semibold">Program lain satu pintu</h2>
         </div>
@@ -261,7 +262,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
           </a>
         </div>
-      </div>
+      </Container>
     </section>
   )}
 </BaseLayout>

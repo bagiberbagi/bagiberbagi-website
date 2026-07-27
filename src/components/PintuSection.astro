@@ -1,6 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import Icon from './Icon.astro';
+import Container from './Container.astro';
 import { PINTU } from '../consts';
 import { getProgramsByPintu } from '../lib/programs';
 import { buildWaLink } from '../lib/format';
@@ -20,8 +21,8 @@ const pintuStatus = await Promise.all(
 ---
 
 <section id="pintu" class="section bg-gray-50 scroll-mt-24">
-  <div class="max-w-7xl mx-auto">
-    <div class="max-w-2xl mb-12">
+  <Container width="wide">
+    <div class="max-w-text mb-12">
       <div class="eyebrow">ARAH KAMI</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Berbagi Tak Berhenti di Makanan</h2>
       <p class="text-base leading-relaxed text-muted">
@@ -69,5 +70,5 @@ const pintuStatus = await Promise.all(
       Punya sumber daya lain untuk dibagi?{' '}
       <a href={waResourceLink} target="_blank" rel="noopener" data-track="pintu_contribute" class="font-semibold text-brand-blue hover:underline underline-offset-2">Ceritakan ke kami</a>, kami bantu wujudkan pintunya.
     </p>
-  </div>
+  </Container>
 </section>

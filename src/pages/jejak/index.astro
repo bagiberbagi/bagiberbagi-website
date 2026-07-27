@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import Container from '../../components/Container.astro';
 import { getJejak } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getGlobalImpact } from '../../lib/impact';
@@ -44,14 +45,14 @@ const fmtDate = (iso: string) =>
   breadcrumbName="Jejak & Dampak"
 >
   <section class="section bg-white">
-    <div class="max-w-6xl mx-auto">
+    <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-orangeDark">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-ink">Jejak &amp; Dampak</span>
       </nav>
 
-      <div class="text-center max-w-2xl mx-auto mb-12">
+      <div class="text-center max-w-text mx-auto mb-12">
         <div class="eyebrow">Jejak &amp; Dampak</div>
         <h1 class="text-heading md:text-display font-semibold mb-3">Setiap kebaikan, bisa ditelusuri</h1>
         <p class="text-body-sm md:text-body text-muted leading-relaxed">
@@ -177,7 +178,7 @@ const fmtDate = (iso: string) =>
           Belum ada jejak terpublikasi. Nantikan dokumentasi kegiatan pertama kami.
         </div>
       )}
-    </div>
+    </Container>
   </section>
 
   {gallery.length > 0 && <Lightbox />}

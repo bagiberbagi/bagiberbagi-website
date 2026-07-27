@@ -1,5 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
+import Container from './Container.astro';
 import { buildWaLink } from '../lib/format';
 
 const CATEGORIES = [
@@ -27,8 +28,8 @@ const waLink = buildWaLink(site.data.waNumber);
 ---
 
 <section id="faq" class="section bg-white">
-  <div class="max-w-6xl mx-auto">
-    <div class="text-center max-w-[720px] mx-auto mb-12">
+  <Container>
+    <div class="text-center max-w-text mx-auto mb-12">
       <div class="eyebrow">FAQ</div>
       <h1 class="text-heading md:text-display font-semibold text-ink mb-4">
         Pertanyaan Sering Diajukan
@@ -114,7 +115,7 @@ const waLink = buildWaLink(site.data.waNumber);
         </p>
       </div>
     </div>
-  </div>
+  </Container>
 </section>
 
 <script>

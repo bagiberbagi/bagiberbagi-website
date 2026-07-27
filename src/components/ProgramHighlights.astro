@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import Container from './Container.astro';
 import { getProgramsByPintu } from '../lib/programs';
 import { getProgramSection } from '../lib/home';
 import { getProgramImpact } from '../lib/impact';
@@ -24,7 +25,9 @@ const cards = await Promise.all(
 );
 
 // Satu sorotan = kartu tunggal lebar penuh; dua atau lebih = grid dua kolom
-// supaya tinggi 360px tak menumpuk jadi dinding foto.
+// supaya tinggi 360px tak menumpuk jadi dinding foto. Lebar seksi ikut jumlahnya:
+// grid butuh bentang `wide`, kartu tunggal ditahan di `standard` agar tak melebar
+// jadi bidang foto raksasa.
 const isGrid = cards.length > 1;
 ---
 
@@ -32,72 +35,70 @@ const isGrid = cards.length > 1;
     tak punya isi utama: sembunyikan seluruhnya, termasuk rail "Segera Menyusul". */}
 {cards.length > 0 && (
 <section id="program" class="section bg-gray-50 scroll-mt-24">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center max-w-2xl mx-auto mb-12">
+  <Container width={isGrid ? 'wide' : 'standard'}>
+    <div class="text-center max-w-text mx-auto mb-12">
       <div class="eyebrow">{section.eyebrow}</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold">{section.title}</h2>
     </div>
 
-    <div class={isGrid ? 'max-w-6xl mx-auto' : 'max-w-4xl mx-auto'}>
-      <div class={isGrid ? 'grid md:grid-cols-2 gap-5' : 'flex flex-col gap-5'}>
-        {cards.map((p) => (
-          <div class="relative overflow-hidden rounded-card min-h-[360px] flex flex-col justify-end p-7 md:p-8 text-white" data-fade="1">
-            {p.image
-              ? <img src={p.image} alt="" width="900" height="560" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover" />
-              : <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />}
-            <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
-            {/* Badge status di atas — mengisi bidang foto yang tadinya kosong.
-                Ikut status program: sorotan boleh dipasang sebelum dibuka. */}
-            <div class="relative mb-auto">
-              <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-micro font-bold uppercase tracking-wider">
-                <span class={`w-1.5 h-1.5 rounded-full ${p.active ? 'bg-brand-yellow' : 'bg-white/60'}`}></span>
-                {p.active ? 'Sedang Berjalan' : 'Segera Hadir'}
-              </span>
-            </div>
-            <div class="relative">
-              <h3 class="text-title md:text-heading-sm font-semibold mb-2.5">{p.label}</h3>
-              <p class="text-body-sm leading-relaxed text-white/85 mb-5 max-w-md">{p.summary}</p>
-              {p.impact.jejakCount > 0 && (
-                <div class="flex flex-wrap gap-2 mb-6">
-                  <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
-                    {p.impact.jejakCount.toLocaleString('id-ID')} kegiatan
-                  </span>
-                  {p.impact.metrics.slice(0, 2).map((m) => (
-                    <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
-                      {formatMetric(m)} {m.label}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {p.href && (
-                <a href={p.href} data-track="program_click" data-track-program={p.label} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
-              )}
-            </div>
+    <div class={isGrid ? 'grid md:grid-cols-2 gap-5' : 'flex flex-col gap-5'}>
+      {cards.map((p) => (
+        <div class="relative overflow-hidden rounded-card min-h-[360px] flex flex-col justify-end p-7 md:p-8 text-white" data-fade="1">
+          {p.image
+            ? <img src={p.image} alt="" width="900" height="560" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover" />
+            : <Image src={programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />}
+          <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
+          {/* Badge status di atas — mengisi bidang foto yang tadinya kosong.
+              Ikut status program: sorotan boleh dipasang sebelum dibuka. */}
+          <div class="relative mb-auto">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-micro font-bold uppercase tracking-wider">
+              <span class={`w-1.5 h-1.5 rounded-full ${p.active ? 'bg-brand-yellow' : 'bg-white/60'}`}></span>
+              {p.active ? 'Sedang Berjalan' : 'Segera Hadir'}
+            </span>
           </div>
-        ))}
-      </div>
-
-      {upcoming.length > 0 && (
-        <div class="mt-9 text-center">
-          <div class="eyebrow text-muted mb-3">Segera Menyusul</div>
-          <div class="flex flex-wrap justify-center gap-2.5">
-            {upcoming.map((p) => (
-              <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-white pl-4 pr-4 py-2 text-body-sm font-semibold text-ink/70">
-                {p.label}
-                {/* Status seragam dgn PintuSection: dot warna + teks micro uppercase. */}
-                <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
-                  <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
+          <div class="relative">
+            <h3 class="text-title md:text-heading-sm font-semibold mb-2.5">{p.label}</h3>
+            <p class="text-body-sm leading-relaxed text-white/85 mb-5 max-w-md">{p.summary}</p>
+            {p.impact.jejakCount > 0 && (
+              <div class="flex flex-wrap gap-2 mb-6">
+                <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
+                  {p.impact.jejakCount.toLocaleString('id-ID')} kegiatan
                 </span>
-              </span>
-            ))}
+                {p.impact.metrics.slice(0, 2).map((m) => (
+                  <span class="rounded-full bg-white/15 backdrop-blur-sm px-3 py-1.5 text-body-sm font-semibold tabular-nums">
+                    {formatMetric(m)} {m.label}
+                  </span>
+                ))}
+              </div>
+            )}
+            {p.href && (
+              <a href={p.href} data-track="program_click" data-track-program={p.label} class="btn-secondary btn-sm inline-flex items-center">Jelajahi Program</a>
+            )}
           </div>
         </div>
-      )}
-
-      <p class="text-center text-body-sm text-muted mt-8">
-        Jelajahi seluruh rencana lewat menu <span class="font-semibold text-ink">Program</span> di navigasi.
-      </p>
+      ))}
     </div>
-  </div>
+
+    {upcoming.length > 0 && (
+      <div class="mt-9 text-center">
+        <div class="eyebrow text-muted mb-3">Segera Menyusul</div>
+        <div class="flex flex-wrap justify-center gap-2.5">
+          {upcoming.map((p) => (
+            <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-white pl-4 pr-4 py-2 text-body-sm font-semibold text-ink/70">
+              {p.label}
+              {/* Status seragam dgn PintuSection: dot warna + teks micro uppercase. */}
+              <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
+                <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Segera
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <p class="text-center text-body-sm text-muted mt-8">
+      Jelajahi seluruh rencana lewat menu <span class="font-semibold text-ink">Program</span> di navigasi.
+    </p>
+  </Container>
 </section>
 )}

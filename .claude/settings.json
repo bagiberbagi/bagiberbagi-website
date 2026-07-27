@@ -2,12 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(bun run build)",
-      "Bash(bun run dev *)",
+      "Bash(bun run dev)",
       "Bash(bun run preview)",
       "Bash(bun test)",
       "Bash(bunx astro check)",
       "Bash(bunx astro sync)",
-      "Bash(astro dev *)",
+      "Bash(astro dev stop)",
+      "Bash(astro dev status)",
       "Bash(openspec instructions)",
       "Bash(openspec status)",
       "Bash(openspec validate)"

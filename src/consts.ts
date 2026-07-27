@@ -52,9 +52,16 @@ export const IMPACTS: Impact[] = [
 
 
 // Tanpa link "Home" — logo di navbar yang jadi jalan pulang ke beranda.
+//
+// Urutannya mengikuti alur kepercayaan donatur: apa yang bisa diberi (pintu) →
+// bukti kami menjalankan (jejak & dampak) → siapa kami → sisa keraguan (FAQ).
+// "Cara Kerja" sengaja tidak di sini: isinya seksi beranda, dan versi yang
+// sebenarnya berguna beda per program (lihat halaman program). Jalan masuknya
+// tetap ada lewat tautan sekunder di Hero.
 export const NAV_LINKS = [
-  { id: 'program', label: 'Pintu Berbagi', href: '/#program' },
-  { id: 'cara-kerja', label: 'Cara Kerja', href: '/#cara-kerja' },
+  // href entri ini cuma fallback: Header merender `program` sebagai tombol
+  // mega-menu, bukan tautan, jadi nilainya tak pernah jadi tujuan klik.
+  { id: 'program', label: 'Pintu Berbagi', href: '/#pintu' },
   // "Jejak & Dampak" menuju showcase global /jejak/ (angka dampak agregat +
   // feed kegiatan + galeri). Dulu sementara ke home #dampak sebelum showcase ada.
   { id: 'dampak', label: 'Jejak & Dampak', href: '/jejak/' },

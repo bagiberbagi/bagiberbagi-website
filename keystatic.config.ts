@@ -11,8 +11,12 @@ function shareImage() {
   return fields.image({
     label: 'Gambar share',
     description: 'Unggah gambar, atau kosongkan untuk memakai gambar default.',
-    directory: 'public/uploads/share',
-    publicPath: '/uploads/share',
+    // Sama seperti foto jejak: unggahan mendarat di src/assets supaya lewat
+    // astro:assets (dikecilkan + dikompres ulang), bukan disajikan mentah dari
+    // public/. publicPath wajib persis sama dengan kunci glob di
+    // src/lib/share-image.ts.
+    directory: 'src/assets/share',
+    publicPath: '/src/assets/share/',
   });
 }
 
@@ -515,8 +519,11 @@ export default config({
           label: 'Foto kartu beranda',
           description:
             'Dipakai saat program ini disorot di beranda (atur di menu Beranda). Rasio lanskap, minimal 900x560. Kosongkan untuk memakai foto bawaan.',
-          directory: 'public/uploads/programs',
-          publicPath: '/uploads/programs',
+          // Unggahan mendarat di src/assets, bukan public/, supaya foto lewat
+          // astro:assets. publicPath wajib persis sama dengan kunci glob di
+          // src/lib/programs.ts.
+          directory: 'src/assets/programs',
+          publicPath: '/src/assets/programs/',
         }),
         summary: fields.text({
           label: 'Ringkasan',

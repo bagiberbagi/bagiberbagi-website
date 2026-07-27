@@ -55,8 +55,10 @@ const carousel = allImages.slice(1);
 
 <BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
   <section class="section bg-white" style={styleVars}>
-    {/* Halaman baca: tier `prose`, bukan `standard` — teks jejak dibaca lurus. */}
-    <Container width="prose">
+    {/* Shell ikut default halaman (`standard`): foto besar, carousel, dan grid
+        metrik butuh bentang itu. Yang disempitkan cuma blok teksnya (max-w-text),
+        supaya panjang barisnya tetap enak dibaca. */}
+    <Container>
       <!-- breadcrumb: Beranda / Pintu / Rekam Jejak / judul -->
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
@@ -86,7 +88,7 @@ const carousel = allImages.slice(1);
         </a>
       </div>
 
-      <h1 class="text-heading md:text-display font-semibold text-ink mb-4">
+      <h1 class="text-heading md:text-display font-semibold text-ink mb-4 max-w-text">
         {jejak.title}
       </h1>
 
@@ -104,7 +106,7 @@ const carousel = allImages.slice(1);
         )}
       </div>
 
-      <p class="text-body-sm text-muted leading-relaxed mb-7">{jejak.summary}</p>
+      <p class="text-body-sm text-muted leading-relaxed mb-7 max-w-text">{jejak.summary}</p>
 
       <!-- featured image (besar): klik untuk perbesar -->
       {featured ? (
@@ -172,7 +174,7 @@ const carousel = allImages.slice(1);
 
       <!-- cerita (body Markdoc) -->
       <div
-        class="text-body text-muted leading-relaxed
+        class="text-body text-muted leading-relaxed max-w-text
           [&_h2]:text-title-sm [&_h2]:font-bold [&_h2]:text-ink [&_h2]:mt-9 [&_h2]:mb-3 [&_h2:first-child]:mt-0
           [&_h3]:text-body [&_h3]:font-bold [&_h3]:text-ink [&_h3]:mt-6 [&_h3]:mb-2
           [&_p]:mb-4 [&_p:last-child]:mb-0

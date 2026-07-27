@@ -50,7 +50,12 @@ export default defineConfig({
       validateH1: true,
       validateUniqueMetadata: true,
       validateImageAlt: true,
-      validateMetadataLength: true,
+      // Bawaan plugin memberi deskripsi kelonggaran sampai 200 karakter, jauh
+      // di atas titik potong Google (~160), jadi deskripsi kepanjangan lolos
+      // tanpa suara. Diketatkan ke 160 supaya build ikut menjaga string yang
+      // tak lewat Keystatic (PINTU di consts.ts, prop title/description di
+      // halaman .astro) yang tak tersentuh validation admin.
+      validateMetadataLength: { description: { max: 160 } },
       validateInternalLinks: true,
     }),
   ],

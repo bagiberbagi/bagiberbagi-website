@@ -1,7 +1,7 @@
 {
   "siteName": "bagiberbagi.id",
   "defaultTitle": "bagiberbagi.id: Berbagi Lebih Mudah, Dampaknya Lebih Nyata",
-  "defaultDescription": "bagiberbagi.id adalah platform donasi & sosial yang menghubungkan kebaikan, komunitas, dan dampak nyata untuk Indonesia. Salurkan bantuan makanan dan dukung UMKM secara transparan.",
+  "defaultDescription": "bagiberbagi.id menyalurkan donasi makanan dan mendukung UMKM lokal bersama komunitas, dengan penyaluran transparan dan bukti yang dikirim ke donatur.",
   "defaultImage": "/og-image.png",
   "organization": {
     "type": "NGO",
@@ -28,7 +28,7 @@
     {
       "path": "/program/jumat-berkah/",
       "title": "Jumat Berkah, Donasi Makanan Mingguan | bagiberbagi.id",
-      "description": "Program Jumat Berkah bagiberbagi.id: berbagi paket makanan sehat dari UMKM terkurasi setiap Jumat, diantar langsung ke penerima, dengan dokumentasi foto & video maksimal H+1.",
+      "description": "Jumat Berkah membagikan paket makanan dari UMKM terkurasi setiap Jumat, diantar langsung ke penerima, dengan bukti foto dan video maksimal H+1.",
       "image": "/open-graph/program/jumat-berkah.png",
       "breadcrumbName": "Jumat Berkah",
       "noindex": false

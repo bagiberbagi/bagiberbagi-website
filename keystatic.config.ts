@@ -28,21 +28,35 @@ function paragraphsField(label: string) {
 }
 
 /**
+ * Batas panjang teks yang menghadap mesin pencari. Google memotong judul di
+ * sekitar 60 karakter dan deskripsi di sekitar 160, jadi apa pun di atas itu
+ * tak pernah terbaca pengunjung. Dipasang sebagai `validation` supaya admin
+ * menolak simpan, bukan sekadar imbauan di teks bantu yang bisa dilewati.
+ * Nilainya dipakai dua kali (blok SEO per halaman dan singleton SEO), jadi
+ * disimpan di satu tempat agar keduanya tak bisa berbeda.
+ */
+const SEO_TITLE_MAX = 60;
+const SEO_DESCRIPTION_MAX = 160;
+
+/**
  * Blok SEO yang menempel di entri konten yang punya halamannya sendiri.
  * Semua opsional: dikosongkan berarti halaman memakai judul/deskripsi yang
- * diturunkan dari isinya, seperti sebelum blok ini ada.
+ * diturunkan dari isinya, seperti sebelum blok ini ada. Batas panjang tidak
+ * mengganggu itu: field kosong tetap lolos, yang ditolak hanya isian kepanjangan.
  */
 function seoFields(hint: string) {
   return fields.object(
     {
       title: fields.text({
         label: 'Judul di hasil pencarian',
-        description: `Kosongkan untuk memakai ${hint}. Ideal 30–65 karakter.`,
+        description: `Kosongkan untuk memakai ${hint}. Ideal 30-60 karakter; Google memotong judul di sekitar ${SEO_TITLE_MAX} karakter.`,
+        validation: { length: { max: SEO_TITLE_MAX } },
       }),
       description: fields.text({
         label: 'Deskripsi di hasil pencarian',
-        description: 'Kosongkan untuk memakai paragraf pembuka halaman. Ideal 70–160 karakter.',
+        description: `Kosongkan untuk memakai paragraf pembuka halaman. Ideal 70-160 karakter; Google memotong deskripsi di sekitar ${SEO_DESCRIPTION_MAX} karakter, jadi taruh info terpenting di depan.`,
         multiline: true,
+        validation: { length: { max: SEO_DESCRIPTION_MAX } },
       }),
       image: shareImage(),
     },
@@ -129,11 +143,16 @@ export default config({
       format: 'json',
       schema: {
         siteName: fields.text({ label: 'Nama situs (og:site_name)' }),
-        defaultTitle: fields.text({ label: 'Judul default' }),
+        defaultTitle: fields.text({
+          label: 'Judul default',
+          description: `Ideal 30-60 karakter; Google memotong judul di sekitar ${SEO_TITLE_MAX} karakter.`,
+          validation: { length: { max: SEO_TITLE_MAX } },
+        }),
         defaultDescription: fields.text({
           label: 'Deskripsi default',
-          description: 'Dipakai halaman yang belum punya deskripsi sendiri. Ideal 50–160 karakter.',
+          description: `Dipakai halaman yang belum punya deskripsi sendiri. Ideal 50-160 karakter; Google memotong deskripsi di sekitar ${SEO_DESCRIPTION_MAX} karakter.`,
           multiline: true,
+          validation: { length: { max: SEO_DESCRIPTION_MAX } },
         }),
         defaultImage: fields.text({
           label: 'Gambar share default',
@@ -163,11 +182,16 @@ export default config({
               label: 'Path halaman',
               description: 'Diawali dan diakhiri garis miring, contoh: /faq/ — beranda cukup /',
             }),
-            title: fields.text({ label: 'Judul', description: 'Ideal 30–60 karakter.' }),
+            title: fields.text({
+              label: 'Judul',
+              description: `Ideal 30-60 karakter; Google memotong judul di sekitar ${SEO_TITLE_MAX} karakter.`,
+              validation: { length: { max: SEO_TITLE_MAX } },
+            }),
             description: fields.text({
               label: 'Deskripsi',
-              description: 'Ideal 50–160 karakter.',
+              description: `Ideal 50-160 karakter; Google memotong deskripsi di sekitar ${SEO_DESCRIPTION_MAX} karakter, jadi taruh info terpenting di depan.`,
               multiline: true,
+              validation: { length: { max: SEO_DESCRIPTION_MAX } },
             }),
             image: shareImage(),
             breadcrumbName: fields.text({

@@ -88,7 +88,7 @@ const carousel = allImages.slice(1);
         </a>
       </div>
 
-      <h1 class="text-heading md:text-display font-semibold text-ink mb-4 max-w-text">
+      <h1 class="text-heading md:text-display font-semibold text-ink mb-4">
         {jejak.title}
       </h1>
 
@@ -106,7 +106,9 @@ const carousel = allImages.slice(1);
         )}
       </div>
 
-      <p class="text-body-sm text-muted leading-relaxed mb-7 max-w-text">{jejak.summary}</p>
+      {/* Kolom baca dipusatkan di dalam shell: foto, carousel, dan grid metrik
+          memakai lebar penuh, teksnya tetap dijaga di ukuran yang enak dibaca. */}
+      <p class="text-body-sm text-muted leading-relaxed mb-7 max-w-text mx-auto">{jejak.summary}</p>
 
       <!-- featured image (besar): klik untuk perbesar -->
       {featured ? (
@@ -174,7 +176,7 @@ const carousel = allImages.slice(1);
 
       <!-- cerita (body Markdoc) -->
       <div
-        class="text-body text-muted leading-relaxed max-w-text
+        class="text-body text-muted leading-relaxed max-w-text mx-auto
           [&_h2]:text-title-sm [&_h2]:font-bold [&_h2]:text-ink [&_h2]:mt-9 [&_h2]:mb-3 [&_h2:first-child]:mt-0
           [&_h3]:text-body [&_h3]:font-bold [&_h3]:text-ink [&_h3]:mt-6 [&_h3]:mb-2
           [&_p]:mb-4 [&_p:last-child]:mb-0

@@ -7,6 +7,7 @@
 @theme {
   --container-wide: 80rem;
   --container-standard: 64rem;
+  --container-article: 48rem;
   --container-text: 42rem;
   --container-form: 28rem;
 }

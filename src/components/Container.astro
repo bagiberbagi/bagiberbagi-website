@@ -11,6 +11,8 @@
  * - full     lebar penuh tanpa padding (hero, band warna/foto, galeri edge-to-edge)
  * - wide     1280 — default beranda, juga seksi non-beranda yang sengaja lebih lega
  * - standard 1024 — default halaman non-beranda
+ * - article  768  — halaman baca bergambar: teksnya panjang tapi foto/grid ikut
+ *                   satu kolom, jadi seluruh isi dijaga satu lebar (jejak detail)
  * - prose    672  — teks untuk dibaca
  * - form     448  — panel input
  *
@@ -18,13 +20,13 @@
  *
  * Kalau markup terlalu dalam untuk dibungkus komponen (pil navbar, panel
  * mega-menu, banner fixed, panel donasi), pakai token util-nya langsung:
- * `max-w-wide` / `max-w-standard` / `max-w-text` / `max-w-form`. Tier `prose`
+ * `max-w-wide` / `max-w-standard` / `max-w-article` / `max-w-text` / `max-w-form`. Tier `prose`
  * sengaja bernama `max-w-text` di util karena `max-w-prose` sudah dipakai
  * Tailwind (65ch) dan tak bisa ditimpa — lihat catatan di global.css.
  */
 import type { HTMLAttributes } from 'astro/types';
 
-export type ContainerWidth = 'full' | 'wide' | 'standard' | 'prose' | 'form';
+export type ContainerWidth = 'full' | 'wide' | 'standard' | 'article' | 'prose' | 'form';
 
 interface Props extends HTMLAttributes<'div'> {
   width?: ContainerWidth;
@@ -42,6 +44,7 @@ const WIDTH: Record<ContainerWidth, string> = {
   full: 'w-full',
   wide: `max-w-wide mx-auto ${PAD}`,
   standard: `max-w-standard mx-auto ${PAD}`,
+  article: `max-w-article mx-auto ${PAD}`,
   prose: `max-w-text mx-auto ${PAD}`,
   form: `max-w-form mx-auto ${PAD}`,
 };

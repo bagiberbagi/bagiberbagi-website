@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
-import { buildWaLink } from '../lib/format';
-import Container from './Container.astro';
+import { buildWaLink } from '../../lib/format';
+import Container from '../Container.astro';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');

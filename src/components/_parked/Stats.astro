@@ -1,6 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
-import Container from './Container.astro';
+import Container from '../Container.astro';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -42,5 +42,5 @@ if (!site) throw new Error('settings/site entry not found');
 </section>
 
 <script>
-  import '../scripts/stats-counter.js';
+  import '../../scripts/stats-counter.js';
 </script>

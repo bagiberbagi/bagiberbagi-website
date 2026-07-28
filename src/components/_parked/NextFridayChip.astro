@@ -1,0 +1,49 @@
+---
+// Chip hitung mundur ke Jumat Berkah berikutnya, diangkat dari Hero lama supaya
+// tidak ikut hilang saat hero diganti. PARKIR: belum dipakai di halaman mana pun,
+// menunggu tempat yang cocok. Jangan dihapus karena "tidak terpakai".
+//
+// Pil gelap khas hero: badge "JUMAT BERKAH BERIKUTNYA" lalu empat segmen angka.
+// Jadwalnya dari Keystatic (settings/site.schedule), bukan hardcode. countdown.js
+// mengisi tiap segmen dan meredupkan unit nol di depan (class .jb-dim) supaya
+// mata fokus ke waktu yang benar-benar tersisa.
+import { getEntry } from 'astro:content';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const schedule = site.data.schedule;
+---
+
+<div
+  class="inline-flex items-center gap-2.5 bg-ink pl-2 pr-4 py-1.5 rounded-full font-semibold text-white shadow-pill"
+  data-jb-weekday={schedule.weekday}
+  data-jb-time={schedule.time}
+>
+  <span class="bg-brand-orange/25 text-brand-yellow text-micro font-bold tracking-wide uppercase px-2.5 py-1 rounded-full">Jumat Berkah Berikutnya</span>
+  <span class="inline-flex items-baseline gap-1.5 text-[13px] text-white/70">
+    <span class="jb-unit"><b id="jb-d" class="text-title-sm font-bold text-brand-yellow tabular-nums">00</b>hari</span>
+    <span class="jb-unit"><b id="jb-h" class="text-title-sm font-bold text-brand-yellow tabular-nums">00</b>jam</span>
+    <span class="jb-unit"><b id="jb-m" class="text-title-sm font-bold text-brand-yellow tabular-nums">00</b>mnt</span>
+    <span class="jb-unit"><b id="jb-s" class="text-title-sm font-bold text-brand-yellow tabular-nums">00</b>dtk</span>
+  </span>
+</div>
+
+<style>
+  /* Tiap segmen unit countdown. Unit nol di depan diberi .jb-dim oleh countdown.js
+     supaya meredup dan mata fokus ke waktu yang benar-benar tersisa. */
+  .jb-unit {
+    transition: opacity 0.3s ease;
+  }
+  .jb-dim {
+    opacity: 0.3;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jb-unit {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import '../../scripts/countdown.js';
+</script>

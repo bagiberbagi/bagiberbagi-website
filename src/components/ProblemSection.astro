@@ -1,0 +1,27 @@
+---
+// Masalah: seksi yang memvalidasi keraguan donatur tanpa menakut-nakuti, lalu
+// menyerahkan jawabannya ke SolutionSection tepat di bawahnya. Signature seksi
+// ini tipografi, bukan komponen, jadi sengaja tidak ada kartu, ikon, atau
+// diagram. Bidangnya netral hangat supaya sambungan dari hero kuning tidak
+// terasa dingin.
+import Container from './Container.astro';
+---
+
+<section class="py-24 md:py-32 bg-surface-warm">
+  {/* Container `wide` seperti seksi lain di beranda, lalu prosanya dibatasi di
+      dalam. Kalau seksi ini memakai tier sempit yang ter-`mx-auto`, bloknya
+      pindah ke tengah halaman dan tepi kirinya tidak lagi lurus dengan kepala
+      seksi di atas dan di bawahnya. Lebar prosa disamakan dengan kepala seksi
+      SolutionSection (46rem) supaya keduanya terbaca satu keluarga. */}
+  <Container width="wide">
+    <div class="max-w-[46rem]">
+      <p class="eyebrow" data-fade>Masalahnya</p>
+      <p class="text-heading-sm md:text-heading-lg font-medium text-ink leading-snug text-balance" data-fade>
+        Banyak orang ingin berbagi. Sedikit yang benar-benar yakin bantuannya <span class="text-brand-orange">sampai ke tangan yang tepat.</span>
+      </p>
+      <p class="text-base md:text-lg text-muted leading-relaxed mt-8 max-w-[52ch]" data-fade>
+        Bukan karena orang tidak peduli, tetapi karena berbagi membutuhkan proses yang dapat dipercaya.
+      </p>
+    </div>
+  </Container>
+</section>

@@ -1,0 +1,367 @@
+---
+// Penutup beranda: pemilih peran, bukan ajakan donasi kedua.
+//
+// Pembagian tugas di halaman ini sengaja dijaga supaya tidak ada yang mengulang:
+// kartu hero memegang donasi (nominal, porsi, tombol bayar), pita di footer
+// memegang kontak umum dan nomor WhatsApp, dan seksi ini memegang pertanyaan
+// yang belum dijawab keduanya, yaitu "kalau saya bukan donatur, saya ikut lewat
+// mana". Karena itu di sini tidak ada nominal, tidak ada nomor telepon, dan
+// tidak ada kalimat "siap berbagi hari ini" yang sudah dipakai footer.
+//
+// Menggantikan JoinUs (kartu mitra dan CSR) yang dulu duduk di tengah halaman.
+// Kalimatnya dilengkapi sendiri oleh pengunjung, dan pilihan itu yang menyusun
+// pesan WhatsApp yang benar-benar terkirim, jadi tidak ada formulir yang perlu
+// diisi dan tidak ada langkah yang terbuang.
+import { getEntry } from 'astro:content';
+import Container from './Container.astro';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+
+// Empat jalur ikut yang benar-benar kami layani hari ini. Tiap pilihan membawa
+// kalimatnya sendiri supaya pesan yang masuk sudah jelas maksudnya sejak awal.
+const PICKS = [
+  { id: 'makanan', word: 'makanan', msg: 'Halo, saya ingin ikut berbagi makanan lewat bagiberbagi.id.' },
+  { id: 'waktu', word: 'waktu saya', msg: 'Halo, saya ingin ikut jadi relawan bagiberbagi.id.' },
+  { id: 'dapur', word: 'dapur saya', msg: 'Halo, saya punya usaha kuliner dan ingin jadi Mitra Dapur UMKM.' },
+  { id: 'perusahaan', word: 'lewat perusahaan', msg: 'Halo, kami tertarik menjalankan program CSR bersama bagiberbagi.id.' },
+];
+
+// Tautan dasar dengan penanda yang ditukar di klien, supaya tidak perlu membangun
+// ulang seluruh URL tiap kali pilihan berganti.
+const waBase = buildWaLink(site.data.waNumber, '__MSG__');
+const initialHref = waBase.replace('__MSG__', encodeURIComponent(PICKS[0]!.msg));
+
+// Glyph WhatsApp, sama persis dengan yang dipakai tombol kontak di Footer.astro
+// supaya satu kanal digambarkan dengan satu ikon di seluruh situs.
+const WA_GLYPH =
+  '<path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Zm5.6 14.3c-.2.6-1.3 1.2-1.9 1.3-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.6-.6-2.9-1.3-4.8-4.2-4.9-4.4-.1-.2-1.2-1.6-1.2-3s.7-2.1 1-2.4c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.6-.1l.6-.7c.2-.3.4-.2.7-.1.3.1 1.7.8 2 .9.3.1.5.2.6.3.1.2.1.9-.1 1.5Z"></path>';
+---
+
+<section class="closing py-24 md:py-32 bg-white" data-picker data-wa={waBase}>
+  <Container width="wide">
+    <div class="cl-grid">
+      <div class="cl-left">
+        <p class="eyebrow" data-fade>Sebelum kamu pergi</p>
+
+        {/* Kalimatnya sendiri yang jadi judul seksi: berubah begitu pilihan
+            ditekan, jadi pengunjung melihat maksudnya terbentuk.
+            Pemenggalan barisnya dipaksa, bukan dibiarkan mengikuti lebar teks,
+            supaya kalimat ini selalu dua baris. Tanpa itu tingginya berubah
+            tiap kali pilihan berganti (kata "lewat perusahaan" jauh lebih
+            panjang dari "makanan") dan seluruh blok di bawahnya ikut melompat. */}
+        <p class="cl-sentence" data-fade>
+          <span class="cl-lead-line">Saya siap berbagi</span>
+          <span class="cl-answer"><span class="cl-slot" data-slot>makanan</span><span class="cl-dot">.</span></span>
+        </p>
+
+        <fieldset class="cl-picks" data-fade>
+          <legend class="cl-picks-legend">Pilih yang paling dekat denganmu</legend>
+          <div class="cl-picks-row">
+            {PICKS.map((p, i) => (
+              <label class:list={['cl-pick', i === 0 && 'is-on']}>
+                {/* Radio sungguhan, bukan tombol yang dibuat mirip radio: panah
+                    kiri-kanan, tab, dan pembaca layar langsung bekerja tanpa
+                    kode tambahan, dan jelas bahwa hanya satu yang bisa dipilih. */}
+                <input
+                  type="radio"
+                  name="cara-berbagi"
+                  value={p.id}
+                  checked={i === 0}
+                  data-pick={p.id}
+                  data-word={p.word}
+                  data-msg={p.msg}
+                  class="cl-pick-input"
+                />
+                <span class="cl-pick-mark" aria-hidden="true"></span>
+                <span class="cl-pick-word">{p.word}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <p class="cl-note" data-fade>
+          Belum yakin yang mana? Ceritakan saja keadaanmu, kami bantu carikan jalurnya.
+        </p>
+      </div>
+
+      {/* Kartu ini pratinjau percakapan WhatsApp, jadi tata letaknya mengikuti
+          kebiasaan aplikasi pesan: penerima di bilah atas, pesan keluar sebagai
+          gelembung hijau rata kanan berekor. Hijau WhatsApp dipakai di sini dan
+          di tombolnya karena ini memang menandai kanal pihak ketiga, sama seperti
+          tombol kontak di Footer.astro. Sengaja tanpa jam dan tanpa centang
+          terkirim: pesannya belum dikirim, dan menampilkannya akan berbohong. */}
+      <div class="cl-right" data-fade>
+        <div class="cl-chat">
+          <div class="cl-chat-head">
+            <span class="cl-avatar" aria-hidden="true">bb</span>
+            <span class="cl-chat-name">
+              Tim bagiberbagi
+              <em>biasanya membalas di jam kerja</em>
+            </span>
+            <svg class="cl-chat-wa" viewBox="0 0 24 24" aria-hidden="true" set:html={WA_GLYPH}></svg>
+          </div>
+
+          <div class="cl-thread">
+            {/* Pratinjau pesan: yang dilihat pengunjung persis yang akan terkirim. */}
+            <p class="cl-bubble" data-bubble>{PICKS[0]!.msg}</p>
+          </div>
+
+          <div class="cl-bar">
+            <a
+              href={initialHref}
+              target="_blank"
+              rel="noopener"
+              data-send
+              data-track="join_click"
+              data-track-source="closing_picker"
+              data-track-pick={PICKS[0]!.id}
+              class="cl-send"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={WA_GLYPH}></svg>
+              Kirim lewat WhatsApp
+            </a>
+          </div>
+        </div>
+        <p class="cl-chat-note">Pesan di atas yang akan terbuka di aplikasimu. Masih bisa kamu ubah sebelum dikirim.</p>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .cl-grid { display: grid; gap: 40px; align-items: center; }
+  @media (min-width: 900px) { .cl-grid { grid-template-columns: 1.15fr 1fr; gap: 64px; } }
+
+  .cl-left { max-width: 46rem; }
+
+  /* Kalimat isian ini yang jadi jangkar seksi, jadi skalanya mengikuti H2 seksi
+     lain di beranda. */
+  .cl-sentence {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: #0f172a;
+    margin: 0;
+  }
+  /* Dua baris tetap: bagian tetap di baris pertama, jawaban di baris kedua. */
+  .cl-lead-line,
+  .cl-answer { display: block; }
+  .cl-slot {
+    color: #c25d0f;
+    border-bottom: 3px solid rgba(244, 121, 29, 0.35);
+    padding-bottom: 2px;
+  }
+  .cl-dot { color: #c25d0f; }
+
+  /* ===== Pemilih ===== */
+  .cl-picks { border: 0; margin: 28px 0 0; padding: 0; min-width: 0; }
+  .cl-picks-legend {
+    padding: 0;
+    margin-bottom: 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #505d6f;
+  }
+  .cl-picks-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .cl-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid #e2e5ea;
+    background: #fff;
+    border-radius: 999px;
+    padding: 11px 20px 11px 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .cl-pick:hover { border-color: #f4791d; box-shadow: 0 6px 16px -12px rgba(15, 23, 42, 0.5); }
+
+  /* Input disembunyikan secara visual saja, tetap bisa difokus keyboard. */
+  .cl-pick-input {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Lingkaran penanda: sinyal paling jelas bahwa ini pilihan, bukan label. */
+  .cl-pick-mark {
+    width: 18px; height: 18px; flex: none;
+    border-radius: 50%;
+    border: 2px solid #c8ced7;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    transition: border-color 0.18s ease;
+  }
+  .cl-pick-mark::after {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #f4791d;
+    transform: scale(0);
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .cl-pick:hover .cl-pick-mark { border-color: #f4791d; }
+
+  .cl-pick.is-on {
+    border-color: #f4791d;
+    background: #fdeee1;
+  }
+  .cl-pick.is-on .cl-pick-word { color: #c25d0f; }
+  .cl-pick.is-on .cl-pick-mark { border-color: #f4791d; }
+  .cl-pick.is-on .cl-pick-mark::after { transform: scale(1); }
+
+  /* Fokus keyboard harus terlihat di pil, bukan di input yang disembunyikan. */
+  .cl-pick:has(.cl-pick-input:focus-visible) {
+    outline: 2px solid #1d46b9;
+    outline-offset: 2px;
+  }
+
+  .cl-note { margin: 24px 0 0; font-size: 14.5px; line-height: 1.6; color: #505d6f; max-width: 46ch; }
+
+  /* Kartu pratinjau percakapan, disusun seperti jendela aplikasi pesan: bilah
+     penerima di atas, area percakapan di tengah, bilah aksi di bawah. */
+  .cl-chat {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #e2e5ea;
+    box-shadow: 0 18px 40px -30px rgba(15, 23, 42, 0.5);
+  }
+
+  .cl-chat-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    border-bottom: 1px solid #eef0f3;
+  }
+  .cl-avatar {
+    width: 38px; height: 38px; flex: none;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: #f4791d;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .cl-chat-name { display: flex; flex-direction: column; font-size: 14.5px; font-weight: 700; color: #0f172a; }
+  .cl-chat-name em { font-style: normal; font-size: 12.5px; font-weight: 500; color: #505d6f; }
+  .cl-chat-wa { width: 20px; height: 20px; margin-left: auto; flex: none; fill: #25d366; }
+
+  /* Area percakapan: tekstur doodle rapat MILIK KITA SENDIRI (mangkuk, kotak,
+     jam, hati, rumah, tanda tambah, gelembung pesan), digambar dari kosakata
+     lima pintu berbagi. Wallpaper bawaan aplikasi pesan sengaja tidak dipakai
+     karena itu karya berhak cipta pihak lain.
+     Dua angka yang menentukan rasanya: kerapatan (sekitar 30 glif per ubin
+     190px) dan keredupan (garis 1,5px pada kepekatan 4,2%). Versi pertama pola
+     ini jarang dan lebih gelap, hasilnya mata menghitung tiap glif satu per
+     satu. Serapat dan seredup ini, teksturnya terbaca sebagai permukaan dan
+     tidak melawan gelembung pesannya.
+     Inline sebagai data URI, bukan berkas terpisah: sekitar 2 KB, ikut ter-cache
+     bersama CSS, dan tanpa satu pun permintaan jaringan tambahan. */
+  .cl-thread {
+    position: relative;
+    background-color: #f6f4f0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='190' fill='none' stroke='%230b141a' stroke-opacity='.042' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 22h14a7 7 0 0 1-14 0Z'/%3E%3Cpath d='M17 15v4'/%3E%3Ccircle cx='52' cy='18' r='7'/%3E%3Cpath d='M52 13v5l3 2'/%3E%3Cpath d='M84 12l9 4.5v10L84 31l-9-4.5v-10z'/%3E%3Cpath d='M118 30s-6-3.7-7.9-7.2c-1.3-2.4 0-5.2 2.9-5.2 1.7 0 2.7 1 3.3 1.9.6-.9 1.6-1.9 3.3-1.9 3 0 4.2 2.8 2.9 5.2-1.9 3.5-7.9 7.2-7.9 7.2Z'/%3E%3Cpath d='M148 28V14h8v14M152 14v14M144 28h16'/%3E%3Cpath d='M176 14v14M170 20h12'/%3E%3Cpath d='M14 58c5-6 12-3 12 3 0 5-6 9-12 12-6-3-12-7-12-12 0-6 7-9 12-3Z'/%3E%3Cpath d='M46 52h18v13H54l-5 5v-5h-3z'/%3E%3Cpath d='M88 50v16M80 58h16'/%3E%3Ccircle cx='120' cy='58' r='8'/%3E%3Cpath d='M120 52v6l4 2'/%3E%3Cpath d='M150 50h16l-2 16h-12z'/%3E%3Cpath d='M154 50v-4h8v4'/%3E%3Cpath d='M10 96h14a7 7 0 0 1-14 0Z'/%3E%3Cpath d='M46 90l9 4.5v10L46 109l-9-4.5v-10z'/%3E%3Cpath d='M82 108s-6-3.7-7.9-7.2c-1.3-2.4 0-5.2 2.9-5.2 1.7 0 2.7 1 3.3 1.9.6-.9 1.6-1.9 3.3-1.9 3 0 4.2 2.8 2.9 5.2-1.9 3.5-7.9 7.2-7.9 7.2Z'/%3E%3Cpath d='M112 106V92h8v14M116 92v14M108 106h16'/%3E%3Ccircle cx='150' cy='98' r='8'/%3E%3Cpath d='M150 92v6l4 2'/%3E%3Cpath d='M176 92v14M170 98h12'/%3E%3Cpath d='M18 132h18v13H26l-5 5v-5h-3z'/%3E%3Cpath d='M58 130v16M50 138h16'/%3E%3Cpath d='M84 130h16l-2 16H86z'/%3E%3Cpath d='M88 130v-4h8v4'/%3E%3Cpath d='M118 134c5-6 12-3 12 3 0 5-6 9-12 12-6-3-12-7-12-12 0-6 7-9 12-3Z'/%3E%3Cpath d='M150 128l9 4.5v10l-9 4.5-9-4.5v-10z'/%3E%3Cpath d='M176 130h10v12h-10z'/%3E%3Cpath d='M14 166h14a7 7 0 0 1-14 0Z'/%3E%3Cpath d='M21 159v4'/%3E%3Ccircle cx='54' cy='170' r='8'/%3E%3Cpath d='M54 164v6l4 2'/%3E%3Cpath d='M86 178s-6-3.7-7.9-7.2c-1.3-2.4 0-5.2 2.9-5.2 1.7 0 2.7 1 3.3 1.9.6-.9 1.6-1.9 3.3-1.9 3 0 4.2 2.8 2.9 5.2-1.9 3.5-7.9 7.2-7.9 7.2Z'/%3E%3Cpath d='M112 176V162h8v14M116 162v14M108 176h16'/%3E%3Cpath d='M144 162h18v13h-10l-5 5v-5h-3z'/%3E%3Cpath d='M178 162v14M172 168h12'/%3E%3C/svg%3E");
+    background-size: 190px 190px;
+    /* Ruang di atas gelembung sengaja disisakan: percakapan yang baru berisi
+       satu pesan memang menyisakan layar kosong, dan itu yang bikin kartunya
+       terbaca sebagai jendela obrolan, bukan sebagai kotak kutipan. */
+    min-height: 148px;
+    padding: 18px 16px 22px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  /* Gelembung pesan keluar: rata kanan, hijau muda, sudut kanan atas dipangkas
+     jadi ekor. Rata kanan itu bukan selera, itu penanda arah: pesannya dikirim
+     oleh pengunjung, bukan diterima. */
+  .cl-bubble {
+    position: relative;
+    margin: 0;
+    max-width: 88%;
+    background: #d9fdd3;
+    border-radius: 16px 4px 16px 16px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: #111b21;
+    box-shadow: 0 1px 1px rgba(11, 20, 26, 0.13);
+  }
+
+  .cl-bar { background: #fff; padding: 14px 16px; }
+  .cl-send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    background: #25d366;
+    color: #0b3d24;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 22px;
+    border-radius: 999px;
+    transition: background-color 0.18s ease;
+  }
+  .cl-send:hover { background: #1eb455; color: #06301b; }
+  .cl-send svg { width: 18px; height: 18px; flex: none; fill: currentColor; }
+
+  .cl-chat-note { margin: 12px 0 0; font-size: 12.5px; line-height: 1.55; color: #505d6f; }
+
+  /* Slot kata berganti isi saat pilihan ditekan; transisinya dijaga tipis supaya
+     tidak jadi pertunjukan. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cl-slot { transition: color 0.18s ease; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cl-pick, .cl-send, .cl-pick-mark, .cl-pick-mark::after { transition: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-picker]');
+
+  if (root) {
+    const slot = root.querySelector<HTMLElement>('[data-slot]');
+    const bubble = root.querySelector<HTMLElement>('[data-bubble]');
+    const send = root.querySelector<HTMLAnchorElement>('[data-send]');
+    const base = root.dataset.wa || '';
+    const inputs = root.querySelectorAll<HTMLInputElement>('.cl-pick-input');
+
+    // Dipasang di event `change`, bukan `click`, supaya pemilihan lewat panah
+    // keyboard ikut tertangkap, bukan cuma lewat tetikus.
+    inputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        inputs.forEach((other) => {
+          other.closest('.cl-pick')?.classList.toggle('is-on', other === input);
+        });
+
+        const word = input.dataset.word || '';
+        const msg = input.dataset.msg || '';
+        if (slot) slot.textContent = word;
+        if (bubble) bubble.textContent = msg;
+        if (send) {
+          send.href = base.replace('__MSG__', encodeURIComponent(msg));
+          send.dataset.trackPick = input.dataset.pick || '';
+        }
+      });
+    });
+  }
+</script>

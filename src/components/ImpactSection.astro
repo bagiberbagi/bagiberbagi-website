@@ -1,92 +1,437 @@
 ---
-import Icon from './Icon.astro';
+// Dampak, dibingkai sebagai efek riak: satu kontribusi memancar jadi rangkaian
+// manfaat yang bergerak lewat banyak orang. Visual riak dulu, angka belakangan,
+// supaya yang dibaca pertama adalah ceritanya.
+//
+// Semua angka di seksi ini berasal dari agregasi jejak (getGlobalImpact), bukan
+// dari daftar yang ditulis tangan. Tidak ada angka yang dikarang: seksi ini
+// hanya menampilkan metrik yang memang tercatat di catatan penyaluran.
+//
+// Urutan angkanya sengaja mengikuti urutan simpul di riak, supaya deretan angka
+// membaca ulang cerita yang baru saja digambar, bukan melaporkan hal lain. Dua
+// metrik ekosistem (mitra UMKM dan relawan) belum ada di data hari ini; begitu
+// editor mengisinya di Keystatic dengan label yang sama, keduanya muncul sendiri
+// di urutan yang benar tanpa file ini perlu disentuh.
 import Container from './Container.astro';
-import { IMPACTS } from '../consts';
-import { getEntry } from 'astro:content';
-import { buildWaLink, formatMetric } from '../lib/format';
 import { getGlobalImpact } from '../lib/impact';
+import { formatMetric } from '../lib/format';
 
-const site = await getEntry('settings', 'site');
-if (!site) throw new Error('settings/site entry not found');
-const waLaporanLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin melihat laporan penyaluran Jumat Berkah.');
-
-// Angka real dari agregasi jejak, untuk mengikat narasi "dampak berputar" ke
-// data. Metrik utama = metrics[0] (urutan kemunculan pertama).
 const impact = await getGlobalImpact();
-const topMetric = impact.metrics[0];
-const hasFigures = impact.jejakCount > 0 && Boolean(topMetric);
+const kegiatan = impact.jejakCount.toLocaleString('id-ID');
+
+type Stage = { label: string; x: number; y: number; svg: string };
+
+const STAGES: Stage[] = [
+  { label: 'Makanan Tersalurkan', x: 50, y: 13, svg: '<path d="M4 12h16a8 8 0 0 1-8 8 8 8 0 0 1-8-8Z"></path><path d="M12 3v3M8 4v2M16 4v2"></path>' },
+  { label: 'UMKM Dapat Pesanan', x: 85, y: 38.5, svg: '<path d="M4 9 5.4 4.5h13.2L20 9"></path><path d="M5 9v10.5h14V9"></path><path d="M9.5 19.5V14h5v5.5"></path>' },
+  { label: 'Relawan Bergerak', x: 72, y: 80, svg: '<circle cx="9" cy="8" r="3"></circle><path d="M3.5 20c0-3.2 2.7-5 5.5-5s5.5 1.8 5.5 5"></path><circle cx="17.5" cy="9" r="2.3"></circle><path d="M16 14.2c2.6.4 4.5 2.1 4.5 5.3"></path>' },
+  { label: 'Penerima Terbantu', x: 28, y: 80, svg: '<circle cx="12" cy="7" r="3.2"></circle><path d="M5.5 21c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"></path>' },
+  { label: 'Komunitas Bertumbuh', x: 15, y: 38.5, svg: '<path d="M12 22V11"></path><path d="M12 11C12 7 9 5 5 5c0 4 3 6 7 6Z"></path><path d="M12 13c0-3 2.5-5 6-5 0 3.5-2.5 5-6 5Z"></path>' },
+];
+
+// Strip perjalanan: alur cerita tipis yang menemani visual riak, bukan
+// menggantikannya.
+const JOURNEY = [
+  { n: '1', t: 'Kontribusi', d: 'Kamu memutuskan berbagi.' },
+  { n: '2', t: 'Ekosistem bergerak', d: 'UMKM, relawan, dan komunitas ikut jalan.' },
+  { n: '3', t: 'Perubahan nyata', d: 'Paket sampai ke tangan yang tepat.' },
+  { n: '4', t: 'Dampak berkelanjutan', d: 'Kepercayaan dan komunitas tumbuh.' },
+];
+
+// Penjelas per metrik: tanpa ini angka besar berdiri sendiri tanpa arti. Label
+// yang belum dikenali jatuh ke kalimat umum, jadi metrik baru dari Keystatic
+// tetap tampil wajar tanpa perlu menyentuh file ini.
+const DESC: Record<string, string> = {
+  porsi: 'Porsi makanan yang sampai ke tangan penerima',
+  'mitra umkm': 'Dapur usaha kecil yang menerima pesanan masak',
+  relawan: 'Orang yang turun mengantar paket ke lokasi',
+  penerima: 'Orang yang menerima paket langsung di lokasi',
+  'donasi tersalur': 'Dana donatur yang sudah dibelanjakan dan dilaporkan',
+};
+
+// Urutan tampil, mengikuti urutan simpul di riak: makanan tersalurkan, UMKM
+// dapat pesanan, relawan bergerak, penerima terbantu, dana yang berputar.
+// Label di luar daftar ini tetap tampil, tapi mengekor di belakang.
+const ORDER = ['porsi', 'mitra umkm', 'relawan', 'penerima', 'donasi tersalur'];
+const rank = (label: string): number => {
+  const i = ORDER.indexOf(label.trim().toLowerCase());
+  return i === -1 ? ORDER.length : i;
+};
+
+// Empat angka sudah cukup untuk satu baris yang terbaca; lebih dari itu deretan
+// angka mulai jadi dasbor, dan itu justru yang dihindari seksi ini.
+const MAX_STATS = 4;
+
+// Kata kerjanya diputar supaya tiga kalimat berurutan tidak terbaca seperti
+// kalimat yang sama disalin tiga kali.
+const TAILS = ['dihitung dari', 'dihimpun dari', 'terkumpul dari'];
+
+const isRupiah = (label: string): boolean => /dana|rupiah|donasi/i.test(label);
+
+const stats = [...impact.metrics]
+  .sort((a, b) => rank(a.label) - rank(b.label))
+  .slice(0, MAX_STATS)
+  .map((metric, i: number) => ({
+    label: metric.label,
+    value: metric.value,
+    // Nilai final dirender di server; count-up baru menurunkannya ke 0 kalau
+    // animasi memang jalan.
+    initial: formatMetric(metric),
+    prefix: isRupiah(metric.label) ? 'Rp ' : '',
+    note: `${DESC[metric.label.trim().toLowerCase()] ?? `Total ${metric.label} yang tercatat`}, ${TAILS[i % TAILS.length]} ${kegiatan} kegiatan penyaluran.`,
+  }));
+
+const hasStats = impact.jejakCount > 0 && stats.length > 0;
 ---
 
-<section id="dampak" class="section bg-brand-blue text-white scroll-mt-24">
-  <Container width="wide">
-    <div class="text-center max-w-text mx-auto mb-12">
-      <div class="eyebrow text-brand-yellow">Dampak Berputar</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Satu paket, dampak yang berputar.</h2>
-      <p class="text-base leading-relaxed text-white/85">
-        Donasi kamu tidak berhenti di satu tangan. Tiap paket Jumat Berkah menggerakkan rantai sosial-ekonomi di lingkungan tempat ia disalurkan.
+<section id="dampak" class="impact py-24 md:py-32 bg-brand-blue text-white scroll-mt-24">
+  <div aria-hidden="true" class="imp-glow imp-glow-top"></div>
+  <div aria-hidden="true" class="imp-glow imp-glow-bottom"></div>
+
+  <Container width="wide" class="relative">
+    <header class="imp-head">
+      <p class="eyebrow text-brand-yellow" data-fade>Dampak yang berputar</p>
+      <h2 class="imp-h2" data-fade>Satu kontribusi, banyak orang yang ikut bergerak.</h2>
+      <p class="imp-lead" data-fade>
+        Donasi tidak berhenti di satu tangan. Ia berpindah ke dapur UMKM, ke relawan yang mengantar, sampai ke keluarga yang menerimanya.
       </p>
-      {hasFigures && (
-        <p class="mt-5 text-body-sm text-white/80">
-          Sejauh ini: <strong class="text-brand-yellow font-bold">{impact.jejakCount.toLocaleString('id-ID')} kali</strong> kegiatan, <strong class="text-brand-yellow font-bold">{formatMetric(topMetric)} {topMetric.label}</strong> tersalur.
-        </p>
-      )}
-      <a href="/jejak/" data-track="jejak_click" data-track-source="impact_intro" class="inline-flex items-center gap-1.5 mt-5 rounded-full bg-white/10 border border-white/20 px-4 py-2 text-body-sm font-bold text-white hover:bg-white/15 hover:gap-2.5 transition-[gap,background-color]">
-        Lihat Jejak &amp; Dampak
-        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
-      </a>
-    </div>
+    </header>
 
-    {/* Cascade: satu donasi (seed) memancar ke empat dampak. Seed diberi halo
-        (ring+glow), konektor berbentuk kipas 1→4 menegaskan "berganda", dan tiap
-        dampak jadi kartu kaca dengan chip ikon kuning — benang warna dari seed
-        menyatukan section. */}
-    <div class="flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-7">
-      <div class="flex-none mx-auto lg:mx-0 w-32 h-32 md:w-36 md:h-36 rounded-full bg-brand-yellow text-ink flex flex-col items-center justify-center text-center ring-8 ring-brand-yellow/15 shadow-[0_24px_60px_-20px_rgba(255,217,0,0.55)]">
-        <span class="text-eyebrow font-bold uppercase tracking-wide text-ink/55">mulai</span>
-        <span class="text-title font-bold mt-0.5">Satu<br />Donasi</span>
-      </div>
-
-      {/* Konektor: kipas 1→4 di desktop, panah turun di mobile. */}
-      <div aria-hidden="true" class="flex-none self-center text-brand-yellow/55">
-        <svg class="hidden lg:block" width="42" height="152" viewBox="0 0 42 152" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <circle cx="4" cy="76" r="3.2" fill="currentColor" stroke="none"></circle>
-          <path d="M4 76h11"></path>
-          <path d="M15 76C28 76 27 22 40 22"></path>
-          <path d="M15 76C28 76 28 58 40 58"></path>
-          <path d="M15 76C28 76 28 94 40 94"></path>
-          <path d="M15 76C28 76 27 130 40 130"></path>
-        </svg>
-        <svg class="lg:hidden mx-auto" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>
-      </div>
-
-      <div class="flex-1 grid gap-4 sm:grid-cols-2">
-        {IMPACTS.map((im) => (
-          <div class="flex gap-4 rounded-2xl bg-white/[0.06] border border-white/10 p-4 md:p-5 transition-colors hover:bg-white/[0.1]" data-fade="1">
-            <span class="w-11 h-11 rounded-xl bg-brand-yellow/15 flex items-center justify-center flex-none">
-              <Icon name={im.icon} color="#FFD900" size={20} />
-            </span>
-            <div>
-              <h3 class="text-title-sm font-semibold mb-1">{im.title}</h3>
-              <p class="text-body-sm leading-snug text-white/75">{im.desc}</p>
-            </div>
+    <div class="imp-journey">
+      {JOURNEY.map((s) => (
+        <div class="imp-step" data-fade>
+          <span class="imp-num flex-none">{s.n}</span>
+          <div>
+            <span class="imp-t">{s.t}</span>
+            <span class="imp-d">{s.d}</span>
           </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Visual riak: inti kuning memancar ke lima simpul putih */}
+    <div class="ripple" data-ripple>
+      <div class="rip-waves" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+
+      <svg class="rip-svg" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+        {STAGES.map((s, i: number) => (
+          <line class="rip-line" x1="50" y1="50" x2={s.x} y2={s.y} style={`--i:${i}`} />
         ))}
+      </svg>
+
+      {STAGES.map((s, i: number) => (
+        <div class="rip-node" style={`left:${s.x}%;top:${s.y}%;--i:${i}`}>
+          <span class="rip-node-ic">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" set:html={s.svg} />
+          </span>
+          <span class="rip-node-label">{s.label}</span>
+        </div>
+      ))}
+
+      <div class="rip-core">
+        <span class="rip-core-label">Kontribusi Kamu</span>
       </div>
     </div>
 
-    {/* Penutup: rule kuning pendek terpusat (aksen dekoratif, bukan garis
-        full-width yang motong) + kalimat intisari. */}
-    <div class="mt-12 text-center">
-      <div class="w-11 h-0.75 rounded bg-brand-yellow/85 mx-auto mb-4"></div>
-      <p class="max-w-text mx-auto text-body-sm leading-relaxed text-white/90">
-        <strong class="text-white">Ekonomi kebaikan yang berputar lokal.</strong> Dana donatur dibelanjakan ke UMKM setempat, dikerjakan warga setempat, dinikmati mustahik setempat. Berkahnya tinggal di lingkungan itu.
+    {hasStats && (
+      <div class="imp-stats-wrap">
+        <p class="label imp-stats-title" data-fade>Yang sudah tercatat sejauh ini</p>
+        <div class="imp-stats" data-stats>
+          {stats.map((st) => (
+            <div class="imp-stat" data-fade>
+              <div class="imp-value">
+                <span data-count-to={st.value} data-prefix={st.prefix}>{st.initial}</span>
+              </div>
+              <div class="imp-label">{st.label}</div>
+              <p class="imp-note">{st.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <div class="imp-foot" data-fade>
+      <p class="imp-foot-text">
+        Setiap angka di atas mewakili orang yang nyata. Satu kontribusi memberi makan seseorang hari itu, menghidupkan dapur usaha kecil, dan menggerakkan relawan di lingkungan yang sama.
       </p>
-      {/* Kaitan tipis ke halaman laporan, bukan blok CTA. Masih dalam konteks
-          Dampak Berputar. Target sementara WA sampai halaman laporan ada. */}
-      <a href={waLaporanLink} target="_blank" rel="noopener" data-track="laporan_click" data-track-source="impact_penutup" class="inline-flex items-center gap-1.5 mt-5 text-brand-yellow font-bold text-body-sm hover:gap-2.5 transition-[gap]">
-        Lihat laporan penyaluran
-        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+      <a href="/jejak/" data-track="jejak_click" data-track-source="impact_penutup" class="imp-foot-link">
+        Lihat jejak dan dampak lengkap
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
       </a>
     </div>
   </Container>
 </section>
+
+<style>
+  .impact { position: relative; overflow: hidden; }
+
+  /* Dua cahaya lembut supaya bidang biru tidak terbaca rata */
+  .imp-glow { position: absolute; pointer-events: none; }
+  .imp-glow-top {
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 46rem; height: 30rem; opacity: 0.8;
+    background: radial-gradient(closest-side, rgba(255, 217, 0, 0.1), transparent);
+  }
+  .imp-glow-bottom {
+    bottom: 0; right: 18%;
+    width: 34rem; height: 34rem; opacity: 0.7;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.08), transparent);
+  }
+
+  /* ===== Kepala seksi =====
+     Ukuran dan lebar sama persis dengan seksi beranda lain supaya tepi kirinya
+     lurus. Warnanya saja yang menyesuaikan bidang biru: teks gelap tak terbaca
+     di sini. */
+  .imp-head { max-width: 46rem; margin: 0 0 44px; }
+  .imp-h2 {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-wrap: balance;
+    color: #fff;
+    margin: 0;
+  }
+  .imp-lead {
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 58ch;
+    margin: 18px 0 0;
+    text-wrap: pretty;
+  }
+
+  /* ===== Strip perjalanan ===== */
+  .imp-journey {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 26px;
+    margin-bottom: 56px;
+  }
+  @media (min-width: 900px) { .imp-journey { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  .imp-step { display: flex; align-items: flex-start; gap: 10px; }
+  .imp-num {
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    padding-top: 2px;
+    color: rgba(255, 217, 0, 0.85);
+    font-variant-numeric: tabular-nums;
+  }
+  .imp-t { display: block; font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.92); }
+  .imp-d { display: block; font-size: 12.5px; line-height: 1.4; color: rgba(255, 255, 255, 0.55); margin-top: 2px; }
+
+  /* ===== Visual riak ===== */
+  .ripple { position: relative; width: 100%; max-width: 500px; aspect-ratio: 1; margin: 0 auto; }
+
+  .rip-waves span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 30%;
+    height: 30%;
+    margin: -15% 0 0 -15%;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .rip-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .rip-line {
+    stroke: rgba(255, 255, 255, 0.5);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 46;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .rip-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100px;
+  }
+  .rip-node-ic {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.5);
+    color: #1d46b9;
+  }
+  .rip-node-label {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: #fff;
+  }
+
+  .rip-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    width: 134px;
+    height: 134px;
+    padding: 0 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd900, #ffe873);
+    box-shadow: 0 18px 44px -14px rgba(255, 217, 0, 0.65), 0 0 0 8px rgba(255, 217, 0, 0.12);
+  }
+  .rip-core-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: #1a2233;
+    text-align: center;
+  }
+
+  /* ===== Angka =====
+     Kolomnya auto-fit karena jumlah metrik ikut isi jejak, bukan angka tetap. */
+  .imp-stats-wrap { margin-top: 64px; }
+  /* Ukuran dan bentuk hurufnya dari class .label; di sini cuma warna terang
+     karena label ini berdiri di bidang biru, plus jaraknya ke deretan angka. */
+  .imp-stats-title {
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 0 22px;
+  }
+  .imp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 34px 30px;
+  }
+  .imp-value {
+    font-size: clamp(30px, 3.6vw, 44px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #ffd900;
+    font-variant-numeric: tabular-nums;
+  }
+  .imp-label {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: capitalize;
+    color: #fff;
+    margin-top: 10px;
+  }
+  .imp-note {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 32ch;
+    margin: 6px 0 0;
+  }
+
+  /* ===== Penutup ===== */
+  .imp-foot {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .imp-foot-text {
+    max-width: 52rem;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.88);
+    text-wrap: pretty;
+  }
+  .imp-foot-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #ffd900;
+    transition: gap 0.18s ease;
+  }
+  .imp-foot-link:hover { gap: 12px; }
+  .imp-foot-link svg { width: 16px; height: 16px; }
+
+  /* ===== Gerak =====
+     Riak mengembang terus, garis dan simpul digambar sekali saat masuk viewport.
+     Tanpa gerak, semuanya langsung tampil utuh. */
+  @media (prefers-reduced-motion: no-preference) {
+    .rip-waves span {
+      opacity: 0;
+      animation: ripWave 4s ease-out infinite;
+    }
+    .rip-waves span:nth-child(2) { animation-delay: 1.3s; }
+    .rip-waves span:nth-child(3) { animation-delay: 2.6s; }
+
+    .rip-line { stroke-dashoffset: 46; }
+    .rip-node { opacity: 0; }
+    .rip-core { opacity: 0; }
+
+    .ripple.in .rip-line {
+      animation: ripDraw 0.6s ease both;
+      animation-delay: calc(0.3s + var(--i) * 0.13s);
+    }
+    .ripple.in .rip-node {
+      animation: ripPop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(0.45s + var(--i) * 0.13s);
+    }
+    .ripple.in .rip-core {
+      animation: ripCore 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+  }
+
+  @keyframes ripWave {
+    0% { transform: scale(0.35); opacity: 0.55; }
+    100% { transform: scale(3.2); opacity: 0; }
+  }
+  @keyframes ripDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes ripPop {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.82); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+  @keyframes ripCore {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+</style>
+
+<script>
+  import '../scripts/count-up.js';
+
+  // Riak digambar saat visualnya masuk viewport, bukan saat halaman dimuat,
+  // supaya gerakannya benar-benar terlihat.
+  const ripple = document.querySelector<HTMLElement>('[data-ripple]');
+  if (ripple) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      ripple.classList.add('in');
+    } else {
+      const io = new IntersectionObserver(
+        (entries: IntersectionObserverEntry[]) => {
+          entries.forEach((entry: IntersectionObserverEntry) => {
+            if (entry.isIntersecting) {
+              ripple.classList.add('in');
+              io.disconnect();
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      io.observe(ripple);
+    }
+  }
+</script>

@@ -15,11 +15,11 @@ export default defineConfig({
   site: 'https://www.bagiberbagi.id',
   output: 'static',
 
-  // `/program` (tanpa slug) tak punya index — program dibrowse lewat halaman
-  // pintu + beranda, jadi URL telanjang diarahkan ke #program. Path persis saja,
-  // tidak mengganggu route dinamis `/program/[program]/`.
+  // `/program` (tanpa slug) tak punya index. Program dibrowse lewat halaman
+  // pintu, jadi URL telanjang diarahkan ke peta lima pintu di beranda. Path
+  // persis saja, tidak mengganggu route dinamis `/program/[program]/`.
   redirects: {
-    '/program': '/#program',
+    '/program': '/#pintu',
   },
 
   // Keystatic Cloud's local-dev auth flow redirects to 127.0.0.1 specifically

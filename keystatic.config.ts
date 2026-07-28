@@ -322,6 +322,33 @@ export default config({
           },
           { label: 'Jadwal Program (hitung mundur hero)' }
         ),
+        // Panel "Agenda Berikutnya" di kartu hero. Kosongkan Lokasi untuk
+        // menyembunyikan seluruh panelnya; kosongkan Target Porsi untuk
+        // menyembunyikan bar progresnya saja. Tanggalnya tidak diisi manual,
+        // dihitung sendiri dari Jadwal Program di atas.
+        nextAgenda: fields.object(
+          {
+            location: fields.text({
+              label: 'Lokasi (kosongkan untuk menyembunyikan panel)',
+              description: 'Contoh: Kampung Melayu, Jakarta Timur',
+            }),
+            targetPorsi: fields.integer({
+              label: 'Target Porsi',
+              description: 'Isi 0 untuk menyembunyikan bar progres.',
+              defaultValue: 0,
+            }),
+            collectedPorsi: fields.integer({
+              label: 'Porsi Terkumpul',
+              description: 'Perbarui menjelang hari H. Tidak boleh melebihi target.',
+              defaultValue: 0,
+            }),
+            cutoff: fields.text({
+              label: 'Batas Donasi',
+              description: 'Ditulis apa adanya, contoh: Kamis 21.00. Kosongkan kalau tidak ada batas.',
+            }),
+          },
+          { label: 'Agenda Berikutnya (kartu hero)' }
+        ),
       },
     }),
     // Switchboard analytics: tiap alat = centang + ID. BaseLayout menyuntik
@@ -574,12 +601,17 @@ export default config({
         summary: fields.text({ label: 'Ringkasan', multiline: true }),
         metrics: fields.array(
           fields.object({
-            label: fields.text({ label: 'Label', description: 'Contoh: porsi, penerima, relawan.' }),
+            label: fields.text({
+              label: 'Label',
+              description:
+                'Pakai salah satu label baku ini supaya angkanya ikut tampil di seksi Dampak beranda: porsi, mitra umkm, relawan, penerima, donasi tersalur. Label lain tetap tersimpan dan ikut dijumlah, hanya urutannya mengekor di belakang.',
+            }),
             value: fields.integer({ label: 'Nilai' }),
           }),
           {
             label: 'Metrik',
-            description: 'Angka hasil. Label senada digabung saat agregasi (huruf besar/kecil diabaikan).',
+            description:
+              'Angka hasil penyaluran ini. Label senada digabung saat agregasi (huruf besar/kecil diabaikan), jadi tulis persis sama antar entri. Isi "mitra umkm" dan "relawan" juga, bukan cuma porsi dan penerima, karena dua angka itu yang membuktikan cerita ekosistem di beranda.',
             itemLabel: (props) =>
               props.fields.label.value
                 ? `${props.fields.label.value}: ${props.fields.value.value ?? ''}`

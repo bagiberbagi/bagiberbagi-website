@@ -46,6 +46,18 @@ const settings = defineCollection({
       weekday: z.string(),
       time: z.string(),
     }),
+    // Panel "Agenda Berikutnya" di kartu hero. Semua opsional supaya beranda
+    // tetap benar saat editor belum mengisinya: location kosong menyembunyikan
+    // panel, targetPorsi 0 menyembunyikan bar progres. Tanggal tidak disimpan
+    // di sini, dihitung dari `schedule` di klien supaya tidak basi.
+    nextAgenda: z
+      .object({
+        location: z.string().default(''),
+        targetPorsi: z.number().default(0),
+        collectedPorsi: z.number().default(0),
+        cutoff: z.string().default(''),
+      })
+      .default({ location: '', targetPorsi: 0, collectedPorsi: 0, cutoff: '' }),
   }),
 });
 

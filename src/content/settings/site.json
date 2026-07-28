@@ -22,5 +22,11 @@
   "schedule": {
     "weekday": "5",
     "time": "06:00"
+  },
+  "nextAgenda": {
+    "location": "Pasar Minggu, Jakarta Selatan",
+    "targetPorsi": 100,
+    "collectedPorsi": 0,
+    "cutoff": "Kamis 21.00"
   }
 }

@@ -1,0 +1,1782 @@
+---
+/**
+ * SINTESIS S2 halaman pintu: "Rel Tenang".
+ *
+ * Dasarnya V5 (Tipografi Lapang). Pertanyaan yang harus dijawab desain ini: rel
+ * itu hidup sebagai APA di halaman yang lapang.
+ *
+ * Jawabannya: rel adalah KOLOM MARGIN, satu bidang `--cat-tint` bersudut besar,
+ * tanpa border dan tanpa shadow, kontras rendah, dan sengaja tidak melawan tipe
+ * besar di kanan. Yang berani di dalamnya cuma satu, yaitu angka dampak: 40px,
+ * warna `--cat-deep`. Fotonya duduk DI DALAM rel, satu potret tinggi di bawah
+ * tombol, jadi rel punya bobot visual tanpa harus ramai. Pintu tanpa foto bikin
+ * rel cukup jadi lebih pendek, bukan menyisakan kotak menunggu gambar.
+ *
+ * Pembagian tugasnya:
+ *
+ *   HERO (lebar penuh)   memikul judul 56px, jadi kelapangan V5 tetap memimpin.
+ *   REL (kolom kiri)     identitas pintu + status + angka yang tercatat + satu
+ *                        jalan bertindak + satu potret di kakinya.
+ *   ALIRAN (kolom kanan) seluruh isi halaman sebagai baris bergaris tipis.
+ *
+ * Keputusan yang perlu dicatat supaya tidak "diperbaiki" tanpa sengaja:
+ *
+ * 1. REL TIDAK DIPAKU (tanpa `position: sticky`), dan ini koreksi paling besar
+ *    dari revisi sebelumnya. Alasannya aritmetika, bukan selera: begitu foto
+ *    potret masuk ke kaki rel, tinggi rel pintu makanan di kolom 320px lewat dari
+ *    1000px, sementara viewport laptop 1280x800 cuma sekitar 700px. Rel yang
+ *    dipaku di `top: 90px` dan lebih tinggi dari layar berarti ekornya TIDAK
+ *    PERNAH bisa dicapai: tombol WhatsApp-nya, tautan rekam jejaknya, dan
+ *    caption fotonya permanen di luar layar sepanjang gulir. `overflow-y: auto`
+ *    memperbaiki jangkauan tapi menukarnya dengan permukaan gulir kedua yang
+ *    mematikan roda mouse (cacat V3). Jadi dua-duanya dibuang, dan rel jadi blok
+ *    tenang di puncak kolom kiri. "Duduk diam" di arah desain dibaca sebagai
+ *    kontras rendah dan tidak berisik, bukan sebagai dipaku ke viewport; foto
+ *    tinggi di dalam rel memang mustahil hidup di elemen yang harus muat layar.
+ *    Bonusnya, angka dampak tidak lagi ikut ke mana pun pembaca menggulir, dan
+ *    itu yang dilarang bagian Anti-patterns (bacaan dashboard) di
+ *    DESIGN_PRINCIPLES.
+ *
+ * 2. SEKSI DAMPAK DIBUANG DARI KOLOM KANAN, angkanya pindah seluruhnya ke rel.
+ *    Kalau dua-duanya ada, halaman menyebut angka yang sama dua kali. Di kolom
+ *    264px, angka besar dengan labelnya tepat di bawah justru padat, sementara
+ *    `.pv5-metric` V5 membentangkan satu angka dan satu label di dua tepi
+ *    container 1280px dan menyisakan lebih dari 800px kosong di tengah baris.
+ *
+ * 3. BLOK ANGKA DIBUKA KALIMAT, BUKAN ANGKA. DESIGN_PRINCIPLES bagian Numbers
+ *    and metrics melarang seksi dampak dibuka angka, dan menuntut tiap angka
+ *    bawa satu kalimat konteks berisi sumber dan berapa kegiatan yang dihitung.
+ *    Jadi urutan rel: kalimat status (selalu ada, untuk kelima pintu), baru
+ *    angka, baru catatan sumbernya yang menyebut jumlah kegiatan dan jumlah
+ *    program. Kalimat status itu dulu cuma dirender di pintu kosong, jadi justru
+ *    pintu yang punya data tidak pernah menjawab "pintu ini sedang apa".
+ *
+ * 4. TOMBOL REL MENGIKUTI JANJI YANG BARU DIUCAPKAN DI ATASNYA. Kalau ada
+ *    program yang benar-benar berjalan, tombolnya `contactWa` ("saya ingin
+ *    berkontribusi"). Kalau belum ada, kalimat statusnya menjanjikan kabar lewat
+ *    WhatsApp, jadi tombolnya `notifyWa` dan `data-track="notify_wa"`. Versi
+ *    sebelumnya memakai `contactWa` di dua tempat yang menetap di layar,
+ *    sehingga di 4 dari 5 halaman pintu satu-satunya jalan yang tersedia adalah
+ *    jalan yang tidak dijanjikan, dan analytics mencatat niat "kabari saya"
+ *    sebagai kontak. Jalan menawarkan sumber daya tidak hilang: ia pindah ke
+ *    kaki blok Alur, tempat kalimatnya memang mengundang itu.
+ *
+ * 5. TIDAK ADA STRIP LENGKET DI MOBILE. Strip versi sebelumnya baru mulai
+ *    menempel sesudah hero, pita foto, dan seluruh panel rel lewat dari layar,
+ *    kira-kira 1800px gulir, lalu hilang lagi di seksi penutup. Janji "identitas
+ *    dan jalan bertindak tidak pernah hilang dari layar" tidak pernah ditepati,
+ *    dan ia juga menabrak anchor `#program`. Sekarang satu perilaku yang sama di
+ *    semua lebar: tidak ada yang dipaku, semuanya bisa digulir dan dijangkau.
+ *
+ * 6. KOLOM KANAN MEMAKAI CONTAINER QUERY SAMPAI KE UKURAN HURUFNYA. Layout
+ *    dua/tiga kolom bertanya pada `@container flow`, DAN semua clamp tipe di
+ *    dalamnya memakai satuan `cqi`, bukan `vw`. Ini yang sebelumnya cuma
+ *    setengah jalan: di viewport 900px kolom kanan cuma 444px, sementara
+ *    `clamp(30px, 4.4vw, 40px)` sudah menyentuh 39,6px, jadi judul sepanjang
+ *    "Program di pintu Berbagi Makanan" pecah jadi empat baris tepat di pita
+ *    laptop yang jadi alasan container query dipakai.
+ *
+ * 7. RITME BLOK TIDAK SERAGAM. Enam blok dengan rumus kepala identik di satu
+ *    bidang putih itu persis yang dilarang bagian Rhythm. Jadi ada dua bobot
+ *    kepala (`.ps2-head` 40px untuk blok utama, `.ps2-head-sm` 30px untuk blok
+ *    penutup), dan blok Alur duduk di atas bidang hangat `#F7F6F3` bersudut
+ *    besar. Bidang hangat itu bahasa V5 yang dipertahankan, dan ia melawan
+ *    bidang tint rel di seberangnya tanpa memperkenalkan kartu baru.
+ *
+ * 8. FOTO TIDAK PERNAH JADI SLOT YANG BISA KOSONG. Peta `PINTU_PHOTOS` cuma
+ *    berisi `food`, dan `Program.image` memang selalu null hari ini, jadi field
+ *    itu tidak dipakai di mana pun. Pintu tanpa entri peta merender jalur tanpa
+ *    foto: rel jadi lebih pendek dan kakinya diisi watermark ikon pintu, bukan
+ *    kotak abu penambal.
+ *
+ * 9. SEMUA CABANG DIHITUNG DARI DATA, BUKAN DARI PROP `hasImpact`. Kedua
+ *    pemanggil mendefinisikan `hasImpact = jejakCount > 0 && metrics.length > 0`,
+ *    jadi pintu yang sudah punya kegiatan terdokumentasi tapi metriknya kosong
+ *    diperlakukan persis seperti pintu yang belum berjalan, dan seluruh tautan ke
+ *    `/jejak/` hilang padahal kegiatannya ada. Di sini `hasJejak` cukup
+ *    `jejakCount > 0`, dan angka besarnya jatuh ke jumlah kegiatan kalau daftar
+ *    metriknya kosong. Prop `hasImpact` sengaja tetap ada di interface supaya
+ *    pemanggil yang sudah ada tidak perlu diubah, tapi tidak dipakai.
+ *
+ * 10. Angka tulis tangan di `content.stats` dan `content.env.stats` tetap TIDAK
+ *    dirender, sama seperti V5 dan V3. Semua angka di halaman ini datang dari
+ *    `getPintuImpact`. `env.headline` dipakai karena itu kalimat, bukan angka,
+ *    dan cuma sebagai lead blok yang badannya benar-benar ada.
+ *
+ * Pertukaran yang dibayar, dan tidak disembunyikan:
+ *
+ * - Tepi kiri V5 tidak lagi satu garis lurus untuk SEMUA teks. Rel memang mulai
+ *   tepat di tepi container, jadi tepi kiri halaman tetap satu garis dari hero
+ *   sampai penutup, tapi seluruh judul blok pindah ke tepi kedua 376px di
+ *   dalamnya. Itu harga dua kolom, dan tier `wide` (1280) dipertahankan justru
+ *   supaya kolom kanan masih 824px di layar besar, bukan supaya tepinya rata.
+ * - Rel bersudut 28-32px berisi bidang tint memang berbentuk kartu, sementara V5
+ *   nol kartu. Bentuk itu dikunci arah desain (bidang tint, sudut membulat
+ *   besar), jadi yang bisa dijaga cuma materialnya: tidak ada border, tidak ada
+ *   shadow, tidak ada latar putih, dan tidak ada kartu kedua di halaman ini.
+ *
+ * Ukuran huruf semuanya nilai token tailwind.config.mjs
+ * (11/12/13/14/16/18/22/26/30/34/40/56); clamp boleh asal kedua ujungnya token,
+ * dan 56px plafon keras. Lebar: tier `wide` (1280) seluruh halaman, menyimpang
+ * sengaja dari default `standard` halaman non-beranda, sama seperti V5.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Container from '../Container.astro';
+import Icon from '../Icon.astro';
+import type { Pintu, PintuId, CategoryContent } from '../../consts';
+import type { Program } from '../../lib/programs';
+import type { Impact as PintuImpact } from '../../lib/impact';
+import { formatMetric } from '../../lib/format';
+import heroJumatBerkah from '../../assets/images/hero-jumat-berkah.png';
+import programPromo from '../../assets/images/program-promo.png';
+import jumatBerkahDistribusi from '../../assets/images/jumat-berkah-distribusi.png';
+
+interface Props {
+  pintu: Pintu;
+  content: CategoryContent | undefined;
+  programs: Program[];
+  active: Program[];
+  upcoming: Program[];
+  otherPintu: Pintu[];
+  impact: PintuImpact;
+  /**
+   * Diterima supaya pemanggil yang sudah ada tidak perlu diubah, tapi SENGAJA
+   * tidak dipakai. Lihat catatan nomor 9 di kepala file: definisinya di
+   * pemanggil menuntut `metrics.length > 0`, jadi pintu yang punya kegiatan
+   * tanpa metrik ikut diperlakukan seperti pintu kosong. Cabang di file ini
+   * dihitung dari `impact` langsung.
+   */
+  hasImpact: boolean;
+  contactWa: string;
+  notifyWa: string;
+  jejakHref: string;
+}
+
+const {
+  pintu,
+  content,
+  active,
+  upcoming,
+  otherPintu,
+  impact,
+  contactWa,
+  notifyWa,
+  jejakHref,
+} = Astro.props;
+
+/**
+ * Foto per pintu. Hanya makanan yang punya, dan itu memang keadaan repo hari
+ * ini: seluruh dokumentasi lapangan bertema penyaluran makanan siap saji. Foto
+ * itu sengaja tidak dipinjamkan ke pintu lain, isinya jelas terbaca sebagai
+ * pembagian nasi kotak. Pintu tanpa entri di peta ini merender jalur tanpa foto.
+ *
+ * Tiga peran, tiga foto berbeda, supaya satu gambar tidak muncul dua kali:
+ *   lead    pita lebar penuh sesudah hero (momen)
+ *   rail    potret di kaki rel, di bawah tombol (crop tinggi, satu serah terima)
+ *   program foto baris program aktif pertama
+ */
+interface PintuPhotos {
+  lead: ImageMetadata;
+  leadAlt: string;
+  leadCaption: string;
+  rail: ImageMetadata;
+  railAlt: string;
+  railCaption: string;
+  program: ImageMetadata;
+  programAlt: string;
+}
+
+const PINTU_PHOTOS: Partial<Record<PintuId, PintuPhotos>> = {
+  food: {
+    lead: heroJumatBerkah,
+    leadAlt: 'Warga dan anak-anak menerima kotak makan pada penyaluran Jumat Berkah di halaman masjid',
+    leadCaption: 'Satu pagi Jumat, satu titik penyaluran, kotak makan yang berpindah tangan.',
+    rail: programPromo,
+    railAlt: 'Relawan bagiberbagi.id menyerahkan tas bantuan kepada seorang nenek di gang kampung',
+    railCaption: 'Penyaluran pekan lalu, difoto saat kegiatan berlangsung.',
+    program: jumatBerkahDistribusi,
+    programAlt: 'Meja penyaluran paket Jumat Berkah bersama jamaah di serambi masjid',
+  },
+};
+
+const photos = PINTU_PHOTOS[pintu.id];
+
+/**
+ * Teks konsep per pintu, dirender untuk SEMUA pintu supaya tiap halaman selalu
+ * punya satu blok yang menjelaskan dirinya sendiri. Sengaja tanpa angka: yang
+ * belum berjalan tidak punya angka yang bisa ditelusuri.
+ *
+ * `Partial`, bukan `Record` penuh, dan blok-nya dijaga `concept &&` di markup.
+ * Astro tidak menjalankan type-check saat build, jadi peta yang menjanjikan
+ * kelima id berhenti di TypeError waktu build begitu satu id ditambahkan ke
+ * `PINTU_IDS`, bukan di editor. Dengan `Partial` pintu baru merender halaman
+ * yang lebih pendek, dan itu keadaan yang sama dengan pintu tanpa
+ * `CATEGORY_CONTENT`.
+ *
+ * UTANG YANG DIAKUI: prosa ini masih hidup di komponen, jadi editor tidak bisa
+ * mengisi halaman pintu kosong tanpa menyentuh kode. Tempat yang benar adalah
+ * `CATEGORY_CONTENT` di consts.ts (dan nanti Keystatic), dan itu edit consts.ts
+ * yang di luar cakupan varian yang masih dibandingkan. Begitu varian ini
+ * dipilih, pindahkan peta ini ke sana lalu ganti lookup di bawah.
+ */
+interface PintuConcept {
+  what: string;
+  examples: string[];
+}
+
+const PINTU_CONCEPT: Partial<Record<PintuId, PintuConcept>> = {
+  food: {
+    what: 'Berbagi Makanan menghubungkan dapur yang punya lebih dengan meja yang sedang kurang. Yang berpindah bukan cuma porsi, tapi kepastian bahwa hari itu ada yang dimakan.',
+    examples: [
+      'Donasi paket makan siap antar',
+      'Surplus dapur yang masih layak',
+      'Jadi mitra dapur penyalur',
+      'Menyiapkan titik penerima',
+    ],
+  },
+  goods: {
+    what: 'Berbagi Barang memindahkan yang sudah tidak terpakai di satu rumah ke rumah yang masih memerlukannya. Barangnya tetap sama, yang berubah nilainya bagi yang menerima.',
+    examples: [
+      'Pakaian layak pakai',
+      'Buku dan alat sekolah',
+      'Perlengkapan bayi dan rumah tangga',
+      'Alat kerja yang masih berfungsi',
+    ],
+  },
+  time: {
+    what: 'Berbagi Waktu adalah satu-satunya pintu yang tidak menuntut apa pun selain kehadiran. Keahlian yang kamu pakai sehari-hari sering justru yang paling dicari di kegiatan sosial.',
+    examples: [
+      'Mengajar dan mendampingi belajar',
+      'Membantu penyaluran di lapangan',
+      'Konsultasi sesuai keahlian',
+      'Mendokumentasikan kegiatan',
+    ],
+  },
+  space: {
+    what: 'Berbagi Ruang membuka tempat yang sedang kosong untuk kegiatan yang sedang butuh tempat. Satu aula yang menganggur setengah hari bisa jadi titik penyaluran.',
+    examples: [
+      'Aula dan ruang pertemuan',
+      'Gudang penyimpanan sementara',
+      'Dapur bersama',
+      'Kendaraan pengantar',
+    ],
+  },
+  money: {
+    what: 'Berbagi Dana menutup bagian yang tidak bisa ditutup barang atau tenaga, mulai dari bahan baku sampai ongkos antar. Setiap penyaluran meninggalkan catatan yang bisa dibaca ulang.',
+    examples: [
+      'Zakat, infak, dan sedekah',
+      'Donasi rutin bulanan',
+      'Dana CSR perusahaan',
+      'Patungan komunitas',
+    ],
+  },
+};
+
+const concept = PINTU_CONCEPT[pintu.id];
+
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
+
+const hasPrograms = active.length > 0 || upcoming.length > 0;
+const isRunning = active.length > 0;
+
+/**
+ * Sinyal dampak diturunkan dari `impact` langsung, bukan dari prop `hasImpact`.
+ * `hasJejak` yang menentukan ada tidaknya tautan ke rekam jejak, jadi kegiatan
+ * yang sudah terdokumentasi tanpa metrik tetap punya jalan ke halamannya.
+ * Angka besarnya jatuh ke jumlah kegiatan kalau daftar metriknya kosong, dan
+ * jaring itu benar-benar terpakai sekarang.
+ */
+const hasJejak = impact.jejakCount > 0;
+const headMetric = impact.metrics[0];
+const restMetrics = impact.metrics.slice(1);
+const bigValue = headMetric ? formatMetric(headMetric) : impact.jejakCount.toLocaleString('id-ID');
+const bigLabel = headMetric ? headMetric.label : 'kali kegiatan';
+
+/**
+ * Satu kalimat status, diturunkan dari data supaya tidak pernah mengklaim
+ * program yang tidak ada, dan dirender untuk KELIMA pintu. Ia yang membuka blok
+ * angka, jadi seksi dampak tidak dibuka angka. Cabang ketiganya ditulis sebagai
+ * kalimat maju, bukan penyangkalan, dan janjinya (kabar lewat WhatsApp) yang
+ * menentukan tombol rel di bawahnya.
+ */
+const statusLine = isRunning
+  ? `Program yang sudah berjalan lewat pintu ini: ${active.map((p) => p.label).join(', ')}.`
+  : upcoming.length > 0
+    ? `${upcoming.length} program sedang kami siapkan di pintu ini, belum ada yang dibuka.`
+    : 'Pintu ini kami buka begitu mitra dan titik penerimanya siap. Kabarnya kami kirim lewat WhatsApp.';
+
+/**
+ * Kalimat konteks angka: sumbernya, berapa kegiatan, berapa program. Tanpa ini
+ * angka di rel cuma angka besar tanpa asal usul.
+ */
+const impactNote = `Dijumlahkan dari ${impact.jejakCount.toLocaleString('id-ID')} kegiatan di ${impact.programCount.toLocaleString('id-ID')} program, masing-masing punya tanggal, lokasi, dan halaman jejaknya sendiri. Bukan target.`;
+
+/** Tombol rel mengikuti janji kalimat status di atasnya. */
+const railCta = isRunning
+  ? { href: contactWa, track: 'contact_wa', label: 'Hubungi lewat WhatsApp' }
+  : { href: notifyWa, track: 'notify_wa', label: 'Kabari saya saat pintu ini dibuka' };
+
+const forWhom = content?.forWhom ?? [];
+const envHeadline = content?.env?.headline?.trim();
+const contribute = content?.contribute ?? [];
+const faq = content?.faq ?? [];
+
+/**
+ * Alur. Pintu yang punya `howItWorks` sendiri menampilkan alur programnya; yang
+ * belum punya jatuh ke alur penerimaan tawaran, yaitu apa yang terjadi sesudah
+ * pesan masuk. Itu janji proses dan berlaku untuk sumber daya apa pun, jadi
+ * tidak ada penyaluran, penerima terdata, atau laporan foto yang disebut di
+ * pintu yang belum berjalan.
+ */
+const INTAKE_FLOW = [
+  { title: 'Kamu kirim pesan', desc: 'Ceritakan lewat WhatsApp apa yang bisa kamu bagi lewat pintu ini.' },
+  { title: 'Kami balas dan tanya detailnya', desc: 'Bentuknya apa, berapa banyak, kapan tersedia, dan sejauh mana kamu bisa ikut.' },
+  { title: 'Kami carikan pasangannya', desc: 'Kalau ada kebutuhan lapangan yang cocok, pintu ini kami buka jadi program. Kalau belum ada, kontakmu kami simpan dan kami kabari begitu muncul.' },
+];
+
+const flowIsPintuSpecific = Boolean(content?.howItWorks?.length);
+const flowSteps = flowIsPintuSpecific ? content!.howItWorks! : INTAKE_FLOW;
+const flowEyebrow = flowIsPintuSpecific ? 'Cara Kerja' : 'Alur';
+const flowTitle = flowIsPintuSpecific
+  ? 'Alur singkatnya'
+  : `Yang terjadi sesudah kamu menawarkan lewat ${pintu.label}`;
+/**
+ * Catatan penutup blok alur. Cabang tanpa jejak sengaja TIDAK menyebut rekam
+ * jejak: versi sebelumnya menjanjikan "yang sudah berjalan bisa kamu lihat di
+ * rekam jejak" tepat di pintu yang jejaknya nol, dan kalimatnya bahkan bukan
+ * tautan.
+ */
+const flowNote = flowIsPintuSpecific
+  ? 'Detail tiap tahap berbeda per program, jadi versi lengkapnya ada di halaman program masing-masing.'
+  : 'Ini alur penerimaan tawaran, bukan catatan penyaluran. Belum ada kegiatan yang kami catat lewat pintu ini.';
+const flowNoteWithJejak = flowIsPintuSpecific
+  ? flowNote
+  : 'Ini alur penerimaan tawaran, bukan catatan penyaluran.';
+
+/**
+ * Blok cerita cuma dirender kalau BADANNYA ada, yaitu `forWhom` terisi.
+ * `env.headline` boleh jadi lead-nya, tapi tidak pernah jadi satu-satunya isi:
+ * penjaga lama (`forWhom.length > 0 || Boolean(env)`) meloloskan blok berisi
+ * eyebrow dan h2 saja, dan `env` dengan headline string kosong bahkan
+ * menghasilkan heading tanpa teks.
+ */
+const hasStory = forWhom.length > 0;
+
+const ARROW_D = 'M5 12h14';
+const ARROW_HEAD = 'm13 6 6 6-6 6';
+---
+
+<div class="ps2" style={styleVars}>
+  {/* HERO lebar penuh. Judul 56px tetap milik hero, bukan milik rel: kolom 320px
+      tidak bisa memikul tipe sebesar itu, dan begitu h1 dikecilkan ke ukuran rel,
+      bahasa V5 hilang di baris pertama halaman. Ditarik naik 74px supaya bidangnya
+      menembus ke belakang pil navbar (10px margin + 64px pil, lihat Header.astro). */}
+  <section class="ps2-hero">
+    <Container width="wide">
+      <nav class="ps2-crumb" aria-label="Breadcrumb">
+        <a href="/">Beranda</a>
+        <span aria-hidden="true">/</span>
+        <a href="/#pintu">Pintu Berbagi</a>
+        <span aria-hidden="true">/</span>
+        <span class="ps2-crumb-now">{pintu.label}</span>
+      </nav>
+
+      <p class="ps2-eyebrow" data-fade>{pintu.english}</p>
+      <h1 class="ps2-h1" data-fade>{pintu.label}</h1>
+      <p class="ps2-lead ps2-lead-hero" data-fade>{pintu.tagline}</p>
+
+      <div class="ps2-actions" data-fade>
+        <a
+          href={contactWa}
+          target="_blank"
+          rel="noopener"
+          data-track="contact_wa"
+          data-track-pintu={pintu.slug}
+          class="ps2-btn"
+        >
+          Hubungi Kami
+        </a>
+        {/* Tombol kedua tidak pernah menyuruh pengunjung keluar dari halaman ini,
+            dan teksnya ikut keadaan sebenarnya: "lihat program" cuma dipakai kalau
+            ada program yang benar-benar berjalan. */}
+        {hasJejak ? (
+          <a href={jejakHref} class="ps2-btn ps2-btn-ghost">Lihat rekam jejak</a>
+        ) : isRunning ? (
+          <a href="#program" class="ps2-btn ps2-btn-ghost">Lihat program di pintu ini</a>
+        ) : hasPrograms ? (
+          <a href="#program" class="ps2-btn ps2-btn-ghost">Lihat yang sedang disiapkan</a>
+        ) : (
+          <a
+            href={notifyWa}
+            target="_blank"
+            rel="noopener"
+            data-track="notify_wa"
+            data-track-pintu={pintu.slug}
+            class="ps2-btn ps2-btn-ghost"
+          >
+            Beri tahu saya saat pintu ini dibuka
+          </a>
+        )}
+      </div>
+    </Container>
+  </section>
+
+  {/* MOMEN: satu pita foto lebar penuh, cuma untuk pintu yang punya dokumentasi.
+      Ini gambar terbesar di halaman dan ia yang bikin halaman terasa hidup;
+      pintu tanpa foto melewatinya sama sekali, bukan menggantinya dengan bidang
+      abu. */}
+  {photos && (
+    <section class="ps2-moment">
+      <Image
+        src={photos.lead}
+        alt={photos.leadAlt}
+        widths={[640, 960, 1280, 1600]}
+        sizes="100vw"
+        loading="eager"
+        class="ps2-moment-img"
+      />
+      <div class="ps2-moment-scrim" aria-hidden="true"></div>
+      <Container width="wide" class="ps2-moment-inner">
+        <p class="ps2-caption">{photos.leadCaption}</p>
+      </Container>
+    </section>
+  )}
+
+  {/* BADAN: satu seksi putih berisi rel dan aliran. Yang memisahkan blok adalah
+      garis, jarak, dan satu bidang hangat di blok alur, bukan band warna
+      bergantian. */}
+  <section class="ps2-body">
+    <Container width="wide">
+      <div class="ps2-grid">
+        {/* REL. `aside` aman di sini karena h1 halaman duduk di hero, bukan di
+            rel, jadi tidak ada heading tingkat satu yang terkurung di landmark
+            complementary. */}
+        <div class="ps2-rail-col">
+          <aside class:list={['ps2-rail', photos && 'has-photo']} aria-label={`Ringkasan ${pintu.label}`}>
+            {/* Identitas serapat mungkin: satu cincin ikon dan nama pintu. Kicker
+                bahasa Inggris dan blurb dibuang, dua-duanya mengulang eyebrow dan
+                tagline yang baru saja dibaca di hero beberapa ratus piksel di
+                atas. Di halaman yang isinya paling sedikit, pengulangan itu yang
+                paling terasa. */}
+            <div class="ps2-rail-id">
+              <span class="ps2-rail-mark" aria-hidden="true">
+                <Icon name={pintu.icon} size={22} />
+              </span>
+              <p class="ps2-rail-name">{pintu.label}</p>
+            </div>
+
+            {/* Kalimat dulu, angka belakangan. Angka besar berwarna `--cat-deep`
+                di atas `--cat-tint` lolos 3:1 pada 40px untuk kelima pintu, dan
+                itu satu-satunya massa visual yang boleh menandingi h2 di kanan. */}
+            <div class="ps2-rail-block">
+              <p class="ps2-rail-status">{statusLine}</p>
+
+              {hasJejak && (
+                <>
+                  <div class="ps2-rail-numline">
+                    <p class="ps2-num">{bigValue}</p>
+                    <p class="ps2-num-label">{bigLabel}</p>
+                  </div>
+
+                  {(restMetrics.length > 0 || Boolean(headMetric)) && (
+                    <dl class="ps2-rail-rows">
+                      {restMetrics.map((m) => (
+                        <div class="ps2-rail-row">
+                          <dt>{m.label}</dt>
+                          <dd>{formatMetric(m)}</dd>
+                        </div>
+                      ))}
+                      {headMetric && (
+                        <div class="ps2-rail-row">
+                          <dt>kali kegiatan</dt>
+                          <dd>{impact.jejakCount.toLocaleString('id-ID')}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  )}
+
+                  <p class="ps2-rail-note">{impactNote}</p>
+                  <a href={jejakHref} class="ps2-rail-link">
+                    Telusuri rekam jejak
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                  </a>
+                </>
+              )}
+            </div>
+
+            <a
+              href={railCta.href}
+              target="_blank"
+              rel="noopener"
+              data-track={railCta.track}
+              data-track-pintu={pintu.slug}
+              class="ps2-rail-cta"
+            >
+              {railCta.label}
+            </a>
+
+            {/* Potret tinggi di KAKI rel, di bawah tombol, sesuai arah desain. Di
+                mobile ia naik ke puncak panel jadi pita lanskap lewat `order`,
+                dan di situlah `order` benar-benar bekerja: di DOM ia anak
+                terakhir. */}
+            {photos && (
+              <figure class="ps2-rail-figure">
+                <Image
+                  src={photos.rail}
+                  alt={photos.railAlt}
+                  widths={[280, 420, 560, 900, 1200]}
+                  sizes="(min-width: 900px) 264px, 100vw"
+                  loading="lazy"
+                  class="ps2-rail-img"
+                />
+                <figcaption class="ps2-rail-cap">{photos.railCaption}</figcaption>
+              </figure>
+            )}
+
+            {/* Pintu tanpa foto tidak dapat kotak penambal. Kakinya diisi jejak
+                ikon pintunya sendiri, jadi rel tetap punya bidang bawah yang
+                terlihat disengaja, cuma lebih pendek. Ia dicat DI BAWAH isi rel
+                lewat `isolation` di CSS, bukan di atas tombol. */}
+            {!photos && (
+              <span class="ps2-rail-watermark" aria-hidden="true">
+                <Icon name={pintu.icon} size={180} />
+              </span>
+            )}
+          </aside>
+        </div>
+
+        <div class="ps2-stream">
+          {/* KONSEP: blok pembuka untuk pintu yang punya entri konsep. Kepala di
+              kiri, bentuk berbaginya sebagai baris bergaris dua kolom di
+              bawahnya, jadi barisnya tidak menyisakan setengah kolom kosong. */}
+          {concept && (
+            <div>
+              <header class="ps2-head" data-fade>
+                <p class="ps2-eyebrow">Tentang Pintu Ini</p>
+                <h2 class="ps2-h2">Apa itu {pintu.label}</h2>
+                <p class="ps2-lead">{concept.what}</p>
+              </header>
+
+              <p class="ps2-minilabel" data-fade>Bentuk berbaginya</p>
+              <ul class="ps2-tiles" data-fade>
+                {concept.examples.map((item) => (
+                  <li>
+                    <span aria-hidden="true"></span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* CARA IKUT: baris bernomor selebar kolom. */}
+          {contribute.length > 0 && (
+            <div>
+              <header class="ps2-head" data-fade>
+                <p class="ps2-eyebrow">Cara Ikut</p>
+                <h2 class="ps2-h2">Yang bisa kamu bagi</h2>
+                <p class="ps2-lead">
+                  Pilih jalan yang paling dekat dengan yang sudah kamu punya. Semuanya berakhir di
+                  penerima yang sama.
+                </p>
+              </header>
+
+              <ol class="ps2-steps">
+                {contribute.map((c, i) => (
+                  <li class="ps2-step" data-fade>
+                    <span class="ps2-step-n">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 class="ps2-step-title">{c.title}</h3>
+                    <p class="ps2-step-desc">{c.desc}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {/* ALUR: selalu ada, dan satu-satunya blok yang duduk di bidang hangat.
+              Untuk pintu yang belum berjalan, blok inilah yang bikin halaman
+              punya isi ketiga sekaligus memberi halaman ganti irama. Kakinya
+              memikul jalan menawarkan sumber daya, karena di situlah kalimatnya
+              memang mengundang itu. */}
+          <div class="ps2-band">
+            <header class="ps2-head" data-fade>
+              <p class="ps2-eyebrow">{flowEyebrow}</p>
+              <h2 class="ps2-h2">{flowTitle}</h2>
+            </header>
+
+            <ol class="ps2-flowlist">
+              {flowSteps.map((s) => (
+                <li class="ps2-flowitem" data-fade>
+                  <span class="ps2-flowdot" aria-hidden="true"></span>
+                  <b>{s.title}</b>
+                  <span>{s.desc}</span>
+                </li>
+              ))}
+            </ol>
+
+            {/* Catatan penutup blok dibedakan dari deskripsi langkah: ada garis
+                di atasnya dan jaraknya 32px, bukan 8px. */}
+            <p class="ps2-note" data-fade>{hasJejak ? flowNoteWithJejak : flowNote}</p>
+
+            <div class="ps2-band-actions" data-fade>
+              {!flowIsPintuSpecific && (
+                <a
+                  href={contactWa}
+                  target="_blank"
+                  rel="noopener"
+                  data-track="contact_wa"
+                  data-track-pintu={pintu.slug}
+                  class="ps2-link"
+                >
+                  Ceritakan yang bisa kamu bagi
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                </a>
+              )}
+              {hasJejak && (
+                <a href={jejakHref} class="ps2-link">
+                  Lihat yang sudah berjalan
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* PROGRAM: baris editorial selebar kolom. Lead-nya ikut keadaan
+              sebenarnya, jadi halaman tidak menyebut "kegiatan yang benar-benar
+              berjalan di lapangan" tepat di atas daftar yang belum dibuka. */}
+          {hasPrograms && (
+            <div id="program">
+              <header class="ps2-head" data-fade>
+                <p class="ps2-eyebrow">Program</p>
+                <h2 class="ps2-h2">Program di pintu {pintu.label}</h2>
+                <p class="ps2-lead">
+                  {isRunning
+                    ? 'Pintu adalah jalan masuknya, program adalah kegiatan yang benar-benar berjalan di lapangan.'
+                    : 'Belum ada yang berjalan di pintu ini. Yang berikut sedang kami siapkan, dan kami kabari begitu dibuka.'}
+                </p>
+              </header>
+
+              {active.map((p, i) => {
+                const withPhoto = i === 0 && Boolean(photos);
+                const withFeatures = !withPhoto && p.detail.features.length > 0;
+                return (
+                  <article
+                    class:list={['ps2-prog', withPhoto && 'has-photo', withFeatures && 'has-features']}
+                    data-fade
+                  >
+                    {withPhoto && photos && (
+                      <div class="ps2-prog-photo">
+                        <Image
+                          src={photos.program}
+                          alt={photos.programAlt}
+                          widths={[420, 640, 900, 1200]}
+                          sizes="(min-width: 1200px) 420px, (min-width: 900px) 320px, 100vw"
+                          loading="lazy"
+                          class="ps2-prog-img"
+                        />
+                      </div>
+                    )}
+
+                    <div class="ps2-prog-body">
+                      <p class="ps2-tag">
+                        <span class="ps2-tag-dot" aria-hidden="true"></span>
+                        Sedang berjalan
+                      </p>
+                      <h3 class="ps2-prog-title">{p.label}</h3>
+                      <p class="ps2-prog-sum">{p.summary}</p>
+                      {p.href ? (
+                        <a
+                          href={p.href}
+                          class="ps2-link"
+                          data-track="pintu_program"
+                          data-track-program={p.slug}
+                        >
+                          Lihat halaman program
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                        </a>
+                      ) : (
+                        <p class="ps2-prog-note">Halaman programnya sedang kami siapkan.</p>
+                      )}
+                    </div>
+
+                    {withFeatures && (
+                      <ul class="ps2-prog-features">
+                        {p.detail.features.map((f) => (
+                          <li><span aria-hidden="true"></span>{f}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </article>
+                );
+              })}
+
+              {upcoming.length > 0 && (
+                <div class="ps2-next">
+                  <p class="ps2-minilabel">Belum dibuka</p>
+                  <ul class="ps2-next-list">
+                    {upcoming.map((p) => (
+                      <li class="ps2-next-item" data-fade>
+                        <div class="ps2-next-main">
+                          <h3 class="ps2-next-title">{p.label}</h3>
+                          <p class="ps2-next-sum">{p.summary}</p>
+                        </div>
+                        <span class="ps2-next-badge">Segera</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href={notifyWa}
+                    target="_blank"
+                    rel="noopener"
+                    data-track="notify_wa"
+                    data-track-pintu={pintu.slug}
+                    class="ps2-link ps2-next-cta"
+                  >
+                    Beri tahu saya saat program ini dibuka
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* UNTUK SIAPA. `env.stats` sengaja tidak dirender, alasannya di catatan
+              nomor 10 di kepala file; `env.headline` cuma jadi lead, dan blok ini
+              cuma muncul kalau daftarnya benar-benar ada. */}
+          {hasStory && (
+            <div>
+              <header class="ps2-head ps2-head-sm" data-fade>
+                <p class="ps2-eyebrow">Untuk Siapa</p>
+                <h2 class="ps2-h2">Siapa yang terbantu</h2>
+                {envHeadline && <p class="ps2-lead">{envHeadline}</p>}
+              </header>
+
+              <ul class="ps2-who" data-fade>
+                {forWhom.map((who) => (
+                  <li><span aria-hidden="true"></span>{who}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* FAQ: teks utuh, tanpa akordeon. Tiga pertanyaan yang langsung
+              terbaca lebih lapang daripada tiga baris yang harus diklik dulu. */}
+          {faq.length > 0 && (
+            <div>
+              <header class="ps2-head ps2-head-sm" data-fade>
+                <p class="ps2-eyebrow">Pertanyaan</p>
+                <h2 class="ps2-h2">Yang paling sering ditanyakan</h2>
+              </header>
+
+              <dl class="ps2-faq">
+                {faq.map((item) => (
+                  <div class="ps2-faq-item" data-fade>
+                    <dt>{item.q}</dt>
+                    <dd>{item.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+
+          {/* PINTU LAIN: selalu ada, dan tiap baris membawa warnanya sendiri
+              lewat `--cat` lokal. Ini yang menaruh empat warna identitas lain di
+              badan halaman tanpa satu pun bidang warna. */}
+          <div>
+            <header class="ps2-head ps2-head-sm" data-fade>
+              <p class="ps2-eyebrow">Pintu Lainnya</p>
+              <h2 class="ps2-h2">Jalan berbagi yang lain</h2>
+              <p class="ps2-lead">
+                Sumber daya yang bisa dibagi tidak cuma satu bentuk. Empat pintu berikut punya
+                halamannya masing-masing.
+              </p>
+            </header>
+
+            <ul class="ps2-index">
+              {otherPintu.map((p) => (
+                <li>
+                  <a
+                    href={`/berbagi-${p.slug}/`}
+                    class="ps2-index-row"
+                    style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
+                  >
+                    <span class="ps2-index-icon"><Icon name={p.icon} size={20} /></span>
+                    <span class="ps2-index-main">
+                      <b>{p.label}</b>
+                      <span>{p.tagline}</span>
+                    </span>
+                    <svg class="ps2-index-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  {/* PENUTUP: satu-satunya bidang gelap, dan satu-satunya kepala yang boleh
+      ditengahkan. Warna pintu jadi watermark, tombolnya putih karena teks putih
+      di atas warna pintu tidak lolos kontras. Eyebrow-nya bukan lagi nama pintu:
+      nama itu sudah diucapkan di breadcrumb, h1, rel, dan judul penutupnya
+      sendiri. */}
+  <section class="ps2-close">
+    <Container width="wide">
+      <div class="ps2-close-inner">
+        <p class="ps2-eyebrow ps2-eyebrow-dark" data-fade>Langkah Berikutnya</p>
+        <h2 class="ps2-h2 ps2-h2-dark" data-fade>
+          {content?.ctaTitle ?? `Ingin berkontribusi lewat ${pintu.label}?`}
+        </h2>
+        <p class="ps2-lead ps2-lead-dark" data-fade>
+          {content?.ctaText ?? 'Ceritakan apa yang bisa kamu bagi, tim kami bantu menyalurkannya.'}
+        </p>
+        <a
+          href={contactWa}
+          target="_blank"
+          rel="noopener"
+          data-track="pintu_cta"
+          data-track-pintu={pintu.slug}
+          class="ps2-btn ps2-btn-light"
+          data-fade
+        >
+          Hubungi Kami
+        </a>
+      </div>
+      <span class="ps2-close-mark" aria-hidden="true">
+        <Icon name={pintu.icon} size={220} />
+      </span>
+    </Container>
+  </section>
+</div>
+
+<style>
+  /* DUA peran garis, dua nilai, dua-duanya token tailwind.config.mjs.
+       --line       token `border` #EEF0F3, garis RITME di dalam satu blok: baris
+                    langkah, baris FAQ, baris index. Sengaja nyaris tak terlihat,
+                    karena yang memisahkan di situ isinya sendiri.
+       --line-band  token gray.300 #B4BCC8, pemisah STRUKTUR antar blok.
+       --rail-line  garis di dalam rel. Tidak bisa memakai dua-duanya karena
+                    latarnya `--cat-tint` yang berbeda tiap pintu; ink beropasitas
+                    rendah menyesuaikan diri ke lima tint sekaligus.
+     KONTRAS TEKS KECIL: semua teks di bawah 24px di file ini memakai #0F172A atau
+     #505D6F, tidak pernah #687281. Alasannya bisa dihitung: #687281 di atas
+     putih 4,87:1 dan di atas #F7F6F3 4,50:1, tapi di atas kelima `--cat-tint`
+     ia jatuh ke 4,0 sampai 4,3:1, di bawah floor 4,5:1 DESIGN_SYSTEM. #505D6F di
+     atas tint terburuk (#ECE6FB) masih 5,45:1. #687281 tinggal dipakai untuk
+     batas tombol ghost, yang ambangnya 3:1 karena bukan teks. */
+  .ps2 {
+    --line: #eef0f3;
+    --line-band: #b4bcc8;
+    --rail-line: rgba(15, 23, 42, 0.12);
+  }
+
+  /* ---------- Rumus kepala ----------
+     DUA bobot, bukan satu. Enam blok dengan kepala identik di satu bidang putih
+     itu yang dilarang bagian Rhythm DESIGN_PRINCIPLES. `.ps2-head` memikul blok
+     utama (konsep, cara ikut, alur, program), `.ps2-head-sm` blok penutup
+     (untuk siapa, FAQ, pintu lain). */
+  .ps2-head { max-width: 46rem; margin: 0 0 48px; }
+  .ps2-head-sm { margin-bottom: 36px; }
+
+  .ps2-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+    /* token eyebrow 13px */
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #0f172a;
+  }
+  .ps2-eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    flex: none;
+    background: var(--cat);
+  }
+  .ps2-eyebrow-dark { color: rgba(255, 255, 255, 0.85); }
+
+  /* Ujung clamp selalu nilai token. H1 berhenti di 56px, step terbesar di config.
+     Hero lebar penuh, jadi di sini `vw` memang satuan yang benar. */
+  .ps2-h1 {
+    margin: 0;
+    /* heading-lg 34 -> display-lg 56 */
+    font-size: clamp(34px, 6.4vw, 56px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    color: #0f172a;
+    text-wrap: balance;
+  }
+
+  /* SATUAN `cqi`, BUKAN `vw`, untuk semua tipe di kolom kanan. `.ps2-stream`
+     yang jadi container, jadi 1cqi = 1% lebar KOLOM. Kolomnya bergerak 444px
+     (viewport 900) sampai 824px (container wide 1280), dan 4,85cqi menaruh h2 di
+     30px sampai kolom 619px lalu naik ke 40px di 824px. Dengan `4.4vw` yang lama,
+     h2 sudah 39,6px waktu kolomnya masih 444px. */
+  .ps2-h2 {
+    margin: 0;
+    /* heading 30 -> display 40 */
+    font-size: clamp(30px, 4.85cqi, 40px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    color: #0f172a;
+    text-wrap: balance;
+  }
+  .ps2-head-sm .ps2-h2 {
+    /* title 22 -> heading 30 */
+    font-size: clamp(22px, 3.6cqi, 30px);
+    letter-spacing: -0.025em;
+  }
+  .ps2-h2-dark { color: #fff; }
+
+  .ps2-lead {
+    margin: 18px 0 0;
+    /* title-sm 18 -> title 22 */
+    font-size: clamp(18px, 2.7cqi, 22px);
+    line-height: 1.62;
+    color: #505d6f;
+    max-width: 58ch;
+    text-wrap: pretty;
+  }
+  .ps2-head-sm .ps2-lead { font-size: 18px; }
+
+  .ps2-minilabel {
+    margin: 0 0 20px;
+    /* token label 11px */
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #505d6f;
+  }
+
+  /* ---------- Hero ---------- */
+  /* -74px = 10px margin atas + 64px pil navbar (Header.astro mengunci angka itu). */
+  .ps2-hero {
+    position: relative;
+    margin-top: -74px;
+    padding: calc(74px + 72px) 0 96px;
+    background: #f7f6f3;
+    overflow: hidden;
+  }
+  .ps2-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(90% 70% at 88% 0%, var(--cat-tint), transparent 62%);
+    pointer-events: none;
+  }
+  .ps2-hero > * { position: relative; }
+  @media (min-width: 768px) {
+    .ps2-hero { padding: calc(74px + 104px) 0 128px; }
+  }
+  /* Hero di luar container query, jadi tipenya bertanya pada viewport. */
+  .ps2-hero .ps2-lead { font-size: clamp(18px, 1.6vw, 22px); }
+
+  .ps2-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 56px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #505d6f;
+  }
+  .ps2-crumb a { transition: color 0.18s ease; }
+  .ps2-crumb a:hover { color: var(--cat-deep); }
+  .ps2-crumb span[aria-hidden] { color: #b4bcc8; }
+  .ps2-crumb-now { color: #0f172a; }
+
+  .ps2-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .ps2-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 30px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #fff;
+    font-weight: 700;
+    /* token body 16px */
+    font-size: 16px;
+    border: 1.5px solid #0f172a;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .ps2-btn:hover { transform: translateY(-2px); }
+  /* Batas tombol membawa makna, jadi ia harus lolos 3:1. gray.400 #687281 di atas
+     hero hangat #F7F6F3 sekitar 4,5:1. */
+  .ps2-btn-ghost {
+    background: transparent;
+    color: #0f172a;
+    border-color: #687281;
+  }
+  .ps2-btn-ghost:hover { border-color: var(--cat); }
+  .ps2-btn-light {
+    background: #fff;
+    color: #0f172a;
+    border-color: #fff;
+  }
+
+  /* ---------- Pita momen ---------- */
+  .ps2-moment {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 58vh;
+    overflow: hidden;
+  }
+  .ps2-moment-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 42%;
+  }
+  .ps2-moment-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 18, 30, 0.78), rgba(10, 18, 30, 0.18) 55%, rgba(10, 18, 30, 0.04));
+  }
+  .ps2-moment-inner {
+    position: relative;
+    padding-top: 0;
+    padding-bottom: 48px;
+  }
+  @media (min-width: 768px) {
+    .ps2-moment { min-height: 66vh; }
+    .ps2-moment-inner { padding-bottom: 72px; }
+  }
+  .ps2-caption {
+    margin: 0;
+    padding-top: 18px;
+    border-top: 2px solid var(--cat);
+    max-width: 46ch;
+    /* title-sm 18 -> title 22 */
+    font-size: clamp(18px, 2vw, 22px);
+    line-height: 1.45;
+    font-weight: 600;
+    color: #fff;
+    text-wrap: pretty;
+  }
+
+  /* ---------- Badan: grid rel + aliran ---------- */
+  .ps2-body { background: #fff; padding: 72px 0 96px; }
+  @media (min-width: 768px) {
+    .ps2-body { padding: 96px 0 128px; }
+  }
+
+  .ps2-grid { display: grid; gap: 48px; }
+
+  /* Dua kolom mulai 900px, angka bespoke di scoped style, bukan breakpoint
+     Tailwind. `align-items: start` wajib: tanpa itu grid item meregang setinggi
+     baris dan bidang tint rel jadi kolom raksasa setinggi seluruh aliran. */
+  @media (min-width: 900px) {
+    .ps2-grid {
+      grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+      gap: 56px;
+      align-items: start;
+    }
+    /* Padding atas 38px menaruh baseline eyebrow blok pertama kira-kira sejajar
+       dengan nama pintu di rel (padding rel 28px + tengah cincin 40px). */
+    .ps2-stream { padding-top: 38px; }
+  }
+  @media (min-width: 1200px) {
+    .ps2-grid { gap: 72px; }
+  }
+
+  /* ---------- Rel ---------- */
+  /* Satu bidang tint bersudut besar. TANPA border, TANPA shadow, TANPA latar
+     putih, dan TANPA `position: sticky`. Rel yang dipaku dan lebih tinggi dari
+     viewport bikin tombol di ekornya tidak pernah bisa dicapai, dan begitu foto
+     potret masuk ke kakinya rel memang selalu lebih tinggi dari layar laptop.
+     Lihat catatan nomor 1 di kepala file. */
+  .ps2-rail {
+    position: relative;
+    /* Bikin stacking context sendiri supaya watermark bisa dicat DI BAWAH isi
+       rel. Tanpa ini watermark (elemen berposisi) menutupi tombol yang statis. */
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 28px;
+    background: var(--cat-tint);
+    padding: 28px 26px 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  .ps2-rail > * { position: relative; z-index: 1; }
+  @media (min-width: 900px) {
+    .ps2-rail { border-radius: 32px; padding: 28px 28px 32px; }
+  }
+
+  .ps2-rail-id { display: flex; align-items: center; gap: 14px; }
+  .ps2-rail-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 999px;
+    /* --cat-deep, bukan --cat: cincin --cat pintu makanan di atas tint-nya
+       sendiri cuma sekitar 1,6:1, sementara --cat-deep sekitar 3,8:1. */
+    border: 1.5px solid var(--cat-deep);
+    color: var(--cat-deep);
+  }
+  .ps2-rail-name {
+    margin: 0;
+    /* token title-sm 18px */
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: #0f172a;
+  }
+
+  .ps2-rail-block {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rail-line);
+  }
+  /* Kalimat pembuka blok angka. Selalu dirender, untuk kelima pintu. */
+  .ps2-rail-status {
+    margin: 0;
+    /* token body-sm 14px */
+    font-size: 14px;
+    line-height: 1.6;
+    color: #505d6f;
+  }
+  .ps2-rail-numline { margin-top: 20px; }
+  /* Satu-satunya yang berani di dalam rel. 40px artinya ambang kontrasnya 3:1,
+     dan --cat-deep di atas tint-nya sendiri lolos untuk kelima pintu (makanan
+     3,79:1 sebagai yang paling ketat). Ukuran dikunci, bukan clamp: kolomnya
+     sendiri sudah dikunci 320px. */
+  .ps2-num {
+    margin: 0;
+    /* token display 40px */
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--cat-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .ps2-num-label {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #505d6f;
+  }
+  .ps2-rail-rows { margin: 18px 0 0; }
+  .ps2-rail-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 9px 0;
+    border-top: 1px solid var(--rail-line);
+  }
+  .ps2-rail-row dt { font-size: 14px; color: #505d6f; }
+  .ps2-rail-row dd {
+    margin: 0;
+    /* token title-sm 18px */
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .ps2-rail-note {
+    margin: 16px 0 0;
+    /* token micro 12px */
+    font-size: 12px;
+    line-height: 1.6;
+    color: #505d6f;
+  }
+
+  .ps2-rail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    transition: gap 0.18s ease;
+  }
+  .ps2-rail-link svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    fill: none;
+    stroke: var(--cat-deep);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .ps2-rail-link:hover,
+  .ps2-rail-link:focus-visible { gap: 14px; }
+
+  /* Tombol tetap ink seperti seluruh tombol halaman ini. Satu pil ink pekat di
+     atas bidang tint lembut adalah titik tekan paling jelas di rel, tanpa perlu
+     memperkenalkan warna baru yang kontrasnya gagal. */
+  .ps2-rail-cta {
+    display: block;
+    margin-top: 24px;
+    padding: 14px 22px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.2s ease;
+  }
+  .ps2-rail-cta:hover { transform: translateY(-2px); }
+
+  .ps2-rail-figure { margin: 0; }
+  .ps2-rail-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Serah terimanya duduk agak ke kiri bawah frame, jadi crop tinggi ditarik
+       ke situ, bukan ke tengah. */
+    object-position: 44% 46%;
+  }
+  .ps2-rail-cap {
+    margin: 12px 0 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #505d6f;
+  }
+
+  .ps2-rail-watermark {
+    position: absolute;
+    right: -34px;
+    bottom: -44px;
+    /* z-index 0 di dalam stacking context rel: ia dicat di bawah seluruh isi rel
+       yang ber-z-index 1, termasuk tombolnya. */
+    z-index: 0;
+    color: var(--cat-deep);
+    opacity: 0.1;
+    line-height: 0;
+    pointer-events: none;
+  }
+
+  /* Mobile: rel BERUBAH BENTUK, bukan ditumpuk. Foto naik jadi pita lanskap di
+     puncak panel dan menempel ke tepinya (potret 4/5 selebar layar memakan satu
+     layar penuh), lalu angkanya jadi baris mendatar alih-alih tumpukan.
+     `order: -1` di sini benar-benar bekerja karena di DOM figure adalah anak
+     TERAKHIR rel, sesuai arah desain (potret di bawah tombol). */
+  @media (max-width: 899px) {
+    .ps2-rail.has-photo { padding-top: 0; }
+    .ps2-rail-figure {
+      order: -1;
+      margin: 0 -26px 26px;
+    }
+    .ps2-rail-img { aspect-ratio: 16 / 10; object-position: 46% 42%; }
+    .ps2-rail-cap { padding: 0 26px; }
+
+    .ps2-rail-numline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .ps2-num-label { margin-top: 0; text-align: right; }
+  }
+  @media (min-width: 900px) {
+    .ps2-rail-figure { margin-top: 28px; }
+    .ps2-rail-img { aspect-ratio: 4 / 5; border-radius: 20px; }
+  }
+
+  /* ---------- Aliran kolom kanan ---------- */
+  /* Container query, bukan breakpoint viewport, DAN satuan cqi untuk tipenya.
+     Di viewport 900px kolom ini cuma 444px sementara `md:` menyala sejak 768px;
+     itu sebabnya varian berbasis breakpoint selalu terlihat sesak di pita 900
+     sampai 1090px. */
+  .ps2-stream {
+    min-width: 0;
+    container-type: inline-size;
+    container-name: flow;
+  }
+
+  /* Batas antar blok 56px di mobile dan 72px di desktop. Dari garis ke eyebrow
+     72px, sementara dari eyebrow ke judulnya sendiri cuma 18px, jadi eyebrow itu
+     jelas milik blok di bawahnya. Garisnya --line-band, bukan --line: yang
+     terakhir 1,06:1 dan praktis tidak ada. */
+  .ps2-stream > * + * {
+    margin-top: 56px;
+    padding-top: 56px;
+    border-top: 1px solid var(--line-band);
+  }
+  @media (min-width: 768px) {
+    .ps2-stream > * + * { margin-top: 72px; padding-top: 72px; }
+  }
+
+  /* Anchor #program di bawah header sticky 74px. Seluruh komponen lain di repo
+     memakai `scroll-mt-24`; ini padanan scoped-nya. */
+  .ps2-stream > #program { scroll-margin-top: 96px; }
+
+  /* ---------- Bidang hangat blok alur ---------- */
+  /* Satu-satunya blok yang tidak duduk di putih. Ia yang mematahkan enam blok
+     seragam, dan materialnya (hangat #F7F6F3, tanpa border, tanpa shadow)
+     menjawab bidang tint rel di seberangnya tanpa jadi kartu kedua. Garis
+     pemisah blok dimatikan di sini: bidang sendiri sudah jadi batasnya. */
+  .ps2-stream > .ps2-band {
+    background: #f7f6f3;
+    border-radius: 28px;
+    border-top: 0;
+    padding: 40px 26px;
+  }
+  /* Padding bidang ini pun bertanya pada lebar KOLOM, bukan lebar jendela: di
+     viewport 900px kolomnya cuma 444px, dan padding 48px di dua sisi menyisakan
+     348px untuk teks kalau dipicu breakpoint viewport 768px. */
+  @container flow (min-width: 560px) {
+    .ps2-stream > .ps2-band { padding: 56px 48px; }
+  }
+  .ps2-band-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 32px;
+    margin-top: 28px;
+  }
+  .ps2-band-actions:empty { display: none; }
+
+  /* ---------- Baris ubin konsep ---------- */
+  .ps2-tiles { list-style: none; margin: 0; padding: 0; display: grid; }
+  .ps2-tiles li {
+    display: grid;
+    grid-template-columns: 14px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+    /* token title-sm 18 -> title 22 */
+    font-size: clamp(18px, 2.6cqi, 22px);
+    letter-spacing: -0.015em;
+    color: #0f172a;
+  }
+  .ps2-tiles li:last-child { border-bottom: 1px solid var(--line); }
+  .ps2-tiles li span {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--cat);
+  }
+  /* Dua kolom begitu kolomnya cukup lebar: baris sependek "Dapur bersama" di
+     kolom 800px menyisakan lebih dari separuh baris kosong, dan itu berulang
+     empat kali. */
+  @container flow (min-width: 600px) {
+    .ps2-tiles { grid-template-columns: 1fr 1fr; column-gap: 48px; }
+    .ps2-tiles li:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--line); }
+  }
+
+  /* ---------- Langkah cara ikut ---------- */
+  .ps2-steps { list-style: none; margin: 0; padding: 0; }
+  .ps2-step {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 4px 14px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .ps2-step:last-child { border-bottom: 1px solid var(--line); }
+  /* 22px bold, bukan 15px: --cat-deep pintu makanan di atas putih sekitar 4,6:1,
+     tapi nomor ini pernah duduk di band hangat dan turun ke 3,9:1. Di 22px bold
+     ambang yang berlaku 3:1. Jangan dikecilkan tanpa menukar warnanya ke ink. */
+  .ps2-step-n {
+    grid-row: span 2;
+    /* token title 22px */
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    color: var(--cat-deep);
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+  }
+  .ps2-step-title {
+    margin: 0;
+    /* title-sm 18 -> heading-sm 26 */
+    font-size: clamp(18px, 3cqi, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+  .ps2-step-desc {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #505d6f;
+    max-width: 52ch;
+  }
+  @container flow (min-width: 620px) {
+    .ps2-step {
+      grid-template-columns: 48px minmax(0, 0.9fr) minmax(0, 1.2fr);
+      align-items: baseline;
+      gap: 32px;
+    }
+    .ps2-step-n { grid-row: auto; padding-top: 0; }
+  }
+
+  /* ---------- Strip alur ---------- */
+  .ps2-flowlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+  @container flow (min-width: 560px) {
+    .ps2-flowlist { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 28px; }
+  }
+  .ps2-flowitem {
+    display: grid;
+    gap: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #505d6f;
+  }
+  /* token body 16px */
+  .ps2-flowitem b { color: #0f172a; font-weight: 700; font-size: 16px; }
+  .ps2-flowdot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--cat);
+  }
+  /* Kalimat kualifikasi penutup blok, dibedakan dari deskripsi langkah lewat
+     garis dan jarak 32px. Tanpa itu ia terbaca sebagai sambungan langkah
+     terakhir. */
+  .ps2-note {
+    margin: 32px 0 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-band);
+    /* token body-sm 14px */
+    font-size: 14px;
+    line-height: 1.6;
+    color: #505d6f;
+    max-width: 62ch;
+  }
+
+  /* ---------- Program ---------- */
+  .ps2-prog {
+    display: grid;
+    gap: 26px;
+    padding: 36px 0;
+    border-top: 1px solid var(--line);
+  }
+  @container flow (min-width: 640px) {
+    /* Kolom pertamanya foto, jadi rasionya condong ke foto; dua kolom teks pakai
+       rasio yang lebih datar. */
+    .ps2-prog.has-photo { grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: center; }
+    .ps2-prog.has-features { grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: start; }
+  }
+  .ps2-prog-photo {
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--cat-tint);
+  }
+  .ps2-prog-img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    display: block;
+  }
+  .ps2-prog-body { display: flex; flex-direction: column; align-items: flex-start; }
+  .ps2-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0f172a;
+  }
+  .ps2-tag-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cat); }
+  .ps2-prog-title {
+    margin: 0 0 14px;
+    /* heading-sm 26 -> heading-lg 34 */
+    font-size: clamp(26px, 4.2cqi, 34px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    color: #0f172a;
+    text-wrap: balance;
+  }
+  .ps2-prog-sum {
+    margin: 0 0 22px;
+    font-size: 16px;
+    line-height: 1.62;
+    color: #505d6f;
+    max-width: 52ch;
+  }
+  .ps2-prog-note { margin: 0; font-size: 14px; color: #505d6f; }
+  .ps2-prog-features { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .ps2-prog-features li {
+    display: grid;
+    grid-template-columns: 14px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: #0f172a;
+  }
+  .ps2-prog-features li span {
+    margin-top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--cat);
+  }
+
+  .ps2-next { margin-top: 28px; padding-top: 34px; border-top: 1px solid var(--line); }
+  .ps2-next-list { list-style: none; margin: 0; padding: 0; }
+  .ps2-next-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .ps2-next-main { min-width: 0; }
+  .ps2-next-title {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: #0f172a;
+  }
+  /* Sengaja TIDAK truncate: ringkasan yang terpotong di tengah kalimat lebih
+     buruk daripada baris kedua. */
+  .ps2-next-sum {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #505d6f;
+    max-width: 62ch;
+  }
+  .ps2-next-badge {
+    flex: none;
+    align-self: center;
+    padding: 5px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--line-band);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #505d6f;
+  }
+  .ps2-next-cta { margin-top: 26px; }
+
+  /* ---------- Tautan panah ---------- */
+  .ps2-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    /* token body 16px */
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    text-decoration-color: transparent;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 2px;
+    transition: gap 0.18s ease, text-decoration-color 0.18s ease;
+  }
+  .ps2-link:hover,
+  .ps2-link:focus-visible {
+    gap: 14px;
+    text-decoration-line: underline;
+    text-decoration-color: var(--cat);
+  }
+  .ps2-link svg {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    fill: none;
+    stroke: var(--cat-deep);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---------- Untuk siapa ---------- */
+  .ps2-who {
+    list-style: none;
+    margin: 0;
+    padding: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 40px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .ps2-who li {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    /* title-sm 18 -> title 22 */
+    font-size: clamp(18px, 2.6cqi, 22px);
+    letter-spacing: -0.015em;
+    color: #0f172a;
+  }
+  .ps2-who li span {
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--cat);
+  }
+
+  /* ---------- FAQ ---------- */
+  .ps2-faq { margin: 0; }
+  .ps2-faq-item {
+    display: grid;
+    gap: 10px;
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+  }
+  .ps2-faq-item:last-child { border-bottom: 1px solid var(--line); }
+  .ps2-faq dt {
+    /* title-sm 18 -> title 22 */
+    font-size: clamp(18px, 2.8cqi, 22px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: #0f172a;
+    text-wrap: balance;
+  }
+  .ps2-faq dd {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.65;
+    color: #505d6f;
+    max-width: 62ch;
+  }
+  @container flow (min-width: 660px) {
+    .ps2-faq-item { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr); gap: 40px; }
+  }
+
+  /* ---------- Indeks pintu lain ---------- */
+  .ps2-index { list-style: none; margin: 0; padding: 0; }
+  .ps2-index-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 22px;
+    align-items: center;
+    gap: 18px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+    transition: padding-left 0.18s ease;
+  }
+  .ps2-index li:last-child .ps2-index-row { border-bottom: 1px solid var(--line); }
+  .ps2-index-row:hover { padding-left: 10px; }
+  .ps2-index-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--cat-tint);
+    color: var(--cat-deep);
+  }
+  .ps2-index-main { display: grid; gap: 3px; min-width: 0; }
+  .ps2-index-main b {
+    font-size: clamp(18px, 2.6cqi, 22px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+  .ps2-index-main span { font-size: 14px; line-height: 1.5; color: #505d6f; }
+  .ps2-index-arrow {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--cat-deep);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    /* Opasitas penuh: --cat-deep di 55% turun ke sekitar 2,1:1 di atas putih.
+       Yang berubah saat hover cuma posisinya. */
+    transition: transform 0.18s ease;
+  }
+  .ps2-index-row:hover .ps2-index-arrow { transform: translateX(3px); }
+
+  /* ---------- Penutup ---------- */
+  .ps2-close {
+    position: relative;
+    background: #0f172a;
+    overflow: hidden;
+    padding: 96px 0;
+  }
+  @media (min-width: 768px) {
+    .ps2-close { padding: 128px 0; }
+  }
+  /* Penutup di luar container query, jadi tipenya kembali bertanya pada viewport. */
+  .ps2-close .ps2-h2 { font-size: clamp(30px, 4.4vw, 40px); }
+  .ps2-close .ps2-lead { font-size: clamp(18px, 1.6vw, 22px); }
+  .ps2-lead-dark { color: rgba(255, 255, 255, 0.78); }
+  .ps2-close-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 40rem;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ps2-close-inner .ps2-eyebrow { justify-content: center; }
+  .ps2-close-inner .ps2-lead { margin-left: auto; margin-right: auto; }
+  .ps2-close-inner .ps2-btn { margin-top: 36px; }
+  .ps2-close-mark {
+    position: absolute;
+    right: -48px;
+    bottom: -70px;
+    color: var(--cat);
+    opacity: 0.16;
+    line-height: 0;
+    pointer-events: none;
+  }
+  /* Tetap tampil di mobile, cuma dikecilkan dan digeser ke sudut. Menyembunyikan
+     watermark di bawah 900px bikin penutupnya jadi blok tengah polos di atas
+     bidang ink setinggi 300px lebih, tanpa satu pun penyeimbang. */
+  @media (max-width: 899px) {
+    .ps2-close-mark {
+      right: -56px;
+      bottom: -56px;
+      opacity: 0.12;
+      transform: scale(0.62);
+      transform-origin: bottom right;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ps2-btn,
+    .ps2-rail-cta,
+    .ps2-link,
+    .ps2-rail-link,
+    .ps2-index-row,
+    .ps2-index-arrow {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Reveal bersama memakai script global situs; komponen ini cuma menempelkan
+  // atribut data-fade dan tidak menulis IntersectionObserver sendiri. Tanpa impor
+  // ini seluruh atribut data-fade di file ini jadi markup mati, karena halaman
+  // pintu juga tidak mengimpornya.
+  import '../../scripts/fade-in.js';
+</script>

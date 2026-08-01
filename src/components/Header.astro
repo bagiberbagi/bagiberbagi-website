@@ -11,7 +11,7 @@ const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
 // Mega-menu desktop = panel 2 kolom: kiri promo "Pintu Berbagi" + kartu flagship
-// program aktif (Jumat Berkah), kanan grid lima kartu pintu (ProgramMenuCategory)
+// program aktif (Jumat Berkah), kanan grid kartu pintu (ProgramMenuCategory)
 // + strip trust/dampak. PROGRAM_MENU dirakit dari PINTU + program per pintu;
 // items[].active dipakai kartu untuk menentukan status Aktif/Segera.
 const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
@@ -92,8 +92,11 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
               {/* KIRI: promo pintu + kartu flagship program aktif */}
               <div class="flex flex-col">
                 <div class="eyebrow text-brand-orange">{PINTU_LABEL}</div>
-                <h3 class="text-title font-semibold mt-2 mb-2">Lima pintu, satu gerakan berbagi.</h3>
-                <p class="text-body-sm text-muted leading-relaxed mb-4">Mulai dari makanan, meluas ke barang, waktu, ruang, dan dana. Satu tempat untuk semua cara berbagi sumber daya.</p>
+                {/* Jumlah pintu sengaja tidak disebut angka di sini maupun di
+                    judul kolom kanan: setiap kali pintu bertambah, kalimatnya
+                    ikut basi dan itu ketahuan paling belakangan. */}
+                <h3 class="text-title font-semibold mt-2 mb-2">Banyak pintu, satu gerakan berbagi.</h3>
+                <p class="text-body-sm text-muted leading-relaxed mb-4">Mulai dari makanan, meluas ke barang, waktu, ruang, dana, dan pohon. Satu tempat untuk semua cara berbagi sumber daya.</p>
 
                 {flagship && (
                   <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-orange to-brand-orangeDark text-white p-4 mt-auto">
@@ -116,19 +119,19 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
                 )}
               </div>
 
-              {/* KANAN: lima kartu pintu + strip trust/dampak */}
+              {/* KANAN: kartu tiap pintu + strip trust/dampak */}
               <div class="flex flex-col">
                 <div class="flex items-center justify-between gap-4 mb-3.5">
-                  <span class="text-micro font-bold uppercase tracking-wider text-muted">Lima Pintu Berbagi</span>
+                  <span class="text-micro font-bold uppercase tracking-wider text-muted">Semua Pintu</span>
                   {/* Dulu menuju #program milik ProgramHighlights. Seksi itu
-                      sudah dilepas dari beranda, jadi tujuannya jadi peta lima
+                      sudah dilepas dari beranda, jadi tujuannya jadi peta
                       pintu, tempat tiap pintu mengantar ke daftar programnya. */}
                   <a href="/#pintu" class="group inline-flex items-center gap-1 text-body-sm font-bold text-ink transition-colors hover:text-brand-orange">
                     Lihat semua program
                     <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
                   </a>
                 </div>
-                <div class="grid grid-cols-5 gap-2 flex-1">
+                <div class="grid grid-cols-3 grid-rows-2 gap-2 flex-1">
                   {PROGRAM_MENU.map((col) => (
                     <ProgramMenuCategory category={col} />
                   ))}

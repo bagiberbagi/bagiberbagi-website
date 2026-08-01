@@ -32,14 +32,27 @@ const linkCols = footer.data.columns
     ),
   }));
 const year = new Date().getFullYear();
-const socialBtn = 'w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted transition-colors hover:bg-brand-blueTint hover:text-brand-blue';
+// Isian tombol sosial pakai hitam transparan, bukan token `border` (#EEF0F3).
+// Token itu condong biru dan di atas latar footer yang hangat lingkarannya
+// terbaca sedikit keabu-abuan dingin; hitam transparan ikut menghangat sendiri
+// mengikuti latarnya.
+const socialBtn = 'w-11 h-11 rounded-full bg-black/5 flex items-center justify-center text-muted transition-colors hover:bg-brand-blueTint hover:text-brand-blue';
 ---
 
 {/* Garis gradasi oranye-kuning di puncak footer dibuang: wordmark raksasa di
     dasar sudah membawa warna brand, dan dua aksen oranye di satu kaki halaman
-    saling melemahkan. overflow-hidden menahan wordmark yang sengaja dibuat
-    selebar mungkin supaya tidak menimbulkan geser mendatar. */}
-<footer class="bg-surface-warm overflow-hidden">
+    saling melemahkan. Yang menggantikannya cuma rambut garis netral, dan itu
+    memang dibutuhkan: latar footer #F7F6F3 dan latar seksi terakhir di halaman
+    pintu #F8FAFC praktis nilainya sama, jadi tanpa garis batas footer hilang
+    dan halaman terlihat cuma meluruh.
+
+    Garisnya menempel di elemen footer, bukan di dalam Container, supaya
+    memanjang dari tepi ke tepi layar. Pembeda dengan garis di dalam footer
+    dipegang oleh panjangnya, bukan oleh ketebalan atau opasitas: yang membatasi
+    wilayah membentang penuh, yang memisahkan baris berhenti di lebar konten.
+    overflow-hidden menahan wordmark yang sengaja dibuat selebar mungkin supaya
+    tidak menimbulkan geser mendatar. */}
+<footer class="hairline bg-surface-warm overflow-hidden border-t border-black/8">
   <Container width="wide">
     {/* Pita CTA "Siap berbagi hari ini?" sengaja dibuang. Beranda sudah ditutup
         seksi pemilih peran yang mengirim pesan WhatsApp yang sudah terisi, jadi
@@ -119,7 +132,7 @@ const socialBtn = 'w-11 h-11 rounded-full bg-border flex items-center justify-ce
 
     {/* Strip utilitas. Nomor WhatsApp berdiri di sini sebagai keterangan kontak:
         tanpa tombol, tanpa ajakan, cukup nomor yang bisa dibaca dan disalin. */}
-    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 pb-7 border-t border-black/10">
+    <div class="hairline flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-4 pb-7 border-t border-black/8">
       <p class="text-body-sm text-muted">© {year} bagiberbagi.id. Dibuat dengan kasih untuk Indonesia.</p>
       <a
         href={waLink}
@@ -139,15 +152,29 @@ const socialBtn = 'w-11 h-11 rounded-full bg-border flex items-center justify-ce
         atas wordmark karena khawatir wordmark kehilangan posisi penutup, tapi
         ternyata tidak: wordmark tetap elemen terbesar, sementara slab teks padat
         di tengah footer justru menghalangi mata yang sedang turun. */}
-    <div class="pt-5 pb-9 border-t border-black/10">
+    <div class="hairline pt-5 pb-9 border-t border-black/6">
       <p class="text-micro leading-relaxed text-muted/65">
-        <strong class="font-semibold text-muted/80">Tentang bagiberbagi.id.</strong> bagiberbagi.id adalah platform donasi makanan dan gerakan sosial di Indonesia yang menyalurkan paket makanan bergizi dari dapur UMKM lokal ke panti asuhan, keluarga prasejahtera, dan warga yang membutuhkan, lengkap dengan bukti foto dan video maksimal H+1. Berawal dari program Jumat Berkah dan Ramadhan Berkah, kami membuka lima pintu berbagi: berbagi makanan, berbagi barang, berbagi waktu, berbagi ruang, dan berbagi dana. Donatur, relawan, mitra dapur UMKM, komunitas, hingga perusahaan yang menjalankan program CSR dapat ikut bergerak bersama. Mulai berdonasi, bersedekah, dan berbagi rezeki secara online dengan cara yang mudah, aman, dan transparan bersama komunitas bagiberbagi.id, menjangkau lebih banyak kota di seluruh Indonesia.
+        <strong class="font-semibold text-muted/80">Tentang bagiberbagi.id.</strong> bagiberbagi.id adalah platform donasi makanan dan gerakan sosial di Indonesia yang menyalurkan paket makanan bergizi dari dapur UMKM lokal ke panti asuhan, keluarga prasejahtera, dan warga yang membutuhkan, lengkap dengan bukti foto dan video maksimal H+1. Berawal dari program Jumat Berkah dan Ramadhan Berkah, kami membuka pintu-pintu berbagi: berbagi makanan, berbagi barang, berbagi waktu, berbagi ruang, berbagi dana, dan berbagi pohon. Donatur, relawan, mitra dapur UMKM, komunitas, hingga perusahaan yang menjalankan program CSR dapat ikut bergerak bersama. Mulai berdonasi, bersedekah, dan berbagi rezeki secara online dengan cara yang mudah, aman, dan transparan bersama komunitas bagiberbagi.id, menjangkau lebih banyak kota di seluruh Indonesia.
       </p>
     </div>
   </Container>
 </footer>
 
 <style>
+  /* Semua garis di footer setipis yang bisa digambar layarnya.
+     `border-t` sudah 1px CSS dan itu memang nilai terkecil yang tersedia, tapi
+     di layar retina satu piksel CSS digambar dengan dua piksel perangkat, dan
+     itu yang membuatnya terbaca tebal. 0,5px turun jadi tepat satu piksel
+     perangkat, jadi garisnya benar-benar rambut.
+
+     Layar 1x sengaja tidak ikut: di sana 0,5px dibulatkan, dan hasilnya bisa
+     hilang sama sekali. Aturan ini menyentuh ketiga garis footer sekaligus,
+     karena kalau cuma batas atasnya yang ditipiskan, dua garis di dalam justru
+     jadi yang paling tebal dan urutannya terbalik. */
+  @media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
+    .hairline { border-top-width: 0.5px; }
+  }
+
   /* Wordmark raksasa. Warnanya oranye brand pada opasitas rendah: cukup untuk
      jadi bidang warna, tidak cukup untuk bersaing dengan tautan di atasnya.
      Tinggi viewBox (152) sengaja lebih besar dari baseline teks (112) supaya

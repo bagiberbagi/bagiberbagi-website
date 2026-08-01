@@ -65,6 +65,28 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
     </Container>
   </section>
 
+  <!-- KONSEP: kenapa pintu ini ada. Menempel langsung di bawah hero supaya
+       terbaca sebagai lanjutan kalimatnya, bukan seksi terpisah. Pintu yang
+       belum punya cerita melewatinya. -->
+  {content?.story && (
+    <section class="section bg-white" style={styleVars}>
+      <Container>
+        <div class="eyebrow text-[var(--cat-deep)]">Konsep</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">{content.story.headline}</h2>
+        <div class="flex flex-col gap-4">
+          {content.story.paragraphs.map((par) => (
+            <p class="text-body md:text-title-sm text-muted leading-relaxed">{par}</p>
+          ))}
+        </div>
+        {content.story.closing && (
+          <p class="mt-8 border-l-4 border-[var(--cat)] pl-5 text-title-sm md:text-title font-semibold text-ink leading-snug">
+            {content.story.closing}
+          </p>
+        )}
+      </Container>
+    </section>
+  )}
+
   <!-- TEASER DAMPAK: angka ringkas → lempar ke showcase /jejak -->
   {hasImpact && (
     <section class="section bg-white" style={styleVars}>
@@ -134,6 +156,26 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
       {active.length === 0 && upcoming.length === 0 && (
         <p class="text-muted">Program untuk pintu ini sedang kami siapkan.</p>
       )}
+
+      {/* Cara ikut menumpang di band yang sama, bukan bikin seksi sendiri.
+          Pintu tanpa program cuma punya satu kalimat di atas, dan satu kalimat
+          tidak cukup untuk menahan seksi setinggi ini. */}
+      {content?.contribute && content.contribute.length > 0 && (
+        <div class="mt-10 pt-8 border-t border-border">
+          <h3 class="text-title-sm font-semibold text-ink mb-5">
+            {active.length + upcoming.length > 0 ? 'Cara lain untuk ikut' : 'Yang bisa kamu lakukan sekarang'}
+          </h3>
+          <div class="grid gap-4 sm:grid-cols-3">
+            {content.contribute.map((step, i) => (
+              <div class="rounded-card bg-white border border-border p-5">
+                <span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-[var(--cat-tint)] text-[var(--cat-deep)] font-bold text-body-sm mb-3 tabular-nums">{i + 1}</span>
+                <h4 class="text-body font-semibold text-ink mb-1">{step.title}</h4>
+                <p class="text-body-sm text-muted leading-snug">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Container>
   </section>
 
@@ -185,7 +227,7 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
     <Container>
       <div class="eyebrow">Pintu Lainnya</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jalan berbagi yang lain</h2>
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
         {otherPintu.map((p) => (
           <a href={`/berbagi-${p.slug}/`} style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`} class="group flex items-center gap-3 rounded-card border border-border p-4 transition-shadow hover:shadow-cardSm">
             <span class="flex-none w-10 h-10 rounded-xl grid place-items-center bg-[var(--cat-tint)] text-[var(--cat)]">

@@ -11,14 +11,26 @@ if (!site) throw new Error('settings/site entry not found');
 const footer = await getEntry('footer', 'footer');
 if (!footer) throw new Error('footer/footer entry not found');
 
-// Kolom "Program" dari CMS digantikan kolom Pintu Berbagi yang dirender dinamis
-// dari PINTU (single-source) — sisanya (Kemitraan/Perusahaan/Legal) tetap CMS.
-const linkCols = footer.data.columns.filter((c) => !/program/i.test(c.title));
-
 const igLink = `https://instagram.com/${site.data.socials.instagram}`;
 const tiktokLink = `https://tiktok.com/@${site.data.socials.tiktok}`;
 const emailLink = `mailto:${site.data.socials.email}`;
 const waLink = buildWaLink(site.data.waNumber);
+
+// Kolom "Program" dari CMS digantikan kolom Pintu Berbagi yang dirender dinamis
+// dari PINTU (single-source), sisanya (Kemitraan/Perusahaan/Legal) tetap CMS.
+//
+// Nomor WhatsApp juga punya satu sumber: settings/site. Kolom Legal & Kontak
+// menyimpan tautannya sendiri, jadi dulu ganti nomor berarti mengedit dua tempat
+// dan yang satu pasti tertinggal. Href wa.me apa pun dari CMS ditulis ulang ke
+// waLink, jadi editor cukup mengurus labelnya dan nomornya ikut settings.
+const linkCols = footer.data.columns
+  .filter((c) => !/program/i.test(c.title))
+  .map((col) => ({
+    ...col,
+    links: col.links.map((l) =>
+      l.href.startsWith('https://wa.me/') ? { ...l, href: waLink } : l
+    ),
+  }));
 const year = new Date().getFullYear();
 const socialBtn = 'w-11 h-11 rounded-full bg-border flex items-center justify-center text-muted transition-colors hover:bg-brand-blueTint hover:text-brand-blue';
 ---

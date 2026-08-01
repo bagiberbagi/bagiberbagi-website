@@ -254,7 +254,11 @@ export default config({
             links: fields.array(
               fields.object({
                 label: fields.text({ label: 'Label' }),
-                href: fields.text({ label: 'URL / Anchor' }),
+                href: fields.text({
+                  label: 'URL / Anchor',
+                  description:
+                    'Isi "https://wa.me/" tanpa nomor untuk tautan WhatsApp: nomornya diambil otomatis dari Identitas & Kontak.',
+                }),
                 target: fields.select({
                   label: 'Buka di',
                   options: [

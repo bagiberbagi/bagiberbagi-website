@@ -70,6 +70,29 @@ const adminTitle = `Keystatic ${section} | bagiberbagi.id`.slice(0, 65);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
     <title>{adminTitle}</title>
+    {/* Router Keystatic mencocokkan path secara persis: pathname dipotong
+        awalannya lalu di-split('/'), jadi slash di ujung menyisakan segmen
+        kosong dan '/keystatic/cloud/oauth/callback/' tak lagi sama dengan
+        'cloud/oauth/callback'. Yang keluar layar "Not found".
+
+        Slash itu tak terhindarkan di sisi kita: build `format: 'directory'`
+        melahirkan folder, dan nginx menambahkan slash lewat 301 pada URL
+        direktori. Keystatic mengirim redirect_uri tanpa slash, nginx
+        menambahkannya, dan login tak pernah bisa selesai. Reload di route
+        admin mana pun kena hal yang sama.
+
+        Slash dibuang di klien sebelum aplikasi mount. replaceState tak
+        memicu permintaan baru, jadi nginx tak berkesempatan menambahkannya
+        lagi. is:inline supaya jalan tanpa menunggu bundel React. */}
+    <script is:inline>
+      if (location.pathname.length > 1 && location.pathname.endsWith('/')) {
+        history.replaceState(
+          null,
+          '',
+          location.pathname.slice(0, -1) + location.search + location.hash
+        );
+      }
+    </script>
   </head>
   <body>
     <!-- Admin UI Keystatic dirender sepenuhnya di klien dan tidak punya heading

@@ -24,6 +24,16 @@
     @apply text-brand-orange font-bold text-eyebrow tracking-wide uppercase mb-3;
   }
 
+  /* Adik dari .eyebrow: peran sama (label huruf besar) tapi untuk di dalam
+     kartu dan panel, di mana 13px terasa terlalu menuntut. Tanpa margin bawaan
+     karena jaraknya selalu diatur oleh induknya. Warnanya juga tidak dipatok:
+     label ini muncul di atas foto, di panel amber, dan di bidang biru, jadi
+     warna selalu ditentukan di tempat pakainya. */
+  .label {
+    @apply font-bold text-label uppercase;
+    letter-spacing: 0.14em;
+  }
+
   /* text-base eksplisit = ukuran CTA besar terkunci (tak bergantung inherit
      konteks). btn-sm di bawah menimpanya jadi text-body-sm. */
   .btn-primary {

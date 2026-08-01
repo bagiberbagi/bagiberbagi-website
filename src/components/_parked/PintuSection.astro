@@ -1,10 +1,10 @@
 ---
 import { getEntry } from 'astro:content';
-import Icon from './Icon.astro';
-import Container from './Container.astro';
-import { PINTU } from '../consts';
-import { getProgramsByPintu } from '../lib/programs';
-import { buildWaLink } from '../lib/format';
+import Icon from '../Icon.astro';
+import Container from '../Container.astro';
+import { PINTU } from '../../consts';
+import { getProgramsByPintu } from '../../lib/programs';
+import { buildWaLink } from '../../lib/format';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');

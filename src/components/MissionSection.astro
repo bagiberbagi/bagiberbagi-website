@@ -1,0 +1,78 @@
+---
+// Pernyataan misi, berdiri sebagai seksinya sendiri.
+//
+// Sebelumnya dua paragraf ini menumpang di ujung VisionSection dan selalu kalah:
+// jangkar seksi itu kartu pintu, jadi misi otomatis jadi ide kedua di ruang yang
+// sudah punya tuan. Dipindah ke sini supaya punya jangkar sendiri, dan
+// jangkarnya memang cuma satu, yaitu kalimatnya.
+//
+// Karena itu seksi ini sengaja kosong dari elemen lain: tanpa eyebrow, tanpa
+// tombol, tanpa gambar. Bobotnya datang dari ukuran huruf dan ruang di
+// sekelilingnya, bukan dari benda tambahan. Napasnya paling lega di seluruh
+// beranda, dan itu memang tujuannya: satu jeda sebelum peta lima pintu.
+//
+// Letaknya tepat sebelum VisionSection supaya urutannya jadi keyakinan dulu,
+// baru rencananya. Dibalik, lima pintu jadi daftar tanpa alasan.
+import Container from './Container.astro';
+---
+
+<section class="mission bg-surface-warm">
+  <Container width="wide">
+    <div class="ms-block">
+      <p class="ms-lead" data-fade>
+        Setiap orang punya sesuatu yang berarti untuk dibagi. Ada yang berbagi makanan, ada yang berbagi waktu, ada yang berbagi pengetahuan, ada yang berbagi kesempatan.
+      </p>
+      <p class="ms-claim" data-fade>
+        Misi kami membuat setiap bentuk berbagi jadi <span class="ms-accent">lebih mudah, transparan, dan berdampak.</span>
+      </p>
+    </div>
+  </Container>
+</section>
+
+<style>
+  /* Padding vertikal sengaja lebih besar dari ritme seksi lain (py-24 md:py-32).
+     Seksi ini satu-satunya yang boleh menyimpang karena tugasnya justru memberi
+     jeda, dan jeda itu yang membuat kalimatnya terbaca sebagai pendirian, bukan
+     sebagai keterangan tambahan. */
+  .mission { padding: 96px 0; }
+  @media (min-width: 768px) { .mission { padding: 152px 0; } }
+
+  .ms-block {
+    max-width: 54rem;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: relative;
+  }
+  /* Garis pendek sebagai satu-satunya ornamen: menandai bahwa ini pernyataan,
+     bukan paragraf yang kebetulan besar. */
+  .ms-block::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 3px;
+    border-radius: 2px;
+    background: #f4791d;
+    margin-bottom: 8px;
+  }
+
+  .ms-lead {
+    margin: 0;
+    font-size: clamp(19px, 2.1vw, 26px);
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+    color: #505d6f;
+    text-wrap: pretty;
+  }
+  .ms-claim {
+    margin: 0;
+    font-size: clamp(28px, 4.2vw, 52px);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.032em;
+    color: #0f172a;
+    text-wrap: balance;
+  }
+  .ms-accent { color: #c25d0f; }
+</style>

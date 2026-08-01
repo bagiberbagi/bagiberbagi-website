@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
-import { formatProgramOptionLabel, buildWaLink } from '../lib/format';
-import { getProgramsByPintu } from '../lib/programs';
+import { formatProgramOptionLabel, buildWaLink } from '../../lib/format';
+import { getProgramsByPintu } from '../../lib/programs';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -79,5 +79,5 @@ const initialWaLink = buildWaLink(site.data.waNumber, 'Halo, saya ingin donasi p
 </div>
 
 <script>
-  import '../scripts/calculator.js';
+  import '../../scripts/calculator.js';
 </script>

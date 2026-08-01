@@ -14,6 +14,12 @@ export default {
           orangeTint: '#FDEEE1',
           blueTint: '#E3EAFB',
         },
+        // Netral hangat untuk bidang seksi yang berdampingan dengan hero kuning.
+        // gray-50 condong biru dan terasa dingin di sebelah kuning; ini padanan
+        // hangatnya. Dipakai sebagai latar seksi, bukan sebagai latar kartu.
+        surface: {
+          warm: '#F7F6F3',
+        },
         ink: '#0F172A',
         muted: '#505D6F',
         border: '#EEF0F3',
@@ -42,6 +48,11 @@ export default {
       // agar token yang berlaku; weight heading turun ke bold (700), hierarki
       // dari ukuran+tracking bukan ketebalan.
       fontSize: {
+        // Label terkecil. Ada karena peran ini terus muncul (label huruf besar
+        // berjarak lebar dan keterangan kecil di dalam kartu) dan tiap kali
+        // orang menulis 11px mentah di scoped style karena micro terasa terlalu
+        // besar. Sekarang angkanya satu dan tercatat.
+        label: ['11px', { lineHeight: '1.35', letterSpacing: '0.01em' }],
         micro: ['12px', { lineHeight: '1.4', letterSpacing: '-0.01em' }],
         eyebrow: ['13px', { lineHeight: '1.2', letterSpacing: '0' }],
         'body-sm': ['14px', { lineHeight: '1.55', letterSpacing: '-0.01em' }],

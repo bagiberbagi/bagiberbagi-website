@@ -1,58 +1,58 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
 import Hero from '../components/Hero.astro';
-import Stats from '../components/Stats.astro';
-import PintuSection from '../components/PintuSection.astro';
-import ProgramHighlights from '../components/ProgramHighlights.astro';
-import ProgramFeatures from '../components/ProgramFeatures.astro';
-import HowItWorks from '../components/HowItWorks.astro';
+import ProblemSection from '../components/ProblemSection.astro';
+import SolutionSection from '../components/SolutionSection.astro';
+import TrustSection from '../components/TrustSection.astro';
+import WhyFood from '../components/WhyFood.astro';
 import ImpactSection from '../components/ImpactSection.astro';
 // JejakTerbaru disembunyikan sementara di beranda (desain belum solid dengan
 // home saat ini). Komponen & data tetap ada; showcase penuh di /jejak.
 // import JejakTerbaru from '../components/JejakTerbaru.astro';
 import FaqHome from '../components/FaqHome.astro';
-import JoinUs from '../components/JoinUs.astro';
-import heroImage from '../assets/images/hero-jumat-berkah.png';
+import MissionSection from '../components/MissionSection.astro';
+import VisionSection from '../components/VisionSection.astro';
+import ClosingSection from '../components/ClosingSection.astro';
 ---
 
 <BaseLayout>
-  {/* Alur narasi donatur: hook+aksi (hero+stats) → kenapa percaya (Mengapa) → program aktif (apa) → cara kerja (gimana) → dampak → tuntasin ragu (FAQ, tutup narasi via radius bind). Lalu di luar narasi: sekunder (gabung) → arah gerakan (pintu). */}
-  {/* Layar pertama = satu zona kuning: navbar (seamless), Hero, dan Stats berbagi
-      SATU foto lapangan di belakang overlay. Overlay opaque di kiri (teks kebaca),
-      memudar ke kanan agar foto menembus — keterbacaan angka stats tetap terjaga. */}
-  {/* Ditarik naik sejauh tinggi header (mobile 77px / desktop 89px) lalu
-      di-pad balik sepadan — foto+overlay menyelip DI BELAKANG header transparan
-      sehingga layar pertama full seamless, tanpa memindah posisi konten hero.
-      Angka = tinggi header saat ini (logo + btn py-4 + py-4 bar); sesuaikan bila
-      padding header berubah. */}
-  {/* min-h-svh: layar pertama terasa penuh saat load. flex-col → Hero mengisi &
-      ter-pusat vertikal, Stats mengendap di dasar. svh (bukan vh) agar aman dari
-      bilah URL mobile. Jika konten > layar (viewport pendek) zona tetap tumbuh &
-      ikut scroll — tetap responsive. */}
-  <div class="relative overflow-hidden bg-brand-yellow min-h-svh flex flex-col -mt-[77px] pt-[77px] nav:-mt-[89px] nav:pt-[89px]">
-    <Image src={heroImage} alt="" loading="eager" class="absolute inset-0 w-full h-full object-cover object-center" />
-    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-brand-yellow from-25% via-brand-yellow/85 to-brand-yellow/55"></div>
-    {/* Scrim vertikal: dasar zona (baris Stats) mengendap ke kuning solid agar
-        foto tak mengotori angka & batas ke seksi putih bersih; hero atas tetap
-        menembus foto. */}
-    <div aria-hidden="true" class="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-brand-yellow to-transparent"></div>
-    <div aria-hidden="true" class="absolute inset-0 bg-brand-yellow/15 md:hidden"></div>
-    <div class="relative flex flex-1 flex-col">
-      <div class="flex flex-1 flex-col justify-center">
-        <Hero />
-      </div>
-      <Stats />
-    </div>
-  </div>
-  <ProgramFeatures />
-  <ProgramHighlights />
-  <HowItWorks />
+  {/* Alur narasi: hook + jalur donasi (hero) → keraguan divalidasi (Masalah) →
+      dijawab platform (Solusi) → dibuktikan (Kepercayaan) → kenapa mulai dari
+      makanan → cara kerja → dampak → tuntasin ragu (FAQ) → ajakan bergabung →
+      arah gerakan (lima pintu). */}
+
+  {/* Hero self-contained sekaligus jalur donasi: kartu kanannya memuat program
+      berjalan, agenda minggu ini, pemilih porsi, dan tombol WhatsApp. Anchor
+      #donasi ada di sana.
+      Komponen yang dilepas dari beranda tapi tetap ada di repo: Stats (belum
+      dibutuhkan), DonationCalculator (dilebur ke kartu hero), ProgramFeatures
+      dan ProgramHighlights (pesannya sudah dibawa Masalah, Solusi, dan
+      Kepercayaan), serta PintuSection (digantikan VisionSection yang memakai
+      id="pintu" yang sama). */}
+  <Hero />
+
+  {/* Cerita dua bagian "kenapa bagiberbagi ada": keraguan divalidasi dulu,
+      baru dijawab dengan platform sebagai infrastruktur. */}
+  <ProblemSection />
+  <SolutionSection />
+
+  {/* Bukti bahwa alur di atas benar-benar dijalankan, lalu jembatan ke program
+      pertama: kenapa gerakan ini dimulai dari makanan. */}
+  <TrustSection />
+  <WhyFood />
+
   <ImpactSection />
   {/* <JejakTerbaru /> disembunyikan sementara (desain belum selaras home). */}
   <FaqHome />
-  <JoinUs />
-  <PintuSection />
+  {/* Keyakinannya dulu, baru rencananya. Dibalik, lima pintu jadi daftar tanpa
+      alasan, dan pernyataan misinya jatuh sebagai catatan kaki. */}
+  <MissionSection />
+  <VisionSection />
+  {/* Penutup halaman. Sengaja bukan ajakan donasi kedua: kartu hero sudah
+      memegang donasi dan pita footer memegang kontak umum, jadi seksi ini
+      menjawab sisanya, yaitu jalur ikut selain menyumbang uang. Menggantikan
+      JoinUs yang dulu duduk di tengah halaman. */}
+  <ClosingSection />
 </BaseLayout>
 
 <script>

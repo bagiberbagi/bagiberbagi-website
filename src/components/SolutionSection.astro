@@ -1,0 +1,266 @@
+---
+// Solusi: jawaban atas keraguan di ProblemSection, dan satu-satunya tempat
+// ekosistem digambarkan utuh. Visualnya satu garis alur tunggal dengan titik
+// yang mengalir pelan, bukan diagram kartu atau grid node, supaya gerak yang
+// jadi penjelasnya.
+//
+// Kenapa koordinat perhentian ditulis eksplisit di sini: label diposisikan dari
+// angka yang sama dengan yang dipakai menggambar garis, jadi label tidak bisa
+// melenceng dari titiknya waktu lebar layar berubah. Perhentian juga selang
+// seling atas dan bawah, jadi dua label yang sebidang selalu terpisah dua
+// langkah dan tidak mungkin bertabrakan.
+import Container from './Container.astro';
+
+type Stop = {
+  x: number;
+  y: number;
+  above: boolean;
+  t: string;
+  d: string;
+  core?: boolean;
+};
+
+// Kotak gambar dibuat pas dengan isinya: tinggi viewBox cuma menyisakan ruang
+// yang benar-benar dipakai label paling atas dan paling bawah, supaya tidak ada
+// pita kosong di atas atau di bawah garis.
+const VB_W = 1000;
+const VB_H = 320;
+
+const STOPS: Stop[] = [
+  { x: 110, y: 225, above: false, t: 'Donatur', d: 'niat baik masuk' },
+  { x: 310, y: 100, above: true, t: 'Bagiberbagi', d: 'kurasi dan verifikasi', core: true },
+  { x: 510, y: 225, above: false, t: 'UMKM & Relawan', d: 'menyiapkan dan mengantar' },
+  { x: 710, y: 100, above: true, t: 'Penerima Manfaat', d: 'bantuan diterima' },
+  { x: 890, y: 185, above: false, t: 'Laporan Dampak', d: 'bukti kembali ke donatur' },
+];
+
+// Garis dirakit dari koordinat perhentian, bukan ditulis tangan, supaya menggeser
+// satu perhentian otomatis menggeser garisnya juga. Tiap ruas kubik dengan
+// singgungan mendatar di kedua ujung = gelombang halus yang melewati tiap titik.
+const RIVER_D = STOPS.map((s, i) => {
+  if (i === 0) return `M${s.x},${s.y}`;
+  const prev = STOPS[i - 1]!;
+  const dx = (s.x - prev.x) * 0.5;
+  return `C${prev.x + dx},${prev.y} ${s.x - dx},${s.y} ${s.x},${s.y}`;
+}).join(' ');
+
+// Jarak label dari titiknya, dalam satuan viewBox.
+const GAP = 30;
+const pct = (value: number, total: number) => ((value / total) * 100).toFixed(3);
+---
+
+{/* id="cara-kerja" pindah ke sini dari HowItWorks yang sudah dilepas dari
+    beranda. Anchor-nya dipertahankan, bukan dibuang, karena tautan "Lihat Cara
+    Kerjanya" di hero menujunya, dan sekarang seksi inilah yang menjelaskan
+    alurnya. */}
+<section id="cara-kerja" class="solution py-24 md:py-32 bg-white scroll-mt-24">
+  <Container width="wide">
+    <header class="sol-head">
+      <p class="eyebrow" data-fade>Solusinya</p>
+      <h2 class="sol-h2" data-fade>Kami membangun infrastrukturnya.</h2>
+      <p class="sol-lead" data-fade>
+        Satu alur yang menghubungkan setiap peran, dari niat baik yang masuk sampai bukti yang kembali.
+      </p>
+    </header>
+
+    {/* Layar lebar: garis mengalir mendatar, label menempel pada koordinat SVG */}
+    <div class="river" data-fade>
+      <svg
+        class="river-svg"
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        fill="none"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
+        <path id="solRiver" class="river-line" d={RIVER_D} />
+
+        {STOPS.map((s) => (
+          s.core ? (
+            <Fragment>
+              <circle class="river-halo" cx={s.x} cy={s.y} r="26" />
+              <circle class="river-core" cx={s.x} cy={s.y} r="12.5" />
+            </Fragment>
+          ) : (
+            <circle class="river-mark" cx={s.x} cy={s.y} r="9" />
+          )
+        ))}
+
+        {/* Titik mengalir pelan: gerakan menjelaskan arah, bukan menghias */}
+        <circle class="river-dot" r="6">
+          <animateMotion dur="11s" repeatCount="indefinite"><mpath href="#solRiver" /></animateMotion>
+        </circle>
+        <circle class="river-dot is-soft" r="4.5">
+          <animateMotion dur="11s" begin="3.6s" repeatCount="indefinite"><mpath href="#solRiver" /></animateMotion>
+        </circle>
+        <circle class="river-dot is-soft" r="4.5">
+          <animateMotion dur="11s" begin="7.2s" repeatCount="indefinite"><mpath href="#solRiver" /></animateMotion>
+        </circle>
+      </svg>
+
+      {STOPS.map((s) => (
+        <span
+          class:list={['stop', s.above ? 'is-above' : 'is-below', s.core && 'is-core']}
+          style={`left:${pct(s.x, VB_W)}%;top:${pct(s.above ? s.y - GAP : s.y + GAP, VB_H)}%`}
+        >
+          <span class="stop-t">{s.t}</span>
+          <span class="stop-d">{s.d}</span>
+        </span>
+      ))}
+    </div>
+
+    {/* Layar sempit: alur tegak, isi dan urutan sama persis */}
+    <ol class="stack">
+      {STOPS.map((s) => (
+        <li class:list={['si', s.core && 'is-core']} data-fade>
+          <span class="si-mark" aria-hidden="true"></span>
+          <span class="si-t">{s.t}</span>
+          <span class="si-d">{s.d}</span>
+        </li>
+      ))}
+    </ol>
+  </Container>
+</section>
+
+<style>
+  /* ===== Kepala seksi =====
+     Rata kiri, dan jaraknya ke diagram dijaga rapat supaya tidak muncul pita
+     kosong di tengah seksi. */
+  .sol-head {
+    max-width: 46rem;
+    margin: 0 0 40px;
+  }
+  .sol-h2 {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-wrap: balance;
+    color: #0f172a;
+    margin: 0;
+  }
+  .sol-lead {
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.65;
+    color: #505d6f;
+    max-width: 58ch;
+    margin: 18px 0 0;
+    text-wrap: pretty;
+  }
+
+  /* ===== Garis alur mendatar (layar lebar) =====
+     Mengisi penuh lebar container seksi, dan tebal garis serta penanda dinaikkan
+     supaya gambarnya sepadan dengan bidang selebar itu. */
+  .river {
+    position: relative;
+    display: none;
+    width: 100%;
+  }
+  @media (min-width: 900px) { .river { display: block; } }
+
+  .river-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .river-line {
+    stroke: #f4791d;
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    stroke-dasharray: 7 12;
+    opacity: 0.55;
+  }
+
+  /* Penanda sekunder: lingkaran kosong, tipis */
+  .river-mark {
+    fill: #fff;
+    stroke: #f4791d;
+    stroke-width: 3;
+    opacity: 0.9;
+  }
+  /* Penanda inti: paling besar, paling pekat, plus halo lembut */
+  .river-halo { fill: rgba(244, 121, 29, 0.14); }
+  .river-core { fill: #f4791d; }
+
+  .river-dot { fill: #f4791d; }
+  .river-dot.is-soft { fill: #f4791d; opacity: 0.45; }
+
+  /* Label: lebar tetap dan ditengahkan pada koordinat titiknya, jadi tidak
+     pernah bergeser relatif terhadap penanda di lebar layar mana pun. */
+  .stop {
+    position: absolute;
+    width: 196px;
+    margin-left: -98px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+  .stop.is-above { transform: translateY(-100%); }
+  .stop-t {
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: #0f172a;
+  }
+  .stop-d {
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: #505d6f;
+  }
+  .stop.is-core .stop-t {
+    font-size: 21px;
+    font-weight: 700;
+    color: #c25d0f;
+  }
+
+  /* ===== Alur tegak (layar sempit) ===== */
+  .stack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 26rem;
+    position: relative;
+  }
+  @media (min-width: 900px) { .stack { display: none; } }
+  .stack::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 14px;
+    bottom: 14px;
+    border-left: 2px dashed rgba(244, 121, 29, 0.5);
+  }
+  .si {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    padding: 16px 0;
+  }
+  .si-mark {
+    grid-row: span 2;
+    align-self: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.2px solid #f4791d;
+    opacity: 0.9;
+  }
+  .si.is-core .si-mark {
+    width: 18px;
+    height: 18px;
+    margin-left: -2px;
+    background: #f4791d;
+    border-color: #f4791d;
+    opacity: 1;
+    box-shadow: 0 0 0 6px rgba(244, 121, 29, 0.14);
+  }
+  .si-t { font-size: 16px; font-weight: 600; letter-spacing: -0.015em; color: #0f172a; }
+  .si-d { font-size: 13.5px; line-height: 1.45; color: #505d6f; }
+  .si.is-core .si-t { font-size: 18px; font-weight: 700; color: #c25d0f; }
+
+  /* Tanpa gerak: titik yang mengalir disembunyikan, garis dan penanda tetap
+     menyampaikan urutan yang sama. */
+  @media (prefers-reduced-motion: reduce) {
+    .river-dot { display: none; }
+  }
+</style>

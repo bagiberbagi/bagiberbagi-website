@@ -1,0 +1,134 @@
+---
+import { mapsLinkUrl, formatCoordinates, type MapPoint } from '../lib/geo';
+
+export interface Props {
+  points: MapPoint[];
+  /** Nama kawasan dari entri jejak, dipakai sebagai judul saat titiknya banyak. */
+  location: string;
+  class?: string;
+}
+
+const { points, location, class: className = 'mb-8' } = Astro.props;
+
+const many = points.length > 1;
+// Judul kartu: satu titik memakai namanya sendiri, banyak titik memakai nama
+// kawasan plus hitungannya, karena nama satu titik tak mewakili sisanya.
+const heading = many ? location : points[0].label;
+---
+
+{/* Peta pakai pola facade seperti video: sebelum ditekan yang ada cuma kartu
+    statis, jadi halaman ini tak menarik ubin peta maupun Leaflet untuk pembaca
+    yang cuma ingin membaca laporannya.
+
+    Petanya OpenStreetMap, bukan Google Maps: tanpa API key, tanpa akun, dan tak
+    menagih per tampilan, yang penting karena jumlah halaman jejak terus
+    bertambah. `isolate` mengurung z-index panel Leaflet di dalam kartu ini,
+    supaya petanya tak pernah naik ke atas header yang sticky. */}
+<section class={className} aria-label="Lokasi kegiatan">
+  <div class="isolate overflow-hidden rounded-card border border-border bg-white">
+    <div class="flex flex-wrap items-center gap-3 p-4">
+      <span class="grid h-11 w-11 flex-none place-items-center rounded-xl text-white" style="background:var(--cat)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path>
+          <circle cx="12" cy="10" r="2.5"></circle>
+        </svg>
+      </span>
+      <span class="min-w-0">
+        <span class="block font-bold text-ink">{heading}</span>
+        <span class="block text-body-sm text-muted tabular-nums">
+          {many ? `${points.length} titik penyaluran` : formatCoordinates(points[0])}
+        </span>
+      </span>
+      {!many && (
+        <a
+          href={mapsLinkUrl(points[0])}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-track="jejak_map_link"
+          class="ml-auto inline-flex flex-none items-center gap-1.5 rounded-full px-4 py-2 text-body-sm font-bold text-white no-underline"
+          style="background:var(--cat)"
+        >
+          Rute
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7M9 7h8v8"></path>
+          </svg>
+        </a>
+      )}
+    </div>
+
+    {/* Titik diserahkan ke klien sebagai JSON di data-*, bukan dicetak jadi
+        pemanggilan Leaflet inline: skrip peta hidup di berkas sendiri dan tak
+        perlu ditulis ulang per halaman. */}
+    <div
+      data-map
+      data-points={JSON.stringify(points)}
+      class="relative aspect-[16/9] w-full border-t border-border bg-gray-100 sm:aspect-[2/1]"
+    >
+      <button
+        type="button"
+        data-map-open
+        data-track="jejak_map_open"
+        aria-label={many ? `Tampilkan peta ${points.length} titik penyaluran` : `Tampilkan peta lokasi ${heading}`}
+        class="group absolute inset-0 h-full w-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-inset"
+      >
+        {/* Latar bergaris tipis: cukup untuk membaca kotak ini sebagai peta yang
+            belum dibuka, tanpa memuat satu ubin pun. */}
+        <span
+          aria-hidden="true"
+          class="absolute inset-0"
+          style="background-color:color-mix(in srgb, var(--cat) 7%, #fff); background-image:linear-gradient(color-mix(in srgb, var(--cat) 14%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--cat) 14%, transparent) 1px, transparent 1px); background-size:28px 28px"
+        ></span>
+        {/* flex-col, bukan grid place-items-center: dua anak di grid jadi dua
+            baris yang membelah tinggi kotak, dan pin-nya terlempar jauh dari
+            tulisannya. */}
+        <span class="absolute inset-0 flex flex-col items-center justify-center gap-2.5">
+          <span class="grid h-12 w-12 place-items-center rounded-full bg-white shadow-card transition-transform duration-300 group-hover:scale-110" style="color:var(--cat)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path>
+              <circle cx="12" cy="10" r="2.5"></circle>
+            </svg>
+          </span>
+          <span class="text-body-sm font-bold text-ink">Tampilkan peta</span>
+        </span>
+      </button>
+    </div>
+
+    {/* Daftar hanya saat titiknya banyak: nomornya cocok dengan nomor di pin,
+        dan tiap baris punya rutenya sendiri karena tujuan orang berbeda-beda. */}
+    {many && (
+      <ol class="divide-y divide-border border-t border-border">
+        {points.map((point, i) => (
+          <li class="flex flex-wrap items-center gap-3 px-4 py-3">
+            <span
+              class="grid h-7 w-7 flex-none place-items-center rounded-full text-body-sm font-bold text-white tabular-nums"
+              style="background:var(--cat)"
+            >
+              {i + 1}
+            </span>
+            <span class="min-w-0">
+              <span class="block font-semibold text-ink">{point.label}</span>
+              <span class="block text-micro text-muted tabular-nums">{formatCoordinates(point)}</span>
+            </span>
+            <a
+              href={mapsLinkUrl(point)}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="jejak_map_link"
+              class="ml-auto inline-flex flex-none items-center gap-1 text-body-sm font-bold no-underline"
+              style="color:var(--cat)"
+            >
+              Rute
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17 17 7M9 7h8v8"></path>
+              </svg>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</section>
+
+<script>
+  import '../scripts/jejak-map.js';
+</script>

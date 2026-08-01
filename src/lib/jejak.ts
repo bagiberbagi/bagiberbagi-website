@@ -3,10 +3,21 @@ import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
 import { createImageResolver } from './assets';
 import { getPrograms } from './programs';
+import { parseVideoUrl, type JejakVideoSource } from './video';
+import { parseCoordinates, type MapPoint } from './geo';
 
 export interface JejakMetric {
   label: string;
   value: number;
+}
+
+export interface JejakVideo {
+  /** Sudah dibaca bentuknya; konsumen tak perlu menyentuh URL mentahnya lagi. */
+  source: JejakVideoSource;
+  /** Poster khusus video. null = pemanggil pakai cover jejak sebagai gantinya. */
+  poster: ImageMetadata | null;
+  caption: string;
+  orientation: 'landscape' | 'portrait';
 }
 
 export interface Jejak {
@@ -21,6 +32,10 @@ export interface Jejak {
   cover: ImageMetadata | null;
   /** Hanya foto yang berkasnya benar-benar ada; entri kosong/hilang dibuang. */
   gallery: ImageMetadata[];
+  /** null = tanpa video, atau link-nya tak dikenali (diperingatkan saat build). */
+  video: JejakVideo | null;
+  /** Titik peta yang koordinatnya terbaca. Kosong = halaman tanpa peta. */
+  points: MapPoint[];
   published: boolean;
   href: string;
 }
@@ -47,6 +62,64 @@ const JEJAK_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
 export const resolveJejakImage = createImageResolver('jejak', JEJAK_IMAGES);
 
 /**
+ * Ubah blok video di frontmatter menjadi bentuk siap render. Link yang tak
+ * dikenali diperlakukan sama seperti foto yang berkasnya hilang: entri tetap
+ * terbit tanpa video, dan build menulis peringatan supaya ketahuan saat deploy
+ * alih-alih menjatuhkan seluruh situs karena satu link salah tempel.
+ */
+const videoWarned = new Set<string>();
+
+function resolveJejakVideo(video: {
+  url: string;
+  poster?: string | null;
+  caption: string;
+  orientation: 'landscape' | 'portrait';
+}): JejakVideo | null {
+  const source = parseVideoUrl(video.url);
+  if (!source) {
+    const raw = video.url.trim();
+    if (raw && !videoWarned.has(raw)) {
+      videoWarned.add(raw);
+      console.warn(`[jejak] link video tidak dikenali, video dilewati: ${raw}`);
+    }
+    return null;
+  }
+  return {
+    source,
+    poster: resolveJejakImage(video.poster),
+    caption: video.caption.trim(),
+    orientation: video.orientation,
+  };
+}
+
+/**
+ * Sama seperti video: isian yang tak terbaca tak menggagalkan build, cuma
+ * menghilangkan petanya dan meninggalkan peringatan supaya ketahuan saat deploy.
+ */
+const coordsWarned = new Set<string>();
+
+function resolveJejakPoints(
+  raw: { label: string; coordinates: string }[],
+  fallbackLabel: string
+): MapPoint[] {
+  return raw.flatMap((entry, i) => {
+    const point = parseCoordinates(entry.coordinates);
+    if (!point) {
+      const text = entry.coordinates.trim();
+      if (text && !coordsWarned.has(text)) {
+        coordsWarned.add(text);
+        console.warn(`[jejak] titik peta tidak terbaca, dilewati: ${text}`);
+      }
+      return [];
+    }
+    // Nama titik boleh kosong: satu titik memakai nama lokasi jejaknya, dan
+    // beberapa titik jatuh ke penomoran supaya daftar dan marker tetap cocok.
+    const label = entry.label.trim() || (raw.length === 1 ? fallbackLabel : `Titik ${i + 1}`);
+    return [{ ...point, label }];
+  });
+}
+
+/**
  * Satu sumber kebenaran untuk semua jejak — kartu beranda, halaman rekam jejak
  * per pintu, halaman program, route detail, dan agregasi dampak semuanya
  * membaca dari sini. Konsumen tak boleh memanggil getCollection('jejak')
@@ -71,6 +144,8 @@ export async function getJejak(): Promise<Jejak[]> {
       gallery: e.data.gallery
         .map((g) => resolveJejakImage(g))
         .filter((img): img is ImageMetadata => img !== null),
+      video: resolveJejakVideo(e.data.video),
+      points: resolveJejakPoints(e.data.points, e.data.location),
       href: `/jejak/${e.id}/`,
     }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));

@@ -271,9 +271,15 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   // dampak baru boleh muncul lewat jejak, bukan diketik tangan.
   tree: {
     story: {
-      headline: 'Kota yang baik tidak hanya dibangun dengan beton.',
+      // Teks ini tulisan pemilik situs. Dua sentuhan saja, dan keduanya bukan
+      // penulisan ulang: judulnya dipendekkan karena versi panjangnya mengulang
+      // hampir persis kalimat pertama paragraf, jadi pembaca membaca klausa yang
+      // sama dua kali berturut-turut. Lalu "menjadi bagian dari solusinya"
+      // diganti "ambil bagian", satu-satunya frasa di sini yang terdengar
+      // seperti siaran pers. Sisanya kata-katanya utuh.
+      headline: 'Kota juga dibangun dengan pohon.',
       paragraphs: [
-        'Kota yang baik bukan hanya dibangun dengan beton, jalan, dan gedung, tetapi juga dengan pohon yang memberi kehidupan. Di tengah suhu kota yang semakin panas, kualitas udara yang menurun, dan dampak perubahan iklim yang semakin nyata, setiap orang kini dapat ikut menjadi bagian dari solusinya.',
+        'Kota yang baik bukan hanya dibangun dengan beton, jalan, dan gedung, tetapi juga dengan pohon yang memberi kehidupan. Di tengah suhu kota yang semakin panas, kualitas udara yang menurun, dan dampak perubahan iklim yang semakin nyata, setiap orang kini bisa ikut ambil bagian.',
         'Melalui Pintu Berbagi Pohon, setiap donasi akan tumbuh menjadi pohon yang menghadirkan keteduhan, menyerap karbon, menghasilkan oksigen, dan memperkuat ketahanan kota bagi generasi mendatang.',
       ],
       closing: 'Karena membangun kota yang lebih hijau bukan hanya tugas pemerintah, tetapi gerakan kita bersama.',

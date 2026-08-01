@@ -150,12 +150,12 @@ export interface CategoryContent {
 export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   food: {
     story: {
-      headline: 'Masakan yang matang pagi ini harus habis hari ini juga.',
+      headline: 'Enam hari dalam seminggu, kami tidak datang.',
       paragraphs: [
-        'Makanan punya batas waktu yang tidak bisa ditawar. Orang yang belum makan sejak pagi juga tidak sedang menunggu hidupnya membaik, dia menunggu makan berikutnya. Anehnya, makanan yang masih layak sering berakhir di tempat sampah, hanya karena pemiliknya tidak tahu harus mengantarkannya ke mana.',
-        'Donasi yang masuk lewat Pintu Berbagi Makanan kami belanjakan ke dapur-dapur kecil yang sudah kami kurasi, lalu masakannya diantar ke penerima yang sudah kami kenali keadaannya. Itu yang berjalan sekarang lewat Jumat Berkah, dan pintu yang sama juga terbuka untuk makanan berlebih yang belum tersentuh supaya tidak ikut terbuang. Foto dan videonya kami kirimkan kembali ke kamu, jadi kamu tahu piring itu berhenti di tangan siapa.',
+        'Jumat Berkah jalan sekali seminggu, dan di hari lain orang tetap perlu makan. Yang benar-benar kami kerjakan baru satu hari itu: dapur kecil yang kami kenal orangnya, penerima yang sudah dipetakan lebih dulu, dan nasi yang harus sampai selagi hangat karena besok sudah tidak layak dimakan. Janji hari Jumat bisa kami pegang justru karena kami menolak menjanjikan hari-hari sisanya.',
+        'Makanan berlebih juga tidak semuanya sanggup kami selamatkan. Ada yang datang di jam yang tidak bisa kami kejar, dan yang sudah telat lebih baik tidak kami angkut sama sekali. Bukan karena ada yang tega membuangnya, tapi karena jam segitu tidak ada lagi alamat yang bisa dituju. Foto dan video yang balik ke kamu dalam sehari itu bukti nasinya sampai, bukan bukti besok ada lagi.',
       ],
-      closing: 'Makanan yang benar-benar menolong adalah makanan yang sampai selagi hangat.',
+      closing: 'Makanan tidak butuh belas kasihan, makanan butuh alamat.',
     },
     stats: [
       { value: '12.400', label: 'porsi tersalurkan' },
@@ -196,12 +196,12 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   // dikerjakan pembaca minggu ini juga tanpa menunggu kami.
   goods: {
     story: {
-      headline: 'Lemari kita menyimpan barang yang masih dibutuhkan orang lain.',
+      headline: '“Daripada dibuang, mending disumbangkan.” Kami tidak setuju.',
       paragraphs: [
-        'Di banyak rumah ada pakaian anak yang sudah kekecilan, buku pelajaran yang kelasnya sudah lewat, dan sepatu yang baru dipakai beberapa kali lalu masuk kardus. Barang-barang itu tidak rusak, cuma diam di tempatnya. Di rumah lain, barang yang sama malah sedang dicari dan terpaksa dibeli baru.',
-        'Biasanya barang itu diam karena pemiliknya tidak tahu siapa yang sedang mencarinya, dan ragu juga apakah barangnya masih pantas diberikan. Pintu Berbagi Barang ada untuk mengurus dua hal itu. Sekarang pintunya belum kami buka, karena cara memilah dan memeriksa kelayakan barang sebelum diantar masih kami susun.',
+        'Kalau sebuah barang pindah cuma karena pemiliknya sudah tidak mau menyimpannya, yang pindah bukan barangnya, tapi giliran membuangnya. Makanya ukuran yang kami pakai lebih keras: barang itu baru pantas berpindah tangan kalau kamu sendiri masih mau memakainya. Kaus yang lehernya sudah melar lolos ukuran “masih bisa dipakai”, dan gagal di ukuran ini. Jaket yang ritsletingnya masih licin lolos dua-duanya.',
+        'Waktu pintu ini dibuka nanti, ada kiriman yang akan kami kembalikan, dan tidak ada cara yang enak buat melakukannya. Kerja beratnya ada di memilah, bukan di mengumpulkan, dan memilah butuh orang yang berani bilang “yang ini jangan dikirim” ke penyumbangnya sendiri. Kami belum punya cukup orang seperti itu, jadi pintunya kami tahan dulu, bukan kami buka supaya kelihatan ramai.',
       ],
-      closing: 'Barang yang berpindah tangan harus tetap terasa seperti hadiah, bukan seperti buangan.',
+      closing: 'Menolak satu kardus jauh lebih murah daripada bikin satu orang merasa jadi tempat pembuangan.',
     },
     contribute: [
       { title: 'Pilah isi lemari', desc: 'Sisihkan yang masih layak tapi sudah lama tidak kamu pakai, lalu simpan terpisah supaya tidak tercampur lagi saat pintu ini dibuka.' },
@@ -214,12 +214,12 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   },
   time: {
     story: {
-      headline: 'Tidak semua orang punya uang lebih, tapi hampir semua orang bisa mengerjakan sesuatu.',
+      headline: 'Uang keluar sekali, lalu urusannya selesai. Waktu menagih kamu lagi minggu depan.',
       paragraphs: [
-        'Ada yang bisa mengajar, ada yang terbiasa merapikan pembukuan dapur kecil, ada yang jago memotret, ada juga yang biasa mengurus acara dari awal sampai selesai. Keahlian seperti ini jarang terasa istimewa buat pemiliknya, soalnya dipakai tiap hari untuk cari nafkah. Di kegiatan berbagi, kemampuan seperti itulah yang paling sering kurang.',
-        'Pintu Berbagi Waktu kami siapkan supaya kemampuan seperti itu punya sasaran yang jelas, mau dipakai untuk apa dan untuk siapa. Nantinya kami cocokkan apa yang kamu bisa dengan kebutuhan yang memang ada di lapangan, lengkap dengan perkiraan jam dan harinya, jadi kamu bisa menakar sendiri sanggup atau tidak mengulanginya. Semuanya masih rencana, dan bentuk akhirnya nanti ikut ditentukan oleh keahlian yang kamu dan orang lain tawarkan.',
+        'Yang kami minta nanti bukan jam kosong, tapi jam yang sebenarnya bisa kamu jual. Keahlian yang kamu pakai cari nafkah tiap hari, entah itu pembukuan, nyetir, atau motret, tidak jadi murah cuma gara-gara kamu memberikannya gratis. Dan yang berat bukan hari pertama, tapi hari-hari sesudahnya: pas hujan, pas kamu capek, pas tidak ada yang bilang terima kasih.',
+        'Makanya pintu ini belum kami buka. Yang belum kami susun itu giliran yang masuk akal buat diulang, misalnya merapikan catatan belanja dapur yang masak buat Jumat Berkah, atau menyetir rute antar yang sama sampai hafal gangnya. Tanpa daftar giliran itu, yang kami lakukan cuma mengundang orang buat menonton kami bekerja.',
       ],
-      closing: 'Karena satu jam yang datang lagi minggu depan lebih menolong daripada satu hari penuh yang tidak pernah terulang.',
+      closing: 'Semua orang sanggup hari Sabtu. Pintu ini kami siapkan buat orang yang masih buka grupnya hari Rabu.',
     },
     contribute: [
       { title: 'Kirim daftar keahlianmu', desc: 'Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.' },
@@ -232,12 +232,12 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   },
   space: {
     story: {
-      headline: 'Niat baik sering berhenti karena tidak ada tempatnya.',
+      headline: 'Kami buka pintu ini tanpa punya satu ruangan pun.',
       paragraphs: [
-        'Kegiatan sosial jarang batal karena orangnya kurang niat. Orangnya biasanya sudah siap dan rencananya sudah jadi, lalu semuanya berhenti di pertanyaan yang paling sepele, yaitu mau berkumpul di mana dan barangnya diangkut pakai apa. Sementara itu, ada ruangan dan kendaraan yang terkunci hampir sepanjang minggu.',
-        'Lewat Pintu Berbagi Ruang, kami ingin mempertemukan dua keadaan itu. Meminjamkan ruangan pada hari yang memang kosong hampir tidak mengurangi apa pun dari pemiliknya, tetapi bisa membuat kegiatan yang tadinya batal jadi benar-benar berjalan. Untuk sekarang kami baru bisa mencatat siapa saja yang bersedia meminjamkan ruang atau kendaraannya, sebab peminjamannya sendiri belum kami mulai.',
+        'Belum ada satu aula, gudang, atau mobil bak yang kami pegang. Kalau kamu menawarkan tempatmu hari ini, kami belum bisa janji tempat itu kepakai minggu depan. Yang kamu pinjami cuma sekumpulan orang dengan satu nomor WhatsApp. Satu-satunya rekam jejak yang bisa kamu periksa ada di pintu sebelah, dan itu pun cuma jalan sehari dalam seminggu.',
+        'Bagian paling sulit dari pintu ini bukan mengangkut barangnya, tapi bertanya. Aula yang gelap dari Senin sampai Kamis itu belum kami ketuk. Pintunya kami buka duluan, sebelum programnya jalan, supaya kamu sempat memeriksa kami sebelum kami datang mengetuk. Menitipkan kunci itu urusan kepercayaan, dan kepercayaan tidak bisa diburu-buru.',
       ],
-      closing: 'Banyak kegiatan baik sebenarnya hanya menunggu satu orang yang berkata, “pakai saja tempat saya”.',
+      closing: 'Ruangnya sudah berdiri di kota ini, dan kuncinya ada di saku orang yang belum pernah kami tanya.',
     },
     contribute: [
       { title: 'Daftarkan ruang atau kendaraanmu', desc: 'Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang pertama kami hubungi nanti.' },
@@ -250,12 +250,12 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   },
   money: {
     story: {
-      headline: 'Uang adalah bantuan yang paling cepat hilang dari pandangan.',
+      headline: 'Rekening dibuka duluan, catatan dibikin kalau ada yang tanya.',
       paragraphs: [
-        'Begitu uang dikirim, orang yang mengirimnya langsung kehilangan cara untuk melihat ke mana uang itu pergi. Padahal dana adalah bentuk bantuan yang paling lentur, karena bisa berubah menjadi apa pun yang dibutuhkan di lapangan pada hari itu. Kelenturan itulah yang membuat dana begitu berguna, sekaligus yang membuatnya sulit dipercaya.',
-        'Yang kami rapikan lebih dulu di Pintu Berbagi Dana justru bagian yang paling membosankan, yaitu pencatatannya: siapa yang menerima, berapa jumlahnya, dan kapan disalurkan. Programnya sendiri belum berjalan, dan urutannya memang sengaja begitu, karena catatan yang baru dibuat setelah uangnya habis tidak ada gunanya. Kami juga tidak berdiri sebagai yayasan berizin, jadi kepercayaan kamu tidak akan pernah kami minta atas nama lembaga.',
+        'Membuka rekening donasi itu gampang, dan enak dipajang. Bikin catatan yang bisa dibaca orang luar itu membosankan, dan tidak ada yang memasang catatan di poster. Jadi urutannya gampang kebalik, uang masuk duluan dan catatannya dipikir belakangan. Waktu kamu tanya ke mana perginya, yang kamu terima cuma ucapan terima kasih, bukan angka yang bisa dicocokkan.',
+        'Berbagi Dana belum kami buka, dan alasannya persis itu. Kami komunitas, bukan lembaga berizin, jadi tidak ada surat berstempel yang bisa kami sodorkan supaya kamu berhenti bertanya. Nasi bisa difoto, uang tidak. Jadi yang harus jadi duluan bukan rekeningnya, tapi catatannya: siapa mengirim apa, dipakai buat apa, sisanya berapa, dan siapa yang boleh menagih kalau angkanya tidak cocok.',
       ],
-      closing: 'Uang hanya pantas dititipkan kepada orang yang tidak keberatan ditanya, berkali-kali kalau perlu.',
+      closing: 'Uang donasi tidak perlu dicuri supaya hilang. Cukup tidak dicatat.',
     },
     contribute: [
       { title: 'Periksa dulu catatan penyalurannya', desc: 'Sebelum mengirim uang, kamu bisa membuka halaman Jejak & Dampak dan melihat sendiri kegiatan apa saja yang sudah kami catat di sana.' },

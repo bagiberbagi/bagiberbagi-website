@@ -9,6 +9,7 @@ import VideoEmbed from '../../components/VideoEmbed.astro';
 import LocationMap from '../../components/LocationMap.astro';
 import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
+import { buildJejakVideoSchema, buildJejakPlacesSchema } from '../../lib/schema';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { PINTU } from '../../consts';
@@ -101,9 +102,40 @@ const lightboxSrc = new Map<ImageMetadata, string>(
     )
   )
 );
+
+// JSON-LD halaman ini. Thumbnail video dibuat lewat getImage, bukan dengan
+// membaca properti modul gambarnya: membaca `.src` di luar pipeline gambar
+// menandai berkas aslinya "terpakai langsung" dan menyalin JPEG mentahnya ke
+// dist. jpeg dipilih ketimbang webp karena ini dibaca mesin pencari, bukan
+// peramban, dan dukungannya paling luas di sana.
+const videoThumb =
+  video && posterPhoto
+    ? new URL((await getImage({ src: posterPhoto, format: 'jpeg', width: 1200 })).src, Astro.site).href
+    : undefined;
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const extraSchema = video
+  ? [
+      buildJejakVideoSchema({
+        pageUrl,
+        name: jejak.title,
+        description: jejak.summary,
+        date: jejak.date,
+        thumbnailUrl: videoThumb,
+        embedUrl: video.source.kind === 'embed' ? video.source.embedUrl : undefined,
+        contentUrl: video.source.kind === 'file' ? video.source.src : undefined,
+        places: jejak.points,
+      }),
+    ]
+  : buildJejakPlacesSchema(pageUrl, jejak.points);
 ---
 
-<BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
+<BaseLayout
+  title={`${jejak.title} | bagiberbagi.id`}
+  description={jejak.summary}
+  breadcrumbName={jejak.title}
+  extraSchema={extraSchema}
+>
   <section class="section bg-white" style={styleVars}>
     {/* Tier `article`: foto besar, carousel, grid metrik, dan teks cerita berbagi
         satu kolom. Mencampur lebar di halaman ini (media lebar, teks sempit) bikin

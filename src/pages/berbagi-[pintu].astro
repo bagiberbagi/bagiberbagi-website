@@ -156,6 +156,26 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
       {active.length === 0 && upcoming.length === 0 && (
         <p class="text-muted">Program untuk pintu ini sedang kami siapkan.</p>
       )}
+
+      {/* Cara ikut menumpang di band yang sama, bukan bikin seksi sendiri.
+          Pintu tanpa program cuma punya satu kalimat di atas, dan satu kalimat
+          tidak cukup untuk menahan seksi setinggi ini. */}
+      {content?.contribute && content.contribute.length > 0 && (
+        <div class="mt-10 pt-8 border-t border-border">
+          <h3 class="text-title-sm font-semibold text-ink mb-5">
+            {active.length + upcoming.length > 0 ? 'Cara lain untuk ikut' : 'Yang bisa kamu lakukan sekarang'}
+          </h3>
+          <div class="grid gap-4 sm:grid-cols-3">
+            {content.contribute.map((step, i) => (
+              <div class="rounded-card bg-white border border-border p-5">
+                <span class="inline-grid place-items-center w-8 h-8 rounded-lg bg-[var(--cat-tint)] text-[var(--cat-deep)] font-bold text-body-sm mb-3 tabular-nums">{i + 1}</span>
+                <h4 class="text-body font-semibold text-ink mb-1">{step.title}</h4>
+                <p class="text-body-sm text-muted leading-snug">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Container>
   </section>
 

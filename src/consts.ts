@@ -149,6 +149,14 @@ export interface CategoryContent {
 
 export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   food: {
+    story: {
+      headline: 'Masakan yang matang pagi ini harus habis hari ini juga.',
+      paragraphs: [
+        'Makanan punya batas waktu yang tidak bisa ditawar. Orang yang belum makan sejak pagi juga tidak sedang menunggu hidupnya membaik, dia menunggu makan berikutnya. Anehnya, makanan yang masih layak sering berakhir di tempat sampah, hanya karena pemiliknya tidak tahu harus mengantarkannya ke mana.',
+        'Donasi yang masuk lewat Pintu Berbagi Makanan kami belanjakan ke dapur-dapur kecil yang sudah kami kurasi, lalu masakannya diantar ke penerima yang sudah kami kenali keadaannya. Itu yang berjalan sekarang lewat Jumat Berkah, dan pintu yang sama juga terbuka untuk makanan berlebih yang belum tersentuh supaya tidak ikut terbuang. Foto dan videonya kami kirimkan kembali ke kamu, jadi kamu tahu piring itu berhenti di tangan siapa.',
+      ],
+      closing: 'Makanan yang benar-benar menolong adalah makanan yang sampai selagi hangat.',
+    },
     stats: [
       { value: '12.400', label: 'porsi tersalurkan' },
       { value: '38', label: 'titik penyaluran' },
@@ -182,6 +190,82 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
     ctaTitle: 'Punya surplus makanan atau ingin jadi mitra penyalur?',
     ctaText: 'Tim kami bantu salurkan ke titik yang tepat. Donasi per program ada di halaman masing-masing.',
   },
+  // Empat pintu di bawah ini belum punya program. Ceritanya ditulis supaya tetap
+  // benar selama pintunya masih disiapkan, jadi tidak ada kalimat yang berbunyi
+  // seolah penyalurannya sudah jalan, dan `contribute`-nya berisi hal yang bisa
+  // dikerjakan pembaca minggu ini juga tanpa menunggu kami.
+  goods: {
+    story: {
+      headline: 'Lemari kita menyimpan barang yang masih dibutuhkan orang lain.',
+      paragraphs: [
+        'Di banyak rumah ada pakaian anak yang sudah kekecilan, buku pelajaran yang kelasnya sudah lewat, dan sepatu yang baru dipakai beberapa kali lalu masuk kardus. Barang-barang itu tidak rusak, cuma diam di tempatnya. Di rumah lain, barang yang sama malah sedang dicari dan terpaksa dibeli baru.',
+        'Biasanya barang itu diam karena pemiliknya tidak tahu siapa yang sedang mencarinya, dan ragu juga apakah barangnya masih pantas diberikan. Pintu Berbagi Barang ada untuk mengurus dua hal itu. Sekarang pintunya belum kami buka, karena cara memilah dan memeriksa kelayakan barang sebelum diantar masih kami susun.',
+      ],
+      closing: 'Barang yang berpindah tangan harus tetap terasa seperti hadiah, bukan seperti buangan.',
+    },
+    contribute: [
+      { title: 'Pilah isi lemari', desc: 'Sisihkan yang masih layak tapi sudah lama tidak kamu pakai, lalu simpan terpisah supaya tidak tercampur lagi saat pintu ini dibuka.' },
+      { title: 'Kabari barang yang ada', desc: 'Kirim foto dan daftar barangnya lewat WhatsApp, supaya kami tahu barang jenis apa yang paling banyak tersedia sebelum alur penyalurannya kami rancang.' },
+      { title: 'Bantu susun standarnya', desc: 'Kalau kamu terbiasa mengurus gudang atau pengiriman barang, ceritakan pengalamanmu, supaya cara memilah dan mengantarnya tidak kami tentukan sendiri.' },
+    ],
+    forWhom: ['Anak-anak panti asuhan', 'Siswa yang belum punya seragam', 'Anak yang kekurangan buku bacaan', 'Keluarga prasejahtera', 'Warga yang perabot rumahnya seadanya', 'Petugas kebersihan kota'],
+    ctaTitle: 'Ada barang bagus yang cuma tersimpan di rumahmu?',
+    ctaText: 'Kirim fotonya ke kami lewat WhatsApp, nanti kami kabari kalau penyalurannya sudah bisa jalan.',
+  },
+  time: {
+    story: {
+      headline: 'Tidak semua orang punya uang lebih, tapi hampir semua orang bisa mengerjakan sesuatu.',
+      paragraphs: [
+        'Ada yang bisa mengajar, ada yang terbiasa merapikan pembukuan dapur kecil, ada yang jago memotret, ada juga yang biasa mengurus acara dari awal sampai selesai. Keahlian seperti ini jarang terasa istimewa buat pemiliknya, soalnya dipakai tiap hari untuk cari nafkah. Di kegiatan berbagi, kemampuan seperti itulah yang paling sering kurang.',
+        'Pintu Berbagi Waktu kami siapkan supaya kemampuan seperti itu punya sasaran yang jelas, mau dipakai untuk apa dan untuk siapa. Nantinya kami cocokkan apa yang kamu bisa dengan kebutuhan yang memang ada di lapangan, lengkap dengan perkiraan jam dan harinya, jadi kamu bisa menakar sendiri sanggup atau tidak mengulanginya. Semuanya masih rencana, dan bentuk akhirnya nanti ikut ditentukan oleh keahlian yang kamu dan orang lain tawarkan.',
+      ],
+      closing: 'Karena satu jam yang datang lagi minggu depan lebih menolong daripada satu hari penuh yang tidak pernah terulang.',
+    },
+    contribute: [
+      { title: 'Kirim daftar keahlianmu', desc: 'Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.' },
+      { title: 'Ikut satu penyaluran dulu', desc: 'Penyaluran makanan sudah berjalan dan kamu boleh ikut membantu di situ, karena melihat sendiri satu kegiatan lebih cepat menjelaskan bantuan seperti apa yang benar-benar dipakai.' },
+      { title: 'Ajak satu orang bergantian', desc: 'Kalau ada dua orang yang bisa saling menggantikan, jadwal tidak langsung berantakan saat salah satu berhalangan, jadi ceritakan pintu ini ke teman yang keahliannya berbeda darimu.' },
+    ],
+    forWhom: ['Siswa yang tertinggal pelajaran', 'Anak panti yang butuh teman belajar', 'Dapur kecil yang pembukuannya belum rapi', 'Kegiatan warga yang perlu didokumentasikan', 'Tim penyaluran di lapangan', 'Relawan baru yang perlu didampingi'],
+    ctaTitle: 'Keahlian apa yang bisa kamu bagikan?',
+    ctaText: 'Tulis saja ke WhatsApp kami, apa yang kamu bisa dan kapan biasanya kamu luang, biar kami catat lebih dulu dan kami hubungi saat kebutuhannya sudah jelas.',
+  },
+  space: {
+    story: {
+      headline: 'Niat baik sering berhenti karena tidak ada tempatnya.',
+      paragraphs: [
+        'Kegiatan sosial jarang batal karena orangnya kurang niat. Orangnya biasanya sudah siap dan rencananya sudah jadi, lalu semuanya berhenti di pertanyaan yang paling sepele, yaitu mau berkumpul di mana dan barangnya diangkut pakai apa. Sementara itu, ada ruangan dan kendaraan yang terkunci hampir sepanjang minggu.',
+        'Lewat Pintu Berbagi Ruang, kami ingin mempertemukan dua keadaan itu. Meminjamkan ruangan pada hari yang memang kosong hampir tidak mengurangi apa pun dari pemiliknya, tetapi bisa membuat kegiatan yang tadinya batal jadi benar-benar berjalan. Untuk sekarang kami baru bisa mencatat siapa saja yang bersedia meminjamkan ruang atau kendaraannya, sebab peminjamannya sendiri belum kami mulai.',
+      ],
+      closing: 'Banyak kegiatan baik sebenarnya hanya menunggu satu orang yang berkata, “pakai saja tempat saya”.',
+    },
+    contribute: [
+      { title: 'Daftarkan ruang atau kendaraanmu', desc: 'Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang pertama kami hubungi nanti.' },
+      { title: 'Pinjamkan langsung tanpa lewat kami', desc: 'Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga tanpa menunggu program ini dibuka.' },
+      { title: 'Kenalkan kami ke pengelolanya', desc: 'Sambungkan kami ke pengurus aula, masjid, atau gudang yang kamu kenal, lalu kami yang menjelaskan bagaimana peminjamannya nanti diatur.' },
+    ],
+    forWhom: ['Komunitas relawan yang belum punya markas', 'Kelas belajar anak-anak di kampung', 'Dapur umum warga', 'Karang taruna dan kelompok pemuda', 'Kelompok yang perlu kendaraan angkut'],
+    ctaTitle: 'Punya ruang yang menganggur di hari tertentu?',
+    ctaText: 'Ceritakan ruang atau kendaraan yang kamu punya lewat WhatsApp, supaya nanti ada tempat yang bisa dituju kelompok yang sedang mencarinya.',
+  },
+  money: {
+    story: {
+      headline: 'Uang adalah bantuan yang paling cepat hilang dari pandangan.',
+      paragraphs: [
+        'Begitu uang dikirim, orang yang mengirimnya langsung kehilangan cara untuk melihat ke mana uang itu pergi. Padahal dana adalah bentuk bantuan yang paling lentur, karena bisa berubah menjadi apa pun yang dibutuhkan di lapangan pada hari itu. Kelenturan itulah yang membuat dana begitu berguna, sekaligus yang membuatnya sulit dipercaya.',
+        'Yang kami rapikan lebih dulu di Pintu Berbagi Dana justru bagian yang paling membosankan, yaitu pencatatannya: siapa yang menerima, berapa jumlahnya, dan kapan disalurkan. Programnya sendiri belum berjalan, dan urutannya memang sengaja begitu, karena catatan yang baru dibuat setelah uangnya habis tidak ada gunanya. Kami juga tidak berdiri sebagai yayasan berizin, jadi kepercayaan kamu tidak akan pernah kami minta atas nama lembaga.',
+      ],
+      closing: 'Uang hanya pantas dititipkan kepada orang yang tidak keberatan ditanya, berkali-kali kalau perlu.',
+    },
+    contribute: [
+      { title: 'Periksa dulu catatan penyalurannya', desc: 'Sebelum mengirim uang, kamu bisa membuka halaman Jejak & Dampak dan melihat sendiri kegiatan apa saja yang sudah kami catat di sana.' },
+      { title: 'Titipkan zakat atau sedekahmu', desc: 'Selama pintu ini masih kami siapkan, uang yang kamu kirim kami arahkan ke program makanan yang sudah berjalan, dan bukti penyalurannya kami kirimkan ke kamu.' },
+      { title: 'Bawa anggaran CSR kantormu', desc: 'Kalau kamu yang memegang anggaran CSR, ajak kami bicara lewat WhatsApp soal bentuk laporan dan dokumentasi yang perusahaanmu butuhkan.' },
+    ],
+    forWhom: ['Mustahik penerima zakat', 'Keluarga prasejahtera', 'Warga yang sedang kesulitan mendadak', 'Penerima manfaat program makanan', 'Dapur UMKM yang memasak pesanannya'],
+    ctaTitle: 'Mau tahu dulu uangmu akan dipakai untuk apa?',
+    ctaText: 'Tanyakan lewat WhatsApp sedetail yang kamu mau, termasuk bentuk laporan yang kamu harapkan, dan kami jawab satu per satu.',
+  },
   // Pintu ini belum punya program, jadi halamannya bersandar pada cerita. Tidak
   // ada angka di sini dengan sengaja: satu pohon pun belum ditanam, dan angka
   // dampak baru boleh muncul lewat jejak, bukan diketik tangan.
@@ -194,6 +278,11 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Karena membangun kota yang lebih hijau bukan hanya tugas pemerintah, tetapi gerakan kita bersama.',
     },
+    contribute: [
+      { title: 'Tunjuk titik yang panas', desc: 'Ceritakan lewat WhatsApp jalan atau kawasan di sekitarmu yang terik dan tidak punya peneduh, supaya daftar lokasi tanamnya tidak kami susun dari peta saja.' },
+      { title: 'Tawarkan lahan atau bibit', desc: 'Kalau kamu punya lahan yang bisa ditanami atau bibit yang siap dipindahkan, kabari kami, karena dua hal itu yang paling sering menahan penanaman.' },
+      { title: 'Rawat pohon yang sudah ada', desc: 'Pohon muda lebih sering mati karena tidak terawat daripada karena kurang bibit, jadi menyiram dan menjaga yang sudah tumbuh di sekitarmu sudah menolong hari ini juga.' },
+    ],
     forWhom: ['Warga di sekitar titik tanam', 'Sekolah & ruang publik', 'Pejalan kaki dan pengguna jalan', 'Kawasan rawan panas & banjir', 'Generasi mendatang'],
     ctaTitle: 'Ingin menanam lebih banyak pohon di kotamu?',
     ctaText: 'Punya lahan, bibit, atau ingin berdonasi pohon? Ceritakan ke kami lewat WhatsApp.',

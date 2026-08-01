@@ -74,9 +74,9 @@ export const NAV_LINKS = [
 // ikon, & warna tiap pintu, yang tidak dikelola editor.
 export type IconName =
   | 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box'
-  | 'time' | 'space' | 'money' | 'impact';
+  | 'time' | 'space' | 'money' | 'tree' | 'impact';
 
-// Lima "Pintu Berbagi" — jalan masuk berkontribusi sumber daya. Sebuah program
+// "Pintu Berbagi" — jalan masuk berkontribusi sumber daya. Sebuah program
 // menempel pada satu pintu lewat field `pintu`-nya (lihat programs.ts).
 // (Dampak/impact BUKAN pintu — ia lapisan hasil, tampil lewat ImpactSection.)
 //
@@ -84,7 +84,7 @@ export type IconName =
 // `PintuId` (tipe), enum zod di content.config.ts, dan opsi select Keystatic.
 // Tambah/hapus pintu cukup di sini + entri PINTU di bawah — jangan tulis ulang
 // daftar id di tempat lain.
-export const PINTU_IDS = ['food', 'goods', 'time', 'space', 'money'] as const;
+export const PINTU_IDS = ['food', 'goods', 'time', 'space', 'money', 'tree'] as const;
 export type PintuId = (typeof PINTU_IDS)[number];
 
 export interface Pintu {
@@ -116,6 +116,9 @@ export const PINTU: Pintu[] = [
   { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', seoDescription: 'Berbagi waktu bersama bagiberbagi.id: relawan membagikan keahlian dan tenaga, dari mengajar sampai pendampingan, untuk kegiatan sosial di berbagai kota.', color: '#E0447B', colorTint: '#FBE4EE', colorDeep: '#B22C5C' },
   { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', seoDescription: 'Berbagi ruang lewat bagiberbagi.id: aula, gudang, ruang pertemuan, dan kendaraan tersedia untuk mendukung kegiatan sosial serta penyaluran bantuan di komunitas.', color: '#0EA5C4', colorTint: '#DBF2F8', colorDeep: '#0B7E97' },
   { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', seoDescription: 'Berbagi dana bersama bagiberbagi.id: zakat, sedekah, CSR, dan donasi disalurkan tepat sasaran dan transparan untuk program bantuan makanan dan sosial.', color: '#16A34A', colorTint: '#DCF3E4', colorDeep: '#10803A' },
+  // Hijau daun, bukan hijau emerald: Dana sudah memakai #16A34A, dan dua hijau
+  // dengan rona berdekatan terbaca sebagai satu pintu yang sama di peta beranda.
+  { id: 'tree', slug: 'pohon', label: 'Berbagi Pohon', english: 'Tree Sharing', icon: 'tree', tagline: 'Setiap donasi tumbuh jadi pohon yang meneduhkan kota dan menyerap karbon.', blurb: 'Pohon yang meneduhkan & menyerap karbon.', seoDescription: 'Berbagi pohon lewat bagiberbagi.id: donasi ditanam jadi pohon yang memberi keteduhan, menyerap karbon, dan memperkuat ketahanan kota bagi generasi mendatang.', color: '#65A30D', colorTint: '#EDF4DB', colorDeep: '#4D7C0F' },
 ];
 
 // Label yang ditampilkan ke pengunjung untuk keseluruhan pintu.
@@ -128,7 +131,12 @@ export const PINTU_LABEL = 'Pintu Berbagi';
 export interface CategoryStat { value: string; label: string }
 export interface CategoryStep { title: string; desc: string }
 export interface CategoryFaqItem { q: string; a: string }
+export interface CategoryStory { headline: string; paragraphs: string[]; closing?: string }
 export interface CategoryContent {
+  // Cerita pembuka pintu, dirender tepat di bawah hero. Isinya alasan pintu ini
+  // ada, bukan cara ikut: yang terakhir itu urusan program. `closing` dipisah
+  // karena kalimat penutupnya dipakai sebagai kutipan, bukan paragraf biasa.
+  story?: CategoryStory;
   stats?: CategoryStat[];
   contribute?: CategoryStep[];
   howItWorks?: CategoryStep[];
@@ -173,6 +181,22 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
     ],
     ctaTitle: 'Punya surplus makanan atau ingin jadi mitra penyalur?',
     ctaText: 'Tim kami bantu salurkan ke titik yang tepat. Donasi per program ada di halaman masing-masing.',
+  },
+  // Pintu ini belum punya program, jadi halamannya bersandar pada cerita. Tidak
+  // ada angka di sini dengan sengaja: satu pohon pun belum ditanam, dan angka
+  // dampak baru boleh muncul lewat jejak, bukan diketik tangan.
+  tree: {
+    story: {
+      headline: 'Kota yang baik tidak hanya dibangun dengan beton.',
+      paragraphs: [
+        'Kota yang baik bukan hanya dibangun dengan beton, jalan, dan gedung, tetapi juga dengan pohon yang memberi kehidupan. Di tengah suhu kota yang semakin panas, kualitas udara yang menurun, dan dampak perubahan iklim yang semakin nyata, setiap orang kini dapat ikut menjadi bagian dari solusinya.',
+        'Melalui Pintu Berbagi Pohon, setiap donasi akan tumbuh menjadi pohon yang menghadirkan keteduhan, menyerap karbon, menghasilkan oksigen, dan memperkuat ketahanan kota bagi generasi mendatang.',
+      ],
+      closing: 'Karena membangun kota yang lebih hijau bukan hanya tugas pemerintah, tetapi gerakan kita bersama.',
+    },
+    forWhom: ['Warga di sekitar titik tanam', 'Sekolah & ruang publik', 'Pejalan kaki dan pengguna jalan', 'Kawasan rawan panas & banjir', 'Generasi mendatang'],
+    ctaTitle: 'Ingin menanam lebih banyak pohon di kotamu?',
+    ctaText: 'Punya lahan, bibit, atau ingin berdonasi pohon? Ceritakan ke kami lewat WhatsApp.',
   },
 };
 

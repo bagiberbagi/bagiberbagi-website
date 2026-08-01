@@ -1,5 +1,5 @@
 ---
-// Arah kami: lima pintu berbagi, dibuka satu per satu. Narasinya baru (hari ini
+// Arah kami: pintu berbagi, dibuka satu per satu. Narasinya baru (hari ini
 // langkah pertama menuju infrastruktur berbagi, label "Hari Ini" dan "Tahap
 // Berikutnya", bukan "Coming Soon"), visualnya yang lama dan memang disukai:
 // kartu putih di latar abu dengan ikon watermark besar berwarna identitas pintu.
@@ -32,11 +32,12 @@ const META: Record<PintuId, { name: string; desc: string }> = {
   money: { name: 'Dana', desc: 'Mendukung kebutuhan pendidikan, kesehatan, dan kondisi darurat melalui program yang terverifikasi.' },
   time: { name: 'Waktu', desc: 'Menghubungkan relawan dengan komunitas yang membutuhkan tenaga, pengalaman, dan kepeduliannya.' },
   space: { name: 'Ruang', desc: 'Membuka kesempatan berbagi ruang yang dapat dimanfaatkan bagi kegiatan sosial dan komunitas.' },
+  tree: { name: 'Pohon', desc: 'Menumbuhkan pohon yang memberi keteduhan, udara lebih baik, dan kota yang lebih tahan bagi generasi mendatang.' },
 };
 
 // Urutan tampil sengaja beda dari urutan PINTU di consts: yang aktif lebih dulu,
 // lalu tahap berikutnya sesuai rencana pembukaan.
-const ORDER = ['food', 'goods', 'money', 'time', 'space'] as const;
+const ORDER = ['food', 'goods', 'money', 'tree', 'time', 'space'] as const;
 
 // Status "sudah jalan" diturunkan dari data program, tidak pernah ditulis tangan,
 // supaya klaim di halaman tidak bisa lebih maju dari kenyataan.
@@ -66,7 +67,10 @@ const STAGES = await Promise.all(
     {/* Kartu identitas pintu. Ikon watermark besar itu yang memberi tiap kartu
         wajahnya sendiri, jadi ukurannya sengaja 150px dengan opasitas rendah:
         cukup kuat untuk dikenali, tetap terbaca sebagai latar. */}
-    <div class="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+    {/* Enam kartu berhenti di tiga kolom, bukan enam: satu baris enam bikin
+        kolomnya selebar 200px dan kalimat tahapnya pecah jadi enam baris. Dua
+        baris tiga terbaca sebagai satu blok utuh. */}
+    <div class="grid gap-5 grid-cols-2 sm:grid-cols-3">
       {STAGES.map((pintu) => (
         <a
           href={`/berbagi-${pintu.slug}/`}

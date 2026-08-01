@@ -16,7 +16,7 @@ export default defineConfig({
   output: 'static',
 
   // `/program` (tanpa slug) tak punya index. Program dibrowse lewat halaman
-  // pintu, jadi URL telanjang diarahkan ke peta lima pintu di beranda. Path
+  // pintu, jadi URL telanjang diarahkan ke peta pintu di beranda. Path
   // persis saja, tidak mengganggu route dinamis `/program/[program]/`.
   redirects: {
     '/program': '/#pintu',

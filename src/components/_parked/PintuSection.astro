@@ -26,13 +26,13 @@ const pintuStatus = await Promise.all(
       <div class="eyebrow">ARAH KAMI</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Berbagi Tak Berhenti di Makanan</h2>
       <p class="text-base leading-relaxed text-muted">
-        Jumat Berkah baru langkah pertama. Kami sedang membuka lima pintu untuk berbagi sumber daya, satu per satu, begitu tim dan mitra siap.
+        Jumat Berkah baru langkah pertama. Kami sedang membuka pintu-pintu untuk berbagi sumber daya, satu per satu, begitu tim dan mitra siap.
       </p>
     </div>
 
-    {/* Lima kanal setara: ukuran seragam, bukan tangga. Warna identitas tiap
+    {/* Semua kanal setara: ukuran seragam, bukan tangga. Warna identitas tiap
         pintu; status ("Sudah jalan"/"Segera") ditandai badge, bukan ukuran. */}
-    <div class="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+    <div class="grid gap-5 grid-cols-2 sm:grid-cols-3">
       {pintuStatus.map((pintu) => (
         <a
           href={`/berbagi-${pintu.slug}/`}

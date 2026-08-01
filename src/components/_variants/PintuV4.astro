@@ -1,0 +1,897 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Container from '../Container.astro';
+import Icon from '../Icon.astro';
+import { formatMetric } from '../../lib/format';
+import type { Program } from '../../lib/programs';
+import type { Impact as PintuImpact } from '../../lib/impact';
+import type { CategoryContent, Pintu, PintuId } from '../../consts';
+import heroJumatBerkah from '../../assets/images/hero-jumat-berkah.png';
+import distribusi from '../../assets/images/jumat-berkah-distribusi.png';
+import programPromo from '../../assets/images/program-promo.png';
+
+/**
+ * Varian halaman pintu "Bukti Dulu".
+ *
+ * Idenya: halaman ini dibaca seperti laporan lapangan, bukan seperti brosur.
+ * Bukti didorong ke layar pertama (panel rekam di samping judul), lampiran foto
+ * menyusul sebagai strip mendatar berukuran seragam, baru sesudah itu program,
+ * alur, dan ajakan. Grid dibuat rapat: banyak informasi per layar, garis hairline
+ * sebagai pemisah, sedikit bidang kosong dekoratif.
+ *
+ * Keputusan yang sengaja diambil:
+ * - Panel rekam SATU blok bersambung (kepala, sel angka, kaki sumber), bukan
+ *   grid kartu terpisah, supaya tidak berubah jadi dashboard.
+ * - Panel itu dibuka oleh kalimat sumbernya, baru angkanya menyusul. Angkanya
+ *   memang naik ke layar pertama, tapi yang dibaca duluan tetap dari mana angka
+ *   itu datang, dan warnanya dipakai versi --cat-ink supaya tidak berebut
+ *   perhatian dengan judul di sebelahnya.
+ * - Kalau belum ada angka sama sekali, panel itu berganti jadi pernyataan niat.
+ *   Tidak menampilkan angka nol, karena nol bukan bukti, cuma ruang terisi.
+ * - Foto cuma dipakai di satu tempat, yaitu strip lampiran. Pintu yang belum
+ *   punya foto tidak merender band itu sama sekali, bukan menampilkan kotak
+ *   kosong, dan tidak meminjam foto pintu lain.
+ * - Warna pintu dibawa turun sampai bawah lewat --cat pada penanda, rel kartu,
+ *   angka, chip, dan panel penutup.
+ * - Setiap kepala seksi menyesuaikan isinya. Kalimat pengantar yang menyebut
+ *   sesuatu yang tidak dirender tidak boleh muncul, jadi teks Program, band
+ *   Cara ikut, band Catatan lapangan, dan copy CTA semuanya bercabang mengikuti
+ *   keadaan pintu, bukan diasumsikan pintunya sudah jalan.
+ * - Satu ajakan pemberitahuan per halaman. `notifyWa` menempel di tombol utama
+ *   hero saat pintu belum punya program berjalan, dan tidak diulang lagi di
+ *   panel program atau di tiap baris antrean, supaya tawaran yang sama tidak
+ *   terbaca dua sampai tiga kali dan analitiknya tetap bisa dibedakan.
+ *
+ * Kontras dihitung dua arah, bukan cuma teks gelap di atas putih:
+ * - Teks kecil berwarna di atas putih pakai --cat-ink.
+ * - Teks putih di atas bidang warna pintu pakai --cat-strong (tombol) dan
+ *   --cat-panel (panel gelap), dua-duanya hasil penggelapan --cat-deep ke arah
+ *   ink secukupnya sampai lolos ambang. Empat pintu praktis tidak berubah;
+ *   yang benar-benar butuh cuma Makanan (#C25D0F cuma 4,32:1 terhadap putih).
+ */
+interface Props {
+  pintu: Pintu;
+  content: CategoryContent | undefined;
+  programs: Program[];
+  active: Program[];
+  upcoming: Program[];
+  otherPintu: Pintu[];
+  impact: PintuImpact;
+  hasImpact: boolean;
+  contactWa: string;
+  notifyWa: string;
+  jejakHref: string;
+}
+
+const {
+  pintu,
+  content,
+  active,
+  upcoming,
+  otherPintu,
+  impact,
+  hasImpact,
+  contactWa,
+  notifyWa,
+  jejakHref,
+} = Astro.props;
+
+// Satu-satunya nilai warna mentah di file ini, dan itu pun token `ink`
+// (#0F172A) yang dinamai sekali lalu dipakai lewat konstanta. Sisanya turunan
+// dari --cat / --cat-deep milik pintu atau kelas token.
+const INK = '#0F172A';
+
+type Rgb = [number, number, number];
+
+const toRgb = (hex: string): Rgb => {
+  const h = hex.replace('#', '');
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+};
+
+const toHex = (rgb: Rgb): string =>
+  `#${rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;
+
+const luminance = (rgb: Rgb): number => {
+  const chan = (v: number) => {
+    const s = v / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * chan(rgb[0]) + 0.7152 * chan(rgb[1]) + 0.0722 * chan(rgb[2]);
+};
+
+const contrastOnWhite = (rgb: Rgb): number => 1.05 / (luminance(rgb) + 0.05);
+
+const mixToInk = (rgb: Rgb, keep: number): Rgb => {
+  const ink = toRgb(INK);
+  return [
+    rgb[0] * keep + ink[0] * (1 - keep),
+    rgb[1] * keep + ink[1] * (1 - keep),
+    rgb[2] * keep + ink[2] * (1 - keep),
+  ];
+};
+
+/**
+ * Gelapkan warna pintu ke arah ink secukupnya, sampai teks putih di atasnya
+ * mencapai rasio yang diminta. Warna pintu tetap terbawa, kontrasnya saja yang
+ * dinaikkan, dan pintu yang sudah lolos dikembalikan apa adanya.
+ */
+const inkedTo = (hex: string, minRatio: number): string => {
+  const base = toRgb(hex);
+  for (let keep = 100; keep > 0; keep -= 2) {
+    const candidate = mixToInk(base, keep / 100);
+    if (contrastOnWhite(candidate) >= minRatio) return toHex(candidate);
+  }
+  return INK;
+};
+
+// --cat-ink: teks kecil berwarna di atas putih (>= 7:1 di kelima pintu).
+// --cat-strong: bidang solid dengan teks putih 16px, jadi butuh 4,5:1. Diberi
+//   sedikit margin ke 4,6 supaya pembulatan hex tidak menjatuhkannya lagi.
+// --cat-panel: panel gelap yang isinya sampai putih 80%, jadi dasarnya harus
+//   jauh lebih gelap lagi. 7:1 di dasar membuat putih 80% mendarat di atas 5:1.
+const catStrong = inkedTo(pintu.colorDeep, 4.6);
+const catPanel = inkedTo(pintu.colorDeep, 7);
+
+const styleVars = [
+  `--cat:${pintu.color}`,
+  `--cat-tint:${pintu.colorTint}`,
+  `--cat-deep:${pintu.colorDeep}`,
+  `--cat-ink:color-mix(in srgb, var(--cat-deep) 62%, ${INK})`,
+  `--cat-strong:${catStrong}`,
+  `--cat-panel:${catPanel}`,
+].join(';');
+
+// Panel rekam: jumlah kegiatan dulu (satuan yang paling bisa ditelusuri), lalu
+// SEMUA metrik apa adanya. Tidak dipotong slice(0, 3): memotong diam-diam bikin
+// angka keempat hilang tanpa pengunjung pernah tahu.
+const ledger = hasImpact
+  ? [
+      { value: impact.jejakCount.toLocaleString('id-ID'), label: 'kali kegiatan tercatat' },
+      ...impact.metrics.map((m) => ({ value: formatMetric(m), label: m.label })),
+    ]
+  : [];
+
+// Kolom mengikuti jumlah sel, jadi barisnya selalu penuh untuk 1 sampai 4 angka.
+// Lebih dari 4 dibungkus jadi 4 kolom; sel yang tersisa tetap rapi karena garis
+// hairline menempel di tiap sel, bukan di wadahnya.
+const LEDGER_COLS: Record<number, string> = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
+};
+const ledgerCols = LEDGER_COLS[Math.min(ledger.length, 4)] ?? 'md:grid-cols-4';
+
+// Angka panjang (mis. "Rp 5.500.000") turun satu tingkat ukuran supaya tidak
+// membungkus jadi dua baris dan bikin tinggi sel tidak seragam.
+const numClass = (s: string) => (s.length > 8 ? 'text-title md:text-heading-sm' : 'text-heading-sm md:text-heading');
+
+interface EvidencePhoto {
+  src: ImageMetadata;
+  alt: string;
+  caption: string;
+}
+
+/**
+ * Lampiran foto per pintu. Hanya pintu yang benar-benar punya dokumentasi yang
+ * terdaftar di sini. Empat pintu lain sengaja kosong: fotonya memang belum ada,
+ * dan foto Jumat Berkah jelas terbaca sebagai pembagian nasi kotak, jadi tidak
+ * bisa dipinjam untuk pintu barang, waktu, ruang, atau dana.
+ */
+const PINTU_PHOTOS: Partial<Record<PintuId, EvidencePhoto[]>> = {
+  food: [
+    {
+      src: distribusi,
+      alt: 'Paket makanan dan air mineral ditata di meja penyaluran Jumat Berkah di halaman masjid',
+      caption: 'Paket ditata di meja penyaluran sebelum dibagikan.',
+    },
+    {
+      src: heroJumatBerkah,
+      alt: 'Warga dan anak-anak memegang kotak makan seusai penyaluran Jumat Berkah',
+      caption: 'Penerima seusai pembagian di titik penyaluran.',
+    },
+    {
+      src: programPromo,
+      alt: 'Relawan berrompi menyerahkan tas bantuan kepada warga di gang kampung',
+      caption: 'Pengantaran langsung ke rumah warga di gang kampung.',
+    },
+  ],
+};
+const photos = PINTU_PHOTOS[pintu.id] ?? [];
+
+// "Pintu ini sudah jalan" = ada program berjalan. Dipakai berkali-kali di
+// bawah, karena hampir semua copy halaman ini bercabang di situ.
+const isOpen = active.length > 0;
+
+// Kepala seksi Program menyesuaikan keadaan. Kalimat lama menjanjikan "yang
+// berjalan bisa langsung kamu ikuti" di pintu yang nol program, persis pola
+// yang dihindari notesTitle di bawah.
+const programsNote = isOpen
+  ? upcoming.length > 0
+    ? 'Satu pintu bisa memuat beberapa program. Yang berjalan bisa langsung kamu ikuti, yang lain masih dalam persiapan.'
+    : 'Yang berjalan di pintu ini bisa langsung kamu ikuti.'
+  : upcoming.length > 0
+    ? 'Belum ada yang berjalan di pintu ini. Program berikut masih dalam persiapan, jadi belum bisa diikuti.'
+    : null;
+
+const contribute = content?.contribute ?? [];
+const howItWorks = content?.howItWorks ?? [];
+const hasProcess = contribute.length > 0 || howItWorks.length > 0;
+const bothProcess = contribute.length > 0 && howItWorks.length > 0;
+// Sama seperti notesTitle: judul band tidak boleh menyebut bagian yang tidak
+// dirender, termasuk kalau kelak editor cuma mengisi salah satu blok.
+const processTitle = bothProcess
+  ? 'Jalan masuk dan apa yang terjadi sesudahnya'
+  : contribute.length > 0
+    ? 'Jalan masuk ke pintu ini'
+    : 'Apa yang terjadi sesudah kamu ikut';
+
+const forWhom = content?.forWhom ?? [];
+const env = content?.env;
+const hasNotes = forWhom.length > 0 || Boolean(env);
+// Judul band menyesuaikan isinya: kalau blok dampak ikutan tidak ada, judulnya
+// tidak boleh menjanjikan sesuatu yang tak dirender.
+const notesTitle = env
+  ? forWhom.length > 0
+    ? 'Siapa yang terbantu, dan apa lagi yang ikut terselamatkan'
+    : 'Apa lagi yang ikut terselamatkan'
+  : 'Siapa yang terbantu';
+
+const faq = content?.faq ?? [];
+
+// Copy penutup ikut keadaan pintu. Menjanjikan "tim kami bantu menyalurkannya"
+// di halaman yang beberapa layar sebelumnya bilang kegiatannya belum berjalan
+// itu melawan premis varian ini.
+const ctaTitle =
+  content?.ctaTitle ?? (isOpen ? `Ingin berkontribusi lewat ${pintu.label}?` : `Ingin ikut saat pintu ${pintu.label} dibuka?`);
+const ctaText =
+  content?.ctaText ??
+  (isOpen
+    ? 'Ceritakan rencana kamu lewat WhatsApp, tim kami bantu menyalurkannya.'
+    : 'Pintu ini belum berjalan, jadi belum ada yang bisa kami salurkan sekarang. Ceritakan rencana kamu lewat WhatsApp, kami catat dan hubungi begitu jalurnya siap.');
+
+// Satu program aktif dirender lebar penuh, bukan setengah baris dengan sisi
+// kanan menganga. Dua atau lebih baru masuk grid dua kolom.
+const singleActive = active.length === 1;
+---
+
+<div style={styleVars}>
+  <!-- KEPALA LAPORAN: identitas pintu di kiri, rekam yang tercatat di kanan.
+       Panel rekam dibuka oleh kalimat sumbernya, angkanya menyusul. -->
+  <section class="bg-surface-warm border-b border-border">
+    <Container width="standard" class="py-24 md:py-32">
+      <nav class="text-body-sm font-semibold text-muted mb-8" aria-label="Breadcrumb">
+        <a href="/" class="link hover:text-ink">Beranda</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <a href="/#pintu" class="link hover:text-ink">Pintu Berbagi</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <span class="text-ink">{pintu.label}</span>
+      </nav>
+
+      <div class="pv4-two">
+        <div data-fade>
+          <div class="flex items-center gap-3 mb-5">
+            <span class="grid place-items-center w-11 h-11 rounded-xl bg-white border border-border shadow-cardSm" style="color:var(--cat)">
+              <Icon name={pintu.icon} size={22} />
+            </span>
+            <span class="label text-muted">{pintu.english}</span>
+          </div>
+
+          <h1 class="text-heading-lg md:text-display font-bold text-ink pv4-balance">{pintu.label}</h1>
+          <p class="text-body md:text-title-sm text-muted mt-4 pv4-measure">{pintu.tagline}</p>
+
+          <div class="flex flex-wrap gap-3 mt-7">
+            {isOpen ? (
+              <a
+                href={contactWa}
+                target="_blank"
+                rel="noopener"
+                data-track="contact_wa"
+                data-track-pintu={pintu.slug}
+                class="btn-primary"
+                style="background:var(--cat-strong)"
+              >Hubungi Kami</a>
+            ) : (
+              /* Pintu yang belum jalan cuma punya satu ajakan yang jujur, dan
+                 ini satu-satunya tautan pemberitahuan di seluruh halaman. */
+              <a
+                href={notifyWa}
+                target="_blank"
+                rel="noopener"
+                data-track="pintu_notify"
+                data-track-pintu={pintu.slug}
+                class="btn-primary"
+                style="background:var(--cat-strong)"
+              >Beri tahu saya saat pintu ini dibuka</a>
+            )}
+            {hasImpact && (
+              <a href={jejakHref} class="btn-secondary border border-border text-ink">Lihat Rekam Jejak</a>
+            )}
+          </div>
+        </div>
+
+        <!-- PANEL REKAM: satu blok bersambung, bukan kartu-kartu lepas. -->
+        <div class="rounded-card border border-border bg-white shadow-cardSm overflow-hidden" data-fade>
+          <div class="px-5 py-4 border-b border-border">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1.5">
+              <span class="label text-muted">{hasImpact ? 'Yang sudah tercatat' : 'Belum ada yang tercatat'}</span>
+              <span class="text-micro text-gray-400">Pintu {pintu.label}</span>
+            </div>
+            {hasImpact && (
+              <p class="text-body-sm text-muted mt-2 leading-snug">
+                Dijumlahkan dari {impact.jejakCount.toLocaleString('id-ID')} kegiatan yang sudah kami dokumentasikan di rekam jejak, bukan dari target atau perkiraan.
+              </p>
+            )}
+          </div>
+
+          {hasImpact ? (
+            <>
+              <div class:list={['grid grid-cols-2', ledgerCols]}>
+                {ledger.map((item) => (
+                  <div class="-mt-px -ml-px border-t border-l border-border px-5 py-5">
+                    <div
+                      class:list={['font-bold tabular-nums leading-none', numClass(item.value)]}
+                      style="color:var(--cat-ink)"
+                    >{item.value}</div>
+                    <div class="text-micro text-muted mt-2 leading-snug">{item.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div class="px-5 py-4 border-t border-border">
+                <a href={jejakHref} class="pv4-arrow text-body-sm" style="color:var(--cat-ink)">
+                  Telusuri semua jejak {pintu.label}
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                </a>
+              </div>
+            </>
+          ) : (
+            <div class="px-5 py-6">
+              <p class="text-body text-ink">
+                Pintu ini belum menghasilkan angka karena kegiatannya memang belum berjalan.
+              </p>
+              <p class="text-body-sm text-muted mt-3">
+                Kami hanya menampilkan yang benar-benar tercatat di lapangan. Begitu kegiatan pertama terdokumentasi, jumlahnya muncul di panel ini apa adanya.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <!-- LAMPIRAN LAPANGAN: strip foto mendatar berukuran seragam. Band gelap satu
+       kali di halaman ini, jadi foto jadi jangkar visual dan tidak bersaing
+       dengan panel rekam di atasnya. Tidak dirender kalau pintu belum berfoto. -->
+  {photos.length > 0 && (
+    <section class="bg-ink">
+      <Container width="standard" class="py-24 md:py-32">
+        <div class="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 mb-7">
+          <div>
+            <div class="flex items-center gap-2.5 mb-2">
+              <span class="w-2 h-2 rounded-full" style="background:var(--cat)"></span>
+              <span class="label text-white/60">Lampiran lapangan</span>
+            </div>
+            <p class="text-body text-white/85 pv4-measure">
+              Foto diambil saat penyaluran berlangsung, bukan sesi pemotretan terpisah.
+            </p>
+          </div>
+          <a href={jejakHref} class="pv4-arrow text-body-sm text-white">
+            Dokumentasi lengkap
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
+        </div>
+
+        <ol class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-1 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+          {photos.map((photo, i) => (
+            <li class="w-4/5 shrink-0 snap-start md:w-auto">
+              <div class="relative overflow-hidden rounded-xl bg-white/10">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  widths={[320, 400, 600, 800]}
+                  sizes="(min-width: 768px) 400px, 80vw"
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  class="aspect-[4/3] w-full object-cover"
+                />
+                <span class="absolute top-3 left-3 rounded-full bg-ink/75 px-2.5 py-1 text-label font-bold tabular-nums text-white">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <p class="text-body-sm text-white/70 mt-3 leading-snug">{photo.caption}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+    </section>
+  )}
+
+  <!-- PROGRAM: satu daftar, satu lebar. Program berjalan tampil lebar penuh saat
+       cuma ada satu, dan antrean program berikutnya pakai lebar yang sama. -->
+  <section class="bg-white">
+    <Container width="standard" class="py-24 md:py-32">
+      <header class="mb-9" data-fade>
+        <div class="flex items-center gap-2.5 mb-3">
+          <span class="w-2 h-2 rounded-full" style="background:var(--cat)"></span>
+          <span class="label text-muted">Program</span>
+        </div>
+        <h2 class="text-heading-sm md:text-heading font-bold text-ink pv4-balance">Program di pintu {pintu.label}</h2>
+        {programsNote && (
+          <p class="text-body text-muted mt-3 pv4-measure">{programsNote}</p>
+        )}
+      </header>
+
+      {active.length > 0 && (
+        <div class:list={['grid gap-5', !singleActive && 'md:grid-cols-2', upcoming.length > 0 && 'mb-5']}>
+          {active.map((p) => {
+            const sideList = p.detail.features.slice(0, 3);
+            const split = singleActive && (p.image !== null || sideList.length > 0);
+            return (
+              <article
+                class:list={[
+                  'relative overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-shadow hover:shadow-card',
+                  split ? 'pv4-card' : 'flex flex-col',
+                ]}
+              >
+                <span class="absolute inset-y-0 left-0 w-1.5 z-10" style="background:var(--cat)" aria-hidden="true"></span>
+                <div class="flex flex-col p-6 md:p-8 pl-8 md:pl-10">
+                  <div class="flex items-center gap-2 mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full" style="background:var(--cat)"></span>
+                    <span class="label text-muted">Berjalan sekarang</span>
+                  </div>
+                  <h3 class="text-title md:text-heading-sm font-bold text-ink">{p.label}</h3>
+                  <p class="text-body text-muted mt-3 pv4-measure">{p.summary}</p>
+                  {p.href ? (
+                    <a
+                      href={p.href}
+                      data-track="program_click"
+                      data-track-program={p.slug}
+                      class="pv4-arrow pv4-stretch mt-6 text-body-sm"
+                      style="color:var(--cat-ink)"
+                    >
+                      Lihat program
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+                    </a>
+                  ) : (
+                    /* Tanpa halaman detail, kartu tidak dibuat kelihatan bisa
+                       diklik. Tautan mati lebih merugikan daripada kartu diam. */
+                    <p class="text-micro text-gray-400 mt-6">Halaman rincian program ini sedang disiapkan.</p>
+                  )}
+                </div>
+
+                {split && (
+                  p.image ? (
+                    <Image
+                      src={p.image}
+                      alt={`Dokumentasi ${p.label}`}
+                      widths={[360, 472, 700, 944]}
+                      sizes="(min-width: 900px) 420px, 100vw"
+                      loading="lazy"
+                      class="h-full w-full object-cover aspect-[4/3]"
+                    />
+                  ) : (
+                    <div class="p-6 md:p-8" style="background:var(--cat-tint)">
+                      <div class="label text-ink/70 mb-4">Isi program</div>
+                      <ul class="flex flex-col gap-3">
+                        {sideList.map((f) => (
+                          <li class="flex gap-2.5 text-body-sm text-ink">
+                            <span class="flex-none mt-2 w-1.5 h-1.5 rounded-full" style="background:var(--cat-deep)" aria-hidden="true"></span>
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        /* Baris antrean membawa status, bukan tautan. Ajakan pemberitahuannya
+           sudah ada satu di hero, dan mengulangnya per baris bikin tawaran yang
+           sama terbaca tiga kali dengan pesan WhatsApp yang persis sama. */
+        <div class="rounded-card border border-border overflow-hidden">
+          <div class="flex items-center justify-between gap-4 px-5 md:px-6 py-3.5 bg-gray-50 border-b border-border">
+            <span class="label text-muted">Antrean berikutnya</span>
+            <span class="text-micro text-gray-400 tabular-nums">{upcoming.length} program</span>
+          </div>
+          <ul class="divide-y divide-border">
+            {upcoming.map((p, i) => (
+              <li class="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 md:px-6 py-4">
+                <span class="text-body-sm font-bold tabular-nums text-gray-400 w-6 flex-none">{String(i + 1).padStart(2, '0')}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="text-body font-bold text-ink">{p.label}</div>
+                  <p class="text-body-sm text-muted leading-snug">{p.summary}</p>
+                </div>
+                <span class="text-micro text-gray-400 flex-none">Dalam persiapan</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {active.length === 0 && upcoming.length === 0 && (
+        /* Panel ini sering jadi satu-satunya isi seksi, jadi lebarnya dijaga
+           sekitar lebar bacanya sendiri supaya sisi kanannya tidak menganga. */
+        <div class="rounded-card border border-border p-6 md:p-8 max-w-article" style="background:var(--cat-tint)">
+          <div class="label text-ink/70 mb-3">Belum dibuka</div>
+          <p class="text-body text-ink pv4-measure">
+            Belum ada program yang berjalan di pintu ini. Kami membuka pintu satu per satu supaya tiap penyaluran benar-benar bisa kami dampingi dan laporkan.
+          </p>
+        </div>
+      )}
+    </Container>
+  </section>
+
+  <!-- CARA IKUT + ALUR: dua kolom rapat. Data ini sudah ada di consts tapi
+       selama ini tidak pernah tampil. Alur di sini versi ringkas tingkat pintu;
+       rinciannya tetap milik halaman program karena bisa beda antar program. -->
+  {hasProcess && (
+    <section class="bg-surface-warm border-y border-border">
+      <Container width="standard" class="py-24 md:py-32">
+        <header class="mb-9" data-fade>
+          <div class="flex items-center gap-2.5 mb-3">
+            <span class="w-2 h-2 rounded-full" style="background:var(--cat)"></span>
+            <span class="label text-muted">Cara ikut</span>
+          </div>
+          <h2 class="text-heading-sm md:text-heading font-bold text-ink pv4-balance">{processTitle}</h2>
+        </header>
+
+        <div class:list={[bothProcess ? 'pv4-two pv4-two--process' : 'max-w-article']}>
+          {contribute.length > 0 && (
+            <div class="rounded-card border border-border bg-white overflow-hidden" data-fade>
+              <div class="px-5 md:px-6 py-3.5 border-b border-border">
+                <span class="label text-muted">Yang bisa kamu berikan</span>
+              </div>
+              <ul class="divide-y divide-border">
+                {contribute.map((c, i) => (
+                  <li class="flex gap-4 px-5 md:px-6 py-5">
+                    <span class="flex-none text-body-sm font-bold tabular-nums pt-0.5" style="color:var(--cat-ink)">{String(i + 1).padStart(2, '0')}</span>
+                    <div>
+                      <h3 class="text-title-sm font-bold text-ink">{c.title}</h3>
+                      <p class="text-body-sm text-muted mt-1 leading-relaxed">{c.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {howItWorks.length > 0 && (
+            <div data-fade>
+              <div class="label text-muted mb-4">Setelah kamu ikut</div>
+              <ol class="pv4-chain">
+                {howItWorks.map((s) => (
+                  <li class="pv4-chain-item">
+                    <span class="pv4-chain-dot" aria-hidden="true"></span>
+                    <h3 class="text-title-sm font-bold text-ink">{s.title}</h3>
+                    <p class="text-body-sm text-muted mt-1 leading-relaxed">{s.desc}</p>
+                  </li>
+                ))}
+              </ol>
+              <p class="text-micro text-gray-400 mt-4">
+                Rincian tiap langkah bisa berbeda antar program, jadi versi lengkapnya ada di halaman program masing-masing.
+              </p>
+            </div>
+          )}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- CATATAN LAPANGAN: satu ide, yaitu siapa yang terbantu. Blok dampak ikutan
+       adalah lanjutan pertanyaan yang sama (siapa/apa lagi yang terbantu), jadi
+       ia jadi h3 di bawah satu h2 yang judulnya sudah menyesuaikan isinya. -->
+  {hasNotes && (
+    <section class="bg-white">
+      <Container width="standard" class="py-24 md:py-32">
+        <header class="mb-8" data-fade>
+          <div class="flex items-center gap-2.5 mb-3">
+            <span class="w-2 h-2 rounded-full" style="background:var(--cat)"></span>
+            <span class="label text-muted">Catatan lapangan</span>
+          </div>
+          <h2 class="text-heading-sm md:text-heading font-bold text-ink pv4-balance">{notesTitle}</h2>
+        </header>
+
+        {forWhom.length > 0 && (
+          <div class="rounded-card border border-border overflow-hidden" data-fade>
+            <div class="flex flex-col md:flex-row">
+              <div class="flex-none md:w-56 px-5 md:px-6 py-4 md:py-5 bg-gray-50 border-b md:border-b-0 md:border-r border-border">
+                <span class="label text-muted">Penerima terdata</span>
+                <div class="text-micro text-gray-400 mt-1.5 tabular-nums">{forWhom.length} kelompok</div>
+              </div>
+              <div class="flex flex-wrap gap-2 px-5 md:px-6 py-4 md:py-5">
+                {forWhom.map((who) => (
+                  <span class="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-body-sm font-semibold text-ink" style="background:var(--cat-tint)">
+                    <span class="w-1.5 h-1.5 rounded-full" style="background:var(--cat)" aria-hidden="true"></span>
+                    {who}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {env && (
+          <div
+            class:list={['rounded-card p-6 md:p-8 text-white flex flex-col md:flex-row md:items-center gap-6', forWhom.length > 0 && 'mt-5']}
+            style={`background:linear-gradient(135deg,color-mix(in srgb, ${INK} 92%, white),${INK})`}
+            data-fade
+          >
+            <div class="flex-1">
+              <div class="label text-white/60 mb-2.5">Dampak ikutan</div>
+              <h3 class="text-title md:text-heading-sm font-bold pv4-balance">{env.headline}</h3>
+            </div>
+            <div class="flex flex-wrap gap-x-10 gap-y-5">
+              {env.stats.map((s) => (
+                <div>
+                  <div class="text-heading-sm font-bold tabular-nums" style="color:var(--cat)">{s.value}</div>
+                  <div class="text-body-sm text-white/80 mt-1">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Container>
+    </section>
+  )}
+
+  <!-- PERTANYAAN: seksi sendiri, satu ide. Accordion pakai <details> bawaan
+       browser, jadi tetap terbuka dan terbaca tanpa JavaScript. -->
+  {faq.length > 0 && (
+    <section class="bg-surface-warm border-t border-border">
+      <Container width="standard" class="py-24 md:py-32">
+        <header class="mb-6" data-fade>
+          <div class="flex items-center gap-2.5 mb-3">
+            <span class="w-2 h-2 rounded-full" style="background:var(--cat)"></span>
+            <span class="label text-muted">Pertanyaan</span>
+          </div>
+          <h2 class="text-heading-sm md:text-heading font-bold text-ink pv4-balance">Yang sering ditanyakan</h2>
+        </header>
+        <div class="pv4-faq rounded-card border border-border bg-white overflow-hidden" data-fade>
+          {faq.map((item) => (
+            <details class="border-b border-border last:border-b-0">
+              <summary>
+                <span class="text-title-sm font-bold text-ink">{item.q}</span>
+                <span class="pv4-chev" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+                </span>
+              </summary>
+              <p class="text-body-sm text-muted leading-relaxed">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- AJAKAN: seksi penutupnya sendiri. Panelnya melebar penuh, jadi isinya
+       dibariskan mendatar supaya sisi kanannya tidak menganga. Dasarnya
+       --cat-panel, bukan --cat-deep, supaya teks putih di dalamnya lolos AA. -->
+  <section class:list={['bg-surface-warm', faq.length === 0 && 'border-t border-border']}>
+    <Container width="standard" class="py-24 md:py-32">
+      <div
+        class="pv4-cta rounded-card p-7 md:p-9 text-white"
+        style={`background:linear-gradient(150deg,var(--cat-panel),color-mix(in srgb, var(--cat-panel) 55%, ${INK}))`}
+        data-fade
+      >
+        <div>
+          <div class="label text-white/85 mb-3">Langkah berikutnya</div>
+          <h2 class="text-title md:text-heading-sm font-bold pv4-balance">{ctaTitle}</h2>
+          <p class="text-body-sm text-white/85 mt-3 leading-relaxed pv4-measure">{ctaText}</p>
+        </div>
+        <div class="pv4-cta-side">
+          <a
+            href={contactWa}
+            target="_blank"
+            rel="noopener"
+            data-track="pintu_cta"
+            data-track-pintu={pintu.slug}
+            class="btn-secondary text-ink inline-block mt-6"
+          >Hubungi Kami</a>
+          <p class="text-micro text-white/80 mt-4">Percakapan langsung ke tim, tanpa formulir dan tanpa biaya pendaftaran.</p>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  <!-- INDEKS PINTU LAIN: pita tipis penutup, tiap pintu bawa kalimatnya sendiri
+       supaya kartunya berisi, bukan sekadar nama dan ikon. -->
+  <section class="bg-white border-t border-border">
+    <Container width="standard" class="py-24 md:py-32">
+      <div class="flex items-center gap-2.5 mb-5">
+        <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+        <span class="label text-muted">Pintu lainnya</span>
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {otherPintu.map((p) => (
+          <a
+            href={`/berbagi-${p.slug}/`}
+            style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
+            class="group flex flex-col rounded-card border border-border p-5 transition-shadow hover:shadow-cardSm"
+          >
+            <span class="flex items-center gap-2.5 mb-2.5">
+              <span class="flex-none grid place-items-center w-8 h-8 rounded-lg" style="background:var(--cat-tint);color:var(--cat-deep)">
+                <Icon name={p.icon} size={17} />
+              </span>
+              <span class="text-body font-bold text-ink">{p.label}</span>
+            </span>
+            <span class="text-body-sm text-muted leading-snug">{p.blurb}</span>
+          </a>
+        ))}
+      </div>
+    </Container>
+  </section>
+</div>
+
+<style>
+  /* Dua kolom bertemu di 900px, ambang yang sama dipakai seluruh seksi bespoke
+     di situs ini. Di bawah itu semuanya satu kolom. */
+  .pv4-two {
+    display: grid;
+    gap: 40px;
+  }
+
+  .pv4-card {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .pv4-two {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 56px;
+      align-items: start;
+    }
+
+    .pv4-two--process {
+      grid-template-columns: 1.15fr 1fr;
+      gap: 56px;
+    }
+
+    .pv4-card {
+      grid-template-columns: 1.45fr 1fr;
+      align-items: stretch;
+    }
+
+    .pv4-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+    }
+
+    .pv4-cta .pv4-cta-side {
+      flex: none;
+      text-align: right;
+    }
+
+    .pv4-cta .pv4-cta-side > a {
+      margin-top: 0;
+    }
+  }
+
+  .pv4-balance {
+    text-wrap: balance;
+  }
+
+  .pv4-measure {
+    max-width: 58ch;
+    text-wrap: pretty;
+  }
+
+  /* Idiom tautan panah situs ini: jaraknya yang melebar saat hover, bukan
+     panahnya yang bergeser. */
+  .pv4-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+  }
+
+  .pv4-stretch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pv4-arrow {
+      transition: gap 0.18s ease;
+    }
+
+    .pv4-arrow:hover {
+      gap: 12px;
+    }
+
+    .pv4-chev {
+      transition: transform 0.2s ease;
+    }
+  }
+
+  /* Rantai langkah: satu garis tegak yang menyambungkan simpul, bukan empat
+     kartu terpisah. */
+  .pv4-chain {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-left: 26px;
+  }
+
+  .pv4-chain::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: color-mix(in srgb, var(--cat) 32%, white);
+  }
+
+  .pv4-chain-item {
+    position: relative;
+  }
+
+  .pv4-chain-dot {
+    position: absolute;
+    left: -26px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: white;
+    border: 3px solid var(--cat);
+  }
+
+  /* Garis antar pertanyaan dipasang di markup lewat kelas token
+     (border-border), bukan hex mentah di blok ini. */
+  .pv4-faq summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .pv4-faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .pv4-faq summary:focus-visible {
+    outline: 2px solid var(--cat-ink);
+    outline-offset: -2px;
+  }
+
+  .pv4-chev {
+    flex: none;
+    display: inline-flex;
+    margin-top: 2px;
+    color: var(--cat-ink);
+  }
+
+  .pv4-faq details[open] .pv4-chev {
+    transform: rotate(90deg);
+  }
+
+  .pv4-faq details > p {
+    margin: 0;
+    padding: 0 20px 20px;
+    max-width: 62ch;
+  }
+</style>
+
+<script>
+  // Reveal bersama memakai script global situs; komponen ini cuma menempelkan
+  // atribut data-fade, tak menulis IntersectionObserver sendiri.
+  import '../../scripts/fade-in.js';
+</script>

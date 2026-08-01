@@ -5,8 +5,11 @@ import type { ImageMetadata } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import LocationMap from '../../components/LocationMap.astro';
 import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
+import { buildJejakVideoSchema, buildJejakPlacesSchema } from '../../lib/schema';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { PINTU } from '../../consts';
@@ -47,17 +50,46 @@ const dateLabel = new Date(jejak.date).toLocaleDateString('id-ID', {
   timeZone: 'UTC',
 });
 
-// Featured = gambar besar (cover, atau foto pertama bila cover kosong); carousel
-// = sisanya. allImages jadi sumber lightbox, urut featured lalu sisanya.
+// Halaman ini punya SATU slot utama, bukan dua. Kalau jejaknya punya video,
+// videonya yang mengisi slot itu dan seluruh foto turun ke carousel; kalau tak
+// ada video, foto pertama naik jadi gambar besar seperti semula. Dua blok
+// sebesar layar bertumpuk terbaca sebagai dua pembuka yang saling berebut.
 //
 // Dedup lewat identitas objek, bukan `img.src`: import.meta.glob eager memberi
 // modul yang sama untuk path yang sama, dan membaca properti modul gambar
 // menandai berkas aslinya "terpakai langsung" sehingga PNG mentahnya ikut
 // disalin ke dist.
-const galleryImages = jejak.gallery;
-const allImages = [...new Set([jejak.cover, ...galleryImages].filter((img) => img !== null))];
-const featured = allImages[0] ?? null;
-const carousel = allImages.slice(1);
+const video = jejak.video;
+const allImages = [...new Set([jejak.cover, ...jejak.gallery].filter((img) => img !== null))];
+
+// Hanya video yang benar-benar bisa diputar di tempat yang berhak atas slot
+// utama. Link yang cuma bisa dibuka di situs lain (folder Drive, Instagram)
+// tetap ditampilkan, tapi di bawah sebagai tautan, dan fotonya yang jadi
+// pembuka seperti biasa.
+const videoPlayer = video && video.source.kind !== 'link' ? video : null;
+const videoLink = video && video.source.kind === 'link' ? video : null;
+
+const heroPhoto = videoPlayer ? null : (allImages[0] ?? null);
+// Poster video default-nya cover jejak. Foto yang sudah tampil sebagai poster
+// tak diulang lagi di carousel, persis seperti gambar besar yang tak ikut turun.
+const posterPhoto = videoPlayer ? (videoPlayer.poster ?? jejak.cover) : null;
+const carousel = allImages.filter((img) => img !== heroPhoto && img !== posterPhoto);
+
+// Yang bisa diperbesar hanyalah foto: poster video kliknya untuk memutar, bukan
+// untuk membuka lightbox. Urutannya sama dengan urutan tampil di halaman.
+const clickable = heroPhoto ? [heroPhoto, ...carousel] : carousel;
+const photoLabelOffset = heroPhoto ? 2 : 1;
+const mediaGap = carousel.length > 0 ? 'mb-3' : 'mb-8';
+
+// Jumlah kolom grid metrik dipilih supaya baris terakhir tak menyisakan kartu
+// yang menggantung sendirian: empat metrik jadi 2x2, bukan 3+1. Tiga kolom cuma
+// dipakai saat jumlahnya memang habis dibagi rapi olehnya.
+const metricCols =
+  jejak.metrics.length === 1
+    ? 'grid-cols-1'
+    : jejak.metrics.length === 2 || jejak.metrics.length === 4
+      ? 'grid-cols-2'
+      : 'grid-cols-2 sm:grid-cols-3';
 
 // Lightbox membuka foto sampai memenuhi layar, jadi sumbernya berkas terpisah
 // dari yang tampil di halaman: webp seukuran aslinya, bukan PNG mentah. Dibuat
@@ -65,14 +97,45 @@ const carousel = allImages.slice(1);
 // tombol yang menunjuk foto sama.
 const lightboxSrc = new Map<ImageMetadata, string>(
   await Promise.all(
-    allImages.map(
+    clickable.map(
       async (img) => [img, (await getImage({ src: img, format: 'webp', quality: 80 })).src] as const
     )
   )
 );
+
+// JSON-LD halaman ini. Thumbnail video dibuat lewat getImage, bukan dengan
+// membaca properti modul gambarnya: membaca `.src` di luar pipeline gambar
+// menandai berkas aslinya "terpakai langsung" dan menyalin JPEG mentahnya ke
+// dist. jpeg dipilih ketimbang webp karena ini dibaca mesin pencari, bukan
+// peramban, dan dukungannya paling luas di sana.
+const videoThumb =
+  video && posterPhoto
+    ? new URL((await getImage({ src: posterPhoto, format: 'jpeg', width: 1200 })).src, Astro.site).href
+    : undefined;
+
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+const extraSchema = video
+  ? [
+      buildJejakVideoSchema({
+        pageUrl,
+        name: jejak.title,
+        description: jejak.summary,
+        date: jejak.date,
+        thumbnailUrl: videoThumb,
+        embedUrl: video.source.kind === 'embed' ? video.source.embedUrl : undefined,
+        contentUrl: video.source.kind === 'file' ? video.source.src : undefined,
+        places: jejak.points,
+      }),
+    ]
+  : buildJejakPlacesSchema(pageUrl, jejak.points);
 ---
 
-<BaseLayout title={`${jejak.title} | bagiberbagi.id`} description={jejak.summary} breadcrumbName={jejak.title}>
+<BaseLayout
+  title={`${jejak.title} | bagiberbagi.id`}
+  description={jejak.summary}
+  breadcrumbName={jejak.title}
+  extraSchema={extraSchema}
+>
   <section class="section bg-white" style={styleVars}>
     {/* Tier `article`: foto besar, carousel, grid metrik, dan teks cerita berbagi
         satu kolom. Mencampur lebar di halaman ini (media lebar, teks sempit) bikin
@@ -127,20 +190,22 @@ const lightboxSrc = new Map<ImageMetadata, string>(
 
       <p class="text-body-sm text-muted leading-relaxed mb-7">{jejak.summary}</p>
 
-      <!-- featured image (besar): klik untuk perbesar -->
-      {featured ? (
+      <!-- slot utama: video kalau ada, kalau tidak gambar besar, klik untuk perbesar -->
+      {videoPlayer ? (
+        <VideoEmbed video={videoPlayer} fallbackPoster={jejak.cover} title={jejak.title} eager class={mediaGap} />
+      ) : heroPhoto ? (
         <button
           type="button"
           data-gallery-item
-          data-src={lightboxSrc.get(featured)}
+          data-src={lightboxSrc.get(heroPhoto)}
           aria-label="Buka foto 1"
-          class="group relative block w-full rounded-card overflow-hidden bg-gray-100 mb-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
+          class:list={['group relative block w-full rounded-card overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2', mediaGap]}
         >
           {/* Container tier `article`: 768px termasuk padding md:px-10, jadi isi
               688px di layar lebar. Lebar terbesar 1376px menutup layar 2x DPR
               sekaligus batas resolusi asli foto lapangan. */}
           <Image
-            src={featured}
+            src={heroPhoto}
             alt={jejak.title}
             widths={[480, 688, 1000, 1376]}
             sizes="(min-width: 768px) 688px, 100vw"
@@ -171,7 +236,7 @@ const lightboxSrc = new Map<ImageMetadata, string>(
                 type="button"
                 data-gallery-item
                 data-src={lightboxSrc.get(img)}
-                aria-label={`Buka foto ${i + 2}`}
+                aria-label={`Buka foto ${i + photoLabelOffset}`}
                 class="snap-start shrink-0 grow-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] group relative block rounded-2xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
               >
                 {/* Kartu carousel: separuh kolom di mobile, sepertiga di sm+
@@ -197,9 +262,13 @@ const lightboxSrc = new Map<ImageMetadata, string>(
         </div>
       )}
 
+      {/* Video yang cuma bisa ditonton di situs lain: di bawah foto, bukan di
+          slot utama, karena tautan tak bisa jadi pembuka halaman. */}
+      {videoLink && <VideoEmbed video={videoLink} title={jejak.title} />}
+
       <!-- statistik -->
       {jejak.metrics.length > 0 && (
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+        <div class:list={['grid gap-3 mb-8', metricCols]}>
           {jejak.metrics.map((m) => (
             <div class="rounded-card border border-border p-5">
               <div class="text-heading-sm font-semibold text-ink tabular-nums leading-none">{formatMetric(m)}</div>
@@ -223,6 +292,12 @@ const lightboxSrc = new Map<ImageMetadata, string>(
         <Content />
       </div>
 
+      {/* Peta menutup bagian faktual, setelah ceritanya dibaca. Ditaruh sebelum
+          cerita, ia memotong alur antara ringkasan dan narasi. */}
+      {jejak.points.length > 0 && (
+        <LocationMap points={jejak.points} location={jejak.location} class="mt-9" />
+      )}
+
       <!-- CTA band ke program induk -->
       <a
         href={ctaHref}
@@ -240,5 +315,8 @@ const lightboxSrc = new Map<ImageMetadata, string>(
     </Container>
   </section>
 
-  {galleryImages.length > 0 && <Lightbox />}
+  {/* Dulu digantung pada panjang galeri, jadi jejak bercover-tanpa-galeri punya
+      tombol perbesar yang tak membuka apa-apa. Yang menentukan adalah jumlah
+      foto yang benar-benar bisa diklik. */}
+  {clickable.length > 0 && <Lightbox />}
 </BaseLayout>

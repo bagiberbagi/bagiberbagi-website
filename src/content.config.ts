@@ -187,11 +187,39 @@ const jejak = defineCollection({
     program: z.string(), // slug program induk (relationship)
     date: z.string(), // ISO YYYY-MM-DD
     location: z.string(),
+    // Titik peta, opsional dan boleh lebih dari satu: satu kali penyaluran
+    // sering berpindah beberapa tempat yang berdekatan. `location` di atas tetap
+    // jadi nama kawasannya, daftar ini yang memecahnya jadi titik. Koordinat
+    // disimpan sebagai string apa adanya (pasangan angka atau URL Google Maps)
+    // dan dibaca `lib/geo.ts`; daftar kosong berarti tak ada peta.
+    points: z
+      .array(
+        z.object({
+          label: z.string().default(''),
+          coordinates: z.string().default(''),
+        })
+      )
+      .default([]),
     summary: z.string(),
     metrics: z.array(z.object({ label: z.string(), value: z.number() })).default([]),
     // fields.image menulis null saat dikosongkan; nullish() menerima null & undefined.
     cover: z.string().nullish(),
     gallery: z.array(z.string().nullish()).default([]),
+    // Video dokumentasi, opsional. Disimpan sebagai satu string URL, bukan enum
+    // penyedia + id terpisah: editor menempelkan apa yang mereka salin dari
+    // aplikasi, dan `lib/video.ts` yang membaca bentuknya. `url` kosong berarti
+    // jejak ini tak punya video, dan blok videonya memang tak dirender.
+    video: z
+      .object({
+        url: z.string().default(''),
+        poster: z.string().nullish(),
+        caption: z.string().default(''),
+        // Rekaman lapangan hampir selalu diambil dengan ponsel tegak. Dipaksa
+        // ke bingkai 16:9 hasilnya video kecil terapit dua pita hitam, jadi
+        // orientasinya disimpan dan bingkainya yang menyesuaikan.
+        orientation: z.enum(['landscape', 'portrait']).default('landscape'),
+      })
+      .default({ url: '', poster: null, caption: '', orientation: 'landscape' }),
     published: z.boolean().default(false),
   }),
 });

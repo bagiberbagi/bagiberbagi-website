@@ -602,13 +602,32 @@ export default config({
         }),
         date: fields.date({ label: 'Tanggal' }),
         location: fields.text({ label: 'Lokasi' }),
+        points: fields.array(
+          fields.object({
+            label: fields.text({
+              label: 'Nama titik',
+              description: 'Misalnya "Taman MRT Dukuh Atas" atau "Halte Tosari". Boleh dikosongkan kalau titiknya cuma satu.',
+            }),
+            coordinates: fields.text({
+              label: 'Koordinat',
+              description:
+                'Buka Google Maps, klik kanan di titiknya, pilih koordinat yang muncul paling atas, lalu tempel di sini. Menempel URL halaman Google Maps apa adanya juga bisa.',
+            }),
+          }),
+          {
+            label: 'Titik lokasi',
+            description:
+              'Opsional, untuk menampilkan peta di halaman jejak. Boleh lebih dari satu kalau penyalurannya berpindah beberapa tempat; semuanya tampil di satu peta, bernomor sesuai urutan daftar ini. Kosongkan kalau tak perlu peta.',
+            itemLabel: (props) => props.fields.label.value || props.fields.coordinates.value || 'Titik',
+          }
+        ),
         summary: fields.text({ label: 'Ringkasan', multiline: true }),
         metrics: fields.array(
           fields.object({
             label: fields.text({
               label: 'Label',
               description:
-                'Pakai salah satu label baku ini supaya angkanya ikut tampil di seksi Dampak beranda: porsi, mitra umkm, relawan, penerima, donasi tersalur. Label lain tetap tersimpan dan ikut dijumlah, hanya urutannya mengekor di belakang.',
+                'Pakai salah satu label baku ini supaya angkanya ikut tampil di seksi Dampak beranda: porsi, mitra umkm, relawan, penerima, donasi tersalur. Agen lapangan dihitung di dalam "relawan", bukan label sendiri, supaya satu orang tak terhitung dua kali. Label lain tetap tersimpan dan ikut dijumlah, hanya urutannya mengekor di belakang.',
             }),
             value: fields.integer({ label: 'Nilai' }),
           }),
@@ -646,6 +665,46 @@ export default config({
           {
             label: 'Galeri',
             itemLabel: (props) => props.value?.filename || 'Foto',
+          }
+        ),
+        // Video ditaruh sesudah galeri karena posisinya di halaman juga di situ,
+        // tepat di bawah foto. Berbeda dari foto, berkas videonya TIDAK diunggah
+        // ke repo: satu menit rekaman ponsel sudah puluhan megabyte, dan repo
+        // ini ikut ter-clone tiap kali CI membangun situs. Yang disimpan hanya
+        // link, dan halaman baru memuat pemutarnya setelah pengunjung menekan
+        // play (lihat VideoEmbed.astro).
+        video: fields.object(
+          {
+            url: fields.text({
+              label: 'Link video',
+              description:
+                'Tempel link apa adanya, bentuknya tidak perlu dirapikan dulu. Google Drive, YouTube, dan Vimeo jadi pemutar di halaman ini, dalam bentuk penulisan mana pun (link Bagikan, /preview, /embed, /shorts, bahkan tanpa https:// di depan). Bisa juga berkas yang diunggah manual ke public/uploads/jejak/, ditulis sebagai /uploads/jejak/nama.mp4. Link yang tidak bisa dipasang sebagai pemutar, misalnya folder Drive, Instagram, atau TikTok, tetap tampil sebagai tautan keluar di bawah foto. Khusus Drive, berkasnya wajib dibagikan sebagai "Siapa saja yang memiliki link", kalau tidak pengunjung cuma melihat permintaan akses. Kosongkan kalau jejak ini tanpa video.',
+            }),
+            poster: fields.image({
+              label: 'Poster video',
+              description:
+                'Gambar diam yang tampil sebelum video diputar. Kosongkan untuk memakai gambar sampul jejak ini. Selama belum diputar, tak ada satu pun permintaan ke server YouTube, jadi halaman tetap ringan dan tak menitipkan pengunjung ke pihak ketiga.',
+              directory: 'src/assets/jejak',
+              publicPath: '/src/assets/jejak/',
+            }),
+            caption: fields.text({
+              label: 'Keterangan video',
+              description: 'Satu kalimat pendek di bawah pemutar, misalnya "Dokumentasi penyaluran, 31 Juli 2026". Boleh dikosongkan.',
+            }),
+            orientation: fields.select({
+              label: 'Orientasi video',
+              description:
+                'Pilih Tegak untuk rekaman ponsel yang dipegang berdiri (termasuk Shorts dan Reels). Salah pilih tidak merusak apa pun, videonya hanya terapit pita hitam.',
+              options: [
+                { label: 'Mendatar (16:9)', value: 'landscape' },
+                { label: 'Tegak (9:16)', value: 'portrait' },
+              ],
+              defaultValue: 'landscape',
+            }),
+          },
+          {
+            label: 'Video dokumentasi',
+            description: 'Opsional. Tampil di bawah foto, di atas angka penyaluran.',
           }
         ),
         published: fields.checkbox({

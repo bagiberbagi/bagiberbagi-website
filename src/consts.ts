@@ -111,14 +111,14 @@ export interface Pintu {
 }
 
 export const PINTU: Pintu[] = [
-  { id: 'food', slug: 'makanan', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.', blurb: 'Makanan bergizi ke yang membutuhkan.', seoDescription: 'Donasi makanan bergizi lewat bagiberbagi.id: dari dapur UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan, dengan bukti foto & video maksimal H+1.', color: '#F4791D', colorTint: '#FDEEE1', colorDeep: '#C25D0F' },
+  { id: 'food', slug: 'makanan', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.', blurb: 'Makanan bergizi ke yang membutuhkan.', seoDescription: 'Donasi makanan bergizi lewat bagiberbagi.id: dari dapur UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan, dengan bukti foto & video maksimal H+1.', color: '#C4701C', colorTint: '#FDEEE1', colorDeep: '#A05C17' },
   { id: 'goods', slug: 'barang', label: 'Berbagi Barang', english: 'Goods Sharing', icon: 'box', tagline: 'Pakaian, buku, dan perlengkapan layak pakai berpindah ke yang memerlukan.', blurb: 'Barang layak pakai berpindah tangan.', seoDescription: 'Berbagi barang lewat bagiberbagi.id: pakaian, buku, dan perlengkapan layak pakai disalurkan ke warga dan komunitas yang membutuhkan, terdokumentasi.', color: '#7C4DDA', colorTint: '#ECE6FB', colorDeep: '#5E33B0' },
-  { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', seoDescription: 'Berbagi waktu bersama bagiberbagi.id: relawan membagikan keahlian dan tenaga, dari mengajar sampai pendampingan, untuk kegiatan sosial di berbagai kota.', color: '#E0447B', colorTint: '#FBE4EE', colorDeep: '#B22C5C' },
-  { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', seoDescription: 'Berbagi ruang lewat bagiberbagi.id: aula, gudang, ruang pertemuan, dan kendaraan tersedia untuk mendukung kegiatan sosial serta penyaluran bantuan di komunitas.', color: '#0EA5C4', colorTint: '#DBF2F8', colorDeep: '#0B7E97' },
-  { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', seoDescription: 'Berbagi dana bersama bagiberbagi.id: zakat, sedekah, CSR, dan donasi disalurkan tepat sasaran dan transparan untuk program bantuan makanan dan sosial.', color: '#16A34A', colorTint: '#DCF3E4', colorDeep: '#10803A' },
-  // Hijau daun, bukan hijau emerald: Dana sudah memakai #16A34A, dan dua hijau
-  // dengan rona berdekatan terbaca sebagai satu pintu yang sama di peta beranda.
-  { id: 'tree', slug: 'pohon', label: 'Berbagi Pohon', english: 'Tree Sharing', icon: 'tree', tagline: 'Setiap donasi tumbuh jadi pohon yang meneduhkan kota dan menyerap karbon.', blurb: 'Pohon yang meneduhkan & menyerap karbon.', seoDescription: 'Berbagi pohon lewat bagiberbagi.id: donasi ditanam jadi pohon yang memberi keteduhan, menyerap karbon, dan memperkuat ketahanan kota bagi generasi mendatang.', color: '#65A30D', colorTint: '#EDF4DB', colorDeep: '#4D7C0F' },
+  { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', seoDescription: 'Berbagi waktu bersama bagiberbagi.id: relawan membagikan keahlian dan tenaga, dari mengajar sampai pendampingan, untuk kegiatan sosial di berbagai kota.', color: '#DF2AA3', colorTint: '#FBE4EE', colorDeep: '#C11D8A' },
+  { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', seoDescription: 'Berbagi ruang lewat bagiberbagi.id: aula, gudang, ruang pertemuan, dan kendaraan tersedia untuk mendukung kegiatan sosial serta penyaluran bantuan di komunitas.', color: '#1478D0', colorTint: '#DBF2F8', colorDeep: '#126DBD' },
+  { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', seoDescription: 'Berbagi dana bersama bagiberbagi.id: zakat, sedekah, CSR, dan donasi disalurkan tepat sasaran dan transparan untuk program bantuan makanan dan sosial.', color: '#12A472', colorTint: '#DCF3E4', colorDeep: '#0D7B55' },
+  // Hijau daun, bukan hijau emerald: Dana memakai #12A472 (condong teal), dan dua
+  // hijau dengan rona berdekatan terbaca sebagai satu pintu yang sama di peta beranda.
+  { id: 'tree', slug: 'pohon', label: 'Berbagi Pohon', english: 'Tree Sharing', icon: 'tree', tagline: 'Setiap donasi tumbuh jadi pohon yang meneduhkan kota dan menyerap karbon.', blurb: 'Pohon yang meneduhkan & menyerap karbon.', seoDescription: 'Berbagi pohon lewat bagiberbagi.id: donasi ditanam jadi pohon yang memberi keteduhan, menyerap karbon, dan memperkuat ketahanan kota bagi generasi mendatang.', color: '#4C9C2E', colorTint: '#EDF4DB', colorDeep: '#3D7C25' },
 ];
 
 // Label yang ditampilkan ke pengunjung untuk keseluruhan pintu.
@@ -175,13 +175,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       { title: 'Laporan H+1', desc: 'Foto & video dikirim ke donatur.' },
     ],
     forWhom: ['Panti asuhan', 'Fakir miskin', 'Petugas kebersihan', 'Komunitas prasejahtera', 'Warga terdampak'],
-    env: {
-      headline: 'Makanan berlebih terselamatkan, bukan jadi sampah.',
-      stats: [
-        { value: '8,2 t', label: 'makanan terselamatkan' },
-        { value: '3,1 t', label: 'emisi CO₂ dihindari' },
-      ],
-    },
     faq: [
       { q: 'Bagaimana kebersihan & kelayakan makanan dijamin?', a: 'Makanan dimasak mitra dapur terkurasi dengan standar laik higiene, dicek sebelum penyaluran, dan tak pernah menyimpan yang basi atau kedaluwarsa.' },
       { q: 'Ke mana saja makanan disalurkan?', a: 'Ke titik penerima yang sudah terdata dan dipetakan, mulai dari panti, warga prasejahtera, sampai petugas kebersihan. Penyaluran dibuat merata, tidak menumpuk di satu tempat.' },
@@ -241,7 +234,7 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
     },
     contribute: [
       { title: 'Daftarkan ruang atau kendaraanmu', desc: 'Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang pertama kami hubungi nanti.' },
-      { title: 'Pinjamkan langsung tanpa lewat kami', desc: 'Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga tanpa menunggu program ini dibuka.' },
+      { title: 'Pinjamkan langsung ke sekitarmu', desc: 'Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga, dan kabari kami juga supaya tercatat sebagai bagian dari jejaring ini.' },
       { title: 'Kenalkan kami ke pengelolanya', desc: 'Sambungkan kami ke pengurus aula, masjid, atau gudang yang kamu kenal, lalu kami yang menjelaskan bagaimana peminjamannya nanti diatur.' },
     ],
     forWhom: ['Komunitas relawan yang belum punya markas', 'Kelas belajar anak-anak di kampung', 'Dapur umum warga', 'Karang taruna dan kelompok pemuda', 'Kelompok yang perlu kendaraan angkut'],
@@ -259,7 +252,7 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
     },
     contribute: [
       { title: 'Periksa dulu catatan penyalurannya', desc: 'Sebelum mengirim uang, kamu bisa membuka halaman Jejak & Dampak dan melihat sendiri kegiatan apa saja yang sudah kami catat di sana.' },
-      { title: 'Titipkan zakat atau sedekahmu', desc: 'Selama pintu ini masih kami siapkan, uang yang kamu kirim kami arahkan ke program makanan yang sudah berjalan, dan bukti penyalurannya kami kirimkan ke kamu.' },
+      { title: 'Daftar minat zakat atau sedekahmu', desc: 'Selama pintu ini masih kami siapkan, kabari lebih dulu lewat WhatsApp, supaya begitu jalurnya resmi dibuka, kamu jadi yang pertama kami hubungi.' },
       { title: 'Bawa anggaran CSR kantormu', desc: 'Kalau kamu yang memegang anggaran CSR, ajak kami bicara lewat WhatsApp soal bentuk laporan dan dokumentasi yang perusahaanmu butuhkan.' },
     ],
     forWhom: ['Mustahik penerima zakat', 'Keluarga prasejahtera', 'Warga yang sedang kesulitan mendadak', 'Penerima manfaat program makanan', 'Dapur UMKM yang memasak pesanannya'],

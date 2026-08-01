@@ -72,14 +72,14 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
     <section class="section bg-white" style={styleVars}>
       <Container>
         <div class="eyebrow text-[var(--cat-deep)]">Konsep</div>
-        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6 max-w-text">{content.story.headline}</h2>
-        <div class="max-w-text flex flex-col gap-4">
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">{content.story.headline}</h2>
+        <div class="flex flex-col gap-4">
           {content.story.paragraphs.map((par) => (
             <p class="text-body md:text-title-sm text-muted leading-relaxed">{par}</p>
           ))}
         </div>
         {content.story.closing && (
-          <p class="max-w-text mt-8 border-l-4 border-[var(--cat)] pl-5 text-title-sm md:text-title font-semibold text-ink leading-snug">
+          <p class="mt-8 border-l-4 border-[var(--cat)] pl-5 text-title-sm md:text-title font-semibold text-ink leading-snug">
             {content.story.closing}
           </p>
         )}

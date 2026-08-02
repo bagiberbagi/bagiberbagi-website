@@ -118,8 +118,14 @@ const modes = [
   {
     key: 'goods',
     label: 'Pintu kosong (Barang)',
-    note: 'belum punya program berjalan, jejak, maupun foto',
+    note: 'punya 2 program terdaftar tapi keduanya belum aktif',
     data: await buildPintuData('goods'),
+  },
+  {
+    key: 'time',
+    label: 'Pintu kosong total (Waktu)',
+    note: 'nol program sama sekali, tanpa CATEGORY_CONTENT, tanpa jejak',
+    data: await buildPintuData('time'),
   },
 ];
 

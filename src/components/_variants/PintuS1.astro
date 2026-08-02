@@ -307,6 +307,15 @@ const PINTU_CONCEPT: Record<PintuId, PintuConcept> = {
       'Patungan komunitas',
     ],
   },
+  tree: {
+    what: 'Berbagi Pohon menanam donasi jadi pohon yang meneduhkan kota, menyerap karbon, dan menghasilkan oksigen. Yang ditanam bukan cuma bibit, tapi ketahanan kota untuk generasi mendatang.',
+    examples: [
+      'Tunjuk titik tanam yang panas',
+      'Tawarkan lahan atau bibit',
+      'Rawat pohon yang sudah ditanam',
+      'Donasi untuk pembibitan',
+    ],
+  },
 };
 
 const concept = PINTU_CONCEPT[pintu.id];
@@ -441,6 +450,7 @@ const programLead = programsAreOpen
 // urutan blok di kolom baca, jadi tidak pernah ada tautan yang menunjuk ke seksi
 // yang tidak ada dan tidak pernah ada tautan yang melompat mundur.
 const jumpLinks: { href: string; label: string }[] = [];
+if (content?.story) jumpLinks.push({ href: '#konsep', label: 'Konsep' });
 if (showForms) jumpLinks.push({ href: '#bentuk', label: 'Bentuk berbagi' });
 if (hasImpact) jumpLinks.push({ href: '#rekam-jejak', label: 'Rekam jejak' });
 jumpLinks.push({ href: `#${joinId}`, label: joinAsSteps ? 'Alurnya' : 'Cara ikut' });
@@ -551,10 +561,38 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     <Container width="wide">
       <div class="s1-grid">
         <div class="s1-flow">
-          {/* PERNYATAAN PEMBUKA. Tanpa eyebrow dan tanpa h2 karena ia memang
-              bukan seksi: ia kalimat yang membuka badan halaman, dan itu juga
-              yang menahan halaman makanan supaya tidak dibuka oleh angka. */}
-          <p class="s1-open" data-fade>{concept.what}</p>
+          {/* KONSEP / PERNYATAAN PEMBUKA. `content.story` menang kalau pintunya
+              sudah punya satu: itu tulisan asli pemilik situs (headline,
+              paragraf, kutipan penutup), dan `PINTU_CONCEPT[...].what` cuma
+              tambalan generik untuk pintu yang belum ditulisi ceritanya
+              sendiri. Sekarang keenam pintu produksi sudah punya `story`,
+              jadi cabang tambalan ini praktis hanya jaring pengaman untuk
+              pintu baru di masa depan. Dua-duanya dibungkus `.s1-blk` yang
+              sama supaya jarak dan garis pemisah ke blok berikutnya konsisten
+              dengan blok lain; blok pertama sendiri tidak pernah menerima
+              garis pemisah di ATASnya karena tidak ada saudara sebelum dia. */}
+          {content?.story ? (
+            <section id="konsep" class="s1-blk">
+              <header class="s1-head">
+                <p class="s1-eyebrow" data-fade>Konsep</p>
+                <h2 class="s1-h2" data-fade>{content.story.headline}</h2>
+              </header>
+
+              <div class="s1-story">
+                {content.story.paragraphs.map((par) => (
+                  <p class="s1-story-p" data-fade>{par}</p>
+                ))}
+              </div>
+
+              {content.story.closing && (
+                <p class="s1-story-closing" data-fade>{content.story.closing}</p>
+              )}
+            </section>
+          ) : (
+            <div class="s1-blk">
+              <p class="s1-open" data-fade>{concept.what}</p>
+            </div>
+          )}
 
           {showForms && (
             <section id="bentuk" class="s1-blk">
@@ -840,35 +878,38 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   {/* PINTU LAIN: keluar dari grid, jadi rel berhenti lengket persis di batas
       isi halaman ini. Latarnya hangat supaya pergantian band menandai pergantian
-      peran, bukan sekadar berkedip. */}
+      peran, bukan sekadar berkedip.
+
+      SENGAJA TANPA `.s1-head` (eyebrow+h2+lead). Ini seksi tambahan, bukan
+      konten utama, dan headline 46px yang sama dengan Konsep/Program membuat
+      navigasi silang ini menyita perhatian sebesar isi halaman yang sebenarnya
+      dicari pengunjung. Label kecil saja sudah cukup.
+
+      PIL, BUKAN BARIS. Baris penuh lebar (ikon+nama+tagline+panah, satu per
+      baris) masih menyita perhatian sebesar isi utama walau headernya sudah
+      dikecilkan, karena bentuknya sendiri tetap berat: lima baris setinggi
+      penuh, bukan satu kelompok kecil. Pil (ikon 28px + nama, tanpa tagline,
+      melipat ke baris berikutnya) menurunkan bobotnya lagi, dan meminjam
+      kosakata yang sudah ada di situs ini: chip filter pintu di /jejak/.
+      Tagline dibuang karena pengunjung sudah menemuinya di mega-menu dan
+      beranda; di seksi tambahan begini nama pintu saja cukup. */}
   <section id="pintu-lain" class="s1-index-band">
     <Container width="wide">
-      <header class="s1-head">
-        <p class="s1-eyebrow" data-fade>Pintu Lainnya</p>
-        <h2 class="s1-h2" data-fade>Jalan berbagi yang lain</h2>
-        <p class="s1-lead" data-fade>
-          Empat pintu lain memakai sumber daya yang berbeda dan berakhir di penerima yang sama.
-        </p>
-      </header>
+      <p class="s1-eyebrow s1-index-label" data-fade>Pintu Lainnya</p>
 
-      <ul class="s1-index">
+      <div class="s1-doors">
         {otherPintu.map((p) => (
-          <li>
-            <a
-              href={`/berbagi-${p.slug}/`}
-              class="s1-index-row"
-              style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
-            >
-              <span class="s1-index-icon"><Icon name={p.icon} size={20} /></span>
-              <span class="s1-index-main">
-                <b>{p.label}</b>
-                <span>{p.tagline}</span>
-              </span>
-              <svg class="s1-index-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
-            </a>
-          </li>
+          <a
+            href={`/berbagi-${p.slug}/`}
+            class="s1-door"
+            style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
+            data-fade
+          >
+            <span class="s1-door-icon"><Icon name={p.icon} size={14} /></span>
+            <span class="s1-door-label">{p.label}</span>
+          </a>
         ))}
-      </ul>
+      </div>
     </Container>
   </section>
 
@@ -925,6 +966,20 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     --line: #eef0f3;
     --line-band: #b4bcc8;
     --header-clear: 94px;
+    /* 1px CSS diberi dua piksel perangkat di layar retina, jadi tiap garis
+       pemisah di halaman ini terbaca dua kali lebih tebal daripada niatnya.
+       Footer sudah menambal masalah yang sama (lihat Footer.astro, commit
+       "draw the footer rules as true hairlines on retina"): di atas 2dppx,
+       0.5px CSS digambar tepat satu piksel perangkat, garis rambut yang
+       sesungguhnya. Di bawah 2dppx dibiarkan 1px karena 0.5px dibulatkan dan
+       bisa hilang sama sekali. Satu variabel di sini dipakai oleh SEMUA garis
+       pemisah netral di file ini (bukan garis aksen berwarna --cat, yang
+       memang sengaja tebal), jadi menebalkan atau menipiskan cukup ubah satu
+       angka, tidak perlu menyentuh puluhan selector satu per satu. */
+    --hairline: 1px;
+  }
+  @media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
+    .s1 { --hairline: 0.5px; }
   }
 
   /* Target lompat mendarat di bawah header, bukan di belakangnya. Tanpa baris
@@ -936,24 +991,20 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   /* ---------- Rumus kepala seksi, sama di seluruh halaman ---------- */
   .s1-head { max-width: 46rem; margin: 0 0 48px; }
 
+  /* Disamakan angka per angka dengan `.eyebrow` global (global.css): 13px,
+     700, tracking-wide (0.025em), bukan penemuan baru. Beda dari versi Tailwind
+     cuma warnanya, dipatok ke identitas pintu (`--cat-deep`) alih-alih
+     brand-orange tetap, sama seperti eyebrow "Konsep" di halaman pintu yang
+     lama. Tanpa garis dekoratif: `.eyebrow` di seluruh situs tidak pernah
+     bawa satu, jadi menambah satu di sini justru bikin halaman pintu terasa
+     beda bahasa dari beranda. */
   .s1-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0 0 18px;
-    /* token eyebrow 13px */
+    margin: 0 0 12px;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.025em;
     text-transform: uppercase;
-    color: #0f172a;
-  }
-  .s1-eyebrow::before {
-    content: '';
-    width: 28px;
-    height: 2px;
-    flex: none;
-    background: var(--cat);
+    color: var(--cat-deep);
   }
   .s1-eyebrow-dark { color: rgba(255, 255, 255, 0.85); }
 
@@ -973,8 +1024,10 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
      Di dalam kolom baca ia ditimpa versi `cqw` di bawah. */
   .s1-h2 {
     margin: 0;
-    /* heading 30 → display 40 */
-    font-size: clamp(30px, 3.4vw, 40px);
+    /* clamp(30px, 4vw, 46px), identik dengan .tr-h2/.imp-h2 di beranda.
+       Ceiling sebelumnya cuma 40px, terasa lebih kalem dari H2 beranda tanpa
+       alasan, padahal keduanya seharusnya satu skala. */
+    font-size: clamp(30px, 4vw, 46px);
     font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.08;
@@ -985,8 +1038,10 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   .s1-lead {
     margin: 18px 0 0;
-    /* title-sm 18 → title 22 */
-    font-size: clamp(18px, 1.6vw, 22px);
+    /* clamp(17px, 1.5vw, 19px), identik dengan lead .tr-head/.imp-head di
+       beranda. 18-22px sebelumnya bikin lead halaman pintu terbaca lebih
+       berat daripada lead section manapun di beranda. */
+    font-size: clamp(17px, 1.5vw, 19px);
     line-height: 1.62;
     color: #505d6f;
     max-width: 58ch;
@@ -1072,7 +1127,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     gap: 20px 24px;
     margin-top: 64px;
     padding-top: 22px;
-    border-top: 1px solid var(--line-band);
+    border-top: var(--hairline) solid var(--line-band);
   }
   .s1-hero-status {
     margin: 0;
@@ -1184,9 +1239,11 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   /* Versi cqw, cuma untuk isi kolom baca. Kolom ini bergerak dari sekitar 335px
      (mobile) sampai 904px (1440 ke atas), dan tiap clamp di bawah dihitung
-     supaya ujung atasnya tercapai persis di 904px. */
-  .s1-flow .s1-h2 { font-size: clamp(30px, 4.4cqw, 40px); }
-  .s1-flow .s1-lead { font-size: clamp(18px, 2.4cqw, 22px); }
+     supaya ujung atasnya tercapai persis di 904px. Ceiling 46px disamakan
+     dengan .tr-h2/.imp-h2 di beranda (lihat versi vw di atas), jadi 5.1cqw
+     (bukan 4.4cqw) supaya 46px tercapai di lebar kolom yang sama. */
+  .s1-flow .s1-h2 { font-size: clamp(30px, 5.1cqw, 46px); }
+  .s1-flow .s1-lead { font-size: clamp(17px, 2.1cqw, 19px); }
 
   /* Pernyataan pembuka badan halaman. Bukan seksi, jadi tanpa eyebrow dan tanpa
      heading, tapi ukurannya di atas lead supaya ia terbaca sebagai kalimat
@@ -1203,33 +1260,61 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     text-wrap: pretty;
   }
 
-  /* Jarak antar blok 56px di mobile dan 72px di desktop, dengan garis yang
-     benar-benar terlihat. Bandingkan dengan jarak kepala seksi ke isinya (48px):
-     eyebrow jelas lebih dekat ke seksinya sendiri daripada ke seksi sebelumnya.
+  /* Konsep: cerita asli pemilik situs, dirender saat `content.story` ada.
+     Paragraf memakai ukuran yang sama dengan jawaban FAQ (`.s1-faq dd`) supaya
+     satu-satunya blok multi-paragraf di kolom baca tetap dalam kosakata yang
+     sudah dipakai file ini, bukan ukuran baru. */
+  .s1-story {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .s1-story-p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.65;
+    color: #505d6f;
+    max-width: 62ch;
+  }
+  .s1-story-closing {
+    margin: 24px 0 0;
+    padding-left: 20px;
+    border-left: 3px solid var(--cat);
+    font-size: clamp(18px, 1.8cqw, 22px);
+    font-weight: 600;
+    line-height: 1.4;
+    color: #0f172a;
+    max-width: 52ch;
+  }
+
+  /* 32+32 = 64px di SEMUA lebar, plafon "Between blocks inside one section" di
+     DESIGN_SYSTEM.md. Angka sebelumnya (56/56 mobile, 72/72 desktop = sampai
+     144px) melampaui plafon itu; S3 sudah lebih dulu diperbaiki ke pola yang
+     sama persis, disamakan di sini supaya kedua varian konsisten. Yang
+     memisahkan tetap garisnya, bukan jaraknya, jadi menyusutkan jarak tidak
+     menghilangkan pemisahan visual. Bandingkan dengan jarak kepala seksi ke
+     isinya (48px): eyebrow jelas lebih dekat ke seksinya sendiri daripada ke
+     seksi sebelumnya.
 
      Pangkal 40px garis itu berwarna pintu. Itu cara warna identitas ikut
      sepanjang gulir di SEMUA lebar, termasuk di bawah 900px tempat rel dan garis
      vertikalnya tidak dirender sama sekali. Halaman ini memakai garis bukan
      bidang, jadi warnanya pun naik ke garis. */
   .s1-blk { position: relative; }
-  .s1-open + .s1-blk,
   .s1-blk + .s1-blk {
-    margin-top: 56px;
-    padding-top: 56px;
+    margin-top: 32px;
+    padding-top: 32px;
   }
-  .s1-open + .s1-blk::before,
   .s1-blk + .s1-blk::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 1px;
+    /* Bukan border, jadi tidak ikut var(--hairline) di atas, tapi prinsipnya
+       sama: setipis yang bisa digambar layarnya. */
+    height: var(--hairline);
     background: linear-gradient(to right, var(--cat) 0 40px, var(--line-band) 40px);
-  }
-  @media (min-width: 768px) {
-    .s1-open + .s1-blk,
-    .s1-blk + .s1-blk { margin-top: 72px; padding-top: 72px; }
   }
 
   /* ---------- Rel ---------- */
@@ -1317,7 +1402,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   .s1-rail-nav {
     margin-top: 28px;
     padding-top: 28px;
-    border-top: 1px solid var(--line);
+    border-top: var(--hairline) solid var(--line);
   }
   .s1-rail-label {
     margin: 0 0 12px;
@@ -1328,7 +1413,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     color: #687281;
   }
   .s1-rail-nav ul { list-style: none; margin: 0; padding: 0; }
-  .s1-rail-nav li + li { border-top: 1px solid var(--line); }
+  .s1-rail-nav li + li { border-top: var(--hairline) solid var(--line); }
   .s1-rail-nav a {
     display: flex;
     align-items: center;
@@ -1357,8 +1442,8 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   /* ---------- Neraca angka ---------- */
   /* Satu rantai menerus, satu baris per metrik: angka di tepi kiri, labelnya di
-     tepi kanan, jadi barisnya membentang penuh seperti `.s1-index-row`. Bentuk
-     grid sudah ditolak DESIGN_PRINCIPLES sebagai dashboard. */
+     tepi kanan, barisnya membentang penuh lebar kolom. Bentuk grid sudah
+     ditolak DESIGN_PRINCIPLES sebagai dashboard. */
   .s1-ledger { display: flex; flex-direction: column; }
   .s1-metric {
     display: flex;
@@ -1366,9 +1451,9 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     justify-content: space-between;
     gap: 20px;
     padding: 22px 0;
-    border-top: 1px solid var(--line);
+    border-top: var(--hairline) solid var(--line);
   }
-  .s1-metric:last-child { border-bottom: 1px solid var(--line); }
+  .s1-metric:last-child { border-bottom: var(--hairline) solid var(--line); }
   .s1-num {
     flex: none;
     /* heading-lg 34 → display-lg 56 */
@@ -1433,20 +1518,22 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     stroke-linejoin: round;
   }
 
-  /* ---------- Daftar polos bergaris (bentuk berbagi) ---------- */
+  /* ---------- Daftar polos (bentuk berbagi) ---------- */
+  /* Sengaja tanpa garis antar item: titik bulat di kiri sudah menandai tiap
+     baris, garis penuh di atasnya cuma mengulang penanda yang sama. Jaraknya
+     dinaikkan dikit (16→20px) supaya jeda itu yang membawa pemisahannya,
+     bukan garis. */
   .s1-plain { list-style: none; margin: 0; padding: 0; }
   .s1-plain li {
     display: grid;
     grid-template-columns: 9px minmax(0, 1fr);
     align-items: center;
     gap: 14px;
-    padding: 16px 0;
-    border-top: 1px solid var(--line);
+    padding: 20px 0;
     font-size: clamp(18px, 2.4cqw, 22px);
     letter-spacing: -0.015em;
     color: #0f172a;
   }
-  .s1-plain li:last-child { border-bottom: 1px solid var(--line); }
   .s1-plain li span {
     width: 9px;
     height: 9px;
@@ -1456,16 +1543,18 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   /* ---------- Daftar bernomor: cara ikut, atau alur ---------- */
   /* Bentuknya satu, dipakai `contribute` kalau ada dan dipakai alur kalau tidak.
-     Blok yang memikul halaman tidak boleh memakai gaya catatan kaki. */
+     Blok yang memikul halaman tidak boleh memakai gaya catatan kaki. Sengaja
+     tanpa garis antar langkah: angkanya sendiri (01, 02, 03...) sudah
+     menandai urutan dan batas tiap langkah, garis di atasnya jadi penanda
+     kedua untuk hal yang sama. Padding dinaikkan (26→30px) supaya jeda
+     udaranya yang memisahkan. */
   .s1-steps { list-style: none; margin: 0; padding: 0; }
   .s1-step {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     gap: 4px 16px;
-    padding: 26px 0;
-    border-top: 1px solid var(--line);
+    padding: 30px 0;
   }
-  .s1-step:last-child { border-bottom: 1px solid var(--line); }
   /* 22px bold, bukan 15px: --cat-deep di atas latar terang cuma sekitar 3,9:1
      untuk pintu makanan, dan ambang 3:1 baru berlaku dari 22px bold ke atas. */
   .s1-step-n {
@@ -1509,7 +1598,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
      `content.howItWorks` yang tahapnya pendek dan seragam, jadi grid kolom di
      sini tidak menghasilkan kolom ragged. Alur generik yang deskripsinya panjang
      tidak pernah sampai ke sini: ia naik jadi `.s1-steps`. */
-  .s1-strip { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); }
+  .s1-strip { margin-top: 56px; padding-top: 28px; border-top: var(--hairline) solid var(--line); }
   .s1-strip-label {
     margin: 0 0 18px;
     font-size: 11px;
@@ -1550,12 +1639,13 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     display: grid;
     gap: 28px;
     padding: 40px 0;
-    border-top: 1px solid var(--line);
+    border-top: var(--hairline) solid var(--line);
   }
   @container (min-width: 520px) {
-    /* Kolom pertamanya foto, jadi rasionya 1.5fr 1fr; dua kolom teks 1.15fr 1fr. */
-    .s1-prog.has-photo { grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center; }
-    .s1-prog.has-features { grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: start; }
+    /* Kolom pertamanya foto, jadi rasionya 1.5fr 1fr; dua kolom teks 1.15fr 1fr.
+       Gap 56px, batas bawah plafon DESIGN_SYSTEM (56-64px desktop). */
+    .s1-prog.has-photo { grid-template-columns: 1.5fr 1fr; gap: 56px; align-items: center; }
+    .s1-prog.has-features { grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start; }
   }
   .s1-prog-photo {
     border-radius: 20px;
@@ -1618,7 +1708,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     background: var(--cat);
   }
 
-  .s1-next { margin-top: 24px; padding-top: 34px; border-top: 1px solid var(--line); }
+  .s1-next { margin-top: 24px; padding-top: 34px; border-top: var(--hairline) solid var(--line); }
   /* Tanpa program aktif di atasnya, daftar ini yang jadi isi seksinya, jadi
      garis pemisahnya dilepas supaya tidak menggantung tanpa apa pun di atasnya. */
   .s1-next.is-lead { margin-top: 0; padding-top: 0; border-top: 0; }
@@ -1637,9 +1727,9 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     justify-content: space-between;
     gap: 20px;
     padding: 22px 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--hairline) solid var(--line);
   }
-  .s1-next.is-lead .s1-next-item:first-child { border-top: 1px solid var(--line); }
+  .s1-next.is-lead .s1-next-item:first-child { border-top: var(--hairline) solid var(--line); }
   .s1-next-main { min-width: 0; }
   .s1-next-title {
     margin: 0 0 4px;
@@ -1662,7 +1752,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     align-self: center;
     padding: 5px 13px;
     border-radius: 999px;
-    border: 1px solid var(--line-band);
+    border: var(--hairline) solid var(--line-band);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -1674,7 +1764,8 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   /* ---------- Untuk siapa ---------- */
   .s1-who-wrap { display: grid; gap: 36px; }
   @container (min-width: 520px) {
-    .s1-who-wrap.has-photo { grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    /* Kolom pertamanya foto, jadi rasionya 1.5fr 1fr, sama dengan pola di .s1-prog.has-photo. */
+    .s1-who-wrap.has-photo { grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center; }
   }
   .s1-who-photo { margin: 0; }
   .s1-who-img {
@@ -1695,20 +1786,20 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     color: #687281;
     max-width: 42ch;
   }
+  /* Sengaja tanpa garis, sama seperti .s1-plain: titik di kiri sudah menandai
+     tiap baris. */
   .s1-who { list-style: none; margin: 0; padding: 0; }
   .s1-who li {
     display: grid;
     grid-template-columns: 9px minmax(0, 1fr);
     align-items: center;
     gap: 14px;
-    padding: 16px 0;
-    border-top: 1px solid var(--line);
+    padding: 20px 0;
     /* title-sm 18 → title 22 */
     font-size: clamp(18px, 2.4cqw, 22px);
     letter-spacing: -0.015em;
     color: #0f172a;
   }
-  .s1-who li:last-child { border-bottom: 1px solid var(--line); }
   .s1-who li span { width: 9px; height: 9px; border-radius: 999px; background: var(--cat); }
   /* Tanpa foto, daftarnya dua kolom supaya frasa sependek "Panti asuhan" tidak
      menyisakan tiga perempat kolom kosong sebanyak jumlah itemnya. */
@@ -1726,9 +1817,9 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     display: grid;
     gap: 10px;
     padding: 28px 0;
-    border-top: 1px solid var(--line);
+    border-top: var(--hairline) solid var(--line);
   }
-  .s1-faq-item:last-child { border-bottom: 1px solid var(--line); }
+  .s1-faq-item:last-child { border-bottom: var(--hairline) solid var(--line); }
   .s1-faq dt {
     font-size: clamp(18px, 2.4cqw, 22px);
     font-weight: 600;
@@ -1758,46 +1849,45 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   @media (min-width: 768px) {
     .s1-index-band { padding: 128px 0; }
   }
-  .s1-index { list-style: none; margin: 0; padding: 0; }
-  .s1-index-row {
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) 22px;
+  /* Label pengganti .s1-head lengkap (lihat catatan di markup). Jarak ke
+     kelompok pil dipangkas jadi 24px, bukan 48px seperti .s1-head, supaya
+     labelnya terbaca menempel ke daftar yang dijelaskannya, bukan berdiri
+     sebagai judul sendiri. */
+  .s1-index-label { margin-bottom: 24px; }
+
+  /* Pil, bukan baris (lihat catatan panjang di markup). Melipat ke baris
+     berikutnya sendiri (flex-wrap), jadi lima pintu di layar sempit tidak
+     pernah butuh gulir mendatar. Tanpa garis pemisah sama sekali: kontur pil
+     itu sendiri sudah jadi batasnya. */
+  .s1-doors { display: flex; flex-wrap: wrap; gap: 10px; }
+  .s1-door {
+    display: inline-flex;
     align-items: center;
-    gap: 18px;
-    padding: 22px 0;
-    border-top: 1px solid var(--line-band);
-    transition: padding-left 0.18s ease;
+    gap: 9px;
+    padding: 8px 16px 8px 8px;
+    border-radius: 999px;
+    background: #fff;
+    border: var(--hairline) solid var(--line);
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
-  .s1-index li:last-child .s1-index-row { border-bottom: 1px solid var(--line-band); }
-  .s1-index-row:hover { padding-left: 10px; }
-  .s1-index-icon {
+  .s1-door:hover { border-color: var(--cat); box-shadow: 0 2px 10px -4px rgba(15, 23, 42, 0.18); }
+  .s1-door-icon {
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: 28px;
+    height: 28px;
+    flex: none;
     border-radius: 999px;
     background: var(--cat-tint);
     color: var(--cat-deep);
   }
-  .s1-index-main { display: grid; gap: 3px; min-width: 0; }
-  .s1-index-main b {
-    font-size: clamp(18px, 2vw, 22px);
+  .s1-door-label {
+    font-size: 14.5px;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
     color: #0f172a;
   }
-  .s1-index-main span { font-size: 14px; line-height: 1.5; color: #505d6f; }
-  .s1-index-arrow {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: var(--cat-deep);
-    stroke-width: 2.4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform 0.18s ease;
-  }
-  .s1-index-row:hover .s1-index-arrow { transform: translateX(3px); }
 
   /* ---------- Penutup ---------- */
   .s1-close {
@@ -1847,8 +1937,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   @media (prefers-reduced-motion: reduce) {
     .s1-btn,
     .s1-link,
-    .s1-index-row,
-    .s1-index-arrow,
+    .s1-door,
     .s1-rail-nav a { transition: none; }
   }
 </style>

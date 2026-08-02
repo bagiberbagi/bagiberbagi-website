@@ -1,0 +1,1269 @@
+---
+/**
+ * Varian halaman pintu: EDITORIAL FOTO.
+ *
+ * Arahnya satu: foto memimpin. Hero berupa panel foto hampir selebar layar
+ * dengan scrim gelap lembut dan judul duduk di atasnya, lalu isi halaman turun
+ * sebagai baris-baris berselang-seling, foto di satu sisi dan teks di sisi lain.
+ * Foto adalah tulang punggung halaman, bukan hiasan yang ditempel belakangan.
+ *
+ * Kenapa keputusan-keputusan berikut diambil:
+ *
+ * 1. FOTO CUMA ADA UNTUK PINTU MAKANAN. Repo baru punya tiga foto lapangan dan
+ *    ketiganya jelas terbaca sebagai pembagian nasi kotak, jadi memasangnya di
+ *    pintu Barang atau Dana justru berbohong. Peta `PHOTOS` sengaja cuma punya
+ *    kunci `food`. Pintu lain jatuh ke "pelat warna": bidang warna pintu penuh
+ *    dengan ikon besar di tengah, memakai kotak dan proporsi yang sama persis
+ *    dengan foto. Pelatnya sengaja pekat, bukan kotak pucat berbingkai: kotak
+ *    besar yang hampir putih terbaca sebagai lubang, justru kebalikan dari yang
+ *    dibutuhkan halaman tanpa dokumentasi.
+ *
+ * 2. SATU BARIS EDITORIAL SELALU DIRENDER. Premis varian ini runtuh kalau ada
+ *    halaman yang badannya cuma judul dan daftar kartu kecil. Jadi syaratnya
+ *    `active.length === 0`, bukan "tidak ada program sama sekali": pintu yang
+ *    program aktifnya nol tetap dapat satu baris penuh, dan daftar program yang
+ *    sedang disiapkan masuk ke dalam badan baris itu, bukan berdiri sendiri di
+ *    bawah garis pemisah yang tidak memisahkan apa pun.
+ *
+ * 3. HERO TIDAK DITARIK KE BELAKANG NAVBAR. Di puncak halaman pil navbar masih
+ *    transparan dengan teks ink gelap (Header.astro), jadi menaruh foto gelap
+ *    di belakangnya bikin menu tak terbaca. Yang ditarik naik -74px cuma bidang
+ *    tint warna pintu (10px margin + 64px pil = 74px, angkanya terikat ke
+ *    Header.astro), dan panel fotonya mulai di bawah bidang itu.
+ *
+ * 4. WARNA PINTU JALAN TERUS SAMPAI BAWAH, TERMASUK DI HALAMAN TERKOSONG.
+ *    Empat dari lima pintu belum punya `CATEGORY_CONTENT`, jadi seksi dampak,
+ *    band "Cara Ikut", proses, dan FAQ semuanya absen di sana. Pembawa warna
+ *    karena itu dipasang hanya pada bagian yang PASTI dirender: bidang tint di
+ *    puncak, pelat warna dan penanda di baris editorial tengah, dan band CTA
+ *    penutup. Seksi yang muncul kondisional (garis di atas angka dampak, band
+ *    ber-tint "Cara Ikut") menambah warna kalau ada, tapi tidak dihitung.
+ *
+ * 5. LATAR BAND DIHITUNG, BUKAN DITULIS TANGAN. Karena separuh seksi bisa
+ *    hilang, urutan putih-hangat yang ditulis tetap bisa berakhir dengan dua
+ *    band sewarna bersebelahan. `bands` di bawah mencatat band yang benar-benar
+ *    dirender, lalu dua seksi penutup memilih lawan dari band sebelumnya.
+ *
+ * 6. TEKS AKSEN MEMAKAI `--cat-text`, BUKAN `--cat-deep`. `--cat-deep` pintu
+ *    Makanan (#C25D0F) cuma 4,3:1 di atas putih dan 3,8:1 di atas tint, dua-
+ *    duanya gagal floor 4,5:1 untuk teks kecil. `--cat-text` mencampurnya
+ *    dengan ink sedikit, jadi hue pintunya tetap terbaca tapi lolos di kelima
+ *    pintu. `--cat-deep` mentah cuma dipakai untuk angka besar dan ikon, yang
+ *    ambangnya 3:1.
+ *
+ * 7. CTA PENUTUP MEMAKAI VERSI GELAP WARNA PINTU. Teks putih di atas `--cat`
+ *    cuma 2,8:1 di pintu Makanan, jadi bidangnya diturunkan ke campuran
+ *    `--cat-deep` dengan ink. Hue pintunya dikembalikan lewat garis `--cat` di
+ *    tepi atas panel dan ikon watermark, jadi panelnya tetap berwarna pintu
+ *    tanpa mengorbankan keterbacaan.
+ *
+ * 8. `content.stats` SENGAJA TIDAK DIRENDER. Empat angka di sana (12.400 porsi,
+ *    38 titik, dan seterusnya) tidak bisa ditelusuri ke entri jejak mana pun,
+ *    sementara seksi dampak di halaman ini menampilkan angka nyata hasil
+ *    agregasi (220 porsi). Dua angka yang bertabrakan di satu halaman merusak
+ *    kepercayaan, jadi yang dipakai hanya angka yang punya sumber.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import Container from '../Container.astro';
+import Icon from '../Icon.astro';
+import type { CategoryContent, Pintu, PintuId } from '../../consts';
+import type { Program } from '../../lib/programs';
+import type { Impact } from '../../lib/impact';
+import { formatMetric } from '../../lib/format';
+
+import heroFood from '../../assets/images/hero-jumat-berkah.png';
+import distribusiFood from '../../assets/images/jumat-berkah-distribusi.png';
+import promoFood from '../../assets/images/program-promo.png';
+
+interface Props {
+  pintu: Pintu;
+  content: CategoryContent | undefined;
+  programs: Program[];
+  active: Program[];
+  upcoming: Program[];
+  otherPintu: Pintu[];
+  impact: Impact;
+  hasImpact: boolean;
+  contactWa: string;
+  notifyWa: string;
+  jejakHref: string;
+}
+
+const { pintu, content, active, upcoming, otherPintu, impact, hasImpact, contactWa, notifyWa, jejakHref } =
+  Astro.props;
+
+// Tiga foto, tiga peran, tidak ada yang dipakai dua kali di satu halaman.
+// Kunci peta ini cuma `food` dan itu disengaja, lihat catatan 1 di atas.
+interface PintuPhotos {
+  hero: ImageMetadata;
+  program: ImageMetadata;
+  proses: ImageMetadata;
+  heroAlt: string;
+  programAlt: string;
+  prosesAlt: string;
+}
+const PHOTOS: Partial<Record<PintuId, PintuPhotos>> = {
+  food: {
+    hero: heroFood,
+    program: distribusiFood,
+    proses: promoFood,
+    heroAlt: 'Warga dan anak-anak penerima paket Jumat Berkah berkumpul di halaman masjid',
+    programAlt: 'Relawan membagikan paket makanan dan air minum di titik penyaluran',
+    prosesAlt: 'Relawan menyerahkan tas bantuan kepada warga di gang kampung',
+  },
+};
+const photos = PHOTOS[pintu.id];
+
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
+
+const contribute = content?.contribute ?? [];
+const forWhom = content?.forWhom ?? [];
+const howItWorks = content?.howItWorks ?? [];
+const faq = content?.faq ?? [];
+
+const showCara = contribute.length > 0 || forWhom.length > 0;
+const caraTwoCol = contribute.length > 0 && forWhom.length > 0;
+
+const programLead =
+  active.length > 0
+    ? 'Setiap program berjalan punya halaman sendiri yang menjelaskan cara kerjanya dan cara ikut.'
+    : upcoming.length > 0
+      ? 'Belum ada yang berjalan di pintu ini. Yang sedang kami siapkan ada di bawah.'
+      : 'Pintu ini belum punya program yang berjalan.';
+
+// Band yang benar-benar dirender, urut dari atas. Dipakai untuk memilih latar
+// dua seksi penutup supaya tidak pernah ada dua band sewarna bersebelahan.
+const bands: string[] = [];
+if (hasImpact) bands.push('white');
+bands.push('warm'); // seksi program selalu ada
+if (showCara) bands.push('tint');
+if (howItWorks.length > 0) bands.push('white');
+if (content?.env) bands.push('warm');
+if (faq.length > 0) bands.push('white');
+const doorsBg = bands[bands.length - 1] === 'warm' ? 'bg-white' : 'bg-surface-warm';
+const ctaBg = doorsBg === 'bg-white' ? 'bg-surface-warm' : 'bg-white';
+
+const ARROW = 'M5 12h14M13 6l6 6-6 6';
+---
+
+<div class="pintu" style={styleVars}>
+  <!-- ================= HERO: panel foto selebar layar ================= -->
+  <section class="hero-band">
+    {/* Bidang tint yang ditarik naik ke belakang navbar; panel fotonya tidak. */}
+    <Container>
+      <nav class="hero-crumbs text-body-sm font-semibold text-muted" aria-label="Breadcrumb">
+        <a href="/" class="link hover:text-ink">Beranda</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <a href="/#pintu" class="link hover:text-ink">Pintu Berbagi</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <span class="text-ink">{pintu.label}</span>
+      </nav>
+    </Container>
+
+    <div class="hero-panel">
+      {photos ? (
+        <Image
+          src={photos.hero}
+          alt={photos.heroAlt}
+          widths={[640, 960, 1280]}
+          sizes="100vw"
+          loading="eager"
+          class="hero-photo"
+        />
+      ) : (
+        /* Jalan mundur tanpa foto: bidang warna pintu digelapkan dengan ink
+           supaya teks putih tetap lolos kontras di kelima pintu. Ikonnya
+           ditaruh di tepi atas kanan, jauh dari blok teks di kiri bawah dan
+           jauh dari bagian scrim yang paling pekat, jadi warna pintunya
+           benar-benar sampai. */
+        <div class="hero-plate" aria-hidden="true">
+          <span class="hero-plate-mark"><Icon name={pintu.icon} size={280} /></span>
+        </div>
+      )}
+      <div class:list={['hero-scrim', !photos && 'hero-scrim-plate']} aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <Container>
+          <p class="eyebrow text-white/75 flex items-center gap-2.5" data-fade>
+            <span class="rule rule-cat" aria-hidden="true"></span>
+            {pintu.english}
+          </p>
+          <h1 class="hero-title text-heading-lg md:text-display-lg font-bold text-white text-balance" data-fade>
+            {pintu.label}
+          </h1>
+          <p class="hero-lead text-body md:text-title-sm text-white/85 text-pretty" data-fade>{pintu.tagline}</p>
+
+          <div class="hero-actions" data-fade>
+            {/* Pil putih karena latarnya foto/pelat gelap, tapi label ikut warna
+                pintu: `.btn-secondary` bawaan memakai biru brand, dan di halaman
+                bertema rose atau cyan itu warna primer kedua yang tidak nyambung
+                dengan `.cat-btn` di bawahnya. */}
+            <a
+              href={contactWa}
+              target="_blank"
+              rel="noopener"
+              data-track="contact_wa"
+              data-track-pintu={pintu.slug}
+              class="btn-secondary hero-cta"
+            >
+              Hubungi Kami
+            </a>
+            {hasImpact && (
+              <a href={jejakHref} class="hero-ghost text-body">
+                Lihat rekam jejak
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+              </a>
+            )}
+          </div>
+        </Container>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DAMPAK: kalimat dulu, angka menyusul ================= -->
+  {hasImpact && (
+    <section class="bg-white py-24 md:py-32">
+      <Container>
+        <header class="sec-head">
+          <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+            <span class="rule rule-cat" aria-hidden="true"></span>
+            Rekam Jejak
+          </p>
+          <h2 class="sec-h2 text-heading md:text-display font-bold text-ink text-balance" data-fade>
+            Yang sudah tercatat di pintu ini
+          </h2>
+          <p class="sec-lead text-body md:text-title-sm text-muted text-pretty" data-fade>
+            Angka di bawah dijumlahkan dari {impact.jejakCount.toLocaleString('id-ID')} kegiatan yang laporannya
+            sudah kami unggah, bukan dari perkiraan.
+          </p>
+        </header>
+
+        {/* Satu garis warna membentang di atas seluruh baris, bukan satu garis
+            per angka. Bedanya penting: garis per angka memecah bukti jadi kartu
+            counter yang berdiri sendiri, dan itu persis bentuk dashboard yang
+            dilarang DESIGN_PRINCIPLES. Dengan satu garis, angka-angka ini
+            terbaca sebagai satu klaim bersambung. Semua metrik ditampilkan apa
+            adanya, tidak dipotong. */}
+        <div class="metrics" data-fade>
+          <div class="metric">
+            <div class="metric-num text-heading-sm md:text-heading tabular-nums">
+              {impact.jejakCount.toLocaleString('id-ID')}
+            </div>
+            <div class="text-body-sm text-muted mt-1.5">kali kegiatan</div>
+          </div>
+          {impact.metrics.map((m) => (
+            <div class="metric">
+              <div class="metric-num text-heading-sm md:text-heading tabular-nums">{formatMetric(m)}</div>
+              <div class="text-body-sm text-muted mt-1.5">{m.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <p class="sec-foot">
+          <a href={jejakHref} class="arrow-link text-body-sm">
+            Telusuri semua jejak {pintu.label}
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+          </a>
+        </p>
+      </Container>
+    </section>
+  )}
+
+  <!-- ================= PROGRAM: baris editorial foto + teks ================= -->
+  <section class="bg-surface-warm py-24 md:py-32">
+    <Container>
+      <header class="sec-head">
+        <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+          <span class="rule rule-cat" aria-hidden="true"></span>
+          Program
+        </p>
+        <h2 class="sec-h2 text-heading md:text-display font-bold text-ink text-balance" data-fade>
+          Program di pintu ini
+        </h2>
+        <p class="sec-lead text-body md:text-title-sm text-muted text-pretty" data-fade>{programLead}</p>
+      </header>
+
+      {active.length > 0 ? (
+        <div class="rows">
+          {active.map((p, i) => (
+            <article class="row" data-fade>
+              <div class:list={['row-visual', i % 2 === 1 && 'row-flip']}>
+                {p.image ? (
+                  <Image
+                    src={p.image}
+                    alt={`Dokumentasi ${p.label}`}
+                    widths={[360, 448, 700, 896]}
+                    sizes="(min-width: 900px) 448px, 100vw"
+                    loading="lazy"
+                    class="row-photo shadow-card"
+                  />
+                ) : photos ? (
+                  <Image
+                    src={photos.program}
+                    alt={photos.programAlt}
+                    widths={[360, 448, 700, 896]}
+                    sizes="(min-width: 900px) 448px, 100vw"
+                    loading="lazy"
+                    class="row-photo shadow-card"
+                  />
+                ) : (
+                  <div class="row-plate shadow-card" aria-hidden="true">
+                    <span class="row-plate-mark"><Icon name={pintu.icon} size={128} /></span>
+                  </div>
+                )}
+              </div>
+
+              <div class="row-body">
+                <p class="row-tag text-micro">
+                  <span class="dot" aria-hidden="true"></span>
+                  Program berjalan
+                </p>
+                <h3 class="row-h3 text-title md:text-heading-sm font-bold text-ink text-balance">{p.label}</h3>
+                <p class="row-text text-body text-muted text-pretty">{p.summary}</p>
+
+                {p.detail.features.length > 0 && (
+                  <ul class="feat text-body-sm text-ink">
+                    {p.detail.features.slice(0, 3).map((f) => (
+                      <li>
+                        <span class="feat-tick" aria-hidden="true">
+                          <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+                        </span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* Tautan cuma dirender kalau halamannya benar-benar ada. Program
+                    aktif yang deskripsinya masih kosong tidak punya href, dan
+                    anchor tanpa href tampak bisa diklik padahal tidak. */}
+                {p.href ? (
+                  <a
+                    href={p.href}
+                    data-track="program_click"
+                    data-track-program={p.label}
+                    class="arrow-link text-body-sm row-cta"
+                  >
+                    Lihat program {p.label}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+                  </a>
+                ) : (
+                  <p class="row-note text-body-sm text-muted">Halaman rinci program ini sedang kami siapkan.</p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        /* Tidak ada program berjalan: barisnya tetap satu baris editorial penuh.
+           Kalau ada program yang sedang disiapkan, daftarnya masuk ke badan
+           baris ini, bukan berdiri sendiri di bawah garis pemisah. */
+        <article class="row" data-fade>
+          <div class="row-visual">
+            {photos ? (
+              <Image
+                src={photos.program}
+                alt={photos.programAlt}
+                widths={[360, 448, 700, 896]}
+                sizes="(min-width: 900px) 448px, 100vw"
+                loading="lazy"
+                class="row-photo shadow-card"
+              />
+            ) : (
+              <div class="row-plate shadow-card" aria-hidden="true">
+                <span class="row-plate-mark"><Icon name={pintu.icon} size={128} /></span>
+              </div>
+            )}
+          </div>
+
+          <div class="row-body">
+            {upcoming.length > 0 ? (
+              <Fragment>
+                <p class="row-tag text-micro">
+                  <span class="dot dot-hollow" aria-hidden="true"></span>
+                  Sedang disiapkan
+                </p>
+                <h3 class="row-h3 text-title md:text-heading-sm font-bold text-ink text-balance">
+                  Program pertama di pintu ini sedang kami siapkan
+                </h3>
+                <p class="row-text text-body text-muted text-pretty">
+                  Belum ada kegiatan yang berjalan, tapi arahnya sudah jelas. Ini yang sedang kami siapkan.
+                </p>
+                <ul class="soon-list">
+                  {upcoming.map((p) => (
+                    <li class="soon-item">
+                      <span class="soon-ring" aria-hidden="true"></span>
+                      <div class="min-w-0">
+                        <div class="text-body font-bold text-ink">{p.label}</div>
+                        <p class="soon-text text-body-sm text-muted text-pretty">{p.summary}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p class="soon-foot">
+                  <a
+                    href={notifyWa}
+                    target="_blank"
+                    rel="noopener"
+                    data-track="notify_wa"
+                    data-track-pintu={pintu.slug}
+                    class="arrow-link text-body-sm"
+                  >
+                    Beri tahu saya saat program ini dibuka
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+                  </a>
+                </p>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <p class="row-tag text-micro">
+                  <span class="dot dot-hollow" aria-hidden="true"></span>
+                  Belum berjalan
+                </p>
+                <h3 class="row-h3 text-title md:text-heading-sm font-bold text-ink text-balance">
+                  Kami masih menyiapkan program pertamanya
+                </h3>
+                <p class="row-text text-body text-muted text-pretty">
+                  Pintu ini sudah punya arah, tapi belum ada kegiatan yang berjalan. Kalau kamu ingin ikut sejak
+                  awal, atau punya sumber daya yang cocok disalurkan lewat sini, ceritakan ke kami.
+                </p>
+                <div class="row-actions">
+                  <a
+                    href={notifyWa}
+                    target="_blank"
+                    rel="noopener"
+                    data-track="notify_wa"
+                    data-track-pintu={pintu.slug}
+                    class="btn-primary btn-sm cat-btn"
+                  >
+                    Beri tahu saya saat dibuka
+                  </a>
+                  <a
+                    href={contactWa}
+                    target="_blank"
+                    rel="noopener"
+                    data-track="contact_wa"
+                    data-track-pintu={pintu.slug}
+                    class="arrow-link text-body-sm"
+                  >
+                    Bicara dengan tim kami
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+                  </a>
+                </div>
+              </Fragment>
+            )}
+          </div>
+        </article>
+      )}
+
+      {/* Garis pemisah di sini cuma masuk akal kalau ada baris program aktif di
+          atasnya. Kalau tidak ada, daftar ini sudah pindah ke dalam baris di
+          atas dan blok ini tidak dirender sama sekali. Dua kolom baru dinyalakan
+          mulai dua item, karena satu kartu di grid dua kolom meninggalkan kolom
+          kanan mati. */}
+      {active.length > 0 && upcoming.length > 0 && (
+        <div class="soon" data-fade>
+          <h3 class="soon-title label text-muted">Sedang disiapkan</h3>
+          <ul class:list={['soon-list', upcoming.length > 1 && 'soon-list-2']}>
+            {upcoming.map((p) => (
+              <li class="soon-item">
+                <span class="soon-ring" aria-hidden="true"></span>
+                <div class="min-w-0">
+                  <div class="text-body font-bold text-ink">{p.label}</div>
+                  <p class="soon-text text-body-sm text-muted text-pretty">{p.summary}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p class="soon-foot">
+            <a
+              href={notifyWa}
+              target="_blank"
+              rel="noopener"
+              data-track="notify_wa"
+              data-track-pintu={pintu.slug}
+              class="arrow-link text-body-sm"
+            >
+              Beri tahu saya saat program ini dibuka
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW}></path></svg>
+            </a>
+          </p>
+        </div>
+      )}
+    </Container>
+  </section>
+
+  <!-- ================= CARA IKUT (satu band ber-tint) ================= -->
+  {showCara && (
+    <section class="cara py-24 md:py-32">
+      <Container>
+        <header class="sec-head">
+          <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+            <span class="rule rule-cat" aria-hidden="true"></span>
+            Cara Ikut
+          </p>
+          <h2 class="sec-h2 text-heading md:text-display font-bold text-ink text-balance" data-fade>
+            Cara kamu bisa ikut lewat pintu ini
+          </h2>
+          {forWhom.length > 0 && (
+            <p class="sec-lead text-body md:text-title-sm text-muted text-pretty" data-fade>
+              Caranya beberapa, tapi ujungnya satu. Semua yang masuk lewat pintu ini berhenti di penerima yang
+              sama.
+            </p>
+          )}
+        </header>
+
+        <div class:list={['cara-grid', caraTwoCol && 'cara-grid-2']}>
+          {contribute.length > 0 && (
+            <ol class="ways">
+              {contribute.map((c, i) => (
+                <li class="way" data-fade>
+                  <span class="way-num text-eyebrow tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3 class="way-h3 text-title-sm font-bold text-ink">{c.title}</h3>
+                    <p class="way-text text-body-sm text-muted text-pretty">{c.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {forWhom.length > 0 && (
+            /* Bukan pertanyaan kedua di seksi ini, tapi ujung dari cara-cara di
+               sebelahnya: ke mana yang kamu salurkan itu berhenti. Karena itu
+               panel pendamping, bukan kolom sejajar dengan judulnya sendiri. */
+            <aside class="whom shadow-card" data-fade>
+              <h3 class="whom-title label text-muted">Bantuannya sampai ke</h3>
+              <ul class="whom-list text-body text-ink">
+                {forWhom.map((who) => (
+                  <li>
+                    <span class="dot" aria-hidden="true"></span>
+                    {who}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- ================= PROSES: foto di sisi lain ================= -->
+  {howItWorks.length > 0 && (
+    <section class="bg-white py-24 md:py-32">
+      <Container>
+        <article class="row">
+          <div class="row-visual row-flip row-visual-tall">
+            {photos ? (
+              <Image
+                src={photos.proses}
+                alt={photos.prosesAlt}
+                widths={[360, 448, 700, 896]}
+                sizes="(min-width: 900px) 448px, 100vw"
+                loading="lazy"
+                class="row-photo shadow-card"
+              />
+            ) : (
+              <div class="row-plate shadow-card" aria-hidden="true">
+                <span class="row-plate-mark"><Icon name="repeat" size={128} /></span>
+              </div>
+            )}
+          </div>
+
+          <div class="row-body">
+            <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+              <span class="rule rule-cat" aria-hidden="true"></span>
+              Perjalanannya
+            </p>
+            <h2 class="row-h3 text-heading-sm md:text-heading font-bold text-ink text-balance" data-fade>
+              Urutan kerjanya
+            </h2>
+            <p class="row-text text-body text-muted text-pretty" data-fade>
+              Langkah yang sama berulang di setiap kegiatan, supaya bantuan sampai dan tercatat.
+            </p>
+
+            <ol class="steps">
+              {howItWorks.map((s, i) => (
+                <li class="step" data-fade>
+                  <span class="step-num text-body-sm tabular-nums">{i + 1}</span>
+                  <div>
+                    <h3 class="step-h3 text-title-sm font-bold text-ink">{s.title}</h3>
+                    <p class="step-text text-body-sm text-muted text-pretty">{s.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </article>
+      </Container>
+    </section>
+  )}
+
+  <!-- ================= BONUS DAMPAK (kalau pintunya punya) ================= -->
+  {content?.env && (
+    <section class="bg-surface-warm py-24 md:py-32">
+      <Container>
+        {/* Bidang gelap yang nyaris netral: ink dengan sedikit hue pintu, jadi
+            angka `--cat` di atasnya tidak berdiri di latar yang asing. Ini satu-
+            satunya bidang gelap setelah hero, jadi ia yang memberi relief. */}
+        <div class="env" data-fade>
+          <div class="env-head">
+            <p class="eyebrow text-white/70 flex items-center gap-2.5">
+              <span class="rule rule-cat" aria-hidden="true"></span>
+              Bonus Dampak
+            </p>
+            <h2 class="env-h2 text-title md:text-heading-sm font-bold text-white text-balance">
+              {content.env.headline}
+            </h2>
+          </div>
+          <div class="env-stats">
+            {content.env.stats.map((s) => (
+              <div>
+                <div class="env-num text-heading-sm font-bold tabular-nums">{s.value}</div>
+                <div class="text-body-sm text-white/80 mt-1">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- ================= FAQ ================= -->
+  {faq.length > 0 && (
+    <section class="bg-white py-24 md:py-32">
+      <Container>
+        <header class="sec-head">
+          <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+            <span class="rule rule-cat" aria-hidden="true"></span>
+            Pertanyaan
+          </p>
+          <h2 class="sec-h2 text-heading-sm md:text-heading font-bold text-ink text-balance" data-fade>
+            Yang sering ditanyakan
+          </h2>
+        </header>
+
+        <div class="faq border-t border-border" data-fade>
+          {faq.map((item) => (
+            <details class="faq-item border-b border-border">
+              <summary>
+                <span class="text-title-sm font-bold text-ink text-pretty">{item.q}</span>
+                <span class="faq-chev" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
+                </span>
+              </summary>
+              <p class="text-body text-muted text-pretty">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- ================= PINTU LAIN ================= -->
+  <section class:list={[doorsBg, 'py-24 md:py-32']}>
+    <Container>
+      <header class="sec-head">
+        <p class="eyebrow text-muted flex items-center gap-2.5" data-fade>
+          <span class="rule rule-cat" aria-hidden="true"></span>
+          Pintu Lainnya
+        </p>
+        <h2 class="sec-h2 text-heading-sm md:text-heading font-bold text-ink text-balance" data-fade>
+          Jalan berbagi yang lain
+        </h2>
+      </header>
+
+      {/* Kartunya membawa blurb, bukan cuma nama. Di pintu yang isinya masih
+          sedikit, blok ini yang menahan halaman supaya tidak terbaca kosong.
+          Tangga kolomnya ditulis sebagai util responsif (pola yang sama dengan
+          halaman pintu di produksi), bukan sebagai media query struktural
+          tambahan di scoped style. */}
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {otherPintu.map((p) => (
+          <a
+            href={`/berbagi-${p.slug}/`}
+            style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
+            class="door border border-border hover:shadow-cardSm"
+            data-fade
+          >
+            <span class="door-icon"><Icon name={p.icon} size={22} /></span>
+            <span class="text-title-sm font-bold text-ink">{p.label}</span>
+            <span class="text-body-sm text-muted text-pretty">{p.blurb}</span>
+            <span class="door-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d={ARROW}></path></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </Container>
+  </section>
+
+  <!-- ================= CTA PENUTUP (band sendiri) ================= -->
+  {/* Dipisah dari grid pintu lain karena judul di seksi itu cuma menerangkan
+      kartunya. Ditumpuk di sana, panel ini menggantung tanpa heading; di band
+      sendiri, judul di dalam panelnya sendiri yang jadi anchor seksi. */}
+  <section class:list={[ctaBg, 'py-24 md:py-32']}>
+    <Container>
+      <a
+        href={contactWa}
+        target="_blank"
+        rel="noopener"
+        data-track="pintu_cta"
+        data-track-pintu={pintu.slug}
+        class="cta"
+        data-fade
+      >
+        <span class="cta-mark" aria-hidden="true"><Icon name={pintu.icon} size={180} /></span>
+        <span class="cta-body">
+          <span class="block text-title md:text-heading-sm font-bold text-white text-balance">
+            {content?.ctaTitle ?? `Ingin berkontribusi lewat ${pintu.label}?`}
+          </span>
+          <span class="cta-text block text-body-sm text-white/90 text-pretty">
+            {content?.ctaText ?? 'Tim kami bantu wujudkan. Hubungi lewat WhatsApp.'}
+          </span>
+        </span>
+        <span class="cta-btn text-body-sm">Hubungi Kami</span>
+      </a>
+    </Container>
+  </section>
+</div>
+
+<script>
+  // Reveal bersama memakai fade-in.js yang sudah ada (data-fade). Tanpa import
+  // ini semua atribut data-fade di atas jadi mati dan halamannya tampil tanpa
+  // reveal sama sekali. Script itu punya cabang prefers-reduced-motion sendiri
+  // yang menampilkan isi penuh langsung.
+  import '../../scripts/fade-in.js';
+</script>
+
+<style>
+  /* ---------- token lokal ---------- */
+
+  .pintu {
+    /* Alias token warna, ditulis sekali di file ini supaya hex mentah tidak
+       tersebar di puluhan aturan di bawah. Nilainya = token `ink` di
+       tailwind.config.mjs. */
+    --ink: #0f172a;
+    /* = token `border`, garis rambut kartu dan pemisah. */
+    --hairline: #eef0f3;
+    /* Teks aksen kecil. `--cat-deep` sendiri gagal floor 4,5:1 di pintu Makanan
+       (4,3:1 di atas putih, 3,8:1 di atas tint), jadi dicampur sedikit ink:
+       hue pintunya tetap terbaca dan kelima pintu lolos, di putih maupun tint. */
+    --cat-text: color-mix(in srgb, var(--cat-deep) 80%, var(--ink));
+  }
+
+  /* ---------- primitif yang dipakai ulang ---------- */
+
+  /* Garis pendek pembawa warna pintu di depan eyebrow. Warna dipindah ke marker
+     karena teks 13px dengan --cat-deep tidak lolos kontras di pintu Makanan. */
+  .rule {
+    display: inline-block;
+    width: 26px;
+    height: 2px;
+    border-radius: 999px;
+    flex: none;
+  }
+  .rule-cat { background: var(--cat); }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 999px;
+    background: var(--cat);
+  }
+  .dot-hollow {
+    background: transparent;
+    box-shadow: inset 0 0 0 2px var(--cat);
+  }
+
+  .sec-head { max-width: 46rem; margin: 0 0 48px; }
+  .sec-h2 { margin: 0; }
+  .sec-lead { max-width: 58ch; margin: 18px 0 0; }
+  .sec-foot { margin: 40px 0 0; }
+
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--cat-text);
+    transition: gap 0.18s ease;
+  }
+  .arrow-link:hover,
+  .arrow-link:focus-visible { gap: 12px; }
+  .arrow-link svg,
+  .hero-ghost svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---------- hero ---------- */
+
+  /* -74px = 10px margin atas header + 64px tinggi pil (Header.astro). Yang
+     ditarik ke belakang navbar cuma bidang tint, bukan fotonya. */
+  .hero-band {
+    margin-top: -74px;
+    padding-top: 74px;
+    background: linear-gradient(180deg, var(--cat-tint), color-mix(in srgb, var(--cat-tint) 40%, #ffffff));
+  }
+  .hero-crumbs { padding: 26px 0 22px; }
+
+  .hero-panel {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: clamp(360px, 52vw, 560px);
+    overflow: hidden;
+  }
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Digeser ke atas supaya wajah orang tidak tertutup blok teks di bawah. */
+    object-position: 50% 34%;
+  }
+  .hero-plate {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--cat-deep) 78%, var(--ink)),
+      color-mix(in srgb, var(--cat-deep) 30%, var(--ink))
+    );
+  }
+  /* Tepi atas kanan: teks hero duduk di kiri bawah, dan bagian scrim yang
+     paling pekat juga di bawah, jadi di sini ikonnya benar-benar terlihat. */
+  .hero-plate-mark {
+    position: absolute;
+    right: -48px;
+    top: -40px;
+    color: var(--cat);
+    opacity: 0.45;
+  }
+  /* rgba dari token `ink` (#0F172A). */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.44) 56%, rgba(15, 23, 42, 0.1));
+  }
+  /* Pelat warna sudah cukup gelap untuk teks putih (paling terang 6,4:1 sebelum
+     scrim), jadi scrim-nya dibuat tipis. Kalau setebal scrim foto, warna
+     pintunya habis dan keempat pintu tanpa foto terbaca sama: persegi biru tua. */
+  .hero-scrim-plate {
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.16) 60%, rgba(15, 23, 42, 0.06));
+  }
+  .hero-inner {
+    position: relative;
+    width: 100%;
+    padding: 56px 0 44px;
+  }
+  @media (min-width: 768px) {
+    .hero-inner { padding: 72px 0 64px; }
+  }
+  .hero-title { margin: 0; }
+  .hero-lead { max-width: 52ch; margin: 16px 0 0; }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  /* Menimpa `text-brand-blue` bawaan .btn-secondary; lihat catatan di markup. */
+  .hero-cta { color: var(--cat-text); }
+
+  .hero-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 26px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.45);
+    color: #fff;
+    font-weight: 700;
+    transition: background-color 0.2s ease, border-color 0.2s ease, gap 0.18s ease;
+  }
+  .hero-ghost:hover,
+  .hero-ghost:focus-visible {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.7);
+    gap: 12px;
+  }
+
+  /* ---------- metrik dampak ---------- */
+
+  /* Satu garis untuk seluruh baris, bukan satu garis per angka; lihat catatan
+     di markup soal kenapa. */
+  .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 56px;
+    padding-top: 20px;
+    border-top: 2px solid color-mix(in srgb, var(--cat) 45%, transparent);
+  }
+  .metric { min-width: 10rem; }
+  /* Angka besar (26px+), jadi ambangnya 3:1 dan --cat-deep mentah masih aman. */
+  .metric-num {
+    font-weight: 700;
+    color: var(--cat-deep);
+  }
+
+  /* ---------- baris editorial ---------- */
+
+  .rows { display: flex; flex-direction: column; gap: 72px; }
+  .row { display: grid; gap: 32px; align-items: center; }
+  @media (min-width: 900px) {
+    .rows { gap: 96px; }
+    .row { grid-template-columns: 1fr 1fr; gap: 56px; }
+    .row-flip { order: 2; }
+  }
+
+  .row-visual { position: relative; }
+  .row-photo {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+  @media (min-width: 900px) {
+    .row-visual-tall .row-photo,
+    .row-visual-tall .row-plate { aspect-ratio: 3 / 4; max-height: 520px; }
+  }
+  /* Pelat warna: pengganti foto berupa bidang warna pintu PENUH, dengan kotak
+     dan proporsi yang sama persis dengan foto. Versi pucat (warna 18% di atas
+     putih) terbaca sebagai lubang, bukan sebagai visual, dan di pintu tanpa
+     foto pelat inilah satu-satunya bidang di badan halaman. */
+  .row-plate {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(140deg, var(--cat), var(--cat-deep));
+  }
+  /* Lingkaran tipis di belakang ikon supaya bidangnya punya pusat dan tidak
+     terbaca sebagai blok warna datar. */
+  .row-plate::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 58%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+  }
+  .row-plate-mark {
+    position: relative;
+    color: #fff;
+    opacity: 0.95;
+  }
+
+  .row-h3 { margin: 0; }
+  .row-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cat-text);
+    margin: 0 0 14px;
+  }
+  .row-text { max-width: 52ch; margin: 14px 0 0; }
+  .row-cta { margin-top: 24px; }
+  .row-note { margin: 24px 0 0; }
+  .row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-top: 28px;
+  }
+
+  .feat { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; }
+  .feat li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .feat-tick {
+    flex: none;
+    margin-top: 2px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--cat-tint);
+    color: var(--cat-deep);
+  }
+  .feat-tick svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---------- program yang belum berjalan ---------- */
+
+  .soon { margin-top: 72px; padding-top: 34px; border-top: 1px solid var(--hairline); }
+  .soon-title { margin: 0 0 18px; }
+  .soon-list { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 12px; }
+  .soon .soon-list { margin-top: 0; }
+  @media (min-width: 900px) {
+    .soon-list-2 { grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+  }
+  /* Kartu putih pekat di atas latar hangat: versi lama memakai putih 60% dan
+     nyaris tak terbaca sebagai kartu. Teksnya juga tidak dipotong lagi. */
+  .soon-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 20px;
+    padding: 18px 20px;
+  }
+  .soon-ring {
+    flex: none;
+    margin-top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--cat) 55%, transparent);
+  }
+  .soon-text { margin: 4px 0 0; }
+  .soon-foot { margin: 22px 0 0; }
+
+  /* ---------- band cara ikut ---------- */
+
+  .cara { background: linear-gradient(180deg, var(--cat-tint), color-mix(in srgb, var(--cat-tint) 55%, #ffffff)); }
+  .cara-grid { display: grid; gap: 40px; }
+  @media (min-width: 900px) {
+    .cara-grid-2 { grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: start; }
+  }
+
+  .ways { list-style: none; margin: 0; padding: 0; display: grid; gap: 26px; }
+  .way { display: flex; gap: 18px; align-items: flex-start; }
+  .way-h3 { margin: 0; }
+  .way-text { margin: 6px 0 0; }
+  .way-num {
+    flex: none;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--cat-text);
+    padding-top: 4px;
+    min-width: 26px;
+  }
+
+  .whom {
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 20px;
+    padding: 24px 26px;
+  }
+  .whom-title { margin: 0 0 14px; }
+  .whom-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+  .whom-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ---------- langkah proses ---------- */
+
+  .steps { list-style: none; margin: 30px 0 0; padding: 0; display: grid; gap: 22px; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .step-h3 { margin: 0; }
+  .step-text { margin: 4px 0 0; }
+  .step-num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--cat-tint);
+    color: var(--cat-text);
+    font-weight: 700;
+  }
+
+  /* ---------- bonus dampak ---------- */
+
+  .env {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    border-radius: 20px;
+    padding: 32px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--cat-deep) 12%, var(--ink)), var(--ink));
+  }
+  @media (min-width: 900px) {
+    .env { flex-direction: row; align-items: center; gap: 48px; padding: 40px; }
+  }
+  .env-head { flex: 1; }
+  .env-h2 { margin: 0; }
+  .env-num { color: var(--cat); }
+  /* flex-wrap dipasang sejak awal: dua stat aman, tiga stat di layar sempit
+     dulu meluber keluar kartu. */
+  .env-stats { display: flex; flex-wrap: wrap; gap: 20px 40px; }
+
+  /* ---------- faq ---------- */
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item > p { margin: 0 0 22px; max-width: 62ch; }
+  .faq-chev {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--cat-tint);
+    color: var(--cat-deep);
+    transition: transform 0.2s ease;
+  }
+  .faq-chev svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .faq-item[open] .faq-chev { transform: rotate(180deg); }
+
+  /* ---------- pintu lain ---------- */
+
+  .door {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 22px 22px 44px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .door:hover {
+    border-color: var(--cat);
+    transform: translateY(-2px);
+  }
+  .door-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--cat-tint);
+    color: var(--cat-deep);
+    margin-bottom: 4px;
+  }
+  .door-arrow {
+    position: absolute;
+    right: 20px;
+    bottom: 16px;
+    color: var(--cat-deep);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .door-arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .door:hover .door-arrow,
+  .door:focus-visible .door-arrow { opacity: 1; transform: translateX(0); }
+
+  /* ---------- cta ---------- */
+
+  /* Bidangnya versi gelap warna pintu, bukan `--cat` vivid: putih di atas
+     #F4791D cuma 2,8:1. Hue pintunya dikembalikan lewat garis `--cat` di tepi
+     atas dan ikon watermark, jadi panelnya tetap jelas milik pintu ini. */
+  .cta {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 22px;
+    border-radius: 20px;
+    border-top: 3px solid var(--cat);
+    padding: 32px;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--cat-deep) 78%, var(--ink)),
+      color-mix(in srgb, var(--cat-deep) 38%, var(--ink))
+    );
+  }
+  @media (min-width: 768px) { .cta { padding: 40px; gap: 32px; } }
+  .cta-mark {
+    position: absolute;
+    right: -30px;
+    bottom: -46px;
+    color: var(--cat);
+    opacity: 0.22;
+  }
+  .cta-body { position: relative; flex: 1 1 20rem; min-width: 0; }
+  .cta-text { margin-top: 8px; }
+  .cta-btn {
+    position: relative;
+    flex: none;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--cat-text);
+    font-weight: 700;
+    padding: 14px 26px;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+  }
+  .cta:hover .cta-btn { transform: translateY(-2px); }
+
+  /* Tombol primer yang ikut warna pintu. Teks putih di atas --cat gagal kontras
+     (Makanan cuma 2,2:1), jadi latarnya dipakai --cat-deep. */
+  .cat-btn { background: var(--cat-deep); }
+  .cat-btn:hover { background: color-mix(in srgb, var(--cat-deep) 85%, #000000); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .door,
+    .door-arrow,
+    .cta-btn,
+    .arrow-link,
+    .hero-ghost,
+    .faq-chev { transition: none; }
+    .door:hover { transform: none; }
+    .cta:hover .cta-btn { transform: none; }
+  }
+</style>

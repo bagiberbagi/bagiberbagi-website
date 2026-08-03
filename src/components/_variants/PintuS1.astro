@@ -187,12 +187,31 @@
  *    kecil), dan menaikkan eyebrow jadi h2 lalu membuang judulnya (Konsep jadi
  *    satu-satunya seksi tanpa judul, masalah setara yang sama persis).
  *
- * MASIH TERBUKA, DAN BUKAN PEKERJAAN FILE INI: `sample-pintu.astro` memakai
- * `goods` sebagai mode "pintu kosong", padahal `goods` punya dua entri program
- * non-aktif sehingga `hasPrograms` bernilai true; pintu yang benar-benar nol
- * program adalah `time` dan `space`, dan keduanya tidak ada di halaman banding.
- * Audit yang sama juga menemukan `#pintu-lain` tidak punya heading sama sekali
- * (labelnya `<p class="s1-eyebrow">Pintu Lainnya`), dan itu belum diputuskan.
+ * 17. DAFTAR PROGRAM SATU BENTUK BARIS, FOTONYA MILIK SEKSI. Versi pertama
+ *    merender program aktif sebagai kartu dua kolom dan program yang belum
+ *    dibuka sebagai baris kecil, dua bahasa untuk satu jenis benda. Lebih buruk
+ *    lagi, foto ditempelkan ke kartu program PERTAMA saja, sehingga kartu itu
+ *    berkolom `foto | badan` sementara kartu di bawahnya berkolom
+ *    `badan | fitur`: judul programnya berpindah dari x=565 ke x=0 di tengah
+ *    daftar. Itu sebab mekanis daftar itu terbaca berantakan, bukan warnanya.
+ *
+ *    Sekarang fotonya jadi anchor seksi di atas daftar, memenuhi tabel "One
+ *    anchor per section" tanpa membuat satu baris berbeda dari saudaranya, dan
+ *    keenam program memakai baris yang sama. Statusnya dibawa label kelompok
+ *    (disebut sekali, bukan sekali per baris seperti "Sedang berjalan" yang
+ *    dulu dicetak empat kali) plus sisi kanan baris. Bullet `detail.features`
+ *    tidak ikut karena halaman program sudah merendernya dan halaman pintu itu
+ *    channel tipis pemikul DAFTAR program, bukan detailnya.
+ *
+ * MASIH TERBUKA, DAN BUKAN PEKERJAAN FILE INI: `#pintu-lain` tidak punya
+ * heading sama sekali, labelnya `<p class="s1-eyebrow">Pintu Lainnya`, pola
+ * yang sama dengan yang diperbaiki di poin 16 dan belum diputuskan.
+ *
+ * Sejak `getProgramCover` ada di `programs.ts`, tiap program punya cover
+ * sendiri, jadi thumbnail per baris daftar program secara data sudah mungkin.
+ * Hari ini belum layak dipasang: cuma Jumat Berkah yang punya foto sendiri,
+ * lima sisanya jatuh ke `program-promo.png` yang sama, jadi barisnya akan
+ * memajang satu foto identik lima kali. Pasang kalau covernya sudah terisi.
  *
  * Ukuran huruf semuanya nilai skala tailwind.config.mjs
  * (11/12/13/14/16/18/22/26/30/34/40/56); clamp boleh asal kedua ujungnya token,
@@ -369,6 +388,12 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
 
 const hasPrograms = active.length > 0 || upcoming.length > 0;
 const programsAreOpen = active.length > 0;
+/**
+ * Label kelompok cuma dirender kalau kedua kelompok memang ada. Dengan satu
+ * kelompok saja, judul seksinya ("Program di pintu X" vs "Program yang sedang
+ * disiapkan") sudah mengatakan statusnya, jadi labelnya cuma pengulangan.
+ */
+const showProgramGroupLabels = active.length > 0 && upcoming.length > 0;
 const forWhom = content?.forWhom ?? [];
 const env = content?.env;
 const contribute = content?.contribute ?? [];
@@ -744,76 +769,81 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                 <p class="s1-lead" data-fade>{programLead}</p>
               </header>
 
-              {active.map((p, i) => {
-                const withPhoto = i === 0 && Boolean(photos);
-                const withFeatures = !withPhoto && p.detail.features.length > 0;
-                return (
-                  <article
-                    class:list={['s1-prog', withPhoto && 'has-photo', withFeatures && 'has-features']}
-                    data-fade
-                  >
-                    {withPhoto && photos && (
-                      <div class="s1-prog-photo">
-                        <Image
-                          src={photos.program}
-                          alt={photos.programAlt}
-                          widths={[420, 640, 900, 1200]}
-                          sizes="(min-width: 900px) 480px, 100vw"
-                          loading="lazy"
-                          class="s1-prog-img"
-                        />
-                      </div>
-                    )}
+              {/* FOTO = ANCHOR SEKSI, BUKAN MILIK SATU PROGRAM. Versi pertama
+                  menempelkannya ke kartu program pertama, dan akibatnya kartu
+                  itu berkolom `foto | badan` sementara tiga kartu di bawahnya
+                  berkolom `badan | fitur`. Judul programnya jadi berpindah dari
+                  x=565 ke x=0 di tengah daftar, dan itu sebab utama daftar ini
+                  terbaca berantakan. Sebagai anchor seksi ia memenuhi tabel
+                  "One anchor per section" di DESIGN_PRINCIPLES tanpa membuat
+                  satu baris berbeda dari saudaranya.
 
-                    <div class="s1-prog-body">
-                      <p class="s1-tag">
-                        <span class="s1-tag-dot" aria-hidden="true"></span>
-                        Sedang berjalan
-                      </p>
-                      <h3 class="s1-prog-title">{p.label}</h3>
-                      <p class="s1-prog-sum">{p.summary}</p>
-                      {p.href ? (
-                        <a
-                          href={p.href}
-                          class="s1-link"
-                          data-track="pintu_program"
-                          data-track-program={p.slug}
-                        >
-                          Lihat halaman program
-                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
-                        </a>
-                      ) : (
-                        <p class="s1-prog-note">Halaman programnya sedang kami siapkan.</p>
-                      )}
-                    </div>
+                  Cuma pintu makanan yang punya foto, jadi jalur tanpa foto
+                  bukan kasus pinggir melainkan keadaan lima pintu lainnya. */}
+              {photos && (
+                <figure class="s1-prog-anchor" data-fade>
+                  <Image
+                    src={photos.program}
+                    alt={photos.programAlt}
+                    widths={[640, 900, 1200, 1600]}
+                    sizes="(min-width: 900px) 904px, 100vw"
+                    loading="lazy"
+                    class="s1-prog-anchor-img"
+                  />
+                </figure>
+              )}
 
-                    {withFeatures && (
-                      <ul class="s1-prog-features">
-                        {p.detail.features.map((f) => (
-                          <li><span aria-hidden="true"></span>{f}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </article>
-                );
-              })}
+              {/* SATU BENTUK BARIS UNTUK SEMUA PROGRAM, apa pun statusnya.
+                  Sebelumnya program aktif dirender sebagai kartu 34px berkolom
+                  dua sementara program yang belum dibuka jadi baris 18px, dua
+                  bahasa untuk satu jenis benda. Sekarang keduanya baris yang
+                  sama dan statusnya dibawa oleh label kelompok plus sisi kanan
+                  baris, bukan oleh ukuran hurufnya.
 
-              {/* Kalau tidak ada satu pun program aktif, daftar ini yang jadi
-                  isi seksinya, jadi ia tidak memakai garis pemisah sendiri dan
-                  tidak memakai label "Belum dibuka": judul seksinya sudah
-                  mengatakan itu. Versi pertama membiarkan garisnya menggantung
-                  tanpa apa pun di atasnya. */}
-              {upcoming.length > 0 && (
-                <div class:list={['s1-next', !programsAreOpen && 'is-lead']}>
-                  {programsAreOpen && <p class="s1-next-label">Belum dibuka</p>}
-                  <ul class="s1-next-list">
-                    {upcoming.map((p) => (
-                      <li class="s1-next-item" data-fade>
-                        <div class="s1-next-main">
-                          <h3 class="s1-next-title">{p.label}</h3>
-                          <p class="s1-next-sum">{p.summary}</p>
+                  Bullet `detail.features` sengaja tidak ikut ke sini. Halaman
+                  program sudah merendernya (`program/[program].astro`), dan
+                  menurut `routing-taxonomy.md` halaman pintu itu channel tipis
+                  yang memikul DAFTAR program, bukan detail tiap program. */}
+              {active.length > 0 && (
+                <div class="s1-plist-group">
+                  {showProgramGroupLabels && <p class="s1-plist-label">Sedang berjalan</p>}
+                  <ul class="s1-plist">
+                    {active.map((p) => (
+                      <li class="s1-plist-item" data-fade>
+                        <div class="s1-plist-main">
+                          <h3 class="s1-plist-title">{p.label}</h3>
+                          <p class="s1-plist-sum">{p.summary}</p>
                         </div>
-                        <span class="s1-next-badge">Segera</span>
+                        {p.href ? (
+                          <a
+                            href={p.href}
+                            class="s1-plist-go"
+                            data-track="pintu_program"
+                            data-track-program={p.slug}
+                          >
+                            <span>Lihat program</span>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
+                          </a>
+                        ) : (
+                          <span class="s1-plist-badge">Halamannya disiapkan</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {upcoming.length > 0 && (
+                <div class="s1-plist-group">
+                  {showProgramGroupLabels && <p class="s1-plist-label">Belum dibuka</p>}
+                  <ul class="s1-plist">
+                    {upcoming.map((p) => (
+                      <li class="s1-plist-item is-soon" data-fade>
+                        <div class="s1-plist-main">
+                          <h3 class="s1-plist-title">{p.label}</h3>
+                          <p class="s1-plist-sum">{p.summary}</p>
+                        </div>
+                        <span class="s1-plist-badge">Segera</span>
                       </li>
                     ))}
                   </ul>
@@ -824,7 +854,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                     data-track="notify_wa"
                     data-track-slot="program"
                     data-track-pintu={pintu.slug}
-                    class="s1-link s1-next-cta"
+                    class="s1-link s1-plist-cta"
                   >
                     Beri tahu saya saat program di pintu ini dibuka
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ARROW_D}></path><path d={ARROW_HEAD}></path></svg>
@@ -1696,121 +1726,97 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   }
 
   /* ---------- Program ---------- */
-  .s1-prog {
-    display: grid;
-    gap: 28px;
-    padding: 40px 0;
-    border-top: var(--hairline) solid var(--line);
-  }
-  @container (min-width: 520px) {
-    /* Kolom pertamanya foto, jadi rasionya 1.5fr 1fr; dua kolom teks 1.15fr 1fr.
-       Gap 56px, batas bawah plafon DESIGN_SYSTEM (56-64px desktop). */
-    .s1-prog.has-photo { grid-template-columns: 1.5fr 1fr; gap: 56px; align-items: center; }
-    .s1-prog.has-features { grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: start; }
-  }
-  .s1-prog-photo {
+  /* Anchor seksi. 16/9 di kolom 904px jadi sekitar 508px, di bawah plafon 96px
+     untuk area kosong karena bidangnya terisi foto, bukan kosong. 4/3 seperti
+     versi kartu lama akan jadi 678px dan mendorong seluruh daftar keluar layar
+     pertama. */
+  .s1-prog-anchor {
+    margin: 0 0 40px;
     border-radius: 20px;
     overflow: hidden;
     background: var(--cat-tint);
   }
-  .s1-prog-img {
+  .s1-prog-anchor-img {
     width: 100%;
-    height: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     display: block;
   }
-  .s1-prog-body { display: flex; flex-direction: column; align-items: flex-start; }
-  .s1-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 0 14px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #0f172a;
-  }
-  .s1-tag-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--cat); }
-  .s1-prog-title {
-    margin: 0 0 14px;
-    /* heading-sm 26 → heading-lg 34 */
-    font-size: clamp(26px, 3.8cqw, 34px);
-    font-weight: 600;
-    letter-spacing: -0.025em;
-    line-height: 1.12;
-    color: #0f172a;
-    text-wrap: balance;
-  }
-  .s1-prog-sum {
-    margin: 0 0 22px;
-    font-size: 16px;
-    line-height: 1.62;
-    color: #505d6f;
-    max-width: 52ch;
-  }
-  .s1-prog-note { margin: 0; font-size: 14px; color: #687281; }
-  .s1-prog-features { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-  .s1-prog-features li {
-    display: grid;
-    grid-template-columns: 8px minmax(0, 1fr);
-    align-items: start;
-    gap: 12px;
-    font-size: 16px;
-    line-height: 1.55;
-    color: #0f172a;
-  }
-  .s1-prog-features li span {
-    margin-top: 7px;
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    background: var(--cat);
-  }
 
-  .s1-next { margin-top: 24px; padding-top: 34px; border-top: var(--hairline) solid var(--line); }
-  /* Tanpa program aktif di atasnya, daftar ini yang jadi isi seksinya, jadi
-     garis pemisahnya dilepas supaya tidak menggantung tanpa apa pun di atasnya. */
-  .s1-next.is-lead { margin-top: 0; padding-top: 0; border-top: 0; }
-  .s1-next-label {
-    margin: 0 0 18px;
+  .s1-plist-group + .s1-plist-group { margin-top: 34px; }
+  .s1-plist-label {
+    margin: 0 0 4px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #687281;
   }
-  .s1-next-list { list-style: none; margin: 0; padding: 0; }
-  .s1-next-item {
+  .s1-plist { list-style: none; margin: 0; padding: 0; }
+  /* Baris, bukan kartu. `align-items: center` bukan `baseline` supaya sisi kanan
+     tetap di tengah baris saat ringkasannya jatuh ke dua baris; dengan baseline
+     ia terkunci ke baris pertama dan terlihat melayang. */
+  .s1-plist-item {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 24px;
     padding: 22px 0;
     border-bottom: var(--hairline) solid var(--line);
   }
-  .s1-next.is-lead .s1-next-item:first-child { border-top: var(--hairline) solid var(--line); }
-  .s1-next-main { min-width: 0; }
-  .s1-next-title {
-    margin: 0 0 4px;
-    font-size: 18px;
+  .s1-plist-item:first-child { border-top: var(--hairline) solid var(--line); }
+  .s1-plist-main { min-width: 0; }
+  /* 22px, satu langkah skala di atas ringkasannya. Versi lama memakai 34px untuk
+     program aktif dan 18px untuk yang belum dibuka, jarak dua langkah yang bikin
+     satu daftar terbaca sebagai dua daftar. */
+  .s1-plist-title {
+    margin: 0 0 5px;
+    font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
     color: #0f172a;
   }
   /* Sengaja TIDAK dipotong: ringkasan yang terputus di tengah kalimat lebih buruk
      daripada baris kedua. */
-  .s1-next-sum {
+  .s1-plist-sum {
     margin: 0;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.55;
     color: #505d6f;
     max-width: 62ch;
   }
-  .s1-next-badge {
+  .s1-plist-item.is-soon .s1-plist-title { color: #505d6f; }
+
+  .s1-plist-go {
     flex: none;
-    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cat-deep);
+    text-decoration: none;
+  }
+  .s1-plist-go svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s ease-out;
+  }
+  .s1-plist-go:hover svg, .s1-plist-go:focus-visible svg { transform: translateX(4px); }
+  /* Di bawah 520px teksnya disembunyikan dan panahnya tetap, supaya baris tidak
+     pecah jadi dua tingkat cuma demi dua kata. */
+  @container (max-width: 519px) {
+    .s1-plist-go span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  }
+
+  .s1-plist-badge {
+    flex: none;
     padding: 5px 13px;
     border-radius: 999px;
     border: var(--hairline) solid var(--line-band);
@@ -1818,9 +1824,10 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #505d6f;
+    color: #687281;
+    white-space: nowrap;
   }
-  .s1-next-cta { margin-top: 26px; }
+  .s1-plist-cta { margin-top: 26px; }
 
   /* ---------- Untuk siapa ---------- */
   .s1-who-wrap { display: grid; gap: 36px; }

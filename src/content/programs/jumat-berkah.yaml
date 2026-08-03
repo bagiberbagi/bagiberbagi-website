@@ -2,7 +2,7 @@ label: Jumat Berkah
 pintu: food
 order: 1
 active: true
-image: /src/assets/programs/jumat-berkah.jpg
+image: /src/assets/programs/jumat-berkah.png
 summary: Paket makanan bergizi setiap Jumat untuk yang membutuhkan.
 detail:
   eyebrow: PROGRAM AKTIF

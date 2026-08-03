@@ -91,7 +91,25 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 >
   {photo && (
     <div class="dc-photo">
-      <Image src={photo} alt="" loading="eager" class="dc-img" />
+      {/* Kepala kartu ini berdiri di atas fold di beranda, jadi ia kandidat LCP
+          dan diberi `fetchpriority="high"` supaya peramban tak menunda-nundanya
+          di belakang aset lain.
+
+          Lebar render: kolom kanan hero adalah 0.62fr dari grid `1fr 0.62fr`
+          dengan gap 64px di dalam Container tier `wide` (isi 1200px), jadi
+          sekitar 435px di layar lebar; di bawah 960px kartunya selebar kolom.
+          Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR.
+          Sebelumnya tanpa `widths`, sehingga satu berkas 1280w dikirim ke kotak
+          setinggi 246px di semua ukuran layar. */}
+      <Image
+        src={photo}
+        alt={`Program ${programLabel}`}
+        widths={[360, 440, 700, 880]}
+        sizes="(min-width: 960px) 440px, 100vw"
+        loading="eager"
+        fetchpriority="high"
+        class="dc-img"
+      />
       <div class="dc-scrim" aria-hidden="true"></div>
       <p class="label dc-kick">Program berjalan</p>
       <div class="dc-photo-body">

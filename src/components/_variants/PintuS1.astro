@@ -620,7 +620,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
               <header class="s1-head">
                 <p class="s1-eyebrow" data-fade>Konsep</p>
                 <h2 class="s1-h2" data-fade>Kenapa pintu ini ada</h2>
-                <p class="s1-lead" data-fade>{content.story.headline}</p>
+                <p class="s1-lead s1-lead-ink" data-fade>{content.story.headline}</p>
               </header>
 
               <div class="s1-story">
@@ -1094,6 +1094,14 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   }
   .s1-lead-hero { margin-top: 24px; }
   .s1-lead-dark { color: rgba(255, 255, 255, 0.78); }
+  /* Lead yang isinya kalimat pemilik situs, bukan kalimat penjelas yang ditulis
+     komponen ini. Bedanya cuma warna, dan itu memang satu-satunya sumbu yang
+     boleh bergerak di sini: ukuran, bobot, dan jaraknya harus tetap sama dengan
+     lead seksi lain supaya kepala seksinya tidak berubah tinggi. Abu 19px di
+     atas paragraf abu 16px cuma berbeda 3px tanpa beda warna, jadi kalimat
+     sepanjang ini melebur jadi paragraf pertama. Tinta memisahkannya tanpa
+     membesarkannya. */
+  .s1-lead-ink { color: #0f172a; }
 
   /* ---------- Hero ---------- */
   /* -74px = 10px margin atas + 64px pil navbar, TINGGI DIAM. Lihat catatan di

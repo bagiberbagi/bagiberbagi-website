@@ -116,6 +116,21 @@ Tiga perubahan di dalamnya:
 
 Ditambah dua header: `X-Content-Type-Options: nosniff` dan `Referrer-Policy`.
 
+**Satu jebakan nginx yang wajib diketahui saat menyunting berkas live.**
+`add_header` diwariskan dari level induk **hanya** kalau level itu tidak punya
+`add_header` sendiri. Begitu satu ditambahkan di dalam sebuah `location`, seluruh
+`add_header` level `server` berhenti terkirim untuk request yang cocok dengan
+location tersebut. Karena itu ketiga header level server sengaja **ditulis ulang**
+di dalam kedua blok `location` di berkas repo. Kalau nanti ada header yang diubah
+di level server, ubah juga salinannya, atau HTML akan diam-diam kehilangannya.
+
+Cara memastikan setelah reload:
+
+```bash
+curl -sSI https://www.bagiberbagi.id/ | grep -icE 'content-security-policy|x-content-type-options|referrer-policy'
+# harapan: 3
+```
+
 ### Langkahnya
 
 ```bash

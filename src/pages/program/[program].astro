@@ -1,13 +1,13 @@
 ---
 import { getEntry } from 'astro:content';
-import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
 import DonationCard from '../../components/DonationCard.astro';
+import ProgramCover from '../../components/ProgramCover.astro';
 import { buildWaLink, formatMetric } from '../../lib/format';
-import { getPrograms, getProgramPages, getProgramsByPintu, getProgramCover } from '../../lib/programs';
+import { getPrograms, getProgramPages, getProgramsByPintu } from '../../lib/programs';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
 import { findPageSeo } from '../../lib/seo';
@@ -78,10 +78,6 @@ const jejak = await getJejakByProgram(program.slug);
 const impact = await getProgramImpact(program.slug);
 const mainMetric = impact.metrics[0];
 const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-
-// Foto hero memakai cover program, sumber yang sama dengan kartu hero beranda
-// dan ajakan di detail jejak.
-const cover = getProgramCover(program);
 
 // Agenda mingguan di `settings` menggambarkan program yang sedang berjalan,
 // yaitu program aktif pertama — konvensi yang sama dengan kartu hero beranda.
@@ -184,16 +180,16 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <div class="order-first md:order-last">
           {/* Kolom foto = separuh grid 2 kolom di Container tier `standard`
               (isi 944px di layar lebar) dikurangi gap 48px, sekitar 448px di
-              lg+; di antara md dan lg kontainer masih ikut lebar layar. */}
-          <Image
-            src={cover}
-            alt={program.label}
-            widths={[360, 448, 680, 896]}
-            sizes="(min-width: 1024px) 448px, (min-width: 768px) 50vw, 100vw"
-            loading="eager"
-            class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card"
-            style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)"
-          />
+              lg+; di antara md dan lg kontainer masih ikut lebar layar.
+
+              Lewat `ProgramCover`, bukan lewat `getProgramCover` langsung,
+              supaya program tanpa cover sendiri tampil dengan ikon pintunya.
+              `getProgramCover` memulangkan `program-promo.png` untuk kasus itu,
+              dan tiga halaman program (Ramadhan Berbagi, Community Giving, CSR
+              Food Program) karena itu sempat memajang foto penyaluran yang
+              bukan kegiatan mereka sebagai wajah mereka sendiri. Bentuk dan
+              ukurannya tidak berubah sedikit pun. */}
+          <ProgramCover program={program} pintu={pintu} variant="hero" alt={program.label} />
         </div>
       </div>
     </Container>

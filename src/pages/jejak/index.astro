@@ -8,6 +8,7 @@ import JejakCard from '../../components/JejakCard.astro';
 import Container from '../../components/Container.astro';
 import { getJejak } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
+import { getOrganisasiRefs } from '../../lib/organisasi';
 import { getGlobalImpact } from '../../lib/impact';
 import { buildWaLink, formatMetric } from '../../lib/format';
 import { PINTU } from '../../consts';
@@ -27,13 +28,19 @@ import { PINTU } from '../../consts';
 // Lebar konten efektif di layar lebar = 1024 dikurangi padding Container
 // (md:px-10 kiri-kanan) = 944px. Angka itu yang jadi dasar semua hitungan
 // `sizes`/`widths` gambar di bawah; kalau tier seksi diubah, hitung ulang.
-const [jejak, programs, impact, site] = await Promise.all([
+const [jejak, programs, impact, organisasiRefs, site] = await Promise.all([
   getJejak(),
   getPrograms(),
   getGlobalImpact(),
+  getOrganisasiRefs(),
   getEntry('settings', 'site'),
 ]);
 if (!site) throw new Error('settings/site entry not found');
+
+// Atribusi organisasi di kartu: label saja, tanpa tautan (akar kartu sudah
+// `<a>`). Peta hanya berisi organisasi ber-halaman, jadi jejak yang menyebut
+// organisasi nonaktif/terhapus otomatis tak menampilkan atribusi apa pun.
+const organisasiLabelOf = (slug: string | null) => (slug ? organisasiRefs.get(slug)?.label : undefined);
 
 const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
 const pintuById = new Map(PINTU.map((p) => [p.id, p]));
@@ -310,6 +317,7 @@ const STEPS_PENCATATAN = [
               <JejakCard
                 jejak={wideJejak}
                 pintu={pintuOf(wideJejak.program)}
+                organisasiLabel={organisasiLabelOf(wideJejak.organisasi)}
                 variant="wide"
                 featured={feedMode === 'feature'}
                 eager
@@ -322,6 +330,7 @@ const STEPS_PENCATATAN = [
                   <JejakCard
                     jejak={j}
                     pintu={pintuOf(j.program)}
+                    organisasiLabel={organisasiLabelOf(j.organisasi)}
                     variant={gridVariant}
                     eager={!wideJejak && i === 0}
                   />
@@ -344,6 +353,7 @@ const STEPS_PENCATATAN = [
                     <JejakCard
                       jejak={j}
                       pintu={pintuOf(j.program)}
+                      organisasiLabel={organisasiLabelOf(j.organisasi)}
                       variant="compact"
                       titleLevel={cardTitleLevel}
                       eager={gi === 0 && i === 0}

@@ -26,9 +26,19 @@ export interface Props {
    * supaya urutan h2 -> h3 -> h4 tak melompat.
    */
   titleLevel?: 3 | 4;
+  /**
+   * Label organisasi yang menggerakkan kegiatan ini, kalau ada. Sengaja label
+   * mentah, bukan objek ber-href: akar kartu ini sudah `<a>`, jadi tautan di
+   * dalamnya akan jadi anchor bersarang yang tak valid. Pemanggil yang butuh
+   * tautan ke organisasi memakainya di halaman detail, bukan di kartu.
+   *
+   * Dikosongkan saat kartu tampil DI halaman organisasi itu sendiri: di sana
+   * atribusinya mubazir, seluruh halaman sudah tentang organisasi tersebut.
+   */
+  organisasiLabel?: string;
 }
 
-const { jejak, pintu, variant, featured = false, eager = false, titleLevel = 3 } = Astro.props;
+const { jejak, pintu, variant, featured = false, eager = false, titleLevel = 3, organisasiLabel } = Astro.props;
 
 // Fallback oranye brand supaya --cat selalu terisi: kartu tetap punya aksen
 // walau relasi pintu-nya belum ketemu. Warna datang dari data, tak di-hardcode
@@ -162,7 +172,15 @@ const placeholderBg =
       )}
     </div>
 
-    <div class="text-micro font-semibold text-muted mb-2">{fmtDate(jejak.date)} &middot; {jejak.location}</div>
+    <div class="text-micro font-semibold text-muted mb-2">
+      {fmtDate(jejak.date)} &middot; {jejak.location}
+      {organisasiLabel && (
+        <>
+          <span aria-hidden="true" class="text-gray-300 mx-1">&middot;</span>
+          <span class="text-ink">bersama {organisasiLabel}</span>
+        </>
+      )}
+    </div>
     {/* Tag ditulis eksplisit, bukan lewat variabel tag dinamis: nama komponen
         berhuruf besar yang isinya string bikin inferensi tipe sisa template ini
         runtuh (metrics.map jadi implicit any). Dua cabang lebih murah. */}

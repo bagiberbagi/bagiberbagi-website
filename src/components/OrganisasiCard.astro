@@ -1,0 +1,187 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { formatMetric } from '../lib/format';
+import type { OrganisasiEntry } from '../lib/organisasi';
+
+export interface Props {
+  org: OrganisasiEntry;
+  /**
+   * wide    = kartu tunggal lebar: kolase foto sejajar isi (dipakai saat
+   *           direktori cuma punya satu entri, supaya tak ada sel bolong).
+   * stack   = kartu setara, isi lengkap, satu foto di atas.
+   * compact = kartu grid ringkas.
+   * Satu markup untuk tiga bentuk direktori, meniru pola JejakCard.
+   */
+  variant: 'wide' | 'stack' | 'compact';
+  /** Kartu pertama saja: fotonya di atas fold, jadi tak perlu di-lazy. */
+  eager?: boolean;
+  /** Turun ke 3 saat pemanggil sudah memakai h2 untuk judul seksi. */
+  titleLevel?: 2 | 3;
+}
+
+const { org, variant, eager = false, titleLevel = 3 } = Astro.props;
+
+const isWide = variant === 'wide';
+const isCompact = variant === 'compact';
+
+// Maksimal 3 metrik supaya baris chip tak pecah saat editor menambah label baru.
+const metrics = org.metrics.slice(0, 3);
+
+// Nilai panjang ("Rp 1.000.000") melebihi lebar chip di kartu sempit, jadi
+// ukurannya turun satu tingkat dan dipaksa satu baris — aturan yang sama dengan
+// JejakCard supaya tinggi kartu tetap seragam antar halaman.
+const numClass = (s: string) => (s.length > 8 ? 'text-body-sm whitespace-nowrap' : 'text-title-sm');
+
+const fmtDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+
+// "Berbagi sejak" diturunkan dari jejak paling awal, bukan dari field `since`
+// yang harus diketik editor dan hari ini masih kosong. Field manual tetap
+// menang kalau diisi: organisasi bisa saja sudah bergerak sebelum jejak
+// pertamanya tercatat di sini.
+const sinceLabel = org.detail.since?.trim() || (org.firstDate ? fmtDate(org.firstDate) : null);
+
+// Kolase hanya untuk kartu lebar. 1 foto memenuhi kolom, 2+ jadi grid; batas 4
+// karena kolom foto setinggi isi dan lebih dari itu membuat tiap petak terlalu
+// kecil untuk terbaca.
+//
+// Jumlah petak juga dibatasi jumlah kegiatan, bukan cuma jumlah foto: `photos`
+// menaruh cover di depan (satu per kegiatan) lalu menambal dengan isi galeri,
+// jadi organisasi dengan satu kegiatan akan mengisi kolase dengan foto
+// pendukung dari kegiatan yang sama. Satu kegiatan lebih jujur ditampilkan
+// sebagai satu foto besar.
+const photos = isWide ? org.photos.slice(0, Math.min(4, Math.max(org.jejakCount, 1))) : org.photos.slice(0, 1);
+const collageCols = photos.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
+
+// Lebar render foto per varian, diturunkan dari isi Container `standard`
+// (1024 - padding md:px-10 = 944px): kolom kolase kartu lebar ~472px dibagi
+// jumlah kolomnya, kartu stack separuh grid gap-5 ~462px, compact sepertiga
+// grid ~301px. Lebar terbesar dua kali lebar render untuk layar 2x DPR.
+const photoSizes = isWide
+  ? photos.length === 1
+    ? '(min-width: 1024px) 472px, (min-width: 768px) 50vw, 100vw'
+    : '(min-width: 1024px) 236px, (min-width: 768px) 25vw, 50vw'
+  : isCompact
+    ? '(min-width: 1024px) 301px, (min-width: 640px) 50vw, 100vw'
+    : '(min-width: 1024px) 462px, (min-width: 768px) 50vw, 100vw';
+const photoWidths = isWide && photos.length > 1 ? [200, 236, 380, 472] : [300, 460, 620, 944];
+
+const rootClass = isWide
+  ? 'group grid overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-shadow hover:shadow-card md:grid-cols-2'
+  : 'group flex flex-col overflow-hidden rounded-card border border-border bg-white shadow-cardSm transition-transform hover:-translate-y-1';
+
+const bodyClass = isWide ? 'flex flex-col p-6 md:p-8' : isCompact ? 'flex flex-1 flex-col p-5' : 'flex flex-1 flex-col p-6';
+const titleClass = isWide
+  ? 'text-title md:text-heading-sm font-semibold text-ink leading-snug group-hover:text-brand-blue transition-colors'
+  : 'text-title-sm font-semibold text-ink leading-snug group-hover:text-brand-blue transition-colors';
+
+const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
+---
+
+<a href={org.href} data-track="organisasi_click" data-track-organisasi={org.slug} class={rootClass}>
+  {photos.length > 0 ? (
+    isWide ? (
+      /* Aspect-ratio cuma di mobile; di md+ dilepas supaya kolom foto ikut
+         tinggi kolom isi dan kedua sisi kartu rata bawah. */
+      <div class:list={['relative grid gap-0.5 bg-gray-100 aspect-[16/10] md:aspect-auto', collageCols]}>
+        {photos.map((img, i) => (
+          <Image
+            src={img}
+            alt=""
+            widths={photoWidths}
+            sizes={photoSizes}
+            loading={eager && i === 0 ? 'eager' : 'lazy'}
+            class="h-full w-full object-cover"
+          />
+        ))}
+      </div>
+    ) : (
+      <Image
+        src={photos[0]}
+        alt=""
+        widths={photoWidths}
+        sizes={photoSizes}
+        loading={eager ? 'eager' : 'lazy'}
+        class="aspect-[16/10] w-full object-cover"
+      />
+    )
+  ) : (
+    /* Organisasi tanpa jejak berfoto tetap dapat bidang visual, bukan kartu
+       yang tiba-tiba lebih pendek dari tetangganya. */
+    <div
+      class:list={['w-full flex items-center justify-center bg-brand-blueTint', isWide ? 'aspect-[16/10] md:aspect-auto' : 'aspect-[16/10]']}
+    >
+      <span class="w-16 h-16 rounded-2xl bg-white grid place-items-center text-brand-blue shadow-cardSm">
+        <Icon name="repeat" size={28} />
+      </span>
+    </div>
+  )}
+
+  <div class={bodyClass}>
+    <div class="flex items-start gap-3 mb-3">
+      {org.logo ? (
+        <img
+          src={org.logo}
+          alt=""
+          width="56"
+          height="56"
+          loading="lazy"
+          class:list={['rounded-xl object-contain bg-white border border-border p-1.5 flex-none', logoSize]}
+        />
+      ) : (
+        <span
+          class:list={['rounded-xl grid place-items-center bg-brand-blueTint text-brand-blue font-bold text-body-sm flex-none', logoSize]}
+        >
+          {org.label.slice(0, 2).toUpperCase()}
+        </span>
+      )}
+      <div class="min-w-0">
+        {titleLevel === 2 ? <h2 class={titleClass}>{org.label}</h2> : <h3 class={titleClass}>{org.label}</h3>}
+        {sinceLabel && (
+          <div class="text-micro font-semibold text-muted mt-1">Berbagi sejak {sinceLabel}</div>
+        )}
+      </div>
+    </div>
+
+    {!isCompact && <p class="text-body-sm text-muted leading-relaxed mb-4">{org.summary}</p>}
+
+    {/* Baris bukti: jumlah kegiatan selalu ada, program & lokasi menyusul kalau
+        datanya memang terisi. Ini yang membedakan kartu direktori dari sekadar
+        daftar nama. */}
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-micro text-muted mb-4">
+      <span class="font-bold text-ink">{org.jejakCount} kegiatan</span>
+      {org.programLabels.length > 0 && (
+        <>
+          <span aria-hidden="true" class="text-gray-300">&middot;</span>
+          <span>{org.programLabels.slice(0, 2).join(', ')}</span>
+        </>
+      )}
+      {!isCompact && org.locations.length > 0 && (
+        <>
+          <span aria-hidden="true" class="text-gray-300">&middot;</span>
+          <span>{org.locations.length} titik</span>
+        </>
+      )}
+    </div>
+
+    {metrics.length > 0 && (
+      <div class="grid grid-cols-3 gap-2 mb-5">
+        {metrics.map((m) => {
+          const value = formatMetric(m);
+          return (
+            <div class="flex h-full flex-col rounded-xl bg-gray-50 px-2 py-2.5 text-center">
+              <div class:list={['font-bold tabular-nums leading-none text-brand-blue', numClass(value)]}>{value}</div>
+              <div class="text-micro text-muted leading-tight mt-1 line-clamp-2">{m.label}</div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+
+    <span class="mt-auto inline-flex items-center gap-1.5 font-bold text-body-sm text-brand-blue">
+      Lihat dashboard dampak
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+    </span>
+  </div>
+</a>

@@ -1,19 +1,32 @@
 ---
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
+import JejakCard from '../../components/JejakCard.astro';
 import { getOrganisasiPages } from '../../lib/organisasi';
 import { getJejakByOrganisasi } from '../../lib/jejak';
 import { getOrganisasiImpact } from '../../lib/impact';
 import { getPrograms } from '../../lib/programs';
 import { buildWaLink, formatMetric } from '../../lib/format';
+import { PINTU } from '../../consts';
 
 // Satu route untuk tiap organisasi ber-halaman, di bawah /organisasi/[slug]/.
 // Begitu editor mengaktifkan organisasi di Keystatic & mengisi Detail,
 // halamannya ikut ter-generate tanpa membuat file .astro baru — pola sama
 // dengan program/[program].astro.
+//
+// LEBAR KONTAINER: seluruh seksi halaman ini memakai Container tier `standard`
+// (1024, default halaman non-beranda). Band biru Dashboard Dampak tetap ikut
+// aturan itu: warnanya yang full-bleed, isinya tetap di dalam Container yang
+// sama, supaya tepi kiri semua seksi lurus. Jangan tulis `max-w` mentah di
+// markup — kosakata lebar dipegang Container.astro.
+//
+// Lebar konten efektif di layar lebar = 1024 dikurangi padding Container
+// (md:px-10 kiri-kanan) = 944px. Angka itu dasar semua hitungan `sizes` gambar
+// di bawah; kalau tier seksi diubah, hitung ulang.
 export async function getStaticPaths() {
   const organisasi = await getOrganisasiPages();
   return organisasi.map((org) => ({
@@ -32,9 +45,72 @@ const [jejak, impact, programs] = await Promise.all([
   getOrganisasiImpact(org.slug),
   getPrograms(),
 ]);
-const labelBySlug = new Map(programs.map((p) => [p.slug, p.label]));
+
+const hasJejak = jejak.length > 0;
 const mainMetric = impact.metrics[0];
-const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+// Pintu induk tiap jejak dipetakan lewat programnya: JejakCard butuh entri PINTU
+// utuh (warna + ikon), bukan cuma id-nya. Resolusinya sama persis dengan feed
+// /jejak supaya kartu yang sama tak pernah beda warna di dua halaman.
+const pintuById = new Map(PINTU.map((p) => [p.id, p]));
+const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
+
+// Foto kartu hero: cover jejak terbaru yang benar-benar punya foto. Cuma satu
+// foto, jadi tak ada dedup yang perlu dikerjakan di sini — dan modul gambarnya
+// diteruskan utuh ke <Image>. Jangan sekali pun membaca propertinya (mis.
+// `.src`) di luar pipeline: Astro membungkus modul gambar dengan Proxy dan
+// menandai berkas aslinya "terpakai langsung" begitu ada properti yang dibaca,
+// sehingga PNG mentahnya ikut disalin ke dist dan seluruh optimasinya hilang
+// (lihat catatan panjang soal ini di jejak/index.astro).
+const heroPhoto = jejak.find((j) => j.cover)?.cover ?? null;
+
+// "Berbagi sejak": isian editor menang kalau ada. Field ini nyaris selalu kosong
+// di data sungguhan, dan badge yang hilang diam-diam justru menghapus satu-satunya
+// tanda bahwa hubungannya sudah berjalan lama, jadi tanggalnya diturunkan dari
+// jejak paling awal. `jejak` sudah urut tanggal desc, jadi elemen terakhir adalah
+// yang paling dulu terjadi.
+const monthYearFmt = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const firstDate = jejak.at(-1)?.date ?? null;
+const since = org.detail.since.trim() || (firstDate ? monthYearFmt.format(new Date(firstDate)) : '');
+
+// Nilai metrik panjang (mis. "Rp 5.500.000") meluber di kartu hero yang cuma
+// sekitar 450px, jadi ukurannya turun satu tingkat saat angkanya panjang — pola
+// sadar-panjang yang sama dengan kartu jejak.
+const heroNumClass = (s: string) =>
+  s.length > 8 ? 'text-heading md:text-heading-lg' : 'text-display md:text-display-lg';
+
+// Rincian program: lewat program mana saja organisasi ini berkontribusi, dan
+// berapa kegiatan di masing-masing. Diurutkan dari yang paling sering karena
+// itu yang menerangkan fokus kontribusinya. Program yang punya halaman ikut
+// ditautkan, yang belum tampil sebagai chip biasa.
+const programBySlug = new Map(programs.map((p) => [p.slug, p]));
+const programBreakdown = [...new Set(jejak.map((j) => j.program))]
+  .map((slug) => ({
+    label: programBySlug.get(slug)?.label ?? slug,
+    href: programBySlug.get(slug)?.href,
+    count: jejak.filter((j) => j.program === slug).length,
+  }))
+  .sort((a, b) => b.count - a.count);
+
+// Penjelas per metrik, meniru pola ImpactSection: angka besar yang berdiri
+// sendiri tak berarti apa-apa. Label di luar daftar jatuh ke kalimat umum, jadi
+// metrik baru dari Keystatic tetap tampil wajar tanpa file ini disentuh.
+const METRIC_NOTE: Record<string, string> = {
+  porsi: 'Porsi makanan yang sampai ke tangan penerima',
+  'mitra umkm': 'Dapur usaha kecil yang menerima pesanan masak',
+  relawan: 'Orang yang turun mengantar paket ke lokasi',
+  penerima: 'Orang yang menerima paket langsung di lokasi',
+  'donasi tersalur': 'Dana yang sudah dibelanjakan dan dilaporkan',
+};
+const noteFor = (label: string) => METRIC_NOTE[label.trim().toLowerCase()] ?? `Total ${label} yang tercatat`;
+
+// Bentuk daftar jejak diturunkan dari jumlahnya, disiplin yang sama dengan feed
+// /jejak: 1 jejak jadi kartu lebar, 2 jadi dua kartu setara berdampingan, 3+
+// masuk grid ringkas. Tanpa ini satu kartu sendirian di grid 3 kolom tampak
+// yatim di kiri.
+const feedMode: 'single' | 'pair' | 'grid' =
+  jejak.length === 1 ? 'single' : jejak.length === 2 ? 'pair' : 'grid';
 
 const joinWa = buildWaLink(
   site.data.waNumber,
@@ -49,134 +125,202 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   description={org.summary}
   breadcrumbName={org.label}
 >
-  <!-- PROFIL -->
+  <!-- PROFIL: dua kolom, kiri identitas + cerita, kanan kartu putih melayang
+       berisi angka utama dan satu foto lapangan. Bentuknya menggemakan hero
+       beranda (bidang warna + kartu putih di kanan), jadi separuh layar kanan
+       tak lagi kosong seperti versi satu kolom sebelumnya. -->
   <section class="section-hero bg-linear-[160deg] from-brand-blueTint to-white to-60%">
     <Container>
-      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-brand-blue">Beranda</a>
-        <span class="text-gray-300 mx-1.5">/</span>
-        <a href="/organisasi/" class="hover:text-brand-blue">Organisasi</a>
-        <span class="text-gray-300 mx-1.5">/</span>
-        <span class="text-ink">{org.label}</span>
-      </nav>
-
-      <div class="flex flex-wrap items-start gap-5 mb-6">
-        {org.logo ? (
-          <img
-            src={org.logo}
-            alt={org.label}
-            width="72"
-            height="72"
-            class="w-18 h-18 rounded-2xl object-contain bg-white border border-border p-2.5 shadow-cardSoft flex-none"
-          />
-        ) : (
-          <span class="w-18 h-18 rounded-2xl grid place-items-center bg-white border border-border text-brand-blue font-bold text-heading-sm shadow-cardSoft flex-none">
-            {org.label.slice(0, 2).toUpperCase()}
-          </span>
-        )}
-        <div class="min-w-0">
-          {org.detail.since && (
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/70 border border-brand-blue/30 text-brand-blue font-bold text-eyebrow tracking-wide px-3 py-1 mb-2">
-              <Icon name="repeat" size={13} />
-              Berkontribusi sejak {org.detail.since}
-            </span>
-          )}
-          <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
-            <h1 class="text-heading md:text-display font-semibold">{org.label}</h1>
-            <Share url={shareUrl} title={org.label} text={org.summary} compact class="flex-none mt-1.5" />
-          </div>
-        </div>
+      <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 mb-8">
+        <nav class="text-sm font-semibold text-muted" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-brand-blue">Beranda</a>
+          <span class="text-gray-300 mx-1.5">/</span>
+          <a href="/organisasi/" class="hover:text-brand-blue">Organisasi</a>
+          <span class="text-gray-300 mx-1.5">/</span>
+          <span class="text-ink">{org.label}</span>
+        </nav>
+        <Share url={shareUrl} title={org.label} text={org.summary} compact class="flex-none" />
       </div>
 
-      <p class="text-body-sm text-muted leading-relaxed max-w-text mb-5">{org.detail.description}</p>
+      {/* Kolom kanan cuma ada kalau organisasinya sudah berjejak; tanpa jejak
+          kartunya bakal berisi nol semua, dan hero satu kolom lebih jujur. */}
+      <div class:list={['grid gap-8 md:gap-10 items-start', hasJejak && 'md:grid-cols-2']}>
+        <div>
+          <div class="flex flex-wrap items-center gap-4 mb-5">
+            {org.logo ? (
+              <img
+                src={org.logo}
+                alt={org.label}
+                width="72"
+                height="72"
+                class="w-18 h-18 rounded-2xl object-contain bg-white border border-border p-2.5 shadow-cardSoft flex-none"
+              />
+            ) : (
+              <span class="w-18 h-18 rounded-2xl grid place-items-center bg-white border border-border text-brand-blue font-bold text-heading-sm shadow-cardSoft flex-none">
+                {org.label.slice(0, 2).toUpperCase()}
+              </span>
+            )}
+            {since && (
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-white/70 border border-brand-blue/30 text-brand-blue font-bold text-eyebrow tracking-wide px-3 py-1">
+                <Icon name="repeat" size={13} />
+                Berbagi sejak {since}
+              </span>
+            )}
+          </div>
 
-      {(org.detail.instagram || org.detail.website) && (
-        <div class="flex flex-wrap gap-3">
-          {org.detail.instagram && (
-            <a
-              href={`https://www.instagram.com/${org.detail.instagram.replace(/^@/, '')}/`}
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-body-sm font-semibold text-ink hover:border-gray-300 transition-colors"
-            >
-              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
-              @{org.detail.instagram.replace(/^@/, '')}
-            </a>
-          )}
-          {org.detail.website && (
-            <a
-              href={org.detail.website}
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-body-sm font-semibold text-ink hover:border-gray-300 transition-colors"
-            >
-              Website
-            </a>
-          )}
-        </div>
-      )}
-    </Container>
-  </section>
+          <h1 class="text-heading md:text-display font-semibold mb-4">{org.label}</h1>
+          <p class="text-body-sm text-muted leading-relaxed mb-6">{org.detail.description}</p>
 
-  <!-- DASHBOARD DAMPAK -->
-  <section class="section bg-white">
-    <Container>
-      <div class="eyebrow">Dashboard Dampak</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Kontribusi {org.label}</h2>
-      <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-text">
-        Sudah berkontribusi lewat <strong class="text-ink">{jejak.length} kegiatan</strong>{impact.programCount > 0 && (
-          <Fragment>, di <strong class="text-ink">{impact.programCount} program</strong> berbeda</Fragment>
-        )}{mainMetric && (
-          <Fragment>, dengan total <strong class="text-ink">{formatMetric(mainMetric)} {mainMetric.label}</strong></Fragment>
-        )}.
-      </p>
-
-      {impact.metrics.length > 0 && (
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {impact.metrics.map((m) => (
-            <div class="rounded-card bg-brand-blueTint p-5">
-              <div class="text-heading-sm font-semibold tabular-nums text-brand-blue">{formatMetric(m)}</div>
-              <div class="text-body-sm text-brand-blue/70 mt-0.5">{m.label}</div>
+          {(org.detail.instagram || org.detail.website) && (
+            <div class="flex flex-wrap gap-3">
+              {org.detail.instagram && (
+                <a
+                  href={`https://www.instagram.com/${org.detail.instagram.replace(/^@/, '')}/`}
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-body-sm font-semibold text-ink hover:border-gray-300 transition-colors"
+                >
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"></circle></svg>
+                  @{org.detail.instagram.replace(/^@/, '')}
+                </a>
+              )}
+              {org.detail.website && (
+                <a
+                  href={org.detail.website}
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-body-sm font-semibold text-ink hover:border-gray-300 transition-colors"
+                >
+                  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3.5 9h17M3.5 15h17"></path><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"></path></svg>
+                  Website
+                </a>
+              )}
             </div>
-          ))}
+          )}
         </div>
-      )}
+
+        {hasJejak && (
+          <div class="rounded-card bg-white shadow-cardSoft overflow-hidden">
+            {heroPhoto && (
+              /* Kolom kanan = separuh grid 2 kolom di Container tier `standard`
+                 (isi 944px di layar lebar) dikurangi gap 40px, sekitar 452px di
+                 lg+; di antara md dan lg kontainer masih ikut lebar layar.
+                 Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR. */
+              <Image
+                src={heroPhoto}
+                alt={`Dokumentasi kegiatan bersama ${org.label}`}
+                widths={[320, 452, 640, 904]}
+                sizes="(min-width: 1024px) 452px, (min-width: 768px) 45vw, 100vw"
+                loading="eager"
+                class="w-full aspect-[16/10] object-cover"
+              />
+            )}
+            <div class="p-6 md:p-7">
+              {mainMetric && (
+                <Fragment>
+                  <p class="label text-muted">Sudah terkumpul</p>
+                  <div class:list={['font-semibold text-brand-blue tabular-nums leading-none mt-2', heroNumClass(formatMetric(mainMetric))]}>
+                    {formatMetric(mainMetric)}
+                  </div>
+                  <div class="text-body-sm font-semibold text-muted capitalize mt-2">{mainMetric.label}</div>
+                </Fragment>
+              )}
+              <div class:list={['grid grid-cols-2 gap-4', mainMetric && 'mt-5 pt-5 border-t border-border']}>
+                <div>
+                  <div class="text-title font-semibold text-ink tabular-nums leading-none">{jejak.length}</div>
+                  <div class="text-micro text-muted mt-1.5">kegiatan</div>
+                </div>
+                <div>
+                  <div class="text-title font-semibold text-ink tabular-nums leading-none">{impact.programCount}</div>
+                  <div class="text-micro text-muted mt-1.5">program</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </Container>
   </section>
 
-  <!-- REKAM JEJAK -->
+  <!-- DASHBOARD DAMPAK: band biru penuh, angka kuning besar. Nadanya sengaja
+       sama dengan ImpactSection di beranda supaya "angka yang sudah tercatat"
+       selalu muncul di bidang yang sama di seluruh situs. Grafik riaknya TIDAK
+       ikut ke sini: itu milik beranda. -->
+  {hasJejak && (
+    <section class="od section bg-brand-blue text-white">
+      <div aria-hidden="true" class="od-glow od-glow-top"></div>
+      <div aria-hidden="true" class="od-glow od-glow-bottom"></div>
+
+      <Container class="relative">
+        <div class="eyebrow text-brand-yellow">Dashboard Dampak</div>
+        <h2 class="od-h2">Kontribusi {org.label}</h2>
+        <p class="od-lead">
+          Semua angka di bawah dijumlahkan dari {jejak.length} kegiatan yang dijalankan bersama {org.label}, satu per satu dari catatan penyalurannya. Tidak ada angka yang ditulis terpisah di halaman ini.
+        </p>
+
+        {impact.metrics.length > 0 && (
+          <div class="od-stats">
+            {impact.metrics.map((m) => (
+              <div>
+                <div class="od-value">{formatMetric(m)}</div>
+                <div class="od-label">{m.label}</div>
+                <p class="od-note">{noteFor(m.label)}.</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {programBreakdown.length > 0 && (
+          <div class="od-foot">
+            <p class="label od-foot-title">Program yang dijalani</p>
+            <div class="od-chips">
+              {programBreakdown.map((p) =>
+                p.href ? (
+                  <a
+                    href={p.href}
+                    data-track="program_click"
+                    data-track-program={p.label}
+                    data-track-source="organisasi_detail"
+                    class="od-chip"
+                  >
+                    {p.label}
+                    <span class="od-chip-n">{p.count} kegiatan</span>
+                  </a>
+                ) : (
+                  <span class="od-chip">
+                    {p.label}
+                    <span class="od-chip-n">{p.count} kegiatan</span>
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+        )}
+      </Container>
+    </section>
+  )}
+
+  <!-- REKAM JEJAK: kartu foto yang sama dengan feed /jejak, bukan kartu strip
+       bespoke tanpa foto. Bentuk daftarnya ikut jumlah jejak (lihat feedMode). -->
   <section class="section bg-gray-50">
     <Container>
       <div class="eyebrow">Rekam Jejak</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jejak {org.label}</h2>
 
-      {jejak.length > 0 ? (
-        <div class="flex flex-col gap-3">
-          {jejak.map((j) => (
-            <a href={j.href} class="group relative flex overflow-hidden rounded-card bg-white border border-border transition hover:shadow-card hover:-translate-y-0.5">
-              <span class="absolute inset-y-0 left-0 w-1.5 bg-brand-blue" aria-hidden="true"></span>
-              <div class="flex-1 pl-6 pr-5 py-5 md:pl-7 md:pr-6 md:py-6">
-                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-micro font-bold uppercase tracking-wide text-muted mb-1.5">
-                  <span>{jejakDateFmt.format(new Date(j.date))}</span>
-                  <span aria-hidden="true" class="text-gray-300">&middot;</span>
-                  <span class="text-brand-blue">{labelBySlug.get(j.program) ?? j.program}</span>
-                </div>
-                <h3 class="text-title-sm font-semibold mb-1.5 transition-colors group-hover:text-brand-blue">{j.title}</h3>
-                <p class="text-body-sm text-muted leading-snug mb-3">{j.summary}</p>
-                {j.metrics.length > 0 && (
-                  <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-body-sm">
-                    {j.metrics.map((m) => (
-                      <span class="inline-flex items-baseline gap-1.5">
-                        <strong class="font-bold tabular-nums text-ink">{formatMetric(m)}</strong>
-                        <span class="text-muted">{m.label}</span>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </a>
-          ))}
-        </div>
+      {hasJejak ? (
+        feedMode === 'single' ? (
+          <JejakCard jejak={jejak[0]} pintu={pintuOf(jejak[0].program)} variant="wide" />
+        ) : (
+          <div class:list={['grid gap-5', feedMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3']}>
+            {jejak.map((j) => (
+              <JejakCard
+                jejak={j}
+                pintu={pintuOf(j.program)}
+                variant={feedMode === 'pair' ? 'stack' : 'compact'}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <p class="rounded-card border border-border bg-white p-8 text-center text-muted">
           Belum ada jejak tercatat untuk organisasi ini.
@@ -208,3 +352,110 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     </Container>
   </section>
 </BaseLayout>
+
+<style>
+  /* Skala tipografi band biru di bawah disalin persis dari ImpactSection, bukan
+     dikira-kira ulang: dua bidang biru dengan ukuran angka yang beda beberapa
+     piksel terbaca sebagai dua sistem yang tidak sengaja mirip. */
+  .od { position: relative; overflow: hidden; }
+
+  /* Dua cahaya lembut supaya bidang biru tidak terbaca rata. */
+  .od-glow { position: absolute; pointer-events: none; }
+  .od-glow-top {
+    top: -8rem; right: -6rem;
+    width: 38rem; height: 38rem; opacity: 0.85;
+    background: radial-gradient(closest-side, rgba(255, 217, 0, 0.13), transparent);
+  }
+  .od-glow-bottom {
+    bottom: -10rem; left: -8rem;
+    width: 34rem; height: 34rem; opacity: 0.7;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.09), transparent);
+  }
+
+  .od-h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    color: #fff;
+    text-wrap: balance;
+  }
+  .od-lead {
+    margin: 14px 0 0;
+    font-size: clamp(15px, 1.4vw, 17px);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 58ch;
+    text-wrap: pretty;
+  }
+
+  /* Kolomnya auto-fit karena jumlah metrik ikut isi jejak, bukan angka tetap. */
+  .od-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 34px 30px;
+    margin-top: 44px;
+  }
+  .od-value {
+    font-size: clamp(30px, 3.6vw, 44px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #ffd900;
+    font-variant-numeric: tabular-nums;
+  }
+  .od-label {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: capitalize;
+    color: #fff;
+  }
+  .od-note {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 32ch;
+  }
+
+  /* Rincian program: chip, bukan tabel. Isinya cuma nama program dan hitungan
+     kegiatan, dan tabel dua kolom untuk itu terbaca jauh lebih berat daripada
+     perannya di halaman ini. */
+  .od-foot {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  /* Ukuran & bentuk hurufnya dari class .label; di sini cuma warna terang karena
+     label ini berdiri di bidang biru, plus jaraknya ke deretan chip. */
+  .od-foot-title { margin: 0 0 14px; color: rgba(255, 255, 255, 0.55); }
+  .od-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .od-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  a.od-chip { transition: background-color 0.16s ease, border-color 0.16s ease; }
+  a.od-chip:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.34); }
+  .od-chip-n {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(255, 217, 0, 0.92);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    a.od-chip { transition: none; }
+  }
+</style>

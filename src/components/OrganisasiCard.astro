@@ -53,6 +53,12 @@ const sinceLabel = org.detail.since?.trim() || (org.firstDate ? fmtDate(org.firs
 // sebagai satu foto besar.
 const photos = isWide ? org.photos.slice(0, Math.min(4, Math.max(org.jejakCount, 1))) : org.photos.slice(0, 1);
 const collageCols = photos.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
+// Tiga foto di grid dua kolom meninggalkan sel bolong di kanan bawah, jadi foto
+// terakhir melebar dua kolom. Barisnya juga dipaksa setinggi sama (auto-rows-fr)
+// supaya kolom foto tak tumbuh melewati kolom isi dan menyisakan jarak
+// menganga di bawah teks.
+const collageRows = photos.length > 2 ? 'grid-rows-2' : 'grid-rows-1';
+const collageOddTail = photos.length === 3;
 
 // Lebar render foto per varian, diturunkan dari isi Container `standard`
 // (1024 - padding md:px-10 = 944px): kolom kolase kartu lebar ~472px dibagi
@@ -82,19 +88,28 @@ const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
 <a href={org.href} data-track="organisasi_click" data-track-organisasi={org.slug} class={rootClass}>
   {photos.length > 0 ? (
     isWide ? (
-      /* Aspect-ratio cuma di mobile; di md+ dilepas supaya kolom foto ikut
-         tinggi kolom isi dan kedua sisi kartu rata bawah. */
-      <div class:list={['relative grid gap-0.5 bg-gray-100 aspect-[16/10] md:aspect-auto', collageCols]}>
-        {photos.map((img, i) => (
-          <Image
-            src={img}
-            alt=""
-            widths={photoWidths}
-            sizes={photoSizes}
-            loading={eager && i === 0 ? 'eager' : 'lazy'}
-            class="h-full w-full object-cover"
-          />
-        ))}
+      /* Aspect-ratio hanya dipakai di mobile. Di md+ dilepas dan kolasenya
+          diposisikan absolut, jadi TINGGI KARTU ditentukan kolom isi dan foto
+          mengisi sisa ruangnya lewat object-cover. Tanpa itu kolase memakai
+          tinggi alami fotonya dan kartu tumbuh sampai dua kali tinggi teksnya,
+         menyisakan bidang kosong menganga di sebelah kanan. Pola ini sama
+         dengan kartu unggulan di JejakCard. */
+      <div class="relative w-full aspect-[16/10] md:aspect-auto bg-gray-100">
+        <div class:list={['absolute inset-0 grid gap-0.5', collageCols, collageRows]}>
+          {photos.map((img, i) => (
+            <Image
+              src={img}
+              alt=""
+              widths={photoWidths}
+              sizes={photoSizes}
+              loading={eager && i === 0 ? 'eager' : 'lazy'}
+              class:list={[
+                'h-full w-full object-cover',
+                collageOddTail && i === photos.length - 1 && 'col-span-2',
+              ]}
+            />
+          ))}
+        </div>
       </div>
     ) : (
       <Image

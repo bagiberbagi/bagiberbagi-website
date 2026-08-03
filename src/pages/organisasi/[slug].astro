@@ -439,6 +439,15 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     gap: 34px 30px;
     margin-top: 44px;
   }
+  /* Empat metrik jatuh 3+1 di bawah auto-fit dan menyisakan satu angka
+     menggantung sendirian di baris kedua. Dipaksa 2x2 supaya baris terakhir
+     tak bolong — aturan yang sama sudah dipakai grid metrik di jejak detail.
+     Jumlah metrik datang dari label yang diisi editor, jadi kasus ini muncul
+     sendiri begitu satu organisasi berkontribusi di kegiatan dengan label
+     metrik yang berbeda-beda. */
+  .od-stats:has(> :nth-child(4):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .od-value {
     font-size: clamp(30px, 3.6vw, 44px);
     font-weight: 600;

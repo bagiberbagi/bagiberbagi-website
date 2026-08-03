@@ -23,8 +23,20 @@ export function buildWaLink(waNumber: string, text?: string): string {
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
 }
 
-export function buildDonationMessage(program: string, pax: number, totalFormatted: string): string {
-  return `Halo, saya ingin donasi program "${program}" untuk ${pax} pax (Total: ${totalFormatted}).`;
+/**
+ * `packageName` opsional: untuk program self-serve berpaket lebih dari satu
+ * (mis. Ramadhan Berbagi: Sahur/Takjil/Buka Puasa), paket yang dipilih ikut
+ * disebut di pesan supaya tim tak perlu menanyakan ulang lewat WhatsApp.
+ * Program dengan satu paket (Jumat Berkah) tetap tanpa embel-embel ini.
+ */
+export function buildDonationMessage(
+  program: string,
+  pax: number,
+  totalFormatted: string,
+  packageName?: string
+): string {
+  const programLabel = packageName ? `${program} (Paket ${packageName})` : program;
+  return `Halo, saya ingin donasi program "${programLabel}" untuk ${pax} pax (Total: ${totalFormatted}).`;
 }
 
 export function formatProgramOptionLabel(opt: { label: string; active: boolean }): string {

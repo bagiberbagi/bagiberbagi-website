@@ -3,6 +3,7 @@ import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
 import { createImageResolver } from './assets';
 import { getPrograms } from './programs';
+import { getOrganisasiPages } from './organisasi';
 import { parseVideoUrl, type JejakVideoSource } from './video';
 import { parseCoordinates, type MapPoint } from './geo';
 
@@ -24,6 +25,14 @@ export interface Jejak {
   slug: string;
   title: string;
   program: string;
+  /**
+   * Slug organisasi (donor institusional) opsional, lateral terhadap `program`.
+   * Tidak difilter di sini terhadap organisasi yatim/inactive — jejak ini tetap
+   * tampil normal di agregasi program/pintu; penyaringannya baru terjadi di
+   * `getJejakByOrganisasi` karena organisasi cuma lapisan tambahan, bukan
+   * syarat jejak valid (lihat design.md risiko "relasi yatim").
+   */
+  organisasi: string | null;
   date: string;
   location: string;
   summary: string;
@@ -34,6 +43,11 @@ export interface Jejak {
   gallery: ImageMetadata[];
   /** null = tanpa video, atau link-nya tak dikenali (diperingatkan saat build). */
   video: JejakVideo | null;
+  /**
+   * Path unggahan manual (`public/uploads/jejak-reports/...`), disajikan apa
+   * adanya sebagai tautan unduh. null = tak ada laporan (design.md keputusan #6).
+   */
+  reportPdf: string | null;
   /** Titik peta yang koordinatnya terbaca. Kosong = halaman tanpa peta. */
   points: MapPoint[];
   published: boolean;
@@ -137,6 +151,8 @@ export async function getJejak(): Promise<Jejak[]> {
     .map((e) => ({
       slug: e.id,
       ...e.data,
+      organisasi: e.data.organisasi ?? null,
+      reportPdf: e.data.reportPdf ?? null,
       // Path string diselesaikan di sini sekali saja, jadi seluruh konsumen
       // menerima modul gambar yang siap dioptimasi dan tak ada satu pun yang
       // perlu tahu di folder mana fotonya disimpan.
@@ -170,4 +186,17 @@ export async function getJejakByPintu(pintuId: PintuId): Promise<Jejak[]> {
 /** Jejak yang punya halaman detail — dasar route dinamis & OG image. */
 export async function getJejakPages(): Promise<Jejak[]> {
   return getJejak();
+}
+
+/**
+ * Jejak yang menyebut organisasi tertentu, lintas program apa pun. Validasi
+ * terhadap organisasi ber-halaman (aktif + deskripsi terisi) dulu — bukan
+ * cuma "ada di collection" seperti `getJejak()` menyaring program, sebab
+ * organisasi yang di-nonaktifkan seharusnya tak lagi kebagian agregasi
+ * dampak (lihat design.md risiko "relasi yatim").
+ */
+export async function getJejakByOrganisasi(organisasiSlug: string): Promise<Jejak[]> {
+  const validSlugs = new Set((await getOrganisasiPages()).map((o) => o.slug));
+  if (!validSlugs.has(organisasiSlug)) return [];
+  return (await getJejak()).filter((j) => j.organisasi === organisasiSlug);
 }

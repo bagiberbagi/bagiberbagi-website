@@ -298,6 +298,28 @@ const extraSchema = video
         <LocationMap points={jejak.points} location={jejak.location} class="mt-9" />
       )}
 
+      {/* Laporan PDF: unggahan manual editor, tanpa generate otomatis
+          (design.md keputusan #6). Section-nya disembunyikan total kalau kosong. */}
+      {jejak.reportPdf && (
+        <a
+          href={jejak.reportPdf}
+          target="_blank"
+          rel="noopener"
+          data-track="report_pdf_download"
+          data-track-jejak={jejak.title}
+          class="mt-9 flex items-center gap-4 rounded-card border border-border bg-white p-5 transition hover:shadow-card hover:-translate-y-0.5"
+        >
+          <span class="flex-none grid place-items-center w-11 h-11 rounded-xl bg-[var(--cat-tint)] text-[var(--cat-deep)]">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"></path><path d="M14 2v6h6"></path></svg>
+          </span>
+          <span class="min-w-0">
+            <span class="block text-body-sm font-semibold text-ink">Unduh Laporan (PDF)</span>
+            <span class="block text-sm text-muted">Ringkasan penyaluran dalam format PDF</span>
+          </span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto flex-none text-muted"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+      )}
+
       <!-- CTA band ke program induk -->
       <a
         href={ctaHref}

@@ -26,6 +26,11 @@ test('buildDonationMessage includes program, pax, and formatted total', () => {
   expect(msg).toBe('Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).');
 });
 
+test('buildDonationMessage mentions the selected package when provided', () => {
+  const msg = buildDonationMessage('Ramadhan Berbagi', 10, 'Rp 250.000', 'Takjil');
+  expect(msg).toBe('Halo, saya ingin donasi program "Ramadhan Berbagi (Paket Takjil)" untuk 10 pax (Total: Rp 250.000).');
+});
+
 test('formatProgramOptionLabel appends "(Segera Hadir)" only when not active', () => {
   expect(formatProgramOptionLabel({ label: 'Jumat Berkah', active: true })).toBe('Jumat Berkah');
   expect(formatProgramOptionLabel({ label: 'Ramadhan Berkah', active: false })).toBe('Ramadhan Berkah (Segera Hadir)');

@@ -1,0 +1,113 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/Container.astro';
+import Icon from '../../components/Icon.astro';
+import { getOrganisasiPages } from '../../lib/organisasi';
+import { buildWaLink } from '../../lib/format';
+
+// Direktori organisasi (donor institusional yang berbagi rutin). Hanya entri
+// ber-halaman (active + detail.description terisi) yang tampil — sama seperti
+// gate publish di getProgramPages(). Lihat design.md untuk kenapa entitas ini
+// berdiri sendiri dari program/pintu.
+const organisasi = await getOrganisasiPages();
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+
+const joinWa = buildWaLink(
+  site.data.waNumber,
+  'Halo, organisasi/komunitas kami ingin berkontribusi rutin dan didaftarkan sebagai organisasi mitra bagiberbagi.id.'
+);
+---
+
+<BaseLayout
+  title="Organisasi Berbagi Rutin | bagiberbagi.id"
+  description="Komunitas dan perusahaan yang berbagi secara rutin bersama bagiberbagi.id, lengkap dengan dashboard dampak dan rekam jejak masing-masing."
+  breadcrumbName="Organisasi"
+>
+  <!-- HERO -->
+  <section class="section bg-linear-[160deg] from-brand-blueTint to-white to-60%">
+    <Container>
+      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-brand-blue">Beranda</a>
+        <span class="text-gray-300 mx-1.5">/</span>
+        <span class="text-ink">Organisasi</span>
+      </nav>
+
+      <div class="text-center max-w-text mx-auto">
+        <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-brand-blue mb-4">
+          <Icon name="repeat" size={30} />
+        </span>
+        <div class="eyebrow">Organisasi</div>
+        <h1 class="text-heading md:text-display font-semibold mb-3">Organisasi yang berbagi secara rutin</h1>
+        <p class="text-body md:text-title-sm text-muted leading-relaxed">
+          Komunitas dan perusahaan yang memberi secara berkelanjutan punya rekam jejak dan dashboard dampaknya sendiri di sini, terpisah dari donasi individu yang memang tidak kami lacak satu per satu.
+        </p>
+      </div>
+    </Container>
+  </section>
+
+  <!-- DAFTAR ORGANISASI -->
+  <section class="section bg-gray-50">
+    <Container>
+      {organisasi.length > 0 ? (
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {organisasi.map((org) => (
+            <a
+              href={org.href}
+              class="group flex flex-col rounded-card border border-border bg-white p-6 transition hover:shadow-card hover:-translate-y-0.5"
+            >
+              {org.logo ? (
+                <img
+                  src={org.logo}
+                  alt={org.label}
+                  width="56"
+                  height="56"
+                  loading="lazy"
+                  class="w-14 h-14 rounded-xl object-contain bg-gray-50 border border-border p-2 mb-4"
+                />
+              ) : (
+                <span class="w-14 h-14 rounded-xl grid place-items-center bg-brand-blueTint text-brand-blue font-bold text-title-sm mb-4">
+                  {org.label.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+              <h2 class="text-title-sm font-semibold text-ink mb-1.5">{org.label}</h2>
+              <p class="text-body-sm text-muted leading-snug flex-1">{org.summary}</p>
+              <span class="mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm text-brand-blue">
+                Lihat dashboard dampak
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="rounded-card border border-border bg-white p-10 text-center text-muted">
+          Belum ada organisasi yang tampil di sini. Profil komunitas atau perusahaan pertama akan muncul begitu bergabung.
+        </p>
+      )}
+    </Container>
+  </section>
+
+  <!-- CTA: ajak organisasi lain bergabung -->
+  <section class="section bg-white">
+    <Container>
+      <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
+        <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Organisasimu ingin berbagi secara rutin?</h2>
+        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-text mx-auto mb-6">
+          Komunitas atau perusahaan yang berkontribusi berkelanjutan bisa punya dashboard dampak sendiri seperti di atas.
+        </p>
+        <a
+          href={joinWa}
+          target="_blank"
+          rel="noopener"
+          data-track="organisasi_join_click"
+          data-track-source="organisasi_index"
+          class="btn-secondary text-brand-orangeDark"
+        >
+          Diskusikan lewat WhatsApp
+        </a>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>

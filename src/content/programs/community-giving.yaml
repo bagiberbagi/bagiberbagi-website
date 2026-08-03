@@ -1,0 +1,16 @@
+label: Community Giving
+pintu: food
+order: 3
+active: true
+summary: Donasi makanan bersama komunitas untuk kegiatan berbagi rutin atau musiman.
+detail:
+  eyebrow: PROGRAM AKTIF
+  description: >-
+    Untuk komunitas (klub olahraga, kelompok hobi, jamaah, alumni) yang ingin
+    berbagi makanan bersama secara rutin atau musiman. Paket disesuaikan
+    dengan kebutuhan komunitasmu, mulai dari jumlah porsi, frekuensi, sampai
+    titik penyaluran, lalu kami bantu urus penyaluran dan dokumentasinya.
+  features:
+    - Paket menyesuaikan jumlah anggota dan jadwal kegiatan komunitas
+    - Bisa sekali jalan untuk momen tertentu atau rutin berkelanjutan
+    - Rekam jejak dan dampak komunitas tercatat di dashboard organisasi sendiri

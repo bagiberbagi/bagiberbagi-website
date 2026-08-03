@@ -119,7 +119,7 @@ export default config({
     // Kelompokkan sidebar agar tidak menumpuk datar. Kunci di sini harus sama
     // persis dengan kunci singleton/collection di bawah.
     navigation: {
-      Halaman: ['home', 'about', 'programs', 'jejak'],
+      Halaman: ['home', 'about', 'programs', 'organisasi', 'jejak'],
       'Konten Situs': ['faq', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
       'Pengaturan Situs': ['settings', 'seo', 'analytics'],
@@ -578,6 +578,56 @@ export default config({
       },
     }),
 
+    // Donor institusional (komunitas atau perusahaan) yang memberi rutin,
+    // lintas program — lihat design.md keputusan #1 dan #2. Publish gate dan
+    // pola field meniru `programs`: active + Detail.description terisi = dapat
+    // halaman sendiri.
+    organisasi: collection({
+      label: 'Organisasi',
+      slugField: 'label',
+      path: 'src/content/organisasi/*',
+      format: { data: 'yaml' },
+      schema: {
+        label: fields.slug({ name: { label: 'Nama Organisasi' } }),
+        logo: fields.image({
+          label: 'Logo',
+          description: 'Kosongkan untuk memakai placeholder.',
+          // Logo kecil, tidak lewat astro:assets, sama seperti pola pengecualian
+          // unggahan non-galeri lain di situs ini (mis. laporan PDF jejak).
+          directory: 'public/uploads/organisasi',
+          publicPath: '/uploads/organisasi/',
+        }),
+        summary: fields.text({
+          label: 'Ringkasan',
+          description: 'Deskripsi singkat untuk kartu di daftar organisasi.',
+          multiline: true,
+        }),
+        detail: fields.object(
+          {
+            description: fields.text({ label: 'Deskripsi halaman', multiline: true }),
+            since: fields.text({
+              label: 'Berkontribusi sejak',
+              description: 'Ditulis apa adanya, contoh: 2023, atau Januari 2023.',
+            }),
+            instagram: fields.text({
+              label: 'Instagram (opsional)',
+              description: 'Handle, tanpa @. Kosongkan bila tidak ada.',
+            }),
+            website: fields.text({ label: 'Website (opsional)', description: 'Kosongkan bila tidak ada.' }),
+          },
+          {
+            label: 'Detail halaman',
+            description: 'Hanya perlu diisi untuk organisasi aktif yang punya halaman sendiri.',
+          }
+        ),
+        active: fields.checkbox({
+          label: 'Aktif (tampil di direktori)',
+          description:
+            'Aktif + isi Detail terisi = organisasi dapat halaman sendiri. Nonaktif tidak tampil di /organisasi/.',
+        }),
+      },
+    }),
+
     // Jejak = lapisan eksekusi di atas program: satu program berjalan berkali-
     // kali, tiap kali menghasilkan foto, angka, dan cerita. Body naratif pakai
     // Markdoc (.mdoc) — ekstensi ini WAJIB sepakat dengan content.config.ts,
@@ -599,6 +649,12 @@ export default config({
           label: 'Program induk',
           description: 'Program yang jejak ini merupakan pelaksanaannya.',
           collection: 'programs',
+        }),
+        organisasi: fields.relationship({
+          label: 'Organisasi (opsional)',
+          description:
+            'Isi bila jejak ini merupakan kontribusi dari donor institusional (komunitas/perusahaan) tertentu. Berdiri sendiri dari Program induk — satu organisasi boleh berkontribusi lewat program berbeda-beda.',
+          collection: 'organisasi',
         }),
         date: fields.date({ label: 'Tanggal' }),
         location: fields.text({ label: 'Lokasi' }),
@@ -707,6 +763,16 @@ export default config({
             description: 'Opsional. Tampil di bawah foto, di atas angka penyaluran.',
           }
         ),
+        // Laporan siap-jadi (mis. ringkasan ESG/CSR), unggahan manual editor —
+        // tanpa generate otomatis (design.md keputusan #6). Disajikan apa
+        // adanya dari public/, sama seperti video berkas manual di atas.
+        reportPdf: fields.file({
+          label: 'Laporan PDF (opsional)',
+          description:
+            'Mis. ringkasan ESG/CSR yang sudah disusun manual. Unggah PDF yang sudah dikompres, situs tidak mengompresnya otomatis.',
+          directory: 'public/uploads/jejak-reports',
+          publicPath: '/uploads/jejak-reports/',
+        }),
         published: fields.checkbox({
           label: 'Terbit',
           description: 'Hanya jejak terbit yang tampil di situs dan ikut agregasi dampak.',

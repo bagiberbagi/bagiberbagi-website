@@ -1178,8 +1178,16 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     inset: 0;
     background: linear-gradient(to top, rgba(10, 18, 30, 0.78), rgba(10, 18, 30, 0.18) 55%, rgba(10, 18, 30, 0.04));
   }
+  /* `width: 100%` di sini bukan hiasan. `.s1-moment` itu flex container, jadi
+     Container tier `wide` di dalamnya jadi flex item dan lebarnya menyusut ke
+     lebar isinya (caption dibatasi 46ch), jauh di bawah 1280. Sisa ruang barisnya
+     lalu dibagi rata oleh `mx-auto` bawaan tier itu, sehingga caption dan garis
+     `--cat` di atasnya berdiri di tengah band foto, tidak sejajar dengan tepi
+     kiri hero maupun badan halaman yang memakai tier sama. Dengan lebar penuh,
+     `max-w-wide` + padding tier itu lagi yang menentukan tepi kirinya. */
   .s1-moment-inner {
     position: relative;
+    width: 100%;
     padding-top: 0;
     padding-bottom: 48px;
   }

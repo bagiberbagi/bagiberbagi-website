@@ -52,6 +52,38 @@ export function buildJejakVideoSchema(input: {
 }
 
 /**
+ * ImageObject piece per foto jejak.
+ *
+ * Foto lapangan adalah bukti yang jadi seluruh argumen situs ini, tapi sebelum
+ * ini tak satu pun disebut di graph: halaman jejak mendeklarasikan videonya
+ * lengkap sampai koordinat, sementara foto-fotonya cuma ada sebagai <img>.
+ * Menyebutnya eksplisit memberi tahu mesin pencari foto mana yang milik
+ * halaman ini, dan `caption` memberi keterangan yang tak bisa disimpulkan dari
+ * berkasnya.
+ *
+ * `contentUrl` menunjuk berkas versi besar yang sama dengan yang dibuka
+ * lightbox, bukan thumbnail: keduanya memang ada di halaman, dan yang besar
+ * itulah yang berguna kalau seseorang menemukannya lewat Google Images.
+ *
+ * `caption` cuma disertakan kalau editor benar-benar menulisnya. Alt turunan
+ * judul sengaja tak dipakai sebagai caption, karena caption menjanjikan
+ * keterangan sungguhan dan alt cadangan bukan itu.
+ */
+export function buildJejakImagesSchema(
+  pageUrl: string,
+  photos: { contentUrl: string; alt: string; caption: string | null }[]
+) {
+  return photos.map((p, i) => ({
+    '@type': 'ImageObject',
+    '@id': `${pageUrl}#image-${i + 1}`,
+    contentUrl: p.contentUrl,
+    representativeOfPage: i === 0,
+    description: p.alt,
+    ...(p.caption ? { caption: p.caption } : {}),
+  }));
+}
+
+/**
  * Place piece untuk jejak yang punya titik peta tapi tak punya video. Saat
  * videonya ada, tempatnya sudah menempel di VideoObject dan fungsi ini tak
  * dipakai, supaya satu titik tak muncul dua kali di graph yang sama.

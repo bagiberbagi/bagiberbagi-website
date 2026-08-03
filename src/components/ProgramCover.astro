@@ -1,0 +1,83 @@
+---
+/**
+ * Wajah satu program dalam bentuk ubin kecil.
+ *
+ * Aturannya: cover milik program itu sendiri kalau ada, kalau tidak ada IKON
+ * PINTU-nya, bukan foto bawaan. Sebabnya bukan selera. `getProgramCover` di
+ * `programs.ts` memulangkan `program-promo.png` untuk program tanpa cover, dan
+ * foto itu foto penyaluran nyata; memasangnya sebagai wajah CSR Food Program
+ * atau Ramadhan Berbagi berarti menampilkan kegiatan yang bukan milik mereka
+ * seolah-olah milik mereka. Ikon pintu tidak mengaku apa-apa: ia menyatakan
+ * kategori, dan kategori itu memang benar.
+ *
+ * Polanya menyalin placeholder `JejakCard.astro`: bidang bertint warna pintu
+ * dengan ikon pintu di tengah, ukuran dan bentuk sama persis dengan versi
+ * berfoto supaya baris tidak berubah tinggi antara program yang punya cover
+ * dan yang belum.
+ *
+ * Warna diambil dari `pintu` lewat style inline, bukan dari `--cat` milik
+ * leluhur, supaya komponen ini tetap benar kalau dipakai di luar halaman pintu.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Pintu } from '../consts';
+import type { Program } from '../lib/programs';
+
+interface Props {
+  program: Pick<Program, 'image'>;
+  pintu: Pintu;
+  /** Program yang belum dibuka: ubinnya kehilangan warna pintu. */
+  muted?: boolean;
+}
+
+const { program, pintu, muted = false } = Astro.props;
+const vars = `--pc:${pintu.color};--pc-tint:${pintu.colorTint}`;
+---
+
+{program.image ? (
+  <div class:list={['pcover', muted && 'is-muted']} style={vars}>
+    <Image
+      src={program.image}
+      alt=""
+      widths={[72, 144, 216]}
+      sizes="72px"
+      loading="lazy"
+      class="pcover-img"
+    />
+  </div>
+) : (
+  <div class:list={['pcover', 'is-icon', muted && 'is-muted']} style={vars} aria-hidden="true">
+    <Icon name={pintu.icon} size={30} />
+  </div>
+)}
+
+<style>
+  .pcover {
+    flex: none;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--pc-tint);
+  }
+  .pcover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pcover.is-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pc);
+  }
+  /* Program yang belum dibuka dilepas dari warna pintunya. Statusnya jadi
+     terbaca dari ubinnya juga, bukan cuma dari badge di ujung kanan baris. */
+  .pcover.is-muted { background: #f1f4f7; color: #9aa6b5; }
+  .pcover.is-muted .pcover-img { filter: grayscale(1); opacity: 0.75; }
+
+  @media (max-width: 767px) {
+    .pcover { width: 56px; height: 56px; border-radius: 13px; }
+  }
+</style>

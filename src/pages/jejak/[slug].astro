@@ -11,7 +11,7 @@ import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
 import { buildJejakVideoSchema, buildJejakPlacesSchema } from '../../lib/schema';
 import { getJejakPages } from '../../lib/jejak';
-import { getPrograms } from '../../lib/programs';
+import { getPrograms, getProgramCover } from '../../lib/programs';
 import { PINTU } from '../../consts';
 
 // Satu route untuk setiap jejak terbit. Begitu editor menambah jejak di
@@ -35,6 +35,10 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
 
 const programLabel = program?.label ?? jejak.program;
 const ctaHref = program?.href ?? `/berbagi-${pintu.slug}/`;
+// Foto program yang sama dengan yang dipakai kartu hero beranda dan hero
+// halaman program, supaya ajakan di bawah memperlihatkan wajah programnya,
+// bukan bidang warna tanpa gambar.
+const programCover = program ? await getProgramCover(program) : null;
 
 // Body naratif Markdoc.
 const entry = await getEntry('jejak', jejak.slug);
@@ -323,17 +327,31 @@ const extraSchema = video
         </a>
       )}
 
-      <!-- CTA band ke program induk -->
+      <!-- CTA band ke program induk. Fotonya cover program, sama dengan yang
+           dipakai kartu hero beranda dan hero halaman program, jadi satu program
+           punya satu wajah di seluruh situs. -->
       <a
         href={ctaHref}
-        class="mt-10 flex flex-wrap items-center gap-4 rounded-card p-6 text-white no-underline"
+        class="group mt-10 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 rounded-card overflow-hidden text-white no-underline"
         style="background:linear-gradient(135deg,var(--cat),var(--cat-deep))"
       >
-        <div class="min-w-0">
+        {programCover && (
+          /* Lebar tetap 176px di sm+ (thumbnail, bukan pembuka), penuh selebar
+             kartu saat menumpuk di mobile. */
+          <Image
+            src={programCover}
+            alt={programLabel}
+            widths={[176, 352, 688]}
+            sizes="(min-width: 640px) 176px, 100vw"
+            loading="lazy"
+            class="w-full h-40 sm:w-44 sm:h-36 flex-none object-cover"
+          />
+        )}
+        <div class="min-w-0 px-6 sm:px-0">
           <h2 class="text-title-sm md:text-title font-semibold">Dukung {programLabel} berikutnya</h2>
           <p class="text-body-sm text-white/90 mt-1">Jejak seperti ini bisa terus berjalan berkat donasi Anda.</p>
         </div>
-        <span class="ml-auto flex-none rounded-full bg-white text-[var(--cat-deep)] font-bold text-body-sm px-6 py-3 whitespace-nowrap">
+        <span class="mx-6 mb-6 sm:mx-0 sm:mb-0 sm:mr-6 sm:ml-auto flex-none rounded-full bg-white text-[var(--cat-deep)] font-bold text-body-sm px-6 py-3 text-center whitespace-nowrap">
           Lihat Program
         </span>
       </a>

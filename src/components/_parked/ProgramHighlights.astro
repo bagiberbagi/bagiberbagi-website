@@ -1,11 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import Container from '../Container.astro';
-import { getProgramsByPintu } from '../../lib/programs';
+import { getProgramsByPintu, getProgramCover } from '../../lib/programs';
 import { getProgramSection } from '../../lib/home';
 import { getProgramImpact } from '../../lib/impact';
 import { formatMetric } from '../../lib/format';
-import programPromoImage from '../../assets/images/jumat-berkah-distribusi.png';
 
 // Featured + rail: program yang disorot tampil menonjol (pendorong donasi),
 // program food yang belum jalan diturunkan jadi chip "Segera" redup tanpa CTA.
@@ -21,7 +20,11 @@ const upcoming = (await getProgramsByPintu('food')).filter(
 // Kartu flagship dipadatkan dengan metrik dampak nyata (dari jejak program)
 // supaya bidang foto tak melompong: badge status di atas, chip angka di bawah.
 const cards = await Promise.all(
-  highlighted.map(async (p) => ({ ...p, impact: await getProgramImpact(p.slug) }))
+  highlighted.map(async (p) => ({
+    ...p,
+    impact: await getProgramImpact(p.slug),
+    cover: await getProgramCover(p),
+  }))
 );
 
 // Satu sorotan = kartu tunggal lebar penuh; dua atau lebih = grid dua kolom
@@ -44,9 +47,10 @@ const isGrid = cards.length > 1;
     <div class={isGrid ? 'grid md:grid-cols-2 gap-5' : 'flex flex-col gap-5'}>
       {cards.map((p) => (
         <div class="relative overflow-hidden rounded-card min-h-[360px] flex flex-col justify-end p-7 md:p-8 text-white" data-fade="1">
-          {/* Foto unggahan dan foto bawaan sama-sama modul gambar, jadi keduanya
-              lewat <Image> yang sama: satu cabang, satu perlakuan optimasi. */}
-          <Image src={p.image ?? programPromoImage} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
+          {/* Cover program dari satu sumber (`getProgramCover`), sama dengan
+              kartu hero beranda dan halaman program — termasuk foto bawaannya
+              kalau program itu belum punya foto sendiri. */}
+          <Image src={p.cover} alt="" width={900} height={560} class="absolute inset-0 w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-brand-blue from-5% via-brand-blue/55 via-50% to-transparent"></div>
           {/* Badge status di atas — mengisi bidang foto yang tadinya kosong.
               Ikut status program: sorotan boleh dipasang sebelum dibuka. */}

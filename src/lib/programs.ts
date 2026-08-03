@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
 import { createImageResolver } from './assets';
+import defaultProgramCover from '../assets/images/program-promo.png';
 
 export interface Program {
   slug: string;
@@ -59,6 +60,31 @@ export async function getPrograms(): Promise<Program[]> {
       };
     })
     .sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Foto satu program, dipakai di mana pun program itu ditampilkan: kartu program
+ * berjalan di hero beranda, hero halaman program, dan ajakan ke program di
+ * detail jejak. Satu program karena itu selalu tampil dengan foto yang sama,
+ * bukan foto bawaan yang beda-beda per komponen seperti sebelumnya.
+ *
+ * Urutan sumbernya: foto yang diunggah editor di Keystatic, lalu dokumentasi
+ * jejak terbaru program itu, lalu foto bawaan. Rantai itu tinggal di sini
+ * supaya program yang belum punya foto sendiri tetap tampil sama di semua
+ * halaman, bukan satu halaman memakai foto lapangan dan halaman lain memakai
+ * gambar promo.
+ *
+ * `jejak.ts` mengimpor modul ini, jadi impor baliknya ditaruh di dalam fungsi
+ * supaya tak jadi lingkaran — pola yang sama dengan `impact.ts`.
+ */
+export async function getProgramCover(
+  program: Pick<Program, 'slug' | 'image'>
+): Promise<ImageMetadata> {
+  if (program.image) return program.image;
+
+  const { getJejakByProgram } = await import('./jejak');
+  const jejak = await getJejakByProgram(program.slug);
+  return jejak.find((j) => j.cover)?.cover ?? defaultProgramCover;
 }
 
 export async function getProgramsByPintu(pintu: PintuId): Promise<Program[]> {

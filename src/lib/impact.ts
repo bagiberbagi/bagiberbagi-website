@@ -71,6 +71,23 @@ export async function getProgramImpact(programSlug: string): Promise<Impact> {
 }
 
 /**
+ * Agregat dampak satu organisasi: sum-by-label lintas SEMUA jejak yang
+ * menyebutnya, apa pun programnya (design.md keputusan #1 — organisasi
+ * menempel ke jejak, bukan ke satu program tetap). programCount di sini
+ * berarti jumlah program berbeda yang jadi jalur kontribusi organisasi ini,
+ * bukan "1 program" seperti di `getProgramImpact`.
+ */
+export async function getOrganisasiImpact(organisasiSlug: string): Promise<Impact> {
+  const { getJejakByOrganisasi } = await import('./jejak');
+  const jejakList = await getJejakByOrganisasi(organisasiSlug);
+  return {
+    metrics: aggregateMetrics(jejakList.map((j) => j.metrics)),
+    jejakCount: jejakList.length,
+    programCount: new Set(jejakList.map((j) => j.program)).size,
+  };
+}
+
+/**
  * Agregat dampak satu pintu: sum-by-label lintas semua program di pintu itu.
  * programCount = jumlah program unik yang benar-benar punya jejak di pintu ini.
  */

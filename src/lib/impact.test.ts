@@ -48,3 +48,17 @@ test('aggregateMetrics returns an empty array for empty input', () => {
   expect(aggregateMetrics([])).toEqual([]);
   expect(aggregateMetrics([[]])).toEqual([]);
 });
+
+// getOrganisasiImpact (impact.ts) memanggil aggregateMetrics persis seperti
+// getProgramImpact, hanya jejak sumbernya sudah difilter lintas program
+// berbeda oleh getJejakByOrganisasi (yang mengandalkan astro:content, jadi
+// tak diuji unit di sini — lihat komentar impact.ts). Yang diuji di bawah
+// adalah skenario spec: sum-by-label tetap benar walau jejak-nya berasal
+// dari program yang berbeda-beda, sebab organisasi menempel lintas program.
+test('aggregateMetrics sums a single organisasi\'s jejak spanning different programs', () => {
+  const result = aggregateMetrics([
+    [{ label: 'porsi', value: 50 }], // jejak di bawah program Community Giving
+    [{ label: 'porsi', value: 30 }], // jejak di bawah program Ramadhan Berbagi
+  ]);
+  expect(result).toEqual([{ label: 'porsi', value: 80 }]);
+});

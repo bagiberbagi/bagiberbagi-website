@@ -195,23 +195,34 @@
  *    `badan | fitur`: judul programnya berpindah dari x=565 ke x=0 di tengah
  *    daftar. Itu sebab mekanis daftar itu terbaca berantakan, bukan warnanya.
  *
- *    Sekarang fotonya jadi anchor seksi di atas daftar, memenuhi tabel "One
- *    anchor per section" tanpa membuat satu baris berbeda dari saudaranya, dan
- *    keenam program memakai baris yang sama. Statusnya dibawa label kelompok
- *    (disebut sekali, bukan sekali per baris seperti "Sedang berjalan" yang
- *    dulu dicetak empat kali) plus sisi kanan baris. Bullet `detail.features`
- *    tidak ikut karena halaman program sudah merendernya dan halaman pintu itu
- *    channel tipis pemikul DAFTAR program, bukan detailnya.
+ *    Sekarang keenam program memakai baris yang sama, dan tiap baris membawa
+ *    ubin wajahnya sendiri lewat `ProgramCover`: cover milik program itu kalau
+ *    ada, kalau tidak ada ikon pintunya. Foto besar di atas daftar sempat
+ *    dipasang sebagai anchor seksi, lalu dibuang begitu ubin per baris masuk.
+ *    Berkasnya `program-promo.png`, yaitu foto bawaan yang sama yang justru
+ *    tidak boleh mewakili satu program, jadi memajangnya setinggi 509px cuma
+ *    memperbesar masalah yang sedang diperbaiki. Kalau nanti seksi ini perlu
+ *    anchor foto lagi, ambil foto pintu yang memang miliknya, jangan foto
+ *    bawaan program.
+ *
+ *    Statusnya dibawa tiga hal yang saling menguatkan: label kelompok (disebut
+ *    sekali, bukan sekali per baris seperti "Sedang berjalan" yang dulu
+ *    dicetak empat kali), warna ubin (warna pintu vs abu), dan sisi kanan
+ *    baris. Bullet `detail.features` tidak ikut karena halaman program sudah
+ *    merendernya dan halaman pintu itu channel tipis pemikul DAFTAR program,
+ *    bukan detailnya.
  *
  * MASIH TERBUKA, DAN BUKAN PEKERJAAN FILE INI: `#pintu-lain` tidak punya
  * heading sama sekali, labelnya `<p class="s1-eyebrow">Pintu Lainnya`, pola
  * yang sama dengan yang diperbaiki di poin 16 dan belum diputuskan.
  *
- * Sejak `getProgramCover` ada di `programs.ts`, tiap program punya cover
- * sendiri, jadi thumbnail per baris daftar program secara data sudah mungkin.
- * Hari ini belum layak dipasang: cuma Jumat Berkah yang punya foto sendiri,
- * lima sisanya jatuh ke `program-promo.png` yang sama, jadi barisnya akan
- * memajang satu foto identik lima kali. Pasang kalau covernya sudah terisi.
+ * `getProgramCover` di `programs.ts` masih memulangkan `program-promo.png`
+ * untuk program tanpa cover, dan itu dipakai hero halaman program. Hari ini
+ * tiga halaman program (Ramadhan Berbagi, Community Giving, CSR Food Program)
+ * karena itu memajang foto penyaluran yang bukan kegiatan mereka sebagai wajah
+ * mereka sendiri. `ProgramCover` sudah menyelesaikannya untuk ubin kecil;
+ * apakah hero 448x320 juga pindah ke ikon pintu belum diputuskan, dan itu kode
+ * sesi lain yang baru masuk.
  *
  * Ukuran huruf semuanya nilai skala tailwind.config.mjs
  * (11/12/13/14/16/18/22/26/30/34/40/56); clamp boleh asal kedua ujungnya token,
@@ -222,13 +233,13 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Container from '../Container.astro';
 import Icon from '../Icon.astro';
+import ProgramCover from '../ProgramCover.astro';
 import { PINTU, type Pintu, type PintuId, type CategoryContent } from '../../consts';
 import type { Program } from '../../lib/programs';
 import type { Impact as PintuImpact } from '../../lib/impact';
 import { formatMetric } from '../../lib/format';
 import heroJumatBerkah from '../../assets/images/hero-jumat-berkah.png';
 import jumatBerkahDistribusi from '../../assets/images/jumat-berkah-distribusi.png';
-import programPromo from '../../assets/images/program-promo.png';
 
 interface Props {
   pintu: Pintu;
@@ -267,8 +278,6 @@ interface PintuPhotos {
   lead: ImageMetadata;
   leadAlt: string;
   caption: string;
-  program: ImageMetadata;
-  programAlt: string;
   story: ImageMetadata;
   storyAlt: string;
   storyCaption: string;
@@ -280,8 +289,6 @@ const PINTU_PHOTOS: Partial<Record<PintuId, PintuPhotos>> = {
     leadAlt:
       'Warga dan anak-anak menerima kotak makan pada penyaluran Jumat Berkah di halaman masjid',
     caption: 'Satu pagi Jumat, satu titik penyaluran, kotak makan yang berpindah tangan.',
-    program: programPromo,
-    programAlt: 'Relawan bagiberbagi.id menyerahkan tas bantuan kepada warga di gang kampung',
     story: jumatBerkahDistribusi,
     storyAlt: 'Meja penyaluran paket makanan Jumat Berkah bersama jamaah masjid',
     storyCaption:
@@ -769,30 +776,6 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                 <p class="s1-lead" data-fade>{programLead}</p>
               </header>
 
-              {/* FOTO = ANCHOR SEKSI, BUKAN MILIK SATU PROGRAM. Versi pertama
-                  menempelkannya ke kartu program pertama, dan akibatnya kartu
-                  itu berkolom `foto | badan` sementara tiga kartu di bawahnya
-                  berkolom `badan | fitur`. Judul programnya jadi berpindah dari
-                  x=565 ke x=0 di tengah daftar, dan itu sebab utama daftar ini
-                  terbaca berantakan. Sebagai anchor seksi ia memenuhi tabel
-                  "One anchor per section" di DESIGN_PRINCIPLES tanpa membuat
-                  satu baris berbeda dari saudaranya.
-
-                  Cuma pintu makanan yang punya foto, jadi jalur tanpa foto
-                  bukan kasus pinggir melainkan keadaan lima pintu lainnya. */}
-              {photos && (
-                <figure class="s1-prog-anchor" data-fade>
-                  <Image
-                    src={photos.program}
-                    alt={photos.programAlt}
-                    widths={[640, 900, 1200, 1600]}
-                    sizes="(min-width: 900px) 904px, 100vw"
-                    loading="lazy"
-                    class="s1-prog-anchor-img"
-                  />
-                </figure>
-              )}
-
               {/* SATU BENTUK BARIS UNTUK SEMUA PROGRAM, apa pun statusnya.
                   Sebelumnya program aktif dirender sebagai kartu 34px berkolom
                   dua sementara program yang belum dibuka jadi baris 18px, dua
@@ -810,6 +793,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                   <ul class="s1-plist">
                     {active.map((p) => (
                       <li class="s1-plist-item" data-fade>
+                        <ProgramCover program={p} pintu={pintu} />
                         <div class="s1-plist-main">
                           <h3 class="s1-plist-title">{p.label}</h3>
                           <p class="s1-plist-sum">{p.summary}</p>
@@ -839,6 +823,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                   <ul class="s1-plist">
                     {upcoming.map((p) => (
                       <li class="s1-plist-item is-soon" data-fade>
+                        <ProgramCover program={p} pintu={pintu} muted />
                         <div class="s1-plist-main">
                           <h3 class="s1-plist-title">{p.label}</h3>
                           <p class="s1-plist-sum">{p.summary}</p>
@@ -1726,23 +1711,6 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   }
 
   /* ---------- Program ---------- */
-  /* Anchor seksi. 16/9 di kolom 904px jadi sekitar 508px, di bawah plafon 96px
-     untuk area kosong karena bidangnya terisi foto, bukan kosong. 4/3 seperti
-     versi kartu lama akan jadi 678px dan mendorong seluruh daftar keluar layar
-     pertama. */
-  .s1-prog-anchor {
-    margin: 0 0 40px;
-    border-radius: 20px;
-    overflow: hidden;
-    background: var(--cat-tint);
-  }
-  .s1-prog-anchor-img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-  }
-
   .s1-plist-group + .s1-plist-group { margin-top: 34px; }
   .s1-plist-label {
     margin: 0 0 4px;
@@ -1756,15 +1724,31 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   /* Baris, bukan kartu. `align-items: center` bukan `baseline` supaya sisi kanan
      tetap di tengah baris saat ringkasannya jatuh ke dua baris; dengan baseline
      ia terkunci ke baris pertama dan terlihat melayang. */
+  /* Grid tiga kolom, bukan flex. Barisnya punya tiga anak (ubin, teks, aksi) dan
+     `justify-content: space-between` akan menaruh jarak yang sama di kedua celah
+     sehingga ubinnya terlepas dari teks yang ia wakili. Grid mengunci ubin ke
+     teksnya dan mendorong aksinya sendiri ke ujung. */
   .s1-plist-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 24px;
+    gap: 20px;
     padding: 22px 0;
     border-bottom: var(--hairline) solid var(--line);
   }
   .s1-plist-item:first-child { border-top: var(--hairline) solid var(--line); }
+  /* Di bawah 768px aksinya turun ke barisnya sendiri, sejajar dengan teks. Waktu
+     ia masih berebut lebar di baris yang sama, badge "Segera" menyisakan sekitar
+     170px untuk teks di layar 390px dan judul sependek "Berbagi Sembako" pun
+     patah jadi dua baris. */
+  @media (max-width: 767px) {
+    .s1-plist-item {
+      grid-template-columns: auto minmax(0, 1fr);
+      row-gap: 12px;
+    }
+    .s1-plist-go,
+    .s1-plist-badge { grid-column: 2; justify-self: start; }
+  }
   .s1-plist-main { min-width: 0; }
   /* 22px, satu langkah skala di atas ringkasannya. Versi lama memakai 34px untuk
      program aktif dan 18px untuk yang belum dibuka, jarak dua langkah yang bikin
@@ -1809,11 +1793,6 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     transition: transform 0.2s ease-out;
   }
   .s1-plist-go:hover svg, .s1-plist-go:focus-visible svg { transform: translateX(4px); }
-  /* Di bawah 520px teksnya disembunyikan dan panahnya tetap, supaya baris tidak
-     pecah jadi dua tingkat cuma demi dua kata. */
-  @container (max-width: 519px) {
-    .s1-plist-go span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  }
 
   .s1-plist-badge {
     flex: none;

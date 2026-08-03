@@ -36,6 +36,11 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !page.includes('/keystatic'),
+      // Sitemap gambar dibangun sendiri di src/pages/sitemap-images.xml.ts:
+      // tipe SitemapItem integrasi ini tak punya slot gambar, jadi `serialize`
+      // tak bisa menambahkannya. Didaftarkan di sini supaya tetap tergantung di
+      // sitemap-index yang sama dan cukup satu URL yang disetor ke Search Console.
+      customSitemaps: ['https://www.bagiberbagi.id/sitemap-images.xml'],
     }),
     // Halaman legal (privasi/syarat/transparansi) pakai .mdoc supaya body-nya
     // bisa diedit lewat Keystatic: contentField Keystatic hanya mendukung

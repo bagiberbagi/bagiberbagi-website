@@ -80,7 +80,7 @@ const CARA_KERJA = [
   breadcrumbName="Organisasi"
 >
   <!-- HERO: latar biru muda, warna identitas entitas organisasi -->
-  <section class="section-hero bg-linear-[160deg] from-brand-blueTint to-white to-60%">
+  <section class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
     <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-blue">Beranda</a>
@@ -95,8 +95,8 @@ const CARA_KERJA = [
           <Icon name="repeat" size={30} />
         </span>
         <div class="eyebrow">Organisasi</div>
-        <h1 class="text-heading md:text-display font-semibold mb-3">Organisasi yang berbagi secara rutin</h1>
-        <p class="text-body md:text-title-sm text-muted leading-relaxed">
+        <h1 class="section-title font-semibold mb-4">Organisasi yang berbagi secara rutin</h1>
+        <p class="section-lead text-muted">
           Komunitas dan perusahaan yang memberi secara berkelanjutan punya rekam jejak dan dashboard dampaknya sendiri di sini, terpisah dari donasi individu yang memang tidak kami lacak satu per satu.
         </p>
       </div>
@@ -137,10 +137,10 @@ const CARA_KERJA = [
   )}
 
   <!-- DIREKTORI: bentuknya ikut listMode (1 kartu lebar / 2 setara / grid) -->
-  <section class="section bg-gray-50">
+  <section class="section section-lg bg-surface-warm">
     <Container>
       <div class="eyebrow">Daftar Organisasi</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Mereka yang berbagi bersama</h2>
+      <h2 class="section-title font-semibold mb-8">Mereka yang berbagi bersama</h2>
 
       {hasOrganisasi ? (
         <div class="flex flex-col gap-5">
@@ -163,10 +163,10 @@ const CARA_KERJA = [
   </section>
 
   <!-- CARA KERJA: kenapa organisasi punya halaman sendiri -->
-  <section class="section bg-white">
+  <section class="section section-lg bg-white">
     <Container>
       <div class="eyebrow">Cara Kerjanya</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Kenapa organisasi punya halaman sendiri</h2>
+      <h2 class="section-title font-semibold mb-8">Kenapa organisasi punya halaman sendiri</h2>
 
       <div class="grid gap-4 sm:grid-cols-3">
         {CARA_KERJA.map((s) => (
@@ -182,13 +182,29 @@ const CARA_KERJA = [
     </Container>
   </section>
 
-  <!-- CTA: ajak organisasi lain bergabung -->
-  <section class="section bg-gray-50">
+  {/* CTA: ajak organisasi lain bergabung.
+
+      Bukan lagi kotak gradien oranye. Bidang gradien itu peninggalan tata rias
+      lama dan sudah tak punya saudara di beranda mana pun setelah revamp, jadi
+      ia terbaca sebagai tambalan. Penggantinya memakai bahasa yang dipakai
+      seksi pernyataan di beranda: pernyataan besar dua warna di atas permukaan
+      polos, dengan oranye pindah ke tombolnya.
+
+      Krem, bukan putih, karena seksi "Cara Kerjanya" tepat di atasnya sudah
+      putih: dua seksi putih berurutan menghapus batasnya, dan padding 128px
+      keduanya menyatu jadi satu bidang kosong raksasa. Footer di bawahnya juga
+      krem, tapi ia punya garis tepi sendiri jadi batasnya tetap terbaca.
+      Halaman detail memilih sebaliknya (putih) karena di sana yang di atas CTA
+      adalah Rekam Jejak yang krem. */}
+  <section class="section section-lg bg-surface-warm">
     <Container>
-      <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
-        <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Organisasimu ingin berbagi secara rutin?</h2>
-        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-text mx-auto mb-6">
-          Komunitas atau perusahaan yang berkontribusi berkelanjutan bisa punya dashboard dampak sendiri seperti di atas.
+      <div class="text-center max-w-text mx-auto">
+        <div class="eyebrow">Bergabung</div>
+        <h2 class="section-title font-semibold mb-4">
+          Organisasimu juga bisa punya <span class="text-brand-orange">halaman seperti ini</span>.
+        </h2>
+        <p class="section-lead text-muted mb-8">
+          Komunitas atau perusahaan yang berkontribusi berkelanjutan dicatat di sini, lengkap dengan dashboard dampak dan rekam jejaknya sendiri.
         </p>
         <a
           href={joinWa}
@@ -196,7 +212,7 @@ const CARA_KERJA = [
           rel="noopener"
           data-track="organisasi_join_click"
           data-track-source="organisasi_index"
-          class="btn-secondary text-brand-orangeDark"
+          class="btn-primary inline-block"
         >
           Diskusikan lewat WhatsApp
         </a>

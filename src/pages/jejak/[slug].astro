@@ -109,6 +109,18 @@ const videoThumb =
     ? new URL((await getImage({ src: posterImg, format: 'jpeg', width: 1200 })).src, Astro.site).href
     : undefined;
 
+// Judul jejak ditulis lengkap dan deskriptif ("Jumat Berkah di Panti Asuhan
+// Darushsholihat dan Al-Attiqiyah, Bogor"), dan itu memang bagus untuk pembaca.
+// Yang tak muat di hasil pencarian justru embel-embel mereknya: menambahkan
+// " | bagiberbagi.id" memakan 17 karakter dan mendorong nama tempat kedua keluar
+// dari potongan yang tampil. Judul panjang karena itu berdiri sendiri; nama
+// situs toh sudah tampil sebagai domain di baris yang sama.
+//
+// Ambangnya diukur, bukan ditebak: Google memotong sekitar 60 karakter, jadi
+// judul yang sudah melewati 45 tak lagi punya ruang untuk suffix itu.
+const seoTitle =
+  jejak.title.length > 45 ? jejak.title : `${jejak.title} | bagiberbagi.id`;
+
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
 // Foto yang bisa diperbesar saja yang masuk graph, dan URL-nya diambil dari
@@ -144,7 +156,7 @@ const extraSchema = [
 ---
 
 <BaseLayout
-  title={`${jejak.title} | bagiberbagi.id`}
+  title={seoTitle}
   description={jejak.summary}
   breadcrumbName={jejak.title}
   extraSchema={extraSchema}

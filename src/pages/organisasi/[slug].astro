@@ -133,10 +133,16 @@ const joinWa = buildWaLink(
 );
 
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+// Nama organisasi saja terlalu pendek untuk judul hasil pencarian ("46Cyclist |
+// bagiberbagi.id" cuma 26 karakter) dan tak memberi tahu pencari apa isi
+// halamannya. Deskriptornya ditambahkan di judul saja, bukan pada `label`,
+// supaya nama organisasi tetap utuh di kartu, breadcrumb, dan atribusi jejak.
+const seoTitle = `${org.label}: Rekam Jejak Berbagi | bagiberbagi.id`;
 ---
 
 <BaseLayout
-  title={`${org.label} | bagiberbagi.id`}
+  title={seoTitle}
   description={org.summary}
   breadcrumbName={org.label}
 >

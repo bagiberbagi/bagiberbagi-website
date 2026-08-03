@@ -5,13 +5,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
-import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah, formatMetric } from '../../lib/format';
-import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
+import DonationCard from '../../components/DonationCard.astro';
+import { buildWaLink, formatMetric } from '../../lib/format';
+import { getPrograms, getProgramPages, getProgramsByPintu, getProgramCover } from '../../lib/programs';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
 import { findPageSeo } from '../../lib/seo';
 import { PINTU, CATEGORY_CONTENT } from '../../consts';
-import programPromo from '../../assets/images/program-promo.png';
 
 // Satu route untuk semua program aktif ber-halaman, di bawah /program/[slug]/.
 // Begitu editor mengaktifkan program di Keystatic & mengisi Detail, halamannya
@@ -57,15 +57,6 @@ const isInquiry = INQUIRY_PROGRAMS.has(program.slug);
 // sebelum donasi (spec program-donation-cta). null = program sepaket tunggal.
 const packages = program.slug === 'ramadhan-berbagi' ? RAMADHAN_PACKAGES : null;
 
-const defaultPax = 10;
-// Paket pertama jadi default server-rendered, supaya tombol donasi tetap
-// masuk akal tanpa JS; program-package-selector.js yang memperbarui href-nya
-// begitu pengunjung memilih paket lain.
-const waLink = buildWaLink(
-  site.data.waNumber,
-  buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)), packages?.[0])
-);
-
 const inquiryWaLink = buildWaLink(site.data.waNumber, `Halo, saya ingin mendiskusikan program ${program.label}.`);
 
 // Kemitraan menempel ke program (mis. dapur mitra Jumat Berkah), jadi CTA mitra
@@ -88,8 +79,16 @@ const impact = await getProgramImpact(program.slug);
 const mainMetric = impact.metrics[0];
 const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
-// Foto hero: dokumentasi jejak terbaru bila ada, kalau tidak pakai gambar promo.
-const heroCover = jejak.find((j) => j.cover)?.cover ?? null;
+// Foto hero memakai cover program, sumber yang sama dengan kartu hero beranda
+// dan ajakan di detail jejak.
+const cover = getProgramCover(program);
+
+// Agenda mingguan di `settings` menggambarkan program yang sedang berjalan,
+// yaitu program aktif pertama — konvensi yang sama dengan kartu hero beranda.
+// Panel agenda karena itu cuma muncul di halaman program itu; tanpa penjagaan
+// ini jadwal Jumat ikut nongol di halaman Ramadhan Berbagi.
+const runningProgram = (await getPrograms()).find((p) => p.active);
+const isRunning = runningProgram?.slug === program.slug;
 
 // URL kanonik penuh untuk tombol bagikan.
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
@@ -163,66 +162,38 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
               </p>
             </div>
           ) : (
-            <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
-              <div class="eyebrow text-[var(--cat-deep)]">HARGA DONASI</div>
-              <div class="text-heading-sm md:text-heading-lg font-bold text-ink mt-1">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></div>
-              <p class="text-sm text-muted mt-1.5 mb-5">Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran.</p>
-
-              {packages && (
-                <div class="mb-5">
-                  <div class="text-eyebrow font-bold text-muted mb-2">PILIH PAKET</div>
-                  <div
-                    class="flex flex-wrap gap-2"
-                    data-package-selector
-                    data-wa-number={site.data.waNumber}
-                    data-program-label={program.label}
-                    data-pax={defaultPax}
-                    role="radiogroup"
-                    aria-label="Pilih paket donasi"
-                  >
-                    {packages.map((pkg, i) => (
-                      <button
-                        type="button"
-                        data-package-option={pkg}
-                        aria-pressed={i === 0 ? 'true' : 'false'}
-                        class="rounded-full border border-border px-4 py-1.5 text-body-sm font-bold text-muted transition-colors aria-pressed:bg-[var(--cat)] aria-pressed:text-white aria-pressed:border-[var(--cat)] hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
-                      >{pkg}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-program={program.label} data-track-source="program_page" data-track-pax="10" data-donate-link class="btn-primary w-full flex items-center justify-center">
-                Donasi Sekarang
-              </a>
-              <div class="text-center mt-3">
-                <a href="/#donasi" data-track="hitung_donasi" class="text-body-sm font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Hitung donasi dulu</a>
-              </div>
-              <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
+            <DonationCard
+              id="donasi"
+              programLabel={program.label}
+              waNumber={site.data.waNumber}
+              agenda={isRunning ? site.data.nextAgenda : null}
+              schedule={isRunning ? site.data.schedule : null}
+              packages={packages}
+              eyebrow="Hitung donasi"
+              note="Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran."
+              trackSource="program_page"
+            >
+              <p slot="foot" class="text-sm text-muted">
                 Mitra UMKM atau relawan?
                 <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
               </p>
-            </div>
+            </DonationCard>
           )}
         </div>
 
         <div class="order-first md:order-last">
-          {heroCover ? (
-            /* Kolom foto = separuh grid 2 kolom di Container tier `standard`
-               (isi 944px di layar lebar) dikurangi gap 48px, sekitar 448px di
-               lg+; di antara md dan lg kontainer masih ikut lebar layar. */
-            <Image
-              src={heroCover}
-              alt={`Dokumentasi ${program.label}`}
-              widths={[360, 448, 680, 896]}
-              sizes="(min-width: 1024px) 448px, (min-width: 768px) 50vw, 100vw"
-              loading="eager"
-              class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card"
-              style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)"
-            />
-          ) : (
-            <Image src={programPromo} alt={program.label} class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card" style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)" />
-          )}
+          {/* Kolom foto = separuh grid 2 kolom di Container tier `standard`
+              (isi 944px di layar lebar) dikurangi gap 48px, sekitar 448px di
+              lg+; di antara md dan lg kontainer masih ikut lebar layar. */}
+          <Image
+            src={cover}
+            alt={program.label}
+            widths={[360, 448, 680, 896]}
+            sizes="(min-width: 1024px) 448px, (min-width: 768px) 50vw, 100vw"
+            loading="eager"
+            class="w-full h-full aspect-[4/3] md:aspect-auto md:min-h-[320px] object-cover rounded-card"
+            style="box-shadow:0 34px 64px -30px color-mix(in srgb, var(--cat) 60%, transparent)"
+          />
         </div>
       </div>
     </Container>
@@ -349,7 +320,3 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     </section>
   )}
 </BaseLayout>
-
-<script>
-  import '../../scripts/program-package-selector.js';
-</script>

@@ -2,6 +2,7 @@ import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
 import { createImageResolver } from './assets';
+import defaultProgramCover from '../assets/images/program-promo.png';
 
 export interface Program {
   slug: string;
@@ -59,6 +60,22 @@ export async function getPrograms(): Promise<Program[]> {
       };
     })
     .sort((a, b) => a.order - b.order);
+}
+
+/**
+ * Foto satu program, dipakai di mana pun program itu ditampilkan: kartu program
+ * berjalan di hero beranda, hero halaman program, kartu sorotan, dan ajakan ke
+ * program di detail jejak. Satu program karena itu selalu tampil dengan foto
+ * yang sama, bukan foto bawaan yang beda-beda per komponen seperti sebelumnya.
+ *
+ * Sumbernya cuma dua: foto yang dipilih editor di Keystatic, lalu foto bawaan.
+ * Sempat ada lapisan ketiga di tengah, yaitu cover jejak terbaru program itu,
+ * dan itu dibuang: "terbaru" adalah urutan tanggal, bukan pilihan, jadi yang
+ * naik jadi wajah program bisa saja foto seremonial di depan spanduk — dan
+ * wajah itu ikut berubah sendiri tiap kali ada jejak baru.
+ */
+export function getProgramCover(program: Pick<Program, 'image'>): ImageMetadata {
+  return program.image ?? defaultProgramCover;
 }
 
 export async function getProgramsByPintu(pintu: PintuId): Promise<Program[]> {

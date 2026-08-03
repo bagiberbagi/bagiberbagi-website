@@ -14,7 +14,7 @@ pakai, ketahuan saat itu juga, bukan nanti saat mau dipakai lagi.
 
 | Komponen | Kenapa dilepas dari beranda |
 |---|---|
-| `DonationCalculator.astro` | dilebur ke kartu hero, yang sekarang memegang pemilih porsi dan anchor `#donasi` |
+| `DonationCalculator.astro` | dilebur ke `DonationCard.astro`, kartu yang memegang pemilih porsi dan anchor `#donasi` di hero beranda maupun di halaman program |
 | `Stats.astro` | band angka belum dibutuhkan di beranda |
 | `ProgramFeatures.astro` | pesannya sudah dibawa seksi Masalah dan Solusi |
 | `ProgramHighlights.astro` | program aktif sekarang hidup di kartu hero. **Baca catatan di bawah** |

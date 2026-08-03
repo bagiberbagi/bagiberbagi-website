@@ -1,0 +1,436 @@
+---
+// Kartu donasi: identitas program, agenda berikutnya, pemilih porsi, dan tombol
+// WhatsApp yang pesannya ikut berubah. Awalnya menyatu di dalam Hero beranda;
+// dipisah ke sini supaya halaman program bisa memakai pemilih porsi yang sama
+// tanpa melempar pengunjung balik ke `/#donasi`.
+//
+// Dua tampilan dari satu komponen:
+//   - dengan `photo` → kartu hero, kepala foto plus nama program di atasnya.
+//   - tanpa `photo` → panel rata (`is-flat`) untuk dipasang di dalam halaman,
+//     bertepi tipis alih-alih berbayang tebal.
+//
+// Warna aksinya mengikuti `--cat` (warna pintu) kalau ada di induknya, dan
+// jatuh ke oranye brand kalau tidak — itu yang bikin kartu ini betah di hero
+// kuning maupun di halaman program yang berwarna pintu.
+import { Image } from 'astro:assets';
+import { calcTotal, buildWaLink, buildDonationMessage, formatRupiah } from '../lib/format';
+
+interface Agenda {
+  location: string;
+  targetPorsi: number;
+  collectedPorsi: number;
+  cutoff?: string;
+}
+
+interface Props {
+  programLabel: string;
+  waNumber: string;
+  photo?: ImageMetadata | null;
+  programSummary?: string;
+  programHref?: string;
+  agenda?: Agenda | null;
+  schedule?: { weekday: string; time: string } | null;
+  packages?: string[] | null;
+  eyebrow?: string;
+  note?: string;
+  trackSource: string;
+  id?: string;
+}
+
+const {
+  programLabel,
+  waNumber,
+  photo = null,
+  programSummary,
+  programHref,
+  agenda = null,
+  schedule = null,
+  packages = null,
+  eyebrow,
+  note,
+  trackSource,
+  id,
+} = Astro.props;
+
+// Panel agenda hanya muncul kalau editor sudah mengisi lokasinya; bar progres
+// butuh target yang masuk akal. Tanpa ini kartunya menampilkan panel kosong
+// setiap kali agenda belum disiapkan.
+const showAgenda = Boolean(agenda && agenda.location.trim().length > 0);
+const showProgress = Boolean(showAgenda && agenda && agenda.targetPorsi > 0);
+const collected = agenda ? Math.min(agenda.collectedPorsi, agenda.targetPorsi) : 0;
+const remaining = agenda ? Math.max(agenda.targetPorsi - collected, 0) : 0;
+const progressPct = showProgress && agenda ? Math.round((collected / agenda.targetPorsi) * 100) : 0;
+
+// Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
+const price = calcTotal(1);
+const PRESETS = [2, 6, 12];
+const DEFAULT_PORSI = 6;
+
+const initialTotal = formatRupiah(calcTotal(DEFAULT_PORSI));
+// Paket pertama jadi default server-rendered, supaya tombol donasi tetap masuk
+// akal tanpa JS; skrip kartu yang memperbarui href-nya begitu pengunjung
+// memilih paket lain.
+const initialWaLink = buildWaLink(
+  waNumber,
+  buildDonationMessage(programLabel, DEFAULT_PORSI, initialTotal, packages?.[0])
+);
+
+const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
+---
+
+<div
+  id={id}
+  class:list={['dcard', !photo && 'is-flat']}
+  data-donation-card
+  data-weekday={schedule?.weekday}
+  data-time={schedule?.time}
+  data-price={price}
+  data-program={programLabel}
+  data-wa={waNumber}
+  data-default-porsi={DEFAULT_PORSI}
+>
+  {photo && (
+    <div class="dc-photo">
+      <Image src={photo} alt="" loading="eager" class="dc-img" />
+      <div class="dc-scrim" aria-hidden="true"></div>
+      <p class="label dc-kick">Program berjalan</p>
+      <div class="dc-photo-body">
+        <p class="dc-name">{programLabel}</p>
+        {programSummary && <p class="dc-desc">{programSummary}</p>}
+        {programHref && (
+          <a href={programHref} data-track="program_click" data-track-program={programLabel} class="dc-photo-link">
+            Detail Program
+            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
+          </a>
+        )}
+      </div>
+    </div>
+  )}
+
+  <div class="dc-body">
+    {eyebrow && <p class="label dc-eyebrow">{eyebrow}</p>}
+
+    {showAgenda && agenda && (
+      <div class="dc-agenda">
+        {/* Label dan sisa hari berbagi satu baris karena keduanya pendek,
+            sehingga baris tanggal di bawahnya dapat lebar penuh dan muat
+            satu baris walau nama lokasinya panjang. */}
+        <div class="dc-agenda-top">
+          <p class="label dc-agenda-kick">Agenda berikutnya</p>
+          <span class="dc-agenda-count" data-agenda-count></span>
+        </div>
+        {/* Tanggal diisi donation-card.js dari jadwal mingguan, bukan saat
+            build, supaya tidak basi begitu Jumatnya lewat. */}
+        <p class="dc-agenda-when">
+          <span data-agenda-date>Jumat berikutnya</span> <span class="dc-sep">·</span> {agenda.location}
+        </p>
+
+        {showProgress && (
+          <div class="dc-progress">
+            <div
+              class="dc-bar"
+              role="progressbar"
+              aria-valuenow={collected}
+              aria-valuemin="0"
+              aria-valuemax={agenda.targetPorsi}
+              aria-label={`${collected} dari ${agenda.targetPorsi} porsi terkumpul`}
+            >
+              <span style={`width:${progressPct}%`}></span>
+            </div>
+            <div class="dc-progress-foot">
+              <span class="dc-progress-num">{collected} dari {agenda.targetPorsi} porsi terkumpul</span>
+              {agenda.cutoff && <span class="dc-progress-cut">tutup {agenda.cutoff}</span>}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+    {packages && packages.length > 0 && (
+      <div class="dc-pkg" data-package-selector role="radiogroup" aria-label="Pilih paket donasi">
+        <p class="dc-pkg-title">Pilih paket</p>
+        <div class="dc-pkg-opts">
+          {packages.map((pkg, i) => (
+            <button type="button" class="dc-pkg-opt" data-package-option={pkg} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {pkg}
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <div class="dc-pick">
+      <div class="dc-pick-top">
+        <p class="dc-pick-title">
+          {showProgress && remaining > 0 ? `Bantu penuhi ${remaining} porsi lagi` : 'Pilih jumlah porsi'}
+        </p>
+        <span class="dc-price">{formatRupiah(price)} / porsi</span>
+      </div>
+
+      {note && <p class="dc-note">{note}</p>}
+
+      <div class="dc-chips">
+        {PRESETS.map((n) => (
+          <button type="button" class="dc-chip" data-porsi={n} aria-pressed={n === DEFAULT_PORSI}>
+            <span class="dc-chip-t">{n} porsi</span>
+            <span class="dc-chip-s">{formatRupiah(calcTotal(n))}</span>
+          </button>
+        ))}
+        <button type="button" class="dc-chip" data-porsi-custom aria-pressed="false">
+          <span class="dc-chip-t">Lainnya</span>
+          <span class="dc-chip-s">atur sendiri</span>
+        </button>
+      </div>
+
+      <div class="dc-stepper" data-stepper hidden>
+        <button type="button" class="dc-step" data-step-dec aria-label="Kurangi satu porsi">&minus;</button>
+        <input
+          type="number"
+          min="1"
+          max="999"
+          value={DEFAULT_PORSI}
+          data-porsi-input
+          aria-label="Jumlah porsi"
+          class="dc-step-input"
+        />
+        <button type="button" class="dc-step" data-step-inc aria-label="Tambah satu porsi">+</button>
+        <span class="dc-step-unit">porsi</span>
+      </div>
+
+      <a
+        href={initialWaLink}
+        target="_blank"
+        rel="noopener"
+        data-donasi-cta
+        data-track="donate_click"
+        data-track-source={trackSource}
+        data-track-program={programLabel}
+        data-track-pax={DEFAULT_PORSI}
+        class="dc-cta"
+      >
+        <span data-donasi-label>Donasi {DEFAULT_PORSI} Porsi · {initialTotal}</span>
+      </a>
+    </div>
+
+    {Astro.slots.has('foot') && (
+      <div class="dc-foot">
+        <slot name="foot" />
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .dcard {
+    background: #fff;
+    border-radius: 22px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 26px 56px -20px rgba(124, 45, 18, 0.45), 0 2px 6px rgba(124, 45, 18, 0.08);
+  }
+  /* Varian tanpa foto: dipasang di tengah halaman, bukan melayang di atas
+     bidang warna hero, jadi bayangan tebalnya diturunkan jadi tepi tipis. */
+  .dcard.is-flat {
+    border-radius: 20px;
+    border: 1px solid #eae7e2;
+    box-shadow: 0 10px 30px -18px rgba(28, 25, 23, 0.25);
+  }
+
+  .dc-photo { position: relative; height: 246px; display: flex; flex-direction: column; justify-content: space-between; }
+  /* Titik fokus digeser ke kanan supaya wajah orang tidak berada tepat di bawah
+     blok teks. Orang bukan latar untuk tipografi. */
+  .dc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 76% 42%; }
+  .dc-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(18, 16, 14, 0.66) 0%, rgba(18, 16, 14, 0.34) 22%, rgba(18, 16, 14, 0.62) 45%, rgba(18, 16, 14, 0.88) 62%, rgba(18, 16, 14, 0.96) 100%);
+  }
+  /* Ukuran, ketebalan, jarak huruf, dan huruf besarnya datang dari class .label.
+     Yang tersisa di sini cuma yang memang milik tempat ini: posisi dan warna
+     terang karena label ini berdiri di atas foto. */
+  .dc-kick {
+    position: relative;
+    margin: 0;
+    padding: 16px 18px;
+    color: rgba(255, 255, 255, 0.78);
+  }
+  .dc-photo-body { position: relative; padding: 0 22px 22px; display: flex; flex-direction: column; gap: 7px; }
+  .dc-name { margin: 0; font-size: 29px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; color: #fff; }
+  .dc-desc { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, 0.84); max-width: 92%; text-wrap: pretty; }
+  .dc-photo-link {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffd900;
+    transition: gap 0.18s ease;
+  }
+  .dc-photo-link:hover { gap: 13px; color: #ffd900; }
+  .dc-photo-link svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  .dc-body { padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  .dc-eyebrow { margin: 0; color: var(--cat-deep, #c25d0f); }
+
+  /* Panel agenda: bidang hangat yang membedakan "apa yang terjadi minggu ini"
+     dari "berapa yang mau kamu kirim" di bawahnya. */
+  .dc-agenda {
+    background: #fffbeb;
+    border: 1px solid #fbe7a8;
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .dc-agenda-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .dc-agenda-kick {
+    margin: 0;
+    color: #b45309;
+  }
+  /* Ukurannya ditakar supaya tanggal plus nama lokasi yang panjang tetap muat
+     satu baris di lebar kartu. */
+  .dc-agenda-when {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: #1c1917;
+    text-wrap: balance;
+  }
+  .dc-sep { color: #b45309; font-weight: 600; }
+  .dc-agenda-count { flex: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; color: #b45309; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .dc-progress { display: flex; flex-direction: column; gap: 8px; }
+  .dc-bar { height: 7px; border-radius: 999px; background: rgba(180, 83, 9, 0.15); overflow: hidden; }
+  .dc-bar span { display: block; height: 100%; border-radius: 999px; background: var(--cat, #f4791d); }
+  .dc-progress-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .dc-progress-num { font-size: 12px; font-weight: 700; color: #92400e; font-variant-numeric: tabular-nums; }
+  .dc-progress-cut { font-size: 11px; font-weight: 600; color: #b45309; white-space: nowrap; }
+
+  /* ===== Pemilih paket ===== */
+  .dc-pkg { display: flex; flex-direction: column; gap: 9px; }
+  .dc-pkg-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.02em; color: #1c1917; }
+  .dc-pkg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dc-pkg-opt {
+    border: 1.5px solid #e7e5e4;
+    background: #fff;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #57534e;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+  }
+  .dc-pkg-opt:hover { border-color: var(--cat, #f4791d); }
+  .dc-pkg-opt[aria-pressed='true'] {
+    border-color: var(--cat, #f4791d);
+    background: var(--cat, #f4791d);
+    color: #fff;
+  }
+
+  /* ===== Pemilih porsi ===== */
+  .dc-pick { display: flex; flex-direction: column; gap: 12px; }
+  .dc-pick-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .dc-pick-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.02em; color: #1c1917; }
+  .dc-price { font-size: 12px; font-weight: 600; color: #8a8279; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  /* Catatan cakupan harga (mis. "sudah termasuk pengantaran"): menempel ke baris
+     harga di atasnya, jadi jaraknya dirapatkan balik dari gap .dc-pick. */
+  .dc-note { margin: -6px 0 0; font-size: 13px; line-height: 1.5; color: #78716c; }
+
+  .dc-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .dc-chip {
+    border: 1.5px solid #e7e5e4;
+    background: #fff;
+    border-radius: 13px;
+    padding: 11px 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background-color 0.16s ease;
+  }
+  .dc-chip:hover { border-color: var(--cat, #f4791d); }
+  .dc-chip.is-active { border: 2px solid var(--cat, #f4791d); background: var(--cat-tint, #fff7ed); }
+  .dc-chip-t { font-size: 15px; font-weight: 800; letter-spacing: -0.015em; color: #1c1917; }
+  .dc-chip-s { font-size: 11px; font-weight: 600; color: #78716c; }
+  .dc-chip.is-active .dc-chip-t, .dc-chip.is-active .dc-chip-s { color: var(--cat-deep, #c25d0f); }
+
+  .dc-stepper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fafaf9;
+    border: 1px solid #eae7e2;
+    border-radius: 13px;
+    padding: 9px 12px;
+  }
+  .dc-stepper[hidden] { display: none; }
+  .dc-step {
+    width: 30px; height: 30px; flex: none;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #e7e5e4;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1c1917;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .dc-step:hover { background: #f5f5f4; }
+  .dc-step-input {
+    flex: 1; min-width: 0;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    color: #1c1917;
+    text-align: center;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Panah bawaan input number mengganggu di kontrol yang sudah punya tombolnya sendiri. */
+  .dc-step-input::-webkit-outer-spin-button,
+  .dc-step-input::-webkit-inner-spin-button { appearance: none; margin: 0; }
+  .dc-step-input { appearance: textfield; -moz-appearance: textfield; }
+  .dc-step-unit { font-size: 12px; font-weight: 600; color: #8a8279; white-space: nowrap; }
+
+  .dc-cta {
+    margin-top: 4px;
+    background: var(--cat, #f4791d);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    padding: 16px;
+    border-radius: 999px;
+    text-align: center;
+    transition: background-color 0.18s ease;
+  }
+  .dc-cta:hover { background: var(--cat-deep, #c25d0f); }
+
+  .dc-foot {
+    border-top: 1px solid #f1efeb;
+    padding-top: 14px;
+    margin-top: -6px;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dc-photo-link, .dc-chip, .dc-step, .dc-cta, .dc-pkg-opt { transition: none; }
+  }
+</style>
+
+<script>
+  import '../scripts/donation-card.js';
+</script>

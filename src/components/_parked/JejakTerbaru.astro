@@ -63,8 +63,8 @@ const COVER_WIDTHS = [320, 386, 580, 772];
               {/* Cover: foto lapangan bila ada, jika tidak fallback banner ber-aksen pintu. */}
               {j.cover ? (
                 <Image
-                  src={j.cover}
-                  alt=""
+                  src={j.cover.img}
+                  alt={j.cover.alt}
                   widths={COVER_WIDTHS}
                   sizes={COVER_SIZES}
                   loading="lazy"

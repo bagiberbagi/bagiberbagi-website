@@ -707,20 +707,54 @@ export default config({
         // satu diubah, ubah keduanya bersamaan atau pemetaan foto putus.
         // Pratinjau di admin tetap jalan: Keystatic membaca isi berkas lewat
         // API-nya sendiri (blob URL), bukan lewat URL publik situs.
-        cover: fields.image({
-          label: 'Gambar sampul',
-          directory: 'src/assets/jejak',
-          publicPath: '/src/assets/jejak/',
-        }),
+        //
+        // Foto dibungkus object supaya `alt` dan `caption` punya rumah. Dulu
+        // field ini cuma path telanjang, dan karena tak ada tempat menyimpan
+        // keterangan, tiap pemakai <Image> terpaksa menulis alt="" untuk
+        // memuaskan Astro (yang menolak alt undefined) — hasilnya seluruh foto
+        // lapangan tak terbaca Google Images maupun pembaca layar.
+        //
+        // Dua-duanya OPSIONAL dan memang boleh kosong. Galeri satu jejak bisa
+        // belasan foto; mewajibkan alt di tiap foto cuma memancing editor
+        // mengetik asal. Yang kosong jatuh ke alt turunan judul jejak di
+        // src/lib/jejak.ts, jadi kosong tetap aman dan tak pernah kembali ke ""
+        cover: fields.object(
+          {
+            image: fields.image({
+              label: 'Gambar',
+              directory: 'src/assets/jejak',
+              publicPath: '/src/assets/jejak/',
+            }),
+            alt: fields.text({
+              label: 'Alt (deskripsi untuk yang tak melihat foto)',
+              description:
+                'Kosongkan kalau foto ini tak punya kekhususan; sistem akan memakai judul jejak. Isi kalau isinya perlu dijelaskan, misal "Pengurus panti menerima paket di teras".',
+            }),
+            caption: fields.text({
+              label: 'Keterangan (tampil di bawah foto besar)',
+              description:
+                'Terlihat pengunjung saat foto dibuka. Ini tempat cerita: siapa, sedang apa, kapan. Kosongkan kalau tak ada yang perlu diceritakan.',
+              multiline: true,
+            }),
+          },
+          { label: 'Gambar sampul' }
+        ),
         gallery: fields.array(
-          fields.image({
-            label: 'Foto',
-            directory: 'src/assets/jejak',
-            publicPath: '/src/assets/jejak/',
-          }),
+          fields.object(
+            {
+              image: fields.image({
+                label: 'Gambar',
+                directory: 'src/assets/jejak',
+                publicPath: '/src/assets/jejak/',
+              }),
+              alt: fields.text({ label: 'Alt (opsional)' }),
+              caption: fields.text({ label: 'Keterangan (opsional)', multiline: true }),
+            },
+            { label: 'Foto' }
+          ),
           {
             label: 'Galeri',
-            itemLabel: (props) => props.value?.filename || 'Foto',
+            itemLabel: (props) => props.fields.image.value?.filename || 'Foto',
           }
         ),
         // Video ditaruh sesudah galeri karena posisinya di halaman juga di situ,

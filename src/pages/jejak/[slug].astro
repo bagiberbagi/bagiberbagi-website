@@ -8,9 +8,9 @@ import Lightbox from '../../components/Lightbox.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import LocationMap from '../../components/LocationMap.astro';
 import Container from '../../components/Container.astro';
-import { formatMetric, jejakPhotoAlt } from '../../lib/format';
-import { buildJejakVideoSchema, buildJejakPlacesSchema } from '../../lib/schema';
-import { getJejakPages } from '../../lib/jejak';
+import { formatMetric } from '../../lib/format';
+import { buildJejakVideoSchema, buildJejakPlacesSchema, buildJejakImagesSchema } from '../../lib/schema';
+import { getJejakPages, getJejakMedia } from '../../lib/jejak';
 import { getPrograms, getProgramCover } from '../../lib/programs';
 import { PINTU } from '../../consts';
 
@@ -64,24 +64,7 @@ const dateLabel = new Date(jejak.date).toLocaleDateString('id-ID', {
 // menandai berkas aslinya "terpakai langsung" sehingga PNG mentahnya ikut
 // disalin ke dist.
 const video = jejak.video;
-const allImages = [...new Set([jejak.cover, ...jejak.gallery].filter((img) => img !== null))];
-
-// Hanya video yang benar-benar bisa diputar di tempat yang berhak atas slot
-// utama. Link yang cuma bisa dibuka di situs lain (folder Drive, Instagram)
-// tetap ditampilkan, tapi di bawah sebagai tautan, dan fotonya yang jadi
-// pembuka seperti biasa.
-const videoPlayer = video && video.source.kind !== 'link' ? video : null;
-const videoLink = video && video.source.kind === 'link' ? video : null;
-
-const heroPhoto = videoPlayer ? null : (allImages[0] ?? null);
-// Poster video default-nya cover jejak. Foto yang sudah tampil sebagai poster
-// tak diulang lagi di carousel, persis seperti gambar besar yang tak ikut turun.
-const posterPhoto = videoPlayer ? (videoPlayer.poster ?? jejak.cover) : null;
-const carousel = allImages.filter((img) => img !== heroPhoto && img !== posterPhoto);
-
-// Yang bisa diperbesar hanyalah foto: poster video kliknya untuk memutar, bukan
-// untuk membuka lightbox. Urutannya sama dengan urutan tampil di halaman.
-const clickable = heroPhoto ? [heroPhoto, ...carousel] : carousel;
+const { videoPlayer, videoLink, heroPhoto, posterImg, carousel, clickable } = getJejakMedia(jejak);
 const photoLabelOffset = heroPhoto ? 2 : 1;
 const mediaGap = carousel.length > 0 ? 'mb-3' : 'mb-8';
 
@@ -102,7 +85,7 @@ const metricCols =
 const lightboxSrc = new Map<ImageMetadata, string>(
   await Promise.all(
     clickable.map(
-      async (img) => [img, (await getImage({ src: img, format: 'webp', quality: 80 })).src] as const
+      async (p) => [p.img, (await getImage({ src: p.img, format: 'webp', quality: 80 })).src] as const
     )
   )
 );
@@ -113,25 +96,42 @@ const lightboxSrc = new Map<ImageMetadata, string>(
 // dist. jpeg dipilih ketimbang webp karena ini dibaca mesin pencari, bukan
 // peramban, dan dukungannya paling luas di sana.
 const videoThumb =
-  video && posterPhoto
-    ? new URL((await getImage({ src: posterPhoto, format: 'jpeg', width: 1200 })).src, Astro.site).href
+  video && posterImg
+    ? new URL((await getImage({ src: posterImg, format: 'jpeg', width: 1200 })).src, Astro.site).href
     : undefined;
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
-const extraSchema = video
-  ? [
-      buildJejakVideoSchema({
-        pageUrl,
-        name: jejak.title,
-        description: jejak.summary,
-        date: jejak.date,
-        thumbnailUrl: videoThumb,
-        embedUrl: video.source.kind === 'embed' ? video.source.embedUrl : undefined,
-        contentUrl: video.source.kind === 'file' ? video.source.src : undefined,
-        places: jejak.points,
-      }),
-    ]
-  : buildJejakPlacesSchema(pageUrl, jejak.points);
+
+// Foto yang bisa diperbesar saja yang masuk graph, dan URL-nya diambil dari
+// peta lightbox yang sudah dibangun di atas. Jadi yang dideklarasikan ke mesin
+// pencari benar-benar berkas yang ada di halaman, bukan varian lain yang cuma
+// hidup di markup schema.
+const imageSchema = buildJejakImagesSchema(
+  pageUrl,
+  clickable.map((p) => ({
+    contentUrl: new URL(lightboxSrc.get(p.img)!, Astro.site).href,
+    alt: p.alt,
+    caption: p.caption,
+  }))
+);
+
+const extraSchema = [
+  ...(video
+    ? [
+        buildJejakVideoSchema({
+          pageUrl,
+          name: jejak.title,
+          description: jejak.summary,
+          date: jejak.date,
+          thumbnailUrl: videoThumb,
+          embedUrl: video.source.kind === 'embed' ? video.source.embedUrl : undefined,
+          contentUrl: video.source.kind === 'file' ? video.source.src : undefined,
+          places: jejak.points,
+        }),
+      ]
+    : buildJejakPlacesSchema(pageUrl, jejak.points)),
+  ...imageSchema,
+];
 ---
 
 <BaseLayout
@@ -198,12 +198,13 @@ const extraSchema = video
 
       <!-- slot utama: video kalau ada, kalau tidak gambar besar, klik untuk perbesar -->
       {videoPlayer ? (
-        <VideoEmbed video={videoPlayer} fallbackPoster={jejak.cover} title={jejak.title} eager class={mediaGap} />
+        <VideoEmbed video={videoPlayer} fallbackPoster={jejak.cover?.img ?? null} title={jejak.title} eager class={mediaGap} />
       ) : heroPhoto ? (
         <button
           type="button"
           data-gallery-item
-          data-src={lightboxSrc.get(heroPhoto)}
+          data-src={lightboxSrc.get(heroPhoto.img)}
+          data-caption={heroPhoto.caption ?? undefined}
           aria-label="Buka foto 1"
           class:list={['group relative block w-full rounded-card overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2', mediaGap]}
         >
@@ -211,8 +212,8 @@ const extraSchema = video
               688px di layar lebar. Lebar terbesar 1376px menutup layar 2x DPR
               sekaligus batas resolusi asli foto lapangan. */}
           <Image
-            src={heroPhoto}
-            alt={jejakPhotoAlt(jejak.title, 1)}
+            src={heroPhoto.img}
+            alt={heroPhoto.alt}
             widths={[480, 688, 1000, 1376]}
             sizes="(min-width: 768px) 688px, 100vw"
             loading="eager"
@@ -251,19 +252,20 @@ const extraSchema = video
             data-carousel-track
             class="flex gap-3 overflow-x-auto snap-x scroll-smooth pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {carousel.map((img, i) => (
+            {carousel.map((photo, i) => (
               <button
                 type="button"
                 data-gallery-item
-                data-src={lightboxSrc.get(img)}
+                data-src={lightboxSrc.get(photo.img)}
+                data-caption={photo.caption ?? undefined}
                 aria-label={`Buka foto ${i + photoLabelOffset}`}
                 class="snap-start shrink-0 grow-0 basis-[calc((100%-0.75rem)/2)] sm:basis-[calc((100%-1.5rem)/3)] group relative block rounded-2xl overflow-hidden bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
               >
                 {/* Kartu carousel: separuh kolom di mobile, sepertiga di sm+
                     (isi kolom 688px dikurangi 2 gap 12px), jadi sekitar 221px. */}
                 <Image
-                  src={img}
-                  alt={jejakPhotoAlt(jejak.title, i + photoLabelOffset)}
+                  src={photo.img}
+                  alt={photo.alt}
                   widths={[221, 340, 442, 640]}
                   sizes="(min-width: 640px) 221px, 45vw"
                   loading="lazy"

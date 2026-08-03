@@ -10,6 +10,16 @@ const seoOverrides = z.object({
   image: z.string().nullish(),
 });
 
+// Satu foto jejak: berkasnya plus keterangan yang tak bisa disimpulkan dari
+// berkas itu sendiri. `alt` dan `caption` default '' supaya entri lama yang
+// belum punya keduanya tetap lolos validasi, dan pembacanya yang memutuskan
+// arti kosong (lihat src/lib/jejak.ts).
+const jejakPhotoSchema = z.object({
+  image: z.string().nullish(),
+  alt: z.string().default(''),
+  caption: z.string().default(''),
+});
+
 const legal = defineCollection({
   loader: glob({ pattern: '*.mdoc', base: './src/content/legal' }),
   schema: z.object({
@@ -235,9 +245,14 @@ const jejak = defineCollection({
       .default([]),
     summary: z.string(),
     metrics: z.array(z.object({ label: z.string(), value: z.number() })).default([]),
+    // Foto = path + keterangannya, bukan path telanjang. `alt` dan `caption`
+    // boleh kosong: yang mengubahnya jadi kalimat adalah src/lib/jejak.ts, yang
+    // menjatuhkan alt kosong ke turunan judul jejak. Bentuk ini harus sama
+    // persis dengan fields.object di keystatic.config.ts, karena admin UI yang
+    // menulis berkasnya.
     // fields.image menulis null saat dikosongkan; nullish() menerima null & undefined.
-    cover: z.string().nullish(),
-    gallery: z.array(z.string().nullish()).default([]),
+    cover: jejakPhotoSchema.nullish(),
+    gallery: z.array(jejakPhotoSchema.nullish()).default([]),
     // Video dokumentasi, opsional. Disimpan sebagai satu string URL, bukan enum
     // penyedia + id terpisah: editor menempelkan apa yang mereka salin dari
     // aplikasi, dan `lib/video.ts` yang membaca bentuknya. `url` kosong berarti

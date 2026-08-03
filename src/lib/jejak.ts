@@ -2,10 +2,31 @@ import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
 import { createImageResolver } from './assets';
+import { jejakPhotoAlt } from './format';
 import { getPrograms } from './programs';
 import { getOrganisasiPages } from './organisasi';
 import { parseVideoUrl, type JejakVideoSource } from './video';
 import { parseCoordinates, type MapPoint } from './geo';
+
+/**
+ * Foto jejak yang sudah siap dirender: berkasnya, alt yang PASTI terisi, dan
+ * caption yang boleh kosong.
+ *
+ * `alt` sengaja tak pernah bertipe `string | null`. Semua alt kosong di situs
+ * ini lahir dari sana: `<Image>` menolak alt undefined, jadi setiap pemakai
+ * yang tak punya data terpaksa menulis `alt=""`, dan string kosong lolos
+ * begitu saja. Dengan alt dijamin terisi di lapis pembacaan, tak ada lagi
+ * pemanggil yang perlu mengarang nilai.
+ *
+ * `caption` sebaliknya nullable, karena ia memang boleh tak ada: caption
+ * dibaca pengunjung yang melihat fotonya, jadi caption karangan lebih buruk
+ * daripada tak ada caption sama sekali.
+ */
+export interface JejakPhoto {
+  img: ImageMetadata;
+  alt: string;
+  caption: string | null;
+}
 
 export interface JejakMetric {
   label: string;
@@ -37,10 +58,10 @@ export interface Jejak {
   location: string;
   summary: string;
   metrics: JejakMetric[];
-  /** Sudah berupa modul gambar, siap dipakai <Image>. null = tak ada / berkas hilang. */
-  cover: ImageMetadata | null;
+  /** Siap dipakai <Image> berikut alt-nya. null = tak ada / berkas hilang. */
+  cover: JejakPhoto | null;
   /** Hanya foto yang berkasnya benar-benar ada; entri kosong/hilang dibuang. */
-  gallery: ImageMetadata[];
+  gallery: JejakPhoto[];
   /** null = tanpa video, atau link-nya tak dikenali (diperingatkan saat build). */
   video: JejakVideo | null;
   /**
@@ -74,6 +95,47 @@ const JEJAK_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
  * ikon pintu untuk kasus itu.
  */
 export const resolveJejakImage = createImageResolver('jejak', JEJAK_IMAGES);
+
+/** Bentuk mentah satu foto di frontmatter, sebelum path-nya diselesaikan. */
+type RawJejakPhoto = { image?: string | null; alt?: string; caption?: string } | null | undefined;
+
+/**
+ * Susun cover + galeri sekaligus, karena penomoran alt cadangannya berjalan
+ * menerus dari cover ke galeri: cover jadi "foto 1", galeri melanjutkannya.
+ *
+ * Nomor dihitung SETELAH foto yang berkasnya hilang dibuang, supaya urutannya
+ * tak pernah bolong ("foto 1, foto 3") gara-gara satu berkas terhapus.
+ *
+ * Nomor mengikuti posisi foto di dalam jejaknya, bukan posisi di halaman yang
+ * menampilkannya. Satu foto karena itu membawa alt yang sama di mana pun ia
+ * muncul, termasuk di galeri gabungan /jejak/ yang mencampur foto lintas jejak.
+ */
+function resolveJejakPhotos(
+  rawCover: RawJejakPhoto,
+  rawGallery: RawJejakPhoto[],
+  title: string
+): { cover: JejakPhoto | null; gallery: JejakPhoto[] } {
+  const resolved = [rawCover, ...rawGallery]
+    .map((raw) => ({ raw, img: resolveJejakImage(raw?.image) }))
+    .filter((x): x is { raw: RawJejakPhoto; img: ImageMetadata } => x.img !== null)
+    .map(({ raw, img }, i) => ({
+      img,
+      // Alt tulisan editor menang; yang kosong jatuh ke turunan judul jejak.
+      // Itu tebakan terbaik dari data yang ada, bukan keterangan sungguhan,
+      // tapi jauh lebih berguna daripada string kosong yang dulu ada di sini.
+      alt: raw?.alt?.trim() || jejakPhotoAlt(title, i + 1),
+      caption: raw?.caption?.trim() || null,
+    }));
+
+  // Cover hilang berarti elemen pertama `resolved` adalah foto galeri, bukan
+  // cover: `filter` di atas membuang lubangnya, jadi posisi tak bisa dipakai
+  // untuk menebak. Berkas cover-nya sendiri yang menentukan.
+  const hasCover = resolveJejakImage(rawCover?.image) !== null;
+  return {
+    cover: hasCover ? resolved[0] : null,
+    gallery: hasCover ? resolved.slice(1) : resolved,
+  };
+}
 
 /**
  * Ubah blok video di frontmatter menjadi bentuk siap render. Link yang tak
@@ -156,15 +218,78 @@ export async function getJejak(): Promise<Jejak[]> {
       // Path string diselesaikan di sini sekali saja, jadi seluruh konsumen
       // menerima modul gambar yang siap dioptimasi dan tak ada satu pun yang
       // perlu tahu di folder mana fotonya disimpan.
-      cover: resolveJejakImage(e.data.cover),
-      gallery: e.data.gallery
-        .map((g) => resolveJejakImage(g))
-        .filter((img): img is ImageMetadata => img !== null),
+      ...resolveJejakPhotos(e.data.cover, e.data.gallery, e.data.title),
       video: resolveJejakVideo(e.data.video),
       points: resolveJejakPoints(e.data.points, e.data.location),
       href: `/jejak/${e.id}/`,
     }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+
+/**
+ * Susunan media satu jejak: mana yang jadi pembuka, mana yang turun ke carousel,
+ * dan mana yang bisa diperbesar.
+ *
+ * Ada di sini, bukan di halaman detail, karena sitemap gambar butuh jawaban yang
+ * sama persis. Waktu perhitungan ini masih di halaman, endpoint sitemap
+ * menghitungnya sendiri dan menghasilkan URL berbeda untuk cover yang ternyata
+ * dipakai sebagai poster video, jadi sitemap menunjuk berkas yang tak ada di
+ * halaman mana pun sekaligus menambah berkas kembar di dist.
+ */
+export interface JejakMedia {
+  /** Video yang bisa diputar di tempat; berhak atas slot pembuka. */
+  videoPlayer: JejakVideo | null;
+  /** Video yang cuma bisa dibuka di situs lain; tampil sebagai tautan di bawah. */
+  videoLink: JejakVideo | null;
+  /** Foto pembuka. null saat slot itu diambil video. */
+  heroPhoto: JejakPhoto | null;
+  /** Modul gambar yang tampil sebagai poster video, kalau ada. */
+  posterImg: ImageMetadata | null;
+  carousel: JejakPhoto[];
+  /**
+   * Foto yang bisa dibuka lightbox, urut seperti tampil di halaman. Poster video
+   * tak termasuk: kliknya memutar video, bukan memperbesar foto.
+   */
+  clickable: JejakPhoto[];
+}
+
+export function getJejakMedia(jejak: Jejak): JejakMedia {
+  const video = jejak.video;
+
+  // Dedup lewat identitas modul gambar, bukan `img.src`: import.meta.glob eager
+  // memberi modul yang sama untuk path yang sama, dan membaca properti modul
+  // gambar menandai berkas aslinya "terpakai langsung" sehingga berkas mentahnya
+  // ikut disalin ke dist.
+  const all = [
+    ...new Map(
+      [jejak.cover, ...jejak.gallery].filter((p) => p !== null).map((p) => [p.img, p])
+    ).values(),
+  ];
+
+  // Hanya video yang benar-benar bisa diputar di tempat yang berhak atas slot
+  // utama. Link yang cuma bisa dibuka di situs lain (folder Drive, Instagram)
+  // tetap ditampilkan, tapi di bawah sebagai tautan, dan fotonya yang jadi
+  // pembuka seperti biasa.
+  const videoPlayer = video && video.source.kind !== 'link' ? video : null;
+  const videoLink = video && video.source.kind === 'link' ? video : null;
+
+  const heroPhoto = videoPlayer ? null : (all[0] ?? null);
+  // Poster video default-nya cover jejak. Foto yang sudah tampil sebagai poster
+  // tak diulang lagi di carousel, persis seperti gambar besar yang tak ikut turun.
+  // Perbandingannya di level modul gambar: poster bisa datang dari `video.poster`
+  // yang memang cuma berupa modul, jadi membandingkan pembungkus JejakPhoto tak
+  // akan pernah cocok dan foto poster akan muncul dua kali.
+  const posterImg = videoPlayer ? (videoPlayer.poster ?? jejak.cover?.img ?? null) : null;
+  const carousel = all.filter((p) => p !== heroPhoto && p.img !== posterImg);
+
+  return {
+    videoPlayer,
+    videoLink,
+    heroPhoto,
+    posterImg,
+    carousel,
+    clickable: heroPhoto ? [heroPhoto, ...carousel] : carousel,
+  };
 }
 
 /** Jejak dari satu program tertentu. */

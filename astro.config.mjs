@@ -94,9 +94,11 @@ export default defineConfig({
     // content collections API, jadi TOC di LegalLayout tidak berubah.
     markdoc(),
     react(),
-    // Hanya lint saat build (peringatan, tidak menggagalkan). IndexNow dan
-    // llms.txt sengaja belum diaktifkan: yang pertama butuh API key, yang kedua
-    // baru berguna kalau situs punya konten artikel.
+    // Hanya lint saat build (peringatan, tidak menggagalkan). IndexNow sengaja
+    // belum diaktifkan karena butuh API key. Pembangkit llms.txt bawaan plugin
+    // ini juga tidak dipakai: situs menyusunnya sendiri di
+    // `src/pages/llms.txt.ts`, supaya isinya lahir dari `PINTU` dan koleksi
+    // `programs` alih-alih dari daftar halaman.
     seoGraph({
       validateH1: true,
       validateUniqueMetadata: true,

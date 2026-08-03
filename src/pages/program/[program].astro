@@ -94,6 +94,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   title={hasCuratedSeo ? undefined : `${program.label} | bagiberbagi.id`}
   description={hasCuratedSeo ? undefined : program.summary}
   breadcrumbName={program.label}
+  breadcrumbTrail={[{ name: pintu.label, url: pintuHref }]}
 >
   <!-- HERO: dua kolom, latar hangat tint pintu, foto ber-glow warna pintu -->
   <section class="section-hero" style={`${styleVars};background:linear-gradient(150deg,var(--cat-tint),#ffffff 58%)`}>

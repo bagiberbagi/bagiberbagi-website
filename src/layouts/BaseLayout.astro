@@ -34,6 +34,19 @@ export interface Props {
   noindex?: boolean;
   /** Short name for the last breadcrumb crumb. Defaults to the title minus the site suffix. */
   breadcrumbName?: string;
+  /**
+   * Jalur breadcrumb antara Beranda dan halaman ini, urut dari yang terluar.
+   * Diisi halaman yang jalur nyatanya BEDA dari bentuk URL-nya.
+   *
+   * Bawaannya diturunkan dari segmen URL, dan untuk sebagian besar halaman itu
+   * benar. Halaman program tidak: URL-nya `/program/<slug>/` sehingga tersusun
+   * crumb "Program" yang menunjuk `/program/`, padahal alamat itu cuma stub
+   * noindex yang melempar ke `/#pintu`. Induk sesungguhnya sebuah program
+   * adalah pintunya, dan itulah yang tertulis di breadcrumb yang dilihat
+   * pengunjung. Dua representasi yang tak sepakat di satu halaman adalah
+   * persis yang diminta Google untuk dihindari.
+   */
+  breadcrumbTrail?: { name: string; url: string }[];
   /** Extra JSON-LD pieces contributed by the page (e.g. FAQPage), merged into the same @graph. */
   extraSchema?: Record<string, unknown>[];
 }
@@ -59,6 +72,7 @@ const description = props.description ?? page?.description ?? seo.defaultDescrip
 const image = props.image ?? page?.image ?? seo.defaultImage;
 const noindex = props.noindex ?? page?.noindex ?? false;
 const breadcrumbName = props.breadcrumbName ?? page?.breadcrumbName;
+const breadcrumbTrail = props.breadcrumbTrail;
 const extraSchema = props.extraSchema ?? [];
 
 // <Seo> merender judul lewat `<title set:html={...}>` — tanpa escaping. Karena
@@ -124,12 +138,21 @@ const graph = organization
       buildBreadcrumbList(
         {
           url: canonical,
-          items: breadcrumbsFromUrl({
-            url: Astro.url,
-            siteUrl,
-            pageName,
-            homeName: 'Beranda',
-          }),
+          items: breadcrumbTrail
+            ? [
+                { name: 'Beranda', url: `${siteUrl}/` },
+                ...breadcrumbTrail.map((c) => ({
+                  name: c.name,
+                  url: new URL(c.url, siteUrl).href,
+                })),
+                { name: pageName, url: canonical },
+              ]
+            : breadcrumbsFromUrl({
+                url: Astro.url,
+                siteUrl,
+                pageName,
+                homeName: 'Beranda',
+              }),
         },
         ids
       ),

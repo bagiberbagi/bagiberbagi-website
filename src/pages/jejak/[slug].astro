@@ -12,6 +12,7 @@ import { formatMetric } from '../../lib/format';
 import { buildJejakVideoSchema, buildJejakPlacesSchema } from '../../lib/schema';
 import { getJejakPages } from '../../lib/jejak';
 import { getPrograms, getProgramCover } from '../../lib/programs';
+import { getOrganisasiRefs } from '../../lib/organisasi';
 import { PINTU } from '../../consts';
 
 // Satu route untuk setiap jejak terbit. Begitu editor menambah jejak di
@@ -39,6 +40,14 @@ const ctaHref = program?.href ?? `/berbagi-${pintu.slug}/`;
 // halaman program, supaya ajakan di bawah memperlihatkan wajah programnya,
 // bukan bidang warna tanpa gambar.
 const programCover = program ? getProgramCover(program) : null;
+
+// Organisasi yang menggerakkan kegiatan ini, kalau ada. Peta hanya berisi
+// organisasi ber-halaman, jadi jejak yang menyebut organisasi nonaktif atau
+// terhapus tak menampilkan apa-apa ketimbang menautkan ke halaman yang hilang.
+// Relasinya lateral terhadap program (satu organisasi bisa lintas program),
+// jadi chip-nya berdiri terpisah dari badge pintu/program dan sengaja tak
+// memakai warna pintu: yang ditandai di sini pelakunya, bukan kategorinya.
+const organisasiRef = jejak.organisasi ? (await getOrganisasiRefs()).get(jejak.organisasi) ?? null : null;
 
 // Body naratif Markdoc.
 const entry = await getEntry('jejak', jejak.slug);
@@ -174,6 +183,18 @@ const extraSchema = video
           <span class="w-1.5 h-1.5 rounded-full bg-[var(--cat)]"></span>
           {programLabel}
         </a>
+        {organisasiRef && (
+          <a
+            href={organisasiRef.href}
+            data-track="organisasi_click"
+            data-track-source="jejak_detail"
+            data-track-organisasi={jejak.organisasi}
+            class="inline-flex items-center gap-2 rounded-full border border-border bg-white text-ink font-bold text-eyebrow tracking-wide px-3.5 py-1.5 transition-colors hover:border-gray-300"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-none text-muted"><circle cx="9" cy="8" r="3"></circle><path d="M3.5 20c0-3.2 2.7-5 5.5-5s5.5 1.8 5.5 5"></path><circle cx="17.5" cy="9" r="2.3"></circle><path d="M16 14.2c2.6.4 4.5 2.1 4.5 5.3"></path></svg>
+            bersama {organisasiRef.label}
+          </a>
+        )}
       </div>
 
       <h1 class="text-heading md:text-display font-semibold text-ink mb-4">

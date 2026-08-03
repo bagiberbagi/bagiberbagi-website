@@ -3,22 +3,75 @@ import { getEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
-import { getOrganisasiPages } from '../../lib/organisasi';
-import { buildWaLink } from '../../lib/format';
+import OrganisasiCard from '../../components/OrganisasiCard.astro';
+import { getOrganisasiDirectory, getOrganisasiTotals } from '../../lib/organisasi';
+import { buildWaLink, formatMetric } from '../../lib/format';
 
 // Direktori organisasi (donor institusional yang berbagi rutin). Hanya entri
 // ber-halaman (active + detail.description terisi) yang tampil — sama seperti
 // gate publish di getProgramPages(). Lihat design.md untuk kenapa entitas ini
 // berdiri sendiri dari program/pintu.
-const organisasi = await getOrganisasiPages();
-
-const site = await getEntry('settings', 'site');
+//
+// TATA BAHASA HALAMAN sengaja sama dengan /jejak/: hero → band angka agregat →
+// daftar yang bentuknya ikut jumlah isi → penjelas cara kerja → CTA. Keduanya
+// halaman bukti, jadi pembaca yang datang dari salah satunya langsung mengenali
+// susunannya. Seluruh seksi memakai Container tier `standard` tanpa kecuali,
+// supaya tepi kiri-kanan tak goyang tiap seksi saat halaman ini diedit lagi.
+const [directory, totals, site] = await Promise.all([
+  getOrganisasiDirectory(),
+  getOrganisasiTotals(),
+  getEntry('settings', 'site'),
+]);
 if (!site) throw new Error('settings/site entry not found');
+
+// Bentuk direktori diturunkan dari jumlah entri supaya tak ada kartu yatim —
+// aturan yang sama dengan feed /jejak/:
+//  1 organisasi  -> satu kartu lebar (grid 3 kolom menyisakan dua sel bolong),
+//  2 organisasi  -> dua kartu setara berdampingan,
+//  3+ organisasi -> grid ringkas.
+const listMode: 'single' | 'pair' | 'grid' =
+  directory.length >= 3 ? 'grid' : directory.length === 2 ? 'pair' : 'single';
+const wideOrg = listMode === 'single' ? directory[0] : undefined;
+const gridOrg = listMode === 'single' ? [] : directory;
+const gridClass = listMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3';
+const gridVariant = listMode === 'pair' ? 'stack' : 'compact';
+
+const hasOrganisasi = directory.length > 0;
+// Dua kartu pertama band angka sudah dipakai jumlah organisasi & kegiatan, jadi
+// sisanya dua metrik teratas — cukup untuk mengunci grid di 4 kolom walau editor
+// menambah label metrik baru.
+const topMetrics = totals.metrics.slice(0, 2);
+
+// Nilai metrik panjang ("Rp 8.125.000") membungkus jadi 2 baris di layar sempit
+// dan bikin tinggi kartu angka tak seragam. Sizing sadar-panjang, sama persis
+// dengan band angka di /jejak/.
+const numClass = (s: string) =>
+  s.length > 8 ? 'text-title-sm md:text-title whitespace-nowrap' : 'text-heading-sm md:text-heading-lg';
 
 const joinWa = buildWaLink(
   site.data.waNumber,
   'Halo, organisasi/komunitas kami ingin berkontribusi rutin dan didaftarkan sebagai organisasi mitra bagiberbagi.id.'
 );
+
+// Penjelas cara kerja, menjawab pertanyaan yang wajar muncul di halaman ini:
+// kenapa organisasi dapat halaman sendiri sementara donasi individu tidak.
+const CARA_KERJA = [
+  {
+    icon: 'repeat' as const,
+    title: 'Kontribusinya berulang',
+    desc: 'Komunitas dan perusahaan di sini memberi lebih dari sekali, jadi kontribusinya punya riwayat yang bisa dijumlahkan.',
+  },
+  {
+    icon: 'map' as const,
+    title: 'Bisa lintas program',
+    desc: 'Satu organisasi bisa ikut Jumat Berkah hari ini dan Ramadhan Berkah bulan depan. Dashboardnya menjumlahkan keduanya.',
+  },
+  {
+    icon: 'impact' as const,
+    title: 'Angkanya dari jejak yang sama',
+    desc: 'Tidak ada pembukuan terpisah. Yang dijumlahkan adalah kegiatan yang dokumentasinya sudah tayang di Jejak & Dampak.',
+  },
+];
 ---
 
 <BaseLayout
@@ -26,8 +79,8 @@ const joinWa = buildWaLink(
   description="Komunitas dan perusahaan yang berbagi secara rutin bersama bagiberbagi.id, lengkap dengan dashboard dampak dan rekam jejak masing-masing."
   breadcrumbName="Organisasi"
 >
-  <!-- HERO -->
-  <section class="section-hero bg-linear-[160deg] from-brand-blueTint to-white to-60%">
+  <!-- HERO: latar biru muda, warna identitas entitas organisasi -->
+  <section class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
     <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-blue">Beranda</a>
@@ -35,51 +88,71 @@ const joinWa = buildWaLink(
         <span class="text-ink">Organisasi</span>
       </nav>
 
+      {/* Blok judul dipersempit ke lebar baca; kontainer seksinya tetap
+          `standard` supaya tepi kiri breadcrumb segaris dengan seksi lain. */}
       <div class="text-center max-w-text mx-auto">
         <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-white shadow-cardSoft text-brand-blue mb-4">
           <Icon name="repeat" size={30} />
         </span>
         <div class="eyebrow">Organisasi</div>
-        <h1 class="text-heading md:text-display font-semibold mb-3">Organisasi yang berbagi secara rutin</h1>
-        <p class="text-body md:text-title-sm text-muted leading-relaxed">
+        <h1 class="section-title font-semibold mb-4">Organisasi yang berbagi secara rutin</h1>
+        <p class="section-lead text-muted">
           Komunitas dan perusahaan yang memberi secara berkelanjutan punya rekam jejak dan dashboard dampaknya sendiri di sini, terpisah dari donasi individu yang memang tidak kami lacak satu per satu.
         </p>
       </div>
     </Container>
   </section>
 
-  <!-- DAFTAR ORGANISASI -->
-  <section class="section bg-gray-50">
-    <Container>
-      {organisasi.length > 0 ? (
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {organisasi.map((org) => (
-            <a
-              href={org.href}
-              class="group flex flex-col rounded-card border border-border bg-white p-6 transition hover:shadow-card hover:-translate-y-0.5"
-            >
-              {org.logo ? (
-                <img
-                  src={org.logo}
-                  alt={org.label}
-                  width="56"
-                  height="56"
-                  loading="lazy"
-                  class="w-14 h-14 rounded-xl object-contain bg-gray-50 border border-border p-2 mb-4"
-                />
-              ) : (
-                <span class="w-14 h-14 rounded-xl grid place-items-center bg-brand-blueTint text-brand-blue font-bold text-title-sm mb-4">
-                  {org.label.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-              <h2 class="text-title-sm font-semibold text-ink mb-1.5">{org.label}</h2>
-              <p class="text-body-sm text-muted leading-snug flex-1">{org.summary}</p>
-              <span class="mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm text-brand-blue">
-                Lihat dashboard dampak
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>
-              </span>
-            </a>
+  {/* ANGKA AGREGAT: kartu pertama gelap (jumlah organisasi = konteks pengali),
+      sisanya ber-tint. Bentuknya sama dengan band angka di /jejak/.
+
+      Angka di sini dihitung HANYA dari kegiatan bersama organisasi, bukan dari
+      seluruh jejak situs: halaman ini menjawab "seberapa besar peran
+      organisasi", jadi mencampurnya dengan kegiatan tanpa organisasi akan
+      membesarkan angka yang bukan milik mereka. */}
+  {hasOrganisasi && (
+    <section class="py-10 md:py-14 bg-white">
+      <Container>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+          <div class="rounded-card bg-ink p-5 text-center text-white">
+            <div class:list={['font-semibold tabular-nums leading-none', numClass(String(totals.organisasiCount))]}>{totals.organisasiCount}</div>
+            <div class="w-5 h-0.75 rounded bg-brand-blue mx-auto my-2.5"></div>
+            <div class="text-body-sm text-white/70">organisasi mitra</div>
+          </div>
+          <div class="rounded-card bg-brand-blueTint p-5 text-center">
+            <div class:list={['font-semibold text-brand-blue tabular-nums leading-none', numClass(String(totals.jejakCount))]}>{totals.jejakCount}</div>
+            <div class="w-5 h-0.75 rounded bg-brand-blue mx-auto my-2.5"></div>
+            <div class="text-body-sm text-brand-blue/70">kegiatan bersama</div>
+          </div>
+          {topMetrics.map((m) => (
+            <div class="rounded-card bg-brand-blueTint p-5 text-center">
+              <div class:list={['font-semibold text-brand-blue tabular-nums leading-none', numClass(formatMetric(m))]}>{formatMetric(m)}</div>
+              <div class="w-5 h-0.75 rounded bg-brand-blue mx-auto my-2.5"></div>
+              <div class="text-body-sm text-brand-blue/70">{m.label}</div>
+            </div>
           ))}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  <!-- DIREKTORI: bentuknya ikut listMode (1 kartu lebar / 2 setara / grid) -->
+  <section class="section section-lg bg-surface-warm">
+    <Container>
+      <div class="eyebrow">Daftar Organisasi</div>
+      <h2 class="section-title font-semibold mb-8">Mereka yang berbagi bersama</h2>
+
+      {hasOrganisasi ? (
+        <div class="flex flex-col gap-5">
+          {wideOrg && <OrganisasiCard org={wideOrg} variant="wide" eager />}
+
+          {gridOrg.length > 0 && (
+            <div class:list={['grid gap-5', gridClass]}>
+              {gridOrg.map((org, i) => (
+                <OrganisasiCard org={org} variant={gridVariant} eager={i === 0} />
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <p class="rounded-card border border-border bg-white p-10 text-center text-muted">
@@ -89,13 +162,49 @@ const joinWa = buildWaLink(
     </Container>
   </section>
 
-  <!-- CTA: ajak organisasi lain bergabung -->
-  <section class="section bg-white">
+  <!-- CARA KERJA: kenapa organisasi punya halaman sendiri -->
+  <section class="section section-lg bg-white">
     <Container>
-      <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
-        <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Organisasimu ingin berbagi secara rutin?</h2>
-        <p class="text-body-sm md:text-body text-white/90 leading-relaxed max-w-text mx-auto mb-6">
-          Komunitas atau perusahaan yang berkontribusi berkelanjutan bisa punya dashboard dampak sendiri seperti di atas.
+      <div class="eyebrow">Cara Kerjanya</div>
+      <h2 class="section-title font-semibold mb-8">Kenapa organisasi punya halaman sendiri</h2>
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        {CARA_KERJA.map((s) => (
+          <div class="rounded-card border border-border bg-white p-6">
+            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-brand-blueTint text-brand-blue mb-4">
+              <Icon name={s.icon} size={22} />
+            </span>
+            <h3 class="text-title-sm font-semibold text-ink mb-1.5">{s.title}</h3>
+            <p class="text-body-sm text-muted leading-relaxed">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </section>
+
+  {/* CTA: ajak organisasi lain bergabung.
+
+      Bukan lagi kotak gradien oranye. Bidang gradien itu peninggalan tata rias
+      lama dan sudah tak punya saudara di beranda mana pun setelah revamp, jadi
+      ia terbaca sebagai tambalan. Penggantinya memakai bahasa yang dipakai
+      seksi pernyataan di beranda: pernyataan besar dua warna di atas permukaan
+      polos, dengan oranye pindah ke tombolnya.
+
+      Krem, bukan putih, karena seksi "Cara Kerjanya" tepat di atasnya sudah
+      putih: dua seksi putih berurutan menghapus batasnya, dan padding 128px
+      keduanya menyatu jadi satu bidang kosong raksasa. Footer di bawahnya juga
+      krem, tapi ia punya garis tepi sendiri jadi batasnya tetap terbaca.
+      Halaman detail memilih sebaliknya (putih) karena di sana yang di atas CTA
+      adalah Rekam Jejak yang krem. */}
+  <section class="section section-lg bg-surface-warm">
+    <Container>
+      <div class="text-center max-w-text mx-auto">
+        <div class="eyebrow">Bergabung</div>
+        <h2 class="section-title font-semibold mb-4">
+          Organisasimu juga bisa punya <span class="text-brand-orange">halaman seperti ini</span>.
+        </h2>
+        <p class="section-lead text-muted mb-8">
+          Komunitas atau perusahaan yang berkontribusi berkelanjutan dicatat di sini, lengkap dengan dashboard dampak dan rekam jejaknya sendiri.
         </p>
         <a
           href={joinWa}
@@ -103,7 +212,7 @@ const joinWa = buildWaLink(
           rel="noopener"
           data-track="organisasi_join_click"
           data-track-source="organisasi_index"
-          class="btn-secondary text-brand-orangeDark"
+          class="btn-primary inline-block"
         >
           Diskusikan lewat WhatsApp
         </a>

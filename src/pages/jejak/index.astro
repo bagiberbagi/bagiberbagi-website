@@ -211,8 +211,9 @@ const STEPS_PENCATATAN = [
   description="Rekam jejak nyata bagiberbagi.id: angka dampak terhitung dari setiap kegiatan, galeri lapangan, dan dokumentasi tiap penyaluran. Transparan, bisa ditelusuri."
   breadcrumbName="Jejak & Dampak"
 >
-  <!-- HERO: latar hangat brand (senada hero pintu), teks tengah -->
-  <section class="section bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
+  <!-- HERO: latar hangat brand (senada hero pintu), teks tengah. `section-hero`,
+       bukan `section`: bidang tint-nya harus menembus ke belakang pil navbar. -->
+  <section class="section-hero bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
     <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-orangeDark">Beranda</a>

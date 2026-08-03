@@ -64,12 +64,16 @@ const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
 const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
 
 // Foto kartu hero: cover jejak terbaru yang benar-benar punya foto. Cuma satu
-// foto, jadi tak ada dedup yang perlu dikerjakan di sini — dan modul gambarnya
-// diteruskan utuh ke <Image>. Jangan sekali pun membaca propertinya (mis.
-// `.src`) di luar pipeline: Astro membungkus modul gambar dengan Proxy dan
-// menandai berkas aslinya "terpakai langsung" begitu ada properti yang dibaca,
-// sehingga PNG mentahnya ikut disalin ke dist dan seluruh optimasinya hilang
-// (lihat catatan panjang soal ini di jejak/index.astro).
+// foto, jadi tak ada dedup yang perlu dikerjakan di sini. Modul gambarnya
+// diteruskan utuh ke <Image> lewat `.img`; jangan sekali pun membaca properti
+// modul itu sendiri (mis. `.src`) di luar pipeline, sebab Astro membungkusnya
+// dengan Proxy dan menandai berkas aslinya "terpakai langsung" begitu ada
+// properti yang dibaca, sehingga berkas mentahnya ikut disalin ke dist dan
+// seluruh optimasinya hilang (lihat catatan panjang di jejak/index.astro).
+//
+// Alt-nya milik foto itu sendiri, bukan kalimat umum "Dokumentasi kegiatan
+// bersama <organisasi>" seperti dulu: seluruh halaman ini sudah tentang
+// organisasi tersebut, jadi yang belum diketahui pembaca justru isi fotonya.
 const heroPhoto = jejak.find((j) => j.cover)?.cover ?? null;
 
 // "Berbagi sejak": isian editor menang kalau ada. Field ini nyaris selalu kosong
@@ -250,8 +254,8 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                  lg+; di antara md dan lg kontainer masih ikut lebar layar.
                  Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR. */
               <Image
-                src={heroPhoto}
-                alt={`Dokumentasi kegiatan bersama ${org.label}`}
+                src={heroPhoto.img}
+                alt={heroPhoto.alt}
                 widths={[320, 452, 640, 904]}
                 sizes="(min-width: 1024px) 452px, (min-width: 768px) 45vw, 100vw"
                 loading="eager"

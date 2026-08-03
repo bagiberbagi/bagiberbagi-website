@@ -1,6 +1,5 @@
 import { getCollection } from 'astro:content';
-import type { ImageMetadata } from 'astro';
-import type { JejakMetric } from './jejak';
+import type { JejakMetric, JejakPhoto } from './jejak';
 
 // jejak.ts sengaja TIDAK di-import statis: jejak.ts sudah mengimpor modul ini
 // untuk memvalidasi relasi organisasi, jadi import balik akan melingkar. Fungsi
@@ -77,12 +76,18 @@ export interface OrganisasiEntry extends Organisasi {
    * pendukung (tangkapan layar video, foto lokasi) yang tak enak berdiri sendiri
    * sebagai wajah organisasi.
    *
-   * Dedup memakai identitas objek (Set), BUKAN `img.src`. Membaca properti modul
-   * gambar di luar pipeline menandai berkas aslinya "terpakai langsung", yang
+   * Dedup memakai identitas objek modul gambar, BUKAN `img.src`. Membaca properti
+   * modul gambar di luar pipeline menandai berkas aslinya "terpakai langsung", yang
    * membuat PNG mentahnya disalin ke dist dan seluruh optimasinya hilang —
-   * lihat catatan panjang soal ini di jejak/index.astro.
+   * lihat catatan panjang soal ini di jejak/index.astro. Kuncinya `photo.img`,
+   * yaitu properti pembungkus JejakPhoto, jadi modul gambarnya sendiri tak
+   * pernah dibaca.
+   *
+   * Berupa `JejakPhoto`, bukan modul gambar telanjang, supaya alt tiap foto ikut
+   * terbawa ke kolase. Sebelumnya kartu organisasi merender `alt=""` karena di
+   * sini memang tak ada tempat menyimpannya.
    */
-  photos: ImageMetadata[];
+  photos: JejakPhoto[];
 }
 
 const PHOTO_LIMIT = 4;
@@ -96,7 +101,7 @@ const PHOTO_LIMIT = 4;
  * paling aktif tenggelam begitu daftarnya panjang.
  */
 export async function getOrganisasiDirectory(): Promise<OrganisasiEntry[]> {
-  const { getJejakByOrganisasi } = await import('./jejak');
+  const { getJejakByOrganisasi, dedupePhotos } = await import('./jejak');
   const { getPrograms } = await import('./programs');
   const { aggregateMetrics } = await import('./impact');
 
@@ -116,13 +121,10 @@ export async function getOrganisasiDirectory(): Promise<OrganisasiEntry[]> {
         firstDate: dates.length ? dates[dates.length - 1] : null,
         latestDate: dates.length ? dates[0] : null,
         locations: [...new Set(jejak.map((j) => j.location).filter(Boolean))],
-        photos: [
-          ...new Set(
-            [...jejak.map((j) => j.cover), ...jejak.flatMap((j) => j.gallery)].filter(
-              (img) => img !== null
-            )
-          ),
-        ].slice(0, PHOTO_LIMIT),
+        photos: dedupePhotos([
+          ...jejak.map((j) => j.cover),
+          ...jejak.flatMap((j) => j.gallery),
+        ]).slice(0, PHOTO_LIMIT),
       };
     })
   );

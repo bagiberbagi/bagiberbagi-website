@@ -96,10 +96,10 @@ const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
          dengan kartu unggulan di JejakCard. */
       <div class="relative w-full aspect-[16/10] md:aspect-auto bg-gray-100">
         <div class:list={['absolute inset-0 grid gap-0.5', collageCols, collageRows]}>
-          {photos.map((img, i) => (
+          {photos.map((photo, i) => (
             <Image
-              src={img}
-              alt=""
+              src={photo.img}
+              alt={photo.alt}
               widths={photoWidths}
               sizes={photoSizes}
               loading={eager && i === 0 ? 'eager' : 'lazy'}
@@ -113,8 +113,8 @@ const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
       </div>
     ) : (
       <Image
-        src={photos[0]}
-        alt=""
+        src={photos[0].img}
+        alt={photos[0].alt}
         widths={photoWidths}
         sizes={photoSizes}
         loading={eager ? 'eager' : 'lazy'}
@@ -138,7 +138,7 @@ const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
       {org.logo ? (
         <img
           src={org.logo}
-          alt=""
+          alt={`Logo ${org.label}`}
           width="56"
           height="56"
           loading="lazy"

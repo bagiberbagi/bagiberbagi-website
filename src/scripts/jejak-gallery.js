@@ -8,6 +8,7 @@ const items = [...document.querySelectorAll('[data-gallery-item]')];
 if (box && items.length > 0) {
   const imgEl = box.querySelector('[data-lightbox-img]');
   const counter = box.querySelector('[data-lightbox-counter]');
+  const captionEl = box.querySelector('[data-lightbox-caption]');
   const prevBtn = box.querySelector('[data-lightbox-prev]');
   const nextBtn = box.querySelector('[data-lightbox-next]');
   const closeEls = [...box.querySelectorAll('[data-lightbox-close]')];
@@ -17,6 +18,10 @@ if (box && items.length > 0) {
   // cuma perlu satu sumber. Tanpa ini foto versi besar tampil tanpa keterangan
   // sama sekali, padahal thumbnail-nya punya.
   const alts = items.map((el) => el.querySelector('img')?.alt ?? '');
+  // Caption ditulis pemilik jejak lewat Keystatic dan boleh kosong, beda dari
+  // alt yang selalu terisi. Kosong berarti figcaption disembunyikan, bukan
+  // dirender jadi baris kosong.
+  const captions = items.map((el) => el.dataset.caption ?? '');
   const many = sources.length > 1;
   let idx = 0;
   let lastFocus = null;
@@ -29,6 +34,10 @@ if (box && items.length > 0) {
     idx = (i + sources.length) % sources.length;
     imgEl.src = sources[idx];
     imgEl.alt = alts[idx];
+    if (captionEl) {
+      captionEl.textContent = captions[idx];
+      captionEl.hidden = captions[idx] === '';
+    }
     if (counter) counter.textContent = `${idx + 1} / ${sources.length}`;
   }
 

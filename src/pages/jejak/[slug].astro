@@ -141,13 +141,15 @@ const extraSchema = video
         satu kolom. Mencampur lebar di halaman ini (media lebar, teks sempit) bikin
         blok teks terlihat menggantung, jadi semuanya dijaga satu tepi. */}
     <Container width="article">
-      <!-- breadcrumb: Beranda / Pintu / Rekam Jejak / judul -->
+      <!-- breadcrumb: Beranda / Jejak / judul — sengaja mengikuti bentuk URL
+           (`/` → `/jejak/` → `/jejak/<slug>/`), sama persis dengan BreadcrumbList
+           JSON-LD yang diturunkan dari URL di `BaseLayout`. Pintu tidak jadi
+           crumb karena bukan induk route-nya, identitasnya sudah dibawa badge
+           di bawah ini. -->
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href={`/berbagi-${pintu.slug}/`} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
-        <span class="text-gray-300 mx-1.5">/</span>
-        <a href={`/jejak/?berbagi=${pintu.slug}`} class="hover:text-[var(--cat-deep)]">Rekam Jejak</a>
+        <a href="/jejak/" class="hover:text-[var(--cat-deep)]">Jejak</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-[var(--cat-deep)]">{jejak.title}</span>
       </nav>

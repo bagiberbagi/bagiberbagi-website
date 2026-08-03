@@ -1,13 +1,12 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import JejakCard from '../../components/JejakCard.astro';
 import Container from '../../components/Container.astro';
-import { getJejak, type JejakPhoto } from '../../lib/jejak';
+import { getJejak, dedupePhotos } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getOrganisasiRefs } from '../../lib/organisasi';
 import { getGlobalImpact } from '../../lib/impact';
@@ -69,19 +68,10 @@ const recordedPrograms = [...new Set(jejak.map((j) => labelBySlug.get(j.program)
 // yang dibaca di luar pipeline gambar, sehingga PNG mentahnya ikut disalin ke
 // dist dan seluruh gunanya optimasi ini hilang.
 // Foto membawa alt dan caption-nya sendiri dari lib/jejak.ts, jadi menggabungkan
-// lintas jejak di sini tak lagi menghilangkan keterangannya. Dedup memakai modul
-// gambar sebagai kunci Set, jadi tetap identitas objek dan bukan pembacaan
-// properti; jejak pertama yang memakai sebuah foto jadi pemiliknya.
-const seenPhotos = new Set<ImageMetadata>();
-const uniquePhotos: JejakPhoto[] = [];
-for (const j of jejak) {
-  for (const photo of [j.cover, ...j.gallery]) {
-    if (photo === null || seenPhotos.has(photo.img)) continue;
-    seenPhotos.add(photo.img);
-    uniquePhotos.push(photo);
-  }
-}
-const gallery = uniquePhotos.slice(0, 8);
+// lintas jejak di sini tak lagi menghilangkan keterangannya. Jejak pertama yang
+// memakai sebuah foto jadi pemiliknya, aturan yang sekarang dipegang satu fungsi
+// bersama supaya tak lagi ditulis ulang beda-beda di tiap pemakai.
+const gallery = dedupePhotos(jejak.flatMap((j) => [j.cover, ...j.gallery])).slice(0, 8);
 
 // Thumbnail dan sumber lightbox sengaja BEDA berkas: thumbnail hanya beberapa
 // ratus piksel, sementara lightbox membuka foto sampai memenuhi layar. Versi

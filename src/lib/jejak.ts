@@ -236,6 +236,35 @@ export async function getJejak(): Promise<Jejak[]> {
  * dipakai sebagai poster video, jadi sitemap menunjuk berkas yang tak ada di
  * halaman mana pun sekaligus menambah berkas kembar di dist.
  */
+/**
+ * Buang foto kembar dari sederet foto, PEMAKAI PERTAMA YANG MENANG, dan entri
+ * kosong ikut terbuang.
+ *
+ * "Pertama menang" bukan detail sepele. Satu berkas boleh dipasang sebagai cover
+ * sekaligus muncul di galeri, dan sesudah ada `alt`/`caption` per foto, kedua
+ * entri itu bisa membawa keterangan berbeda. `new Map(pasangan)` menyimpan nilai
+ * entri TERAKHIR untuk kunci yang sama sambil mempertahankan posisi entri
+ * pertama, jadi foto pembuka akan tampil di posisinya sendiri tapi memakai
+ * keterangan milik entri galeri — biasanya kosong, sehingga alt tulisan editor
+ * di cover hilang tanpa suara.
+ *
+ * Perbandingannya lewat identitas modul gambar (`photo.img` sebagai kunci Set),
+ * bukan `img.src`. Membaca properti modul gambar di luar pipeline menandai
+ * berkas aslinya "terpakai langsung" dan menyalin berkas mentahnya ke dist.
+ * `photo.img` sendiri aman: itu properti pembungkus JejakPhoto, bukan pembacaan
+ * pada modul gambarnya.
+ */
+export function dedupePhotos(photos: (JejakPhoto | null | undefined)[]): JejakPhoto[] {
+  const seen = new Set<ImageMetadata>();
+  const out: JejakPhoto[] = [];
+  for (const photo of photos) {
+    if (!photo || seen.has(photo.img)) continue;
+    seen.add(photo.img);
+    out.push(photo);
+  }
+  return out;
+}
+
 export interface JejakMedia {
   /** Video yang bisa diputar di tempat; berhak atas slot pembuka. */
   videoPlayer: JejakVideo | null;
@@ -255,16 +284,7 @@ export interface JejakMedia {
 
 export function getJejakMedia(jejak: Jejak): JejakMedia {
   const video = jejak.video;
-
-  // Dedup lewat identitas modul gambar, bukan `img.src`: import.meta.glob eager
-  // memberi modul yang sama untuk path yang sama, dan membaca properti modul
-  // gambar menandai berkas aslinya "terpakai langsung" sehingga berkas mentahnya
-  // ikut disalin ke dist.
-  const all = [
-    ...new Map(
-      [jejak.cover, ...jejak.gallery].filter((p) => p !== null).map((p) => [p.img, p])
-    ).values(),
-  ];
+  const all = dedupePhotos([jejak.cover, ...jejak.gallery]);
 
   // Hanya video yang benar-benar bisa diputar di tempat yang berhak atas slot
   // utama. Link yang cuma bisa dibuka di situs lain (folder Drive, Instagram)

@@ -5,17 +5,19 @@
 // donasi. Kalkulator donasi yang dulu jadi seksi terpisah pindah ke sini, jadi
 // anchor #donasi ikut pindah dan tetap hidup.
 //
+// Kartunya sendiri sekarang tinggal di DonationCard.astro, karena halaman
+// program memakai pemilih porsi yang sama (versi tanpa kepala foto).
+//
 // Hero ini bidang bespoke (lihat catatan pengecualian di DESIGN_SYSTEM.md):
 // paletnya hangat mengikuti bidang kuning, jadi beberapa nilai ditulis mentah
 // di scoped style. Warna aksi dan aksen tetap memakai token brand.
 //
 // Foto lapangan tidak lagi jadi latar seluruh hero, melainkan kepala kartu.
 // Konsekuensinya bidang kuning bersih dan headline tidak lagi bersaing dengan foto.
-import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
+import DonationCard from './DonationCard.astro';
 import { getPrograms } from '../lib/programs';
 import { getGlobalImpact } from '../lib/impact';
-import { calcTotal, buildWaLink, buildDonationMessage, formatRupiah } from '../lib/format';
 import programPhoto from '../assets/images/program-promo.png';
 
 const site = await getEntry('settings', 'site');
@@ -25,27 +27,7 @@ const programs = await getPrograms();
 const program = programs.find((p) => p.active);
 const impact = await getGlobalImpact();
 
-const agenda = site.data.nextAgenda;
-// Panel agenda hanya muncul kalau editor sudah mengisi lokasinya; bar progres
-// butuh target yang masuk akal. Tanpa ini beranda menampilkan panel kosong
-// setiap kali agenda belum disiapkan.
-const showAgenda = agenda.location.trim().length > 0;
-const showProgress = showAgenda && agenda.targetPorsi > 0;
-const collected = Math.min(agenda.collectedPorsi, agenda.targetPorsi);
-const remaining = Math.max(agenda.targetPorsi - collected, 0);
-const progressPct = showProgress ? Math.round((collected / agenda.targetPorsi) * 100) : 0;
-
-// Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
-const price = calcTotal(1);
-const PRESETS = [2, 6, 12];
-const DEFAULT_PORSI = 6;
-
 const programLabel = program?.label ?? 'Jumat Berkah';
-const initialTotal = formatRupiah(calcTotal(DEFAULT_PORSI));
-const initialWaLink = buildWaLink(
-  site.data.waNumber,
-  buildDonationMessage(programLabel, DEFAULT_PORSI, initialTotal)
-);
 
 const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 ---
@@ -66,128 +48,24 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
       </a>
     </div>
 
-    <div
+    <DonationCard
       id="donasi"
-      class="hero-card"
-      data-hero-donasi
-      data-weekday={site.data.schedule.weekday}
-      data-time={site.data.schedule.time}
-      data-price={price}
-      data-program={programLabel}
-      data-wa={site.data.waNumber}
-      data-default-porsi={DEFAULT_PORSI}
+      photo={programPhoto}
+      programLabel={programLabel}
+      programSummary={program?.summary}
+      programHref={program?.href}
+      agenda={site.data.nextAgenda}
+      schedule={site.data.schedule}
+      waNumber={site.data.waNumber}
+      trackSource="hero_card"
     >
-      <div class="hc-photo">
-        <Image src={programPhoto} alt="" loading="eager" class="hc-img" />
-        <div class="hc-scrim" aria-hidden="true"></div>
-        <p class="label hc-kick">Program berjalan</p>
-        <div class="hc-photo-body">
-          <p class="hc-name">{programLabel}</p>
-          {program?.summary && <p class="hc-desc">{program.summary}</p>}
-          {program?.href && (
-            <a href={program.href} data-track="program_click" data-track-program={programLabel} class="hc-photo-link">
-              Detail Program
-              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
-            </a>
-          )}
-        </div>
-      </div>
-
-      <div class="hc-body">
-        {showAgenda && (
-          <div class="hc-agenda">
-            {/* Label dan sisa hari berbagi satu baris karena keduanya pendek,
-                sehingga baris tanggal di bawahnya dapat lebar penuh dan muat
-                satu baris walau nama lokasinya panjang. */}
-            <div class="hc-agenda-top">
-              <p class="label hc-agenda-kick">Agenda berikutnya</p>
-              <span class="hc-agenda-count" data-agenda-count></span>
-            </div>
-            {/* Tanggal diisi hero-donasi.js dari jadwal mingguan, bukan saat
-                build, supaya tidak basi begitu Jumatnya lewat. */}
-            <p class="hc-agenda-when">
-              <span data-agenda-date>Jumat berikutnya</span> <span class="hc-sep">·</span> {agenda.location}
-            </p>
-
-            {showProgress && (
-              <div class="hc-progress">
-                <div
-                  class="hc-bar"
-                  role="progressbar"
-                  aria-valuenow={collected}
-                  aria-valuemin="0"
-                  aria-valuemax={agenda.targetPorsi}
-                  aria-label={`${collected} dari ${agenda.targetPorsi} porsi terkumpul`}
-                >
-                  <span style={`width:${progressPct}%`}></span>
-                </div>
-                <div class="hc-progress-foot">
-                  <span class="hc-progress-num">{collected} dari {agenda.targetPorsi} porsi terkumpul</span>
-                  {agenda.cutoff && <span class="hc-progress-cut">tutup {agenda.cutoff}</span>}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div class="hc-pick">
-          <div class="hc-pick-top">
-            <p class="hc-pick-title">
-              {showProgress && remaining > 0 ? `Bantu penuhi ${remaining} porsi lagi` : 'Pilih jumlah porsi'}
-            </p>
-            <span class="hc-price">{formatRupiah(price)} / porsi</span>
-          </div>
-
-          <div class="hc-chips">
-            {PRESETS.map((n) => (
-              <button type="button" class="hc-chip" data-porsi={n} aria-pressed={n === DEFAULT_PORSI}>
-                <span class="hc-chip-t">{n} porsi</span>
-                <span class="hc-chip-s">{formatRupiah(calcTotal(n))}</span>
-              </button>
-            ))}
-            <button type="button" class="hc-chip" data-porsi-custom aria-pressed="false">
-              <span class="hc-chip-t">Lainnya</span>
-              <span class="hc-chip-s">atur sendiri</span>
-            </button>
-          </div>
-
-          <div class="hc-stepper" data-stepper hidden>
-            <button type="button" class="hc-step" data-step-dec aria-label="Kurangi satu porsi">&minus;</button>
-            <input
-              type="number"
-              min="1"
-              max="999"
-              value={DEFAULT_PORSI}
-              data-porsi-input
-              aria-label="Jumlah porsi"
-              class="hc-step-input"
-            />
-            <button type="button" class="hc-step" data-step-inc aria-label="Tambah satu porsi">+</button>
-            <span class="hc-step-unit">porsi</span>
-          </div>
-
-          <a
-            href={initialWaLink}
-            target="_blank"
-            rel="noopener"
-            data-donasi-cta
-            data-track="donate_click"
-            data-track-source="hero_card"
-            data-track-program={programLabel}
-            class="hc-cta"
-          >
-            <span data-donasi-label>Donasi {DEFAULT_PORSI} Porsi · {initialTotal}</span>
-          </a>
-        </div>
-
-        {impact.jejakCount > 0 && (
-          <a href="/jejak/" class="hc-foot">
-            Lihat laporan {impact.jejakCount} penyaluran sebelumnya
-            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
-          </a>
-        )}
-      </div>
-    </div>
+      {impact.jejakCount > 0 && (
+        <a slot="foot" href="/jejak/" class="hero-card-foot">
+          Lihat laporan {impact.jejakCount} penyaluran sebelumnya
+          <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
+        </a>
+      )}
+    </DonationCard>
   </div>
 </section>
 
@@ -270,192 +148,23 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   .hero-link:hover { gap: 15px; color: #c25d0f; border-color: #c25d0f; }
   .hero-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* ===== Kartu kanan ===== */
-  .hero-card {
-    background: #fff;
-    border-radius: 22px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 26px 56px -20px rgba(124, 45, 18, 0.45), 0 2px 6px rgba(124, 45, 18, 0.08);
-  }
-
-  .hc-photo { position: relative; height: 246px; display: flex; flex-direction: column; justify-content: space-between; }
-  /* Titik fokus digeser ke kanan supaya wajah orang tidak berada tepat di bawah
-     blok teks. Orang bukan latar untuk tipografi. */
-  .hc-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 76% 42%; }
-  .hc-scrim {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(18, 16, 14, 0.66) 0%, rgba(18, 16, 14, 0.34) 22%, rgba(18, 16, 14, 0.62) 45%, rgba(18, 16, 14, 0.88) 62%, rgba(18, 16, 14, 0.96) 100%);
-  }
-  /* Ukuran, ketebalan, jarak huruf, dan huruf besarnya datang dari class .label.
-     Yang tersisa di sini cuma yang memang milik tempat ini: posisi dan warna
-     terang karena label ini berdiri di atas foto. */
-  .hc-kick {
-    position: relative;
-    margin: 0;
-    padding: 16px 18px;
-    color: rgba(255, 255, 255, 0.78);
-  }
-  .hc-photo-body { position: relative; padding: 0 22px 22px; display: flex; flex-direction: column; gap: 7px; }
-  .hc-name { margin: 0; font-size: 29px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; color: #fff; }
-  .hc-desc { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, 0.84); max-width: 92%; text-wrap: pretty; }
-  .hc-photo-link {
-    align-self: flex-start;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #ffd900;
-    transition: gap 0.18s ease;
-  }
-  .hc-photo-link:hover { gap: 13px; color: #ffd900; }
-  .hc-photo-link svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-
-  .hc-body { padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 20px; }
-
-  /* Panel agenda: bidang hangat yang membedakan "apa yang terjadi minggu ini"
-     dari "berapa yang mau kamu kirim" di bawahnya. */
-  .hc-agenda {
-    background: #fffbeb;
-    border: 1px solid #fbe7a8;
-    border-radius: 16px;
-    padding: 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-  }
-  .hc-agenda-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-  .hc-agenda-kick {
-    margin: 0;
-    color: #b45309;
-  }
-  /* Ukurannya ditakar supaya tanggal plus nama lokasi yang panjang tetap muat
-     satu baris di lebar kartu. */
-  .hc-agenda-when {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
-    color: #1c1917;
-    text-wrap: balance;
-  }
-  .hc-sep { color: #b45309; font-weight: 600; }
-  .hc-agenda-count { flex: none; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; color: #b45309; white-space: nowrap; font-variant-numeric: tabular-nums; }
-
-  .hc-progress { display: flex; flex-direction: column; gap: 8px; }
-  .hc-bar { height: 7px; border-radius: 999px; background: rgba(180, 83, 9, 0.15); overflow: hidden; }
-  .hc-bar span { display: block; height: 100%; border-radius: 999px; background: #f4791d; }
-  .hc-progress-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .hc-progress-num { font-size: 12px; font-weight: 700; color: #92400e; font-variant-numeric: tabular-nums; }
-  .hc-progress-cut { font-size: 11px; font-weight: 600; color: #b45309; white-space: nowrap; }
-
-  /* ===== Pemilih porsi ===== */
-  .hc-pick { display: flex; flex-direction: column; gap: 12px; }
-  .hc-pick-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  .hc-pick-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.02em; color: #1c1917; }
-  .hc-price { font-size: 12px; font-weight: 600; color: #8a8279; white-space: nowrap; font-variant-numeric: tabular-nums; }
-
-  .hc-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-  .hc-chip {
-    border: 1.5px solid #e7e5e4;
-    background: #fff;
-    border-radius: 13px;
-    padding: 11px 6px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    cursor: pointer;
-    transition: border-color 0.16s ease, background-color 0.16s ease;
-  }
-  .hc-chip:hover { border-color: #f4791d; }
-  .hc-chip.is-active { border: 2px solid #f4791d; background: #fff7ed; }
-  .hc-chip-t { font-size: 15px; font-weight: 800; letter-spacing: -0.015em; color: #1c1917; }
-  .hc-chip-s { font-size: 11px; font-weight: 600; color: #78716c; }
-  .hc-chip.is-active .hc-chip-t, .hc-chip.is-active .hc-chip-s { color: #c25d0f; }
-
-  .hc-stepper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fafaf9;
-    border: 1px solid #eae7e2;
-    border-radius: 13px;
-    padding: 9px 12px;
-  }
-  .hc-stepper[hidden] { display: none; }
-  .hc-step {
-    width: 30px; height: 30px; flex: none;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid #e7e5e4;
-    display: grid;
-    place-items: center;
-    font-size: 18px;
-    font-weight: 700;
-    color: #1c1917;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-  }
-  .hc-step:hover { background: #f5f5f4; }
-  .hc-step-input {
-    flex: 1; min-width: 0;
-    font: inherit;
-    font-size: 16px;
-    font-weight: 800;
-    color: #1c1917;
-    text-align: center;
-    border: none;
-    background: transparent;
-    outline: none;
-    font-variant-numeric: tabular-nums;
-  }
-  /* Panah bawaan input number mengganggu di kontrol yang sudah punya tombolnya sendiri. */
-  .hc-step-input::-webkit-outer-spin-button,
-  .hc-step-input::-webkit-inner-spin-button { appearance: none; margin: 0; }
-  .hc-step-input { appearance: textfield; -moz-appearance: textfield; }
-  .hc-step-unit { font-size: 12px; font-weight: 600; color: #8a8279; white-space: nowrap; }
-
-  .hc-cta {
-    margin-top: 4px;
-    background: #f4791d;
-    color: #fff;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    padding: 16px;
-    border-radius: 999px;
-    text-align: center;
-    transition: background-color 0.18s ease;
-  }
-  .hc-cta:hover { background: #c25d0f; }
-
-  .hc-foot {
+  /* Ekor kartu donasi: tautan laporan yang dititipkan ke slot `foot`
+     DonationCard. Style-nya tinggal di sini karena isi slot ikut scope
+     komponen pemanggil. */
+  .hero-card-foot {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    border-top: 1px solid #f1efeb;
-    padding-top: 14px;
-    margin-top: -6px;
     font-size: 13px;
     font-weight: 600;
     color: #8a8279;
     transition: color 0.16s ease, gap 0.16s ease;
   }
-  .hc-foot:hover { color: #c25d0f; gap: 11px; }
-  .hc-foot svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .hero-card-foot:hover { color: #c25d0f; gap: 11px; }
+  .hero-card-foot svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero-link, .hc-photo-link, .hc-foot, .hc-chip, .hc-step, .hc-cta { transition: none; }
+    .hero-link, .hero-card-foot { transition: none; }
   }
 </style>
-
-<script>
-  import '../scripts/hero-donasi.js';
-</script>

@@ -2,6 +2,7 @@ import { getEntry } from 'astro:content';
 import { OGImageRoute } from 'astro-og-canvas';
 import { ogKeyFromPath } from '../../lib/seo';
 import { getProgramPages } from '../../lib/programs';
+import { getOrganisasiPages } from '../../lib/organisasi';
 import { getJejakPages } from '../../lib/jejak';
 
 /**
@@ -60,6 +61,25 @@ const programPages = Object.fromEntries(
 );
 
 /**
+ * Sama seperti program: cuma organisasi ber-halaman (aktif + Detail terisi)
+ * yang dibikinin OG image, sumbernya `getOrganisasiPages()` — sama dengan
+ * route dinamis `organisasi/[slug].astro` — jadi begitu editor mengaktifkan
+ * organisasi di Keystatic, share image-nya ikut ter-generate tanpa mengubah
+ * file ini.
+ */
+const organisasiPages = Object.fromEntries(
+  (await getOrganisasiPages())
+    .filter((org) => !(`organisasi/${org.slug}` in manualPages))
+    .map((org) => [
+      `organisasi/${org.slug}`,
+      {
+        title: `${org.label} | bagiberbagi.id`,
+        description: org.summary,
+      },
+    ])
+);
+
+/**
  * Tiap halaman detail jejak (`/jejak/{slug}/`) kebagian share image sendiri,
  * di-namespace `jejak/{slug}` supaya route-nya `/open-graph/jejak/{slug}.png`
  * dan tak bentrok dengan slug program. Sumbernya `getJejakPages()` — sama
@@ -78,7 +98,7 @@ const jejakPages = Object.fromEntries(
 );
 
 export const { getStaticPaths, GET } = await OGImageRoute({
-  pages: { ...programPages, ...jejakPages, ...manualPages },
+  pages: { ...programPages, ...organisasiPages, ...jejakPages, ...manualPages },
   getImageOptions: (_path, page: { title: string; description: string }) => ({
     title: page.title,
     description: page.description,

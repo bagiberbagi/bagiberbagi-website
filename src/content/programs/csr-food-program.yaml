@@ -4,7 +4,7 @@ order: 4
 active: true
 summary: Program CSR makanan untuk perusahaan, dengan paket dan laporan sesuai kebutuhan.
 stage:
-  kicker: Sesuai kebutuhan, untuk perusahaan
+  kicker: Ketika perusahaan turun tangan
   lead: ''
   status: Menunggu jejak pertama
   caption: Foto ilustrasi, bukan dokumentasi program ini

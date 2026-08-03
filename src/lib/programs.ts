@@ -17,6 +17,20 @@ export interface Program {
    */
   image: ImageMetadata | null;
   summary: string;
+  /**
+   * Teks slide program ini di "Panggung Bergilir" beranda. Semua field boleh
+   * kosong; konsumennya yang memutuskan apa jatuhan tiap baris kosong (mis.
+   * `lead` kosong = pakai `summary`).
+   */
+  stage: {
+    kicker: string;
+    lead: string;
+    status: string;
+    caption: string;
+    ctaLabel: string;
+    ctaWhatsapp: boolean;
+    ctaMessage: string;
+  };
   detail: { eyebrow: string; description: string; features: string[] };
   /** Terisi hanya jika program punya halaman detail (aktif + deskripsi terisi). */
   href?: string;

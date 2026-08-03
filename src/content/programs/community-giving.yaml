@@ -3,6 +3,16 @@ pintu: food
 order: 3
 active: true
 summary: Donasi makanan bersama komunitas untuk kegiatan berbagi rutin atau musiman.
+stage:
+  kicker: Sesuai kebutuhan, untuk komunitas
+  lead: ''
+  status: Menunggu jejak pertama
+  caption: Foto ilustrasi, bukan dokumentasi program ini
+  ctaLabel: Bicara lewat WhatsApp
+  ctaWhatsapp: true
+  ctaMessage: >-
+    Halo, saya dari sebuah komunitas dan ingin tahu lebih lanjut tentang
+    program "Community Giving".
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

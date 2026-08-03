@@ -457,6 +457,24 @@ export default config({
             description: 'Kartu besar berisi program pilihan, tepat di bawah cara kerja.',
           }
         ),
+        programStage: fields.object(
+          {
+            kicker: fields.text({ label: 'Baris kecil di atas judul' }),
+            title: fields.text({ label: 'Judul slide pertama' }),
+            lead: fields.text({ label: 'Paragraf slide pertama', multiline: true }),
+            statement: fields.text({
+              label: 'Kalimat penutup',
+              description:
+                'Muncul di pil bawah slide pertama. Nama program slide itu ditambahkan otomatis di depannya dengan huruf tebal, jadi tulis lanjutannya saja, contoh: bukan tujuan akhir, melainkan langkah pertama.',
+              multiline: true,
+            }),
+          },
+          {
+            label: 'Panggung Bergilir (slide pertama)',
+            description:
+              'Slide pertama pita foto besar membawa narasi seksinya, bukan narasi satu program. Teks slide berikutnya diatur di entri program masing-masing.',
+          }
+        ),
       },
     }),
 
@@ -547,9 +565,9 @@ export default config({
           description: 'Aktif + isi Detail terisi = program dapat halaman sendiri. Nonaktif tampil "Segera Hadir".',
         }),
         image: fields.image({
-          label: 'Foto kartu beranda',
+          label: 'Foto program',
           description:
-            'Dipakai saat program ini disorot di beranda (atur di menu Beranda). Rasio lanskap, minimal 900x560. Kosongkan untuk memakai foto bawaan.',
+            'Foto utama program ini: dipakai di slide Panggung Bergilir beranda, dan di kartu beranda saat program disorot. Rasio lanskap, minimal 1600x1000 karena slide-nya melebar penuh. Kosongkan untuk memakai foto jejak terbaru program ini; kalau jejaknya juga belum ada, slide-nya tampil abu sebagai tanda belum ada dokumentasi.',
           // Unggahan mendarat di src/assets, bukan public/, supaya foto lewat
           // astro:assets. publicPath wajib persis sama dengan kunci glob di
           // src/lib/programs.ts.
@@ -561,6 +579,48 @@ export default config({
           description: 'Deskripsi singkat untuk kartu program & menu.',
           multiline: true,
         }),
+        stage: fields.object(
+          {
+            kicker: fields.text({
+              label: 'Baris kecil di atas judul',
+              description: 'Contoh: Musiman, perorangan dan komunitas. Kosongkan kalau tidak perlu.',
+            }),
+            lead: fields.text({
+              label: 'Paragraf slide',
+              description: 'Kosongkan untuk memakai Ringkasan di atas. Isi hanya kalau slide butuh kalimat sendiri.',
+              multiline: true,
+            }),
+            status: fields.text({
+              label: 'Status menunggu',
+              description:
+                'Contoh: Menunggu Ramadhan berikutnya. Hanya tampil selama program ini belum punya Foto program dan belum punya jejak berfoto; hilang sendiri begitu dokumentasinya masuk.',
+            }),
+            caption: fields.text({
+              label: 'Sumber foto',
+              description:
+                'Baris kecil di pojok kanan atas slide. Kalau fotonya bukan dokumentasi program ini, katakan apa adanya di sini.',
+            }),
+            ctaLabel: fields.text({
+              label: 'Teks tombol',
+              defaultValue: 'Lihat program',
+            }),
+            ctaWhatsapp: fields.checkbox({
+              label: 'Tombol membuka WhatsApp',
+              description: 'Centang untuk mengarahkan tombol ke WhatsApp, bukan ke halaman program.',
+              defaultValue: false,
+            }),
+            ctaMessage: fields.text({
+              label: 'Pesan WhatsApp',
+              description: 'Teks yang sudah terisi di kolom pesan saat pengunjung menekan tombol. Dipakai hanya kalau pilihan di atas dicentang.',
+              multiline: true,
+            }),
+          },
+          {
+            label: 'Panggung Bergilir (beranda)',
+            description:
+              'Teks slide program ini di pita foto besar beranda. Judul slide memakai Nama Program, dan fotonya diambil dari Foto program atau jejak terbarunya.',
+          }
+        ),
         detail: fields.object(
           {
             eyebrow: fields.text({ label: 'Eyebrow', defaultValue: 'PROGRAM AKTIF' }),

@@ -3,6 +3,17 @@ pintu: food
 order: 2
 active: true
 summary: Paket Sahur, Takjil, atau Buka Puasa untuk yang membutuhkan selama Ramadhan.
+stage:
+  kicker: Musiman, perorangan dan komunitas
+  lead: >-
+    Paket Sahur, Takjil, atau Buka Puasa untuk yang membutuhkan selama
+    Ramadhan. Donasi diproses lewat WhatsApp, disalurkan bersama mitra UMKM
+    dan relawan lapangan, lalu dilaporkan dengan foto dan video maksimal H+1.
+  status: Menunggu Ramadhan berikutnya
+  caption: Foto ilustrasi, bukan dokumentasi program ini
+  ctaLabel: Lihat program
+  ctaWhatsapp: false
+  ctaMessage: ''
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

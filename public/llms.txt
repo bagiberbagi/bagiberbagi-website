@@ -5,16 +5,18 @@
 ## Tentang
 bagiberbagi.id (NGO) menghubungkan donatur, relawan, mitra dapur UMKM, komunitas, dan perusahaan (program CSR) untuk berbagi secara transparan dan terdokumentasi. Berawal dari program Jumat Berkah dan Ramadhan Berkah.
 
-## Lima Pintu Berbagi
-- Berbagi Makanan: paket makanan bergizi dari UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan.
-- Berbagi Barang: pakaian, buku, dan perlengkapan layak pakai.
-- Berbagi Waktu: relawan membagikan keahlian dan tenaga (mengajar, konsultasi, pendampingan).
-- Berbagi Ruang: aula, gudang, ruang pertemuan, dan kendaraan untuk kegiatan sosial.
-- Berbagi Dana: zakat, sedekah, CSR, dan donasi tepat sasaran.
+## Enam Pintu Berbagi
+- Berbagi Makanan: paket makanan bergizi dari UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan. https://www.bagiberbagi.id/berbagi-makanan/
+- Berbagi Barang: pakaian, buku, dan perlengkapan layak pakai. https://www.bagiberbagi.id/berbagi-barang/
+- Berbagi Waktu: relawan membagikan keahlian dan tenaga (mengajar, konsultasi, pendampingan). https://www.bagiberbagi.id/berbagi-waktu/
+- Berbagi Ruang: aula, gudang, ruang pertemuan, dan kendaraan untuk kegiatan sosial. https://www.bagiberbagi.id/berbagi-ruang/
+- Berbagi Dana: zakat, sedekah, CSR, dan donasi tepat sasaran. https://www.bagiberbagi.id/berbagi-dana/
+- Berbagi Pohon: donasi ditanam jadi pohon yang meneduhkan kota dan menyerap karbon. https://www.bagiberbagi.id/berbagi-pohon/
 
 ## Halaman Utama
 - Beranda: https://www.bagiberbagi.id/
-- Program Jumat Berkah: https://www.bagiberbagi.id/jumat-berkah/
+- Jejak & Dampak: https://www.bagiberbagi.id/jejak/
+- Program Jumat Berkah: https://www.bagiberbagi.id/program/jumat-berkah/
 - Tentang Kami: https://www.bagiberbagi.id/tentang/
 - FAQ: https://www.bagiberbagi.id/faq/
 - Transparansi: https://www.bagiberbagi.id/transparansi/

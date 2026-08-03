@@ -224,6 +224,20 @@ const extraSchema = video
         </div>
       )}
 
+      {/* Statistik duluan, sebelum galeri: angkanya adalah bukti, jadi dibaca
+          sebelum donatur diminta menggulir lebih jauh untuk foto lainnya. */}
+      {jejak.metrics.length > 0 && (
+        <div class:list={['grid gap-3 mb-8', metricCols]}>
+          {jejak.metrics.map((m) => (
+            <div class="rounded-card border border-border p-5">
+              <div class="text-heading-sm font-semibold text-ink tabular-nums leading-none">{formatMetric(m)}</div>
+              <div class="mt-1.5 h-0.75 w-6 rounded bg-[var(--cat)]"></div>
+              <div class="text-sm text-muted mt-2.5">{m.label}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <!-- carousel foto lain: strip scroll horizontal (nampung berapa pun), klik untuk perbesar -->
       {carousel.length > 0 && (
         <div class="relative mb-8" data-carousel>
@@ -265,19 +279,6 @@ const extraSchema = video
       {/* Video yang cuma bisa ditonton di situs lain: di bawah foto, bukan di
           slot utama, karena tautan tak bisa jadi pembuka halaman. */}
       {videoLink && <VideoEmbed video={videoLink} title={jejak.title} />}
-
-      <!-- statistik -->
-      {jejak.metrics.length > 0 && (
-        <div class:list={['grid gap-3 mb-8', metricCols]}>
-          {jejak.metrics.map((m) => (
-            <div class="rounded-card border border-border p-5">
-              <div class="text-heading-sm font-semibold text-ink tabular-nums leading-none">{formatMetric(m)}</div>
-              <div class="mt-1.5 h-0.75 w-6 rounded bg-[var(--cat)]"></div>
-              <div class="text-sm text-muted mt-2.5">{m.label}</div>
-            </div>
-          ))}
-        </div>
-      )}
 
       <!-- cerita (body Markdoc) -->
       <div

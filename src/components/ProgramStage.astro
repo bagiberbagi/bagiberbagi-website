@@ -25,17 +25,9 @@
 // developer.
 import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
-import type { ImageMetadata } from 'astro';
-import { getPrograms } from '../lib/programs';
-import { getJejak } from '../lib/jejak';
+import { getPrograms, getProgramCover } from '../lib/programs';
 import { getProgramStageIntro } from '../lib/home';
 import { buildWaLink } from '../lib/format';
-
-// The one photo left in code, and it is not content: it stands in for a program
-// that has no documentation at all yet, and it is only ever shown behind the
-// grey dormant treatment. As soon as the program gets its own photo or its
-// first jejak, this file stops being reached for that slide.
-import fallbackPhoto from '../assets/images/program-promo.png';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -43,44 +35,37 @@ const waNumber = site.data.waNumber;
 
 const intro = await getProgramStageIntro();
 
-// Newest jejak photo per program. `getJejak()` already hands them over sorted
-// newest first, so the first hit per program wins and nothing needs re-sorting.
-// A jejak whose cover file is missing is skipped rather than counted, since a
-// program with no usable photo still has nothing to show.
-const covers = new Map<string, { image: ImageMetadata; title: string }>();
-for (const jejak of await getJejak()) {
-  if (!jejak.cover || covers.has(jejak.program)) continue;
-  covers.set(jejak.program, { image: jejak.cover, title: jejak.title });
-}
-
 // Every active program becomes a slide, and what it looks like follows from its
-// data alone:
+// data alone: a program with a cover of its own shows it, and one without has
+// nothing to document yet, so it takes the shared stand-in behind a grey wash
+// and says what it is waiting for.
 //
-//   1. its own uploaded photo, if the editor gave it one;
-//   2. otherwise the cover of its newest jejak;
-//   3. otherwise it has no documentation at all, so it takes the stand-in photo
-//      behind the grey wash and shows its waiting status.
+// `getProgramCover` is the single answer to "what does this program look like",
+// shared with the hero donation card, the program page, and the jejak CTA, so
+// this band cannot drift into showing a different face from the rest of the
+// site. An earlier version of this component slipped a third layer in between,
+// falling back to the newest jejak cover before the stand-in. That is the same
+// chain `programs.ts` tried and removed: "newest" is a date order rather than a
+// choice, so it promoted whichever frame happened to be latest to be the face
+// of the program, and changed that face again on every new jejak.
 //
-// Rule 3 is also what decides the running order. Programs carrying real
-// documentation come first and the ones still waiting sink to the back: the
-// band opens on its strongest evidence, and the grey slides land at the end
-// where they read as what is coming rather than as a gap in the middle of the
-// run. Sorting happens before the second map because `index` there decides both
-// the counter and which slide inherits the h2. `sort` is stable, so inside each
-// group the collection's own `order` still decides.
+// The same test decides the running order. Programs carrying a cover come first
+// and the ones still waiting sink to the back, so the band opens on its
+// strongest evidence and the grey slides land at the end where they read as
+// what is coming rather than as a gap in the middle of the run. Sorting happens
+// before the second map because `index` there decides both the counter and
+// which slide inherits the h2. `sort` is stable, so inside each group the
+// collection's own `order` still decides.
 const programs = await getPrograms();
 const slides = programs
   .filter((program) => program.active)
   .map((program) => {
     const stage = program.stage;
-    const cover = covers.get(program.slug);
-    const photo = program.image ?? cover?.image ?? fallbackPhoto;
-    const dormant = program.image === null && cover === undefined;
-    const alt = program.image
-      ? `Dokumentasi program ${program.label}`
-      : cover
-        ? `Dokumentasi ${cover.title}`
-        : `Foto ilustrasi untuk program ${program.label}`;
+    const photo = getProgramCover(program);
+    const dormant = program.image === null;
+    const alt = dormant
+      ? `Foto ilustrasi untuk program ${program.label}`
+      : `Dokumentasi program ${program.label}`;
 
     return {
       slug: program.slug,

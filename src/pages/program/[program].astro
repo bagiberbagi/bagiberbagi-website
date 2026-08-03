@@ -81,7 +81,7 @@ const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: '
 
 // Foto hero memakai cover program, sumber yang sama dengan kartu hero beranda
 // dan ajakan di detail jejak.
-const cover = await getProgramCover(program);
+const cover = getProgramCover(program);
 
 // Agenda mingguan di `settings` menggambarkan program yang sedang berjalan,
 // yaitu program aktif pertama — konvensi yang sama dengan kartu hero beranda.

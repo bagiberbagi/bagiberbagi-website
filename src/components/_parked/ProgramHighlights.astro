@@ -23,7 +23,7 @@ const cards = await Promise.all(
   highlighted.map(async (p) => ({
     ...p,
     impact: await getProgramImpact(p.slug),
-    cover: await getProgramCover(p),
+    cover: getProgramCover(p),
   }))
 );
 

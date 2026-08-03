@@ -38,7 +38,7 @@ const ctaHref = program?.href ?? `/berbagi-${pintu.slug}/`;
 // Foto program yang sama dengan yang dipakai kartu hero beranda dan hero
 // halaman program, supaya ajakan di bawah memperlihatkan wajah programnya,
 // bukan bidang warna tanpa gambar.
-const programCover = program ? await getProgramCover(program) : null;
+const programCover = program ? getProgramCover(program) : null;
 
 // Body naratif Markdoc.
 const entry = await getEntry('jejak', jejak.slug);

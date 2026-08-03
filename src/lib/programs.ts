@@ -64,27 +64,18 @@ export async function getPrograms(): Promise<Program[]> {
 
 /**
  * Foto satu program, dipakai di mana pun program itu ditampilkan: kartu program
- * berjalan di hero beranda, hero halaman program, dan ajakan ke program di
- * detail jejak. Satu program karena itu selalu tampil dengan foto yang sama,
- * bukan foto bawaan yang beda-beda per komponen seperti sebelumnya.
+ * berjalan di hero beranda, hero halaman program, kartu sorotan, dan ajakan ke
+ * program di detail jejak. Satu program karena itu selalu tampil dengan foto
+ * yang sama, bukan foto bawaan yang beda-beda per komponen seperti sebelumnya.
  *
- * Urutan sumbernya: foto yang diunggah editor di Keystatic, lalu dokumentasi
- * jejak terbaru program itu, lalu foto bawaan. Rantai itu tinggal di sini
- * supaya program yang belum punya foto sendiri tetap tampil sama di semua
- * halaman, bukan satu halaman memakai foto lapangan dan halaman lain memakai
- * gambar promo.
- *
- * `jejak.ts` mengimpor modul ini, jadi impor baliknya ditaruh di dalam fungsi
- * supaya tak jadi lingkaran — pola yang sama dengan `impact.ts`.
+ * Sumbernya cuma dua: foto yang dipilih editor di Keystatic, lalu foto bawaan.
+ * Sempat ada lapisan ketiga di tengah, yaitu cover jejak terbaru program itu,
+ * dan itu dibuang: "terbaru" adalah urutan tanggal, bukan pilihan, jadi yang
+ * naik jadi wajah program bisa saja foto seremonial di depan spanduk — dan
+ * wajah itu ikut berubah sendiri tiap kali ada jejak baru.
  */
-export async function getProgramCover(
-  program: Pick<Program, 'slug' | 'image'>
-): Promise<ImageMetadata> {
-  if (program.image) return program.image;
-
-  const { getJejakByProgram } = await import('./jejak');
-  const jejak = await getJejakByProgram(program.slug);
-  return jejak.find((j) => j.cover)?.cover ?? defaultProgramCover;
+export function getProgramCover(program: Pick<Program, 'image'>): ImageMetadata {
+  return program.image ?? defaultProgramCover;
 }
 
 export async function getProgramsByPintu(pintu: PintuId): Promise<Program[]> {

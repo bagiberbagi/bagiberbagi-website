@@ -31,7 +31,7 @@ const programLabel = program?.label ?? 'Jumat Berkah';
 // Foto program berjalan datang dari sumber yang sama dengan halaman program dan
 // ajakan di detail jejak, jadi program yang sama tak pernah tampil dengan dua
 // foto berbeda tergantung halamannya.
-const programCover = program ? await getProgramCover(program) : defaultCover;
+const programCover = program ? getProgramCover(program) : defaultCover;
 
 const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 ---

@@ -3,6 +3,17 @@ pintu: food
 order: 3
 active: true
 summary: Donasi makanan bersama komunitas untuk kegiatan berbagi rutin atau musiman.
+image: /src/assets/programs/community-giving-46cyclist.jpeg
+stage:
+  kicker: Ketika komunitas bergerak bersama
+  lead: ''
+  status: ''
+  caption: Komunitas 46Cyclist, Dukuh Atas, 31 Juli 2026
+  ctaLabel: Diskusikan kerja sama
+  ctaWhatsapp: true
+  ctaMessage: >-
+    Halo, saya dari sebuah komunitas dan ingin tahu lebih lanjut tentang
+    program "Community Giving".
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

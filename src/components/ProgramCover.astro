@@ -1,0 +1,144 @@
+---
+/**
+ * Wajah satu program.
+ *
+ * Aturannya: cover milik program itu sendiri kalau ada, kalau tidak ada IKON
+ * PINTU-nya, bukan foto bawaan. Sebabnya bukan selera. `getProgramCover` di
+ * `programs.ts` memulangkan `program-promo.png` untuk program tanpa cover, dan
+ * foto itu foto penyaluran nyata; memasangnya sebagai wajah CSR Food Program
+ * atau Ramadhan Berbagi berarti menampilkan kegiatan yang bukan milik mereka
+ * seolah-olah milik mereka. Ikon pintu tidak mengaku apa-apa: ia menyatakan
+ * kategori, dan kategori itu memang benar.
+ *
+ * Polanya menyalin placeholder `JejakCard.astro`: bidang bertint warna pintu
+ * dengan ikon pintu di tengah. Kedua jalur selalu sebentuk dan seukuran supaya
+ * tata letak tidak bergeser antara program yang punya cover dan yang belum.
+ *
+ * Dua varian, dan keduanya slot yang sudah ada di halaman, bukan ukuran baru:
+ *
+ * - `tile` 72px (56px di bawah 768px), buat baris daftar program di halaman
+ *   pintu. Ikonnya langsung di atas tint, tanpa badge putih, karena di ukuran
+ *   segitu ubinnya sendiri sudah berperan sebagai badge.
+ * - `hero` mengisi kolomnya, dipakai kepala halaman program. Di sini ikonnya
+ *   dibungkus badge putih persis seperti `JejakCard`, sebab ikon telanjang di
+ *   bidang 448x320 terbaca sebagai gambar yang gagal dimuat, bukan sebagai
+ *   penanda kategori.
+ *
+ * Warna diambil dari `pintu` lewat style inline, bukan dari `--cat` milik
+ * leluhur, supaya komponen ini tetap benar di mana pun ia dipakai.
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Pintu } from '../consts';
+import type { Program } from '../lib/programs';
+
+interface Props {
+  program: Pick<Program, 'image'>;
+  pintu: Pintu;
+  variant?: 'tile' | 'hero';
+  /** Program yang belum dibuka: ubinnya kehilangan warna pintu. */
+  muted?: boolean;
+  /** Kosong = dekoratif, dipakai saat nama programnya sudah ada di sebelahnya. */
+  alt?: string;
+}
+
+const { program, pintu, variant = 'tile', muted = false, alt = '' } = Astro.props;
+
+const isHero = variant === 'hero';
+const vars = `--pc:${pintu.color};--pc-tint:${pintu.colorTint}`;
+const widths = isHero ? [360, 448, 680, 896] : [72, 144, 216];
+const sizes = isHero ? '(min-width: 1024px) 448px, (min-width: 768px) 50vw, 100vw' : '72px';
+---
+
+{program.image ? (
+  <div class:list={['pcover', isHero ? 'is-hero' : 'is-tile', muted && 'is-muted']} style={vars}>
+    <Image
+      src={program.image}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      loading={isHero ? 'eager' : 'lazy'}
+      class="pcover-img"
+    />
+  </div>
+) : (
+  <div
+    class:list={['pcover', 'is-icon', isHero ? 'is-hero' : 'is-tile', muted && 'is-muted']}
+    style={vars}
+    role={alt ? 'img' : undefined}
+    aria-label={alt || undefined}
+    aria-hidden={alt ? undefined : 'true'}
+  >
+    {isHero ? (
+      <span class="pcover-badge"><Icon name={pintu.icon} size={64} /></span>
+    ) : (
+      <Icon name={pintu.icon} size={30} />
+    )}
+  </div>
+)}
+
+<style>
+  .pcover {
+    overflow: hidden;
+    background: var(--pc-tint);
+  }
+  .pcover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pcover.is-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pc);
+  }
+
+  .pcover.is-tile {
+    flex: none;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+  }
+
+  /* Bentuk dan ukurannya menyalin foto yang dulu ada di slot ini, jadi kolomnya
+     tidak bergeser: 4/3 saat menumpuk, lalu tinggi mengikuti kolom teks di
+     sebelahnya dengan lantai 320px begitu gridnya jadi dua kolom. Radius 20px
+     dan shadow ini nilai token `rounded-card` dan `shadow-card`. */
+  .pcover.is-hero {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 20px;
+    box-shadow: 0 34px 64px -30px color-mix(in srgb, var(--pc) 60%, transparent);
+  }
+  @media (min-width: 768px) {
+    /* Cuma jalur berfoto yang ikut meregang setinggi kolom teks di sebelahnya.
+       Jalur ikon tetap 4/3, sebab ikon di bidang 448x558 tidak proporsional
+       terhadap bidangnya dan terbaca sebagai gambar yang gagal dimuat, bukan
+       sebagai penanda kategori. DESIGN_SYSTEM menyebut elemen visual yang tak
+       proporsional terhadap bidangnya sebagai cacat, bukan kesederhanaan. */
+    .pcover.is-hero { aspect-ratio: auto; min-height: 320px; }
+    .pcover.is-hero.is-icon { aspect-ratio: 4 / 3; height: auto; }
+  }
+  .pcover-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 152px;
+    height: 152px;
+    border-radius: 38px;
+    background: #fff;
+    box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.25);
+  }
+
+  /* Program yang belum dibuka dilepas dari warna pintunya. Statusnya jadi
+     terbaca dari ubinnya juga, bukan cuma dari badge di ujung kanan baris. */
+  .pcover.is-muted { background: #f1f4f7; color: #9aa6b5; }
+  .pcover.is-muted .pcover-img { filter: grayscale(1); opacity: 0.75; }
+
+  @media (max-width: 767px) {
+    .pcover.is-tile { width: 56px; height: 56px; border-radius: 13px; }
+  }
+</style>

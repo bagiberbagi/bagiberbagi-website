@@ -3,6 +3,16 @@ pintu: food
 order: 4
 active: true
 summary: Program CSR makanan untuk perusahaan, dengan paket dan laporan sesuai kebutuhan.
+stage:
+  kicker: Ketika perusahaan turun tangan
+  lead: ''
+  status: Menunggu jejak pertama
+  caption: Foto ilustrasi, bukan dokumentasi program ini
+  ctaLabel: Diskusikan kerja sama
+  ctaWhatsapp: true
+  ctaMessage: >-
+    Halo, saya mewakili perusahaan dan ingin tahu lebih lanjut tentang program
+    "CSR Food Program".
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

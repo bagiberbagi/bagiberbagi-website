@@ -3,5 +3,11 @@
     "eyebrow": "PROGRAM AKTIF",
     "title": "Salurkan Kebaikan Melalui Program Kami",
     "items": ["jumat-berkah"]
+  },
+  "programStage": {
+    "kicker": "Mengapa mulai dari makanan",
+    "title": "Setiap perjalanan besar dimulai dari satu langkah.",
+    "lead": "Makanan adalah kebutuhan paling dasar. Kami memulai dari yang paling dekat dengan kehidupan sehari-hari, bersama UMKM dan relawan di sekitar.",
+    "statement": "bukan tujuan akhir, melainkan langkah pertama."
   }
 }

@@ -29,13 +29,18 @@
       "title": "Kemitraan",
       "links": [
         {
+          "label": "Organisasi Mitra",
+          "href": "/organisasi/",
+          "target": "_self"
+        },
+        {
           "label": "Jadi Mitra Dapur UMKM",
           "href": "/#tentang",
           "target": "_self"
         },
         {
           "label": "CSR Korporasi",
-          "href": "/#tentang",
+          "href": "/organisasi/",
           "target": "_self"
         },
         {

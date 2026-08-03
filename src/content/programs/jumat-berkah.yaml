@@ -4,6 +4,14 @@ order: 1
 active: true
 image: /src/assets/programs/jumat-berkah.png
 summary: Paket makanan bergizi setiap Jumat untuk yang membutuhkan.
+stage:
+  kicker: Mengapa mulai dari makanan
+  lead: ''
+  status: Menunggu jejak pertama
+  caption: Dokumentasi Jumat Berkah, Bogor
+  ctaLabel: Lihat program
+  ctaWhatsapp: false
+  ctaMessage: ''
 detail:
   eyebrow: PROGRAM AKTIF
   description: >-

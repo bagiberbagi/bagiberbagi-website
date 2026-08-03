@@ -4,7 +4,7 @@ import Hero from '../components/Hero.astro';
 import ProblemSection from '../components/ProblemSection.astro';
 import SolutionSection from '../components/SolutionSection.astro';
 import TrustSection from '../components/TrustSection.astro';
-import WhyFood from '../components/WhyFood.astro';
+import ProgramStage from '../components/ProgramStage.astro';
 import ImpactSection from '../components/ImpactSection.astro';
 // JejakTerbaru disembunyikan sementara di beranda (desain belum solid dengan
 // home saat ini). Komponen & data tetap ada; showcase penuh di /jejak.
@@ -37,9 +37,12 @@ import ClosingSection from '../components/ClosingSection.astro';
   <SolutionSection />
 
   {/* Bukti bahwa alur di atas benar-benar dijalankan, lalu jembatan ke program
-      pertama: kenapa gerakan ini dimulai dari makanan. */}
+      pertama: kenapa gerakan ini dimulai dari makanan. Panggung bergilir ini
+      menggantikan WhyFood: slide pertamanya membawa seluruh teks seksi itu
+      apa adanya, tiga slide berikutnya memberi wajah pada program lain yang
+      juga sedang berjalan. */}
   <TrustSection />
-  <WhyFood />
+  <ProgramStage />
 
   <ImpactSection />
   {/* <JejakTerbaru /> disembunyikan sementara (desain belum selaras home). */}

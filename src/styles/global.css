@@ -45,6 +45,42 @@
     padding-block: calc(var(--nav-h) + var(--section-y)) var(--section-y);
   }
 
+  /* Ritme lega yang dipakai seluruh seksi beranda (py-24 md:py-32). Ia bekerja
+     dengan menimpa `--section-y` di elemen itu sendiri, bukan dengan menulis
+     padding baru, jadi ia otomatis ikut dipakai `.section` MAUPUN
+     `.section-hero` tanpa perlu varian kedua untuk masing-masing.
+
+     Halaman non-beranda lahir dengan ritme 88px yang lebih rapat. Berdampingan
+     dengan beranda selisih ini terbaca sebagai halaman yang lebih sesak, jadi
+     halaman yang memang ingin senapas dengan beranda menambahkan kelas ini. */
+  .section-lg {
+    --section-y: 4rem;
+  }
+  @media (min-width: 48rem) {
+    .section-lg {
+      --section-y: 128px;
+    }
+  }
+
+  /* Judul dan pengantar seksi, seukuran beranda.
+     Angkanya disalin dari scoped style seksi beranda (TrustSection,
+     ImpactSection, MissionSection) yang semuanya memakai skala sama. Ditaruh di
+     sini supaya halaman di luar beranda tak perlu menyalin ulang nilai clamp-nya
+     satu per satu — token fontSize di tailwind.config berhenti di ukuran tetap,
+     dan `heading-lg` (34px) memang lebih kecil dari puncak clamp ini (46px). */
+  .section-title {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .section-lead {
+    font-size: clamp(17px, 1.5vw, 19px);
+    line-height: 1.65;
+  }
+
   .eyebrow {
     @apply text-brand-orange font-bold text-eyebrow tracking-wide uppercase mb-3;
   }

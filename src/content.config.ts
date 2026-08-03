@@ -162,6 +162,28 @@ const programs = defineCollection({
   }),
 });
 
+// Donor institusional (komunitas atau perusahaan) yang memberi rutin, satu
+// schema tanpa subtipe karena strukturnya identik — lihat design.md keputusan
+// #2. Publish gate meniru programs: active + detail.description terisi.
+const organisasi = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/organisasi' }),
+  schema: z.object({
+    label: z.string(),
+    // fields.image menulis null saat dikosongkan; nullish() menerima null & undefined.
+    logo: z.string().nullish(),
+    summary: z.string(),
+    detail: z
+      .object({
+        description: z.string().default(''),
+        since: z.string().default(''),
+        instagram: z.string().optional(),
+        website: z.string().optional(),
+      })
+      .default({ description: '', since: '', instagram: '', website: '' }),
+    active: z.boolean().default(false),
+  }),
+});
+
 /**
  * Penempatan di beranda, dipisah dari isi program: program menjawab "apa ini",
  * beranda menjawab "mana yang dipajang dan urutannya". Slug di `items` adalah
@@ -185,6 +207,11 @@ const jejak = defineCollection({
   schema: z.object({
     title: z.string(),
     program: z.string(), // slug program induk (relationship)
+    // Relationship opsional, lateral terhadap `program` (bukan field di
+    // dalamnya): satu organisasi bisa punya jejak di beberapa program, jadi
+    // slug-nya disimpan sendiri, bukan bersarang. fields.relationship menulis
+    // null saat dikosongkan.
+    organisasi: z.string().nullish(),
     date: z.string(), // ISO YYYY-MM-DD
     location: z.string(),
     // Titik peta, opsional dan boleh lebih dari satu: satu kali penyaluran
@@ -220,6 +247,11 @@ const jejak = defineCollection({
         orientation: z.enum(['landscape', 'portrait']).default('landscape'),
       })
       .default({ url: '', poster: null, caption: '', orientation: 'landscape' }),
+    // Laporan PDF (mis. ESG/CSR summary) unggahan manual editor, tanpa generate
+    // otomatis (design.md keputusan #6). fields.file menulis null saat
+    // dikosongkan; disajikan apa adanya dari public/, bukan lewat astro:assets,
+    // sama seperti foto kartu program.
+    reportPdf: z.string().nullish(),
     published: z.boolean().default(false),
   }),
 });
@@ -275,4 +307,4 @@ const analytics = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, home, jejak, footer, analytics };
+export const collections = { legal, settings, seo, about, faq, programs, organisasi, home, jejak, footer, analytics };

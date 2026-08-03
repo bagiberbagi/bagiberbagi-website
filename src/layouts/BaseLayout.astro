@@ -104,6 +104,40 @@ const organization = site
       logo: new URL(seo.organization.logo, Astro.site).href,
       description: seo.defaultDescription,
       email: site.data.socials.email,
+      // WhatsApp adalah kanal donasi sungguhan situs ini, bukan pelengkap, jadi
+      // nomornya disebut sebagai contactPoint alih-alih cuma hidup di dalam
+      // tautan `wa.me`. Bentuk E.164 dipakai apa adanya dari settings.
+      //
+      // `address` dan `foundingDate` SENGAJA belum ada di sini. Keduanya berguna
+      // untuk entitas organisasi di mata mesin pencari, tapi keduanya juga
+      // pernyataan fakta: mengisinya dengan tebakan berarti menerbitkan data
+      // palsu yang dibaca mesin sebagai kebenaran. Field-nya sudah disiapkan di
+      // Keystatic, tinggal diisi pemilik.
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        telephone: site.data.waNumber,
+        email: site.data.socials.email,
+        availableLanguage: ['id'],
+      },
+      // Syaratnya isi, bukan keberadaan: Keystatic menulis objek berisi string
+      // kosong saat editor melewatinya, bukan null, jadi `address ? ...` akan
+      // menerbitkan alamat hampa yang justru lebih buruk daripada tak ada.
+      ...(seo.organization.address?.locality
+        ? {
+            address: {
+              '@type': 'PostalAddress',
+              addressLocality: seo.organization.address.locality,
+              ...(seo.organization.address.region
+                ? { addressRegion: seo.organization.address.region }
+                : {}),
+              addressCountry: seo.organization.address.country || 'ID',
+            },
+          }
+        : {}),
+      ...(seo.organization.foundingDate?.trim()
+        ? { foundingDate: seo.organization.foundingDate.trim() }
+        : {}),
       sameAs: [
         `https://www.instagram.com/${site.data.socials.instagram}/`,
         `https://www.tiktok.com/@${site.data.socials.tiktok}`,

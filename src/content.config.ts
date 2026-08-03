@@ -82,6 +82,19 @@ const seo = defineCollection({
       type: z.enum(['NGO', 'Organization']),
       name: z.string(),
       logo: z.string(),
+      // Dua-duanya opsional dan sengaja dibiarkan kosong sampai pemilik
+      // mengisinya. Keduanya masuk JSON-LD sebagai pernyataan fakta tentang
+      // organisasi, jadi tebakan di sini berarti menerbitkan data palsu yang
+      // dibaca mesin pencari sebagai kebenaran. Blok yang kosong tak dirender
+      // sama sekali (lihat BaseLayout), jadi kosong tetap aman.
+      address: z
+        .object({
+          locality: z.string(),
+          region: z.string().default(''),
+          country: z.string().default('ID'),
+        })
+        .nullish(),
+      foundingDate: z.string().nullish(),
     }),
     pages: z.array(
       z.object({

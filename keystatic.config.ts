@@ -174,10 +174,30 @@ export default config({
             }),
             name: fields.text({ label: 'Nama organisasi' }),
             logo: fields.text({ label: 'Path logo', description: 'Contoh: /favicon/apple-touch-icon.png' }),
+            // Boleh dikosongkan. Yang kosong tidak dirender ke JSON-LD sama
+            // sekali, jadi lebih baik kosong daripada diisi kira-kira: ini
+            // dibaca mesin pencari sebagai pernyataan fakta tentang lembaga.
+            address: fields.object(
+              {
+                locality: fields.text({ label: 'Kota / kabupaten' }),
+                region: fields.text({ label: 'Provinsi', description: 'Boleh dikosongkan.' }),
+                country: fields.text({ label: 'Kode negara', description: 'Dua huruf, mis. ID.' }),
+              },
+              {
+                label: 'Alamat',
+                description:
+                  'Isi hanya kalau alamatnya memang benar. Kosongkan kalau belum pasti, jangan dikira-kira.',
+              }
+            ),
+            foundingDate: fields.text({
+              label: 'Tanggal berdiri',
+              description: 'Format YYYY-MM-DD atau YYYY. Kosongkan kalau belum pasti.',
+            }),
           },
           {
             label: 'Organisasi (structured data)',
-            description: 'Email dan akun sosial diambil dari Site Settings.',
+            description:
+              'Email, nomor WhatsApp, dan akun sosial diambil dari Site Settings. Alamat dan tanggal berdiri boleh dikosongkan.',
           }
         ),
         pages: fields.array(

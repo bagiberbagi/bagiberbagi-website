@@ -212,7 +212,13 @@ const jejak = defineCollection({
     // slug-nya disimpan sendiri, bukan bersarang. fields.relationship menulis
     // null saat dikosongkan.
     organisasi: z.string().nullish(),
-    date: z.string(), // ISO YYYY-MM-DD
+    // ISO YYYY-MM-DD sebagai string. Keystatic Cloud kadang menulis field ini
+    // sebagai scalar YAML tanpa quote (`date: 2026-07-31`), yang di-parse jadi
+    // Date, bukan string. Makanya di sini diterima keduanya lalu dinormalkan,
+    // supaya build tak gagal tiap kali entry jejak disimpan ulang lewat CMS.
+    date: z
+      .union([z.string(), z.date()])
+      .transform((d) => (typeof d === 'string' ? d : d.toISOString().slice(0, 10))),
     location: z.string(),
     // Titik peta, opsional dan boleh lebih dari satu: satu kali penyaluran
     // sering berpindah beberapa tempat yang berdekatan. `location` di atas tetap

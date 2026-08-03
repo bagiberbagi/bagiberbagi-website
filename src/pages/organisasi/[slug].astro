@@ -47,7 +47,15 @@ const [jejak, impact, programs] = await Promise.all([
 ]);
 
 const hasJejak = jejak.length > 0;
-const mainMetric = impact.metrics[0];
+
+// Kegiatan terakhir, isi kartu hero. `jejak` sudah urut tanggal desc.
+const latestJejak = jejak[0] ?? null;
+
+// Angka per kegiatan di kartu Rekam Jejak cuma berguna kalau ada beberapa
+// kegiatan untuk dibandingkan. Saat organisasi baru punya satu, angka kartunya
+// persis sama dengan hasil penjumlahan di band biru tepat di atasnya, jadi
+// pengulangannya disembunyikan dan band biru tetap jadi pemilik tunggal angka.
+const singleJejak = jejak.length === 1;
 
 // Pintu induk tiap jejak dipetakan lewat programnya: JejakCard butuh entri PINTU
 // utuh (warna + ikon), bukan cuma id-nya. Resolusinya sama persis dengan feed
@@ -74,11 +82,15 @@ const monthYearFmt = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'nu
 const firstDate = jejak.at(-1)?.date ?? null;
 const since = org.detail.since.trim() || (firstDate ? monthYearFmt.format(new Date(firstDate)) : '');
 
-// Nilai metrik panjang (mis. "Rp 5.500.000") meluber di kartu hero yang cuma
-// sekitar 450px, jadi ukurannya turun satu tingkat saat angkanya panjang — pola
-// sadar-panjang yang sama dengan kartu jejak.
-const heroNumClass = (s: string) =>
-  s.length > 8 ? 'text-heading md:text-heading-lg' : 'text-display md:text-display-lg';
+// Tanggal kegiatan terakhir untuk kartu hero, ditulis lengkap karena ia berdiri
+// sendiri sebagai isi kartu, bukan sebagai baris meta di antara data lain.
+const fullDateFmt = new Intl.DateTimeFormat('id-ID', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const lastJejakDateLabel = latestJejak ? fullDateFmt.format(new Date(latestJejak.date)) : '';
 
 // Rincian program: lewat program mana saja organisasi ini berkontribusi, dan
 // berapa kegiatan di masing-masing. Diurutkan dari yang paling sering karena
@@ -199,8 +211,14 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           )}
         </div>
 
-        {hasJejak && (
-          <div class="rounded-card bg-white shadow-cardSoft overflow-hidden">
+        {hasJejak && latestJejak && (
+          <a
+            href={latestJejak.href}
+            data-track="jejak_click"
+            data-track-jejak={latestJejak.slug}
+            data-track-source="organisasi_hero"
+            class="group block rounded-card bg-white shadow-cardSoft overflow-hidden transition-shadow hover:shadow-card"
+          >
             {heroPhoto && (
               /* Kolom kanan = separuh grid 2 kolom di Container tier `standard`
                  (isi 944px di layar lebar) dikurangi gap 40px, sekitar 452px di
@@ -215,28 +233,34 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                 class="w-full aspect-[16/10] object-cover"
               />
             )}
+            {/* Kartu ini SENGAJA tak memuat satu pun angka metrik: band biru di
+                bawahnya adalah pemilik tunggal angka. Saat organisasi baru punya
+                satu kegiatan, penjumlahan di band itu menghasilkan angka yang
+                identik dengan angka kegiatan itu sendiri, jadi menaruhnya di
+                sini juga membuat "40 porsi" muncul tiga kali dalam satu layar.
+
+                Judul kegiatannya ikut ditulis karena saat cuma ada satu jejak,
+                seksi "Rekam Jejak" di bawah tidak dirender sama sekali (lihat
+                alasannya di sana) dan kartu inilah satu-satunya jalan ke
+                halaman dokumentasinya. */}
             <div class="p-6 md:p-7">
-              {mainMetric && (
-                <Fragment>
-                  <p class="label text-muted">Sudah terkumpul</p>
-                  <div class:list={['font-semibold text-brand-blue tabular-nums leading-none mt-2', heroNumClass(formatMetric(mainMetric))]}>
-                    {formatMetric(mainMetric)}
-                  </div>
-                  <div class="text-body-sm font-semibold text-muted capitalize mt-2">{mainMetric.label}</div>
-                </Fragment>
-              )}
-              <div class:list={['grid grid-cols-2 gap-4', mainMetric && 'mt-5 pt-5 border-t border-border']}>
-                <div>
-                  <div class="text-title font-semibold text-ink tabular-nums leading-none">{jejak.length}</div>
-                  <div class="text-micro text-muted mt-1.5">kegiatan</div>
-                </div>
-                <div>
-                  <div class="text-title font-semibold text-ink tabular-nums leading-none">{impact.programCount}</div>
-                  <div class="text-micro text-muted mt-1.5">program</div>
-                </div>
+              <p class="label text-muted">Kegiatan terakhir</p>
+              <div class="text-title font-semibold text-ink leading-snug mt-2 transition-colors group-hover:text-brand-blue">
+                {singleJejak ? latestJejak.title : lastJejakDateLabel}
               </div>
+              <div class="flex items-start gap-2 text-body-sm text-muted mt-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="flex-none mt-0.5 text-brand-blue"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+                <span>
+                  {lastJejakDateLabel}
+                  {latestJejak.location && <Fragment> &middot; {latestJejak.location}</Fragment>}
+                </span>
+              </div>
+              <span class="inline-flex items-center gap-1.5 font-bold text-body-sm text-brand-blue mt-4">
+                Lihat dokumentasi lengkap
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+              </span>
             </div>
-          </div>
+          </a>
         )}
       </div>
     </Container>
@@ -254,8 +278,11 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
       <Container class="relative">
         <div class="eyebrow text-brand-yellow">Dashboard Dampak</div>
         <h2 class="od-h2">Kontribusi {org.label}</h2>
+        {/* Kalimat pengantar cukup menerangkan ASAL angkanya, tanpa mengulang
+            jumlah kegiatan: hitungan itu sudah dibawa chip program di bawah,
+            dan sebelumnya sempat muncul tiga kali dalam satu layar. */}
         <p class="od-lead">
-          Semua angka di bawah dijumlahkan dari {jejak.length} kegiatan yang dijalankan bersama {org.label}, satu per satu dari catatan penyalurannya. Tidak ada angka yang ditulis terpisah di halaman ini.
+          Dihitung dari catatan tiap penyaluran yang dijalankan bersama {org.label}, bukan dari pembukuan terpisah.
         </p>
 
         {impact.metrics.length > 0 && (
@@ -284,12 +311,16 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                     class="od-chip"
                   >
                     {p.label}
-                    <span class="od-chip-n">{p.count} kegiatan</span>
+                    {/* Hitungan cuma ditulis kalau memang lebih dari satu:
+                        "1 kegiatan" di sebelah satu-satunya program tak
+                        menambah apa pun selain angka yang sudah ada di tempat
+                        lain. */}
+                    {p.count > 1 && <span class="od-chip-n">{p.count} kegiatan</span>}
                   </a>
                 ) : (
                   <span class="od-chip">
                     {p.label}
-                    <span class="od-chip-n">{p.count} kegiatan</span>
+                    {p.count > 1 && <span class="od-chip-n">{p.count} kegiatan</span>}
                   </span>
                 )
               )}
@@ -300,34 +331,45 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     </section>
   )}
 
-  <!-- REKAM JEJAK: kartu foto yang sama dengan feed /jejak, bukan kartu strip
-       bespoke tanpa foto. Bentuk daftarnya ikut jumlah jejak (lihat feedMode). -->
-  <section class="section bg-gray-50">
-    <Container>
-      <div class="eyebrow">Rekam Jejak</div>
-      <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jejak {org.label}</h2>
+  {/* REKAM JEJAK: kartu foto yang sama dengan feed /jejak, bukan kartu strip
+      bespoke tanpa foto. Bentuk daftarnya ikut jumlah jejak (lihat feedMode).
 
-      {hasJejak ? (
-        feedMode === 'single' ? (
-          <JejakCard jejak={jejak[0]} pintu={pintuOf(jejak[0].program)} variant="wide" />
-        ) : (
-          <div class:list={['grid gap-5', feedMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3']}>
-            {jejak.map((j) => (
-              <JejakCard
-                jejak={j}
-                pintu={pintuOf(j.program)}
-                variant={feedMode === 'pair' ? 'stack' : 'compact'}
-              />
-            ))}
-          </div>
-        )
-      ) : (
+      TIDAK DIRENDER saat cuma ada satu kegiatan. Daftar berisi satu kartu itu
+      memajang ulang foto, tanggal, lokasi, dan judul yang sama persis dengan
+      kartu di hero, hanya beberapa ratus piksel di bawahnya — halaman jadi
+      terasa mengulang-ulang padahal isinya memang cuma satu kegiatan. Kartu
+      hero sudah menautkan ke dokumentasinya, jadi tak ada jalan yang hilang.
+      Seksi ini muncul sendiri begitu kegiatan kedua tercatat, dan sejak titik
+      itu daftarnya memang membawa isi baru. */}
+  {jejak.length > 1 ? (
+    <section class="section bg-gray-50">
+      <Container>
+        <div class="eyebrow">Rekam Jejak</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jejak {org.label}</h2>
+
+        <div class:list={['grid gap-5', feedMode === 'pair' ? 'md:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3']}>
+          {jejak.map((j) => (
+            <JejakCard
+              jejak={j}
+              pintu={pintuOf(j.program)}
+              variant={feedMode === 'pair' ? 'stack' : 'compact'}
+            />
+          ))}
+        </div>
+      </Container>
+    </section>
+  ) : !hasJejak ? (
+    <section class="section bg-gray-50">
+      <Container>
+        <div class="eyebrow">Rekam Jejak</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Jejak {org.label}</h2>
+
         <p class="rounded-card border border-border bg-white p-8 text-center text-muted">
           Belum ada jejak tercatat untuk organisasi ini.
         </p>
-      )}
-    </Container>
-  </section>
+      </Container>
+    </section>
+  ) : null}
 
   <!-- CTA: ajak organisasi lain bergabung -->
   <section class="section bg-white">

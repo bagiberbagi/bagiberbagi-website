@@ -27,18 +27,37 @@ export interface Props {
    */
   titleLevel?: 3 | 4;
   /**
-   * Label organisasi yang menggerakkan kegiatan ini, kalau ada. Sengaja label
-   * mentah, bukan objek ber-href: akar kartu ini sudah `<a>`, jadi tautan di
-   * dalamnya akan jadi anchor bersarang yang tak valid. Pemanggil yang butuh
-   * tautan ke organisasi memakainya di halaman detail, bukan di kartu.
+   * Organisasi yang menggerakkan kegiatan ini, kalau ada. Tanpa href: akar kartu
+   * ini sudah `<a>`, jadi tautan di dalamnya akan jadi anchor bersarang yang tak
+   * valid. Tautan ke organisasi hidup di halaman detail jejak, bukan di kartu.
+   *
+   * Ditampilkan sebagai LOGO, bukan teks. Judul jejak sering sudah menyebut nama
+   * organisasinya sendiri ("Jumat Berkah bersama 46Cyclist di Dukuh Atas"), jadi
+   * chip berteks mengulang judul dua baris di atasnya dengan huruf lebih kecil
+   * dan praktis tak terbaca. Logo membawa hal yang tak bisa dibawa judul.
    *
    * Dikosongkan saat kartu tampil DI halaman organisasi itu sendiri: di sana
    * atribusinya mubazir, seluruh halaman sudah tentang organisasi tersebut.
    */
-  organisasiLabel?: string;
+  organisasi?: { label: string; logo: string | null };
+  /**
+   * Sembunyikan chip metrik. Dipakai saat pemanggil sudah memajang angka yang
+   * sama persis tepat di atas kartu ini (halaman organisasi dengan satu
+   * kegiatan: penjumlahannya identik dengan angka kartunya sendiri).
+   */
+  hideMetrics?: boolean;
 }
 
-const { jejak, pintu, variant, featured = false, eager = false, titleLevel = 3, organisasiLabel } = Astro.props;
+const {
+  jejak,
+  pintu,
+  variant,
+  featured = false,
+  eager = false,
+  titleLevel = 3,
+  organisasi,
+  hideMetrics = false,
+} = Astro.props;
 
 // Fallback oranye brand supaya --cat selalu terisi: kartu tetap punya aksen
 // walau relasi pintu-nya belum ketemu. Warna datang dari data, tak di-hardcode
@@ -48,7 +67,7 @@ const tint = pintu?.colorTint ?? '#FDEEE1';
 
 const isWide = variant === 'wide';
 const isCompact = variant === 'compact';
-const metrics = jejak.metrics.slice(0, 3);
+const metrics = hideMetrics ? [] : jejak.metrics.slice(0, 3);
 
 // Chip metrik cuma selebar sepertiga kartu, jadi nilai panjang (mis.
 // "Rp 5.500.000") membungkus jadi 2 baris dan tinggi kartu antar jejak jadi tak
@@ -170,17 +189,20 @@ const placeholderBg =
       {featured && (
         <span class="rounded-full bg-gray-100 px-2.5 py-1 text-micro font-bold uppercase tracking-wide text-muted">Terbaru</span>
       )}
-    </div>
-
-    <div class="text-micro font-semibold text-muted mb-2">
-      {fmtDate(jejak.date)} &middot; {jejak.location}
-      {organisasiLabel && (
-        <>
-          <span aria-hidden="true" class="text-gray-300 mx-1">&middot;</span>
-          <span class="text-ink">bersama {organisasiLabel}</span>
-        </>
+      {organisasi?.logo && (
+        <img
+          src={organisasi.logo}
+          alt={`Bersama ${organisasi.label}`}
+          title={`Bersama ${organisasi.label}`}
+          width="24"
+          height="24"
+          loading="lazy"
+          class="w-6 h-6 rounded-md object-contain bg-white border border-border p-0.5 ml-auto flex-none"
+        />
       )}
     </div>
+
+    <div class="text-micro font-semibold text-muted mb-2">{fmtDate(jejak.date)} &middot; {jejak.location}</div>
     {/* Tag ditulis eksplisit, bukan lewat variabel tag dinamis: nama komponen
         berhuruf besar yang isinya string bikin inferensi tipe sisa template ini
         runtuh (metrics.map jadi implicit any). Dua cabang lebih murah. */}

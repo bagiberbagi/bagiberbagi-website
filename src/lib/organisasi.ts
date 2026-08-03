@@ -161,7 +161,9 @@ export async function getOrganisasiTotals(): Promise<{
  * nonaktif/terhapus otomatis tak menampilkan chip apa pun ketimbang menautkan ke
  * halaman yang tidak ada.
  */
-export async function getOrganisasiRefs(): Promise<Map<string, { label: string; href: string }>> {
+export async function getOrganisasiRefs(): Promise<
+  Map<string, { label: string; href: string; logo: string | null }>
+> {
   const pages = await getOrganisasiPages();
-  return new Map(pages.map((o) => [o.slug, { label: o.label, href: o.href! }]));
+  return new Map(pages.map((o) => [o.slug, { label: o.label, href: o.href!, logo: o.logo }]));
 }

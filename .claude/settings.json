@@ -2,9 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(bun run build)",
+      "Bash(bun run build 2>&1)",
       "Bash(bun run dev)",
       "Bash(bun run preview)",
       "Bash(bun test)",
+      "Bash(bun test src/lib/format.test.ts)",
+      "Bash(bun test src/lib/geo.test.ts)",
+      "Bash(bun test src/lib/impact.test.ts)",
+      "Bash(bun test src/lib/video.test.ts)",
       "Bash(bunx astro check)",
       "Bash(bunx astro sync)",
       "Bash(astro dev stop)",

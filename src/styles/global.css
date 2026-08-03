@@ -12,12 +12,37 @@
   --container-form: 28rem;
 }
 
+/* Dua angka yang dipakai bareng oleh .section dan .section-hero di bawah.
+   `--nav-h` = tinggi header sungguhan dalam keadaan DIAM di puncak halaman:
+   10px margin atas + 64px tinggi pil, keduanya dikunci di Header.astro. Kalau
+   angka di sana berubah, ubah di sini. Hero.astro dan PintuS1.astro masih
+   menulis 74px sendiri di CSS scoped mereka karena bentuk padding-nya beda. */
+:root {
+  --nav-h: 74px;
+  --section-y: 3rem;
+}
+@media (min-width: 48rem) {
+  :root {
+    --section-y: 88px;
+  }
+}
+
 @layer components {
   /* Ritme vertikal seksi saja. Padding horizontal + lebar konten dipegang
      Container.astro, supaya seksi full-bleed (band foto/warna) tak perlu
      melawan padding yang sudah terlanjur menempel di sini. */
   .section {
-    @apply py-12 md:py-[88px];
+    padding-block: var(--section-y);
+  }
+
+  /* Varian .section untuk hero halaman: latarnya ditembuskan ke belakang pil
+     navbar supaya layar pertama menyatu dengan header, persis seperti hero
+     beranda dan hero halaman pintu, lalu di-pad balik sepadan supaya isinya
+     tidak ikut naik. Tanpa ini, seksi hero mulai di bawah header dan menyisakan
+     pita putih setinggi navbar di atas bidang warnanya. */
+  .section-hero {
+    margin-top: calc(var(--nav-h) * -1);
+    padding-block: calc(var(--nav-h) + var(--section-y)) var(--section-y);
   }
 
   .eyebrow {

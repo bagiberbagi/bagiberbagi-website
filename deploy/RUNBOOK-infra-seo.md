@@ -193,6 +193,13 @@ sudo cp /root/bagiberbagi.id.conf.bak.<tanggal> /etc/nginx/sites-available/bagib
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
+**Rollback saja tidak cukup.** Begitu langkah ini pernah aktif, Cloudflare sudah
+menyimpan HTML di edge beserta header lamanya, dan mengembalikan config origin
+tidak menyentuh apa yang sudah tersimpan di sana. Setelah reload, purge:
+Cloudflare → **Caching → Configuration → Purge Everything**. Tanpa itu,
+pengunjung masih bisa menerima respons dari config yang baru saja kamu batalkan
+selama satu jam berikutnya.
+
 ---
 
 ## 4. Purge cache Cloudflare setiap deploy

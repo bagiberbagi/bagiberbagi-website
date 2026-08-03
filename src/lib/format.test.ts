@@ -36,12 +36,6 @@ test('formatProgramOptionLabel appends "(Segera Hadir)" only when not active', (
   expect(formatProgramOptionLabel({ label: 'Ramadhan Berkah', active: false })).toBe('Ramadhan Berkah (Segera Hadir)');
 });
 
-test('jejakPhotoAlt describes the photo without an index when a card shows only one', () => {
-  expect(jejakPhotoAlt('Jumat Berkah di Masjid Nurul Hikmah, Bogor')).toBe(
-    'Dokumentasi Jumat Berkah di Masjid Nurul Hikmah, Bogor',
-  );
-});
-
 test('jejakPhotoAlt numbers each photo so one page never repeats an alt', () => {
   const title = 'Jumat Berkah bersama 46Cyclist di Dukuh Atas';
   expect(jejakPhotoAlt(title, 1)).toBe('Dokumentasi Jumat Berkah bersama 46Cyclist di Dukuh Atas, foto 1');

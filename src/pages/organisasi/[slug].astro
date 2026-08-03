@@ -138,7 +138,13 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 // bagiberbagi.id" cuma 26 karakter) dan tak memberi tahu pencari apa isi
 // halamannya. Deskriptornya ditambahkan di judul saja, bukan pada `label`,
 // supaya nama organisasi tetap utuh di kartu, breadcrumb, dan atribusi jejak.
-const seoTitle = `${org.label}: Rekam Jejak Berbagi | bagiberbagi.id`;
+// Pengaman panjang yang sama dengan halaman jejak: nama organisasi itu teks
+// bebas, jadi yang panjang akan mendorong deskriptor DAN nama situs keluar dari
+// potongan yang tampil di hasil pencarian. Yang panjang cukup dapat deskriptor.
+const seoTitle =
+  org.label.length > 28
+    ? `${org.label}: Rekam Jejak Berbagi`
+    : `${org.label}: Rekam Jejak Berbagi | bagiberbagi.id`;
 ---
 
 <BaseLayout

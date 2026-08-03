@@ -31,11 +31,12 @@ export function formatMetric(metric: { label: string; value: number }): string {
  * netral: kita tak punya keterangan per foto, dan menebak isinya ("penyaluran
  * ke panti") berisiko meleset dari yang benar-benar tampak di gambar.
  *
- * `index` diisi hanya saat satu jejak memajang banyak foto sekaligus, supaya
- * tiap foto di satu halaman tak berakhir dengan alt yang identik.
+ * `index` adalah nomor foto di dalam jejaknya, dihitung menerus dari cover ke
+ * galeri. Wajib, karena satu jejak hampir selalu punya lebih dari satu foto dan
+ * alt yang identik di satu halaman tak menerangkan apa pun.
  */
-export function jejakPhotoAlt(title: string, index?: number): string {
-  return index === undefined ? `Dokumentasi ${title}` : `Dokumentasi ${title}, foto ${index}`;
+export function jejakPhotoAlt(title: string, index: number): string {
+  return `Dokumentasi ${title}, foto ${index}`;
 }
 
 export function calcTotal(pax: number): number {

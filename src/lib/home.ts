@@ -37,3 +37,28 @@ export async function getProgramSection(): Promise<ProgramSection> {
     programs,
   };
 }
+
+export interface ProgramStageIntro {
+  kicker: string;
+  title: string;
+  lead: string;
+  /** Ekor kalimat pil penutup; nama programnya ditambahkan komponen di depannya. */
+  statement: string;
+}
+
+/**
+ * Teks slide pertama "Panggung Bergilir". Slide itu membawa narasi seksinya,
+ * bukan narasi satu program, jadi teksnya duduk di singleton `home` alih-alih
+ * di entri program mana pun. Semua field boleh kosong: komponen melewatkan
+ * baris yang kosong dan slide pertama jatuh ke data programnya sendiri.
+ */
+export async function getProgramStageIntro(): Promise<ProgramStageIntro> {
+  const entry = await getEntry('home', 'home');
+  const intro = entry?.data.programStage;
+  return {
+    kicker: intro?.kicker ?? '',
+    title: intro?.title ?? '',
+    lead: intro?.lead ?? '',
+    statement: intro?.statement ?? '',
+  };
+}

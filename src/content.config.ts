@@ -150,6 +150,34 @@ const programs = defineCollection({
     // jadi nullish().
     image: z.string().nullish(),
     summary: z.string(),
+    // Teks slide program di "Panggung Bergilir" beranda (ProgramStage.astro).
+    // Dulu ditulis tangan di dalam komponen; sekarang milik editor. Seluruhnya
+    // opsional dengan default supaya program lama tetap valid tanpa disentuh:
+    // slide yang fieldnya kosong cuma kehilangan baris itu, bukan gagal build.
+    // `status` sengaja tidak punya saklar sendiri — komponen menampilkannya
+    // hanya selama program ini belum punya foto sendiri dan belum punya jejak
+    // berfoto, jadi statusnya hilang sendiri begitu dokumentasinya masuk.
+    stage: z
+      .object({
+        kicker: z.string().default(''),
+        // Kosong = pakai `summary` program. Diisi hanya kalau slide butuh
+        // kalimat yang berbeda dari ringkasan kartu/menu.
+        lead: z.string().default(''),
+        status: z.string().default(''),
+        caption: z.string().default(''),
+        ctaLabel: z.string().default('Lihat program'),
+        ctaWhatsapp: z.boolean().default(false),
+        ctaMessage: z.string().default(''),
+      })
+      .default({
+        kicker: '',
+        lead: '',
+        status: '',
+        caption: '',
+        ctaLabel: 'Lihat program',
+        ctaWhatsapp: false,
+        ctaMessage: '',
+      }),
     // Diisi hanya untuk program aktif yang punya halaman detail; program
     // "segera hadir" cukup mengosongkannya (tidak ter-route).
     detail: z
@@ -199,6 +227,20 @@ const home = defineCollection({
       title: z.string(),
       items: z.array(z.string().nullish()).default([]),
     }),
+    // Slide pertama "Panggung Bergilir" membawa narasi seksinya, bukan narasi
+    // satu program, jadi teksnya milik beranda. Sisa slide membaca `stage` di
+    // entri programnya masing-masing.
+    programStage: z
+      .object({
+        kicker: z.string().default(''),
+        title: z.string().default(''),
+        lead: z.string().default(''),
+        // Kalimat penutup di pil slide pertama. Nama programnya ditambahkan
+        // komponen di depan kalimat ini (tebal), jadi yang disimpan di sini
+        // hanya lanjutannya.
+        statement: z.string().default(''),
+      })
+      .default({ kicker: '', title: '', lead: '', statement: '' }),
   }),
 });
 

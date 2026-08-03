@@ -161,14 +161,38 @@
  *    satu entri jejak pun, sementara angka nyata datang dari getPintuImpact.
  *    `env.headline` dipakai karena itu kalimat.
  *
- * BELUM SELESAI, DAN TIDAK BISA DISELESAIKAN DARI FILE INI: komponen ini belum
- * dirender di mana pun. `sample-pintu.astro` cuma mengimpor PintuV1 sampai
- * PintuV5, jadi varian ini belum pernah dilihat mata dan belum diverifikasi di
- * 390/768/1024/1440. Halaman banding itu juga memakai `goods` sebagai mode
- * "pintu kosong", padahal `goods` punya dua entri program non-aktif sehingga
- * `hasPrograms` bernilai true; pintu yang benar-benar nol program adalah `time`
- * dan `space`, dan keduanya tidak ada di halaman banding. Dua-duanya perbaikan
- * di `sample-pintu.astro`, bukan di sini.
+ * 16. SEMUA SEKSI SETARA, TERMASUK KONSEP. Bentuk kepala seksi cuma ada satu di
+ *    halaman ini: eyebrow, judul pendek, lalu kalimat pengantar. Versi pertama
+ *    melanggarnya di satu tempat, yaitu Konsep, yang slot judulnya diisi
+ *    `story.headline`. Akibatnya dua-duanya rusak sekaligus.
+ *
+ *    Rusak sebagai struktur: audit heading keenam pintu menunjukkan setiap
+ *    heading yang terlihat panjangnya 12 sampai 53 karakter, kecuali yang satu
+ *    ini, 117 sampai 192 karakter. Heading itu label seksi, bukan isi seksi,
+ *    dan alat audit teknis menandai heading di atas ~70 karakter tepat karena
+ *    itu gejala isi yang salah tag.
+ *
+ *    Rusak sebagai bacaan: 46px di kolom 736px cuma memuat sekitar 27 karakter
+ *    per baris, jadi judulnya 5 sampai 6 baris di desktop dan 8 baris di 390px.
+ *
+ *    Perbaikannya menambah yang hilang, bukan mengecilkan yang ada. Konsep
+ *    dapat judul pendek seperti lima seksi lain, dan kalimat pemilik situs
+ *    turun UTUH ke slot pengantar. Judulnya literal komponen karena semua judul
+ *    seksi di sini memang literal komponen dan sama di keenam pintu; ia label
+ *    UI, bukan naskah. Naskahnya sendiri nol kata berubah, dan aturan itu ada
+ *    di `consts.ts` di atas `story.headline` pintu pohon.
+ *
+ *    Dua jalan buntu yang sudah dicoba dan ditolak, jangan diulang: mengecilkan
+ *    `.s1-h2` khusus Konsep (kalimat 192 karakter tetap salah tag, cuma jadi
+ *    kecil), dan menaikkan eyebrow jadi h2 lalu membuang judulnya (Konsep jadi
+ *    satu-satunya seksi tanpa judul, masalah setara yang sama persis).
+ *
+ * MASIH TERBUKA, DAN BUKAN PEKERJAAN FILE INI: `sample-pintu.astro` memakai
+ * `goods` sebagai mode "pintu kosong", padahal `goods` punya dua entri program
+ * non-aktif sehingga `hasPrograms` bernilai true; pintu yang benar-benar nol
+ * program adalah `time` dan `space`, dan keduanya tidak ada di halaman banding.
+ * Audit yang sama juga menemukan `#pintu-lain` tidak punya heading sama sekali
+ * (labelnya `<p class="s1-eyebrow">Pintu Lainnya`), dan itu belum diputuskan.
  *
  * Ukuran huruf semuanya nilai skala tailwind.config.mjs
  * (11/12/13/14/16/18/22/26/30/34/40/56); clamp boleh asal kedua ujungnya token,
@@ -573,9 +597,30 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
               garis pemisah di ATASnya karena tidak ada saudara sebelum dia. */}
           {content?.story ? (
             <section id="konsep" class="s1-blk">
+              {/* Kepala seksi ini berbentuk sama persis dengan lima saudaranya:
+                  eyebrow, judul pendek, lalu kalimat pengantar. Sebelumnya
+                  slot judulnya diisi `story.headline`, satu kalimat 117 sampai
+                  192 karakter, jadi Konsep satu-satunya seksi yang tidak punya
+                  judul sementara semua seksi lain punya.
+
+                  "Kenapa pintu ini ada" ditulis di sini, bukan di `consts.ts`,
+                  karena judul seksi di halaman ini memang literal komponen:
+                  "Yang sudah tercatat", "Yang bisa kamu bagi", "Siapa yang
+                  terbantu", "Yang paling sering ditanyakan", semuanya sama di
+                  keenam pintu. Jadi ini label UI, bukan naskah pemilik situs.
+
+                  Kalimat pemiliknya sendiri tidak disentuh sama sekali. Ia
+                  turun utuh ke slot ketiga, memakai `.s1-lead` yang sama persis
+                  dengan seksi lain. Sempat dicoba memberinya skala sendiri yang
+                  lebih besar, dengan alasan ia memikul argumen seksinya, dan
+                  hasilnya kepala seksi ini menyimpang di tiga sumbu sekaligus
+                  (30px bukan 19px, tinta bukan abu, 24px bukan 18px) sehingga
+                  Konsep kembali jadi satu-satunya yang beda. Bobot kalimatnya
+                  memang datang dari isinya, bukan dari ukuran hurufnya. */}
               <header class="s1-head">
                 <p class="s1-eyebrow" data-fade>Konsep</p>
-                <h2 class="s1-h2" data-fade>{content.story.headline}</h2>
+                <h2 class="s1-h2" data-fade>Kenapa pintu ini ada</h2>
+                <p class="s1-lead" data-fade>{content.story.headline}</p>
               </header>
 
               <div class="s1-story">

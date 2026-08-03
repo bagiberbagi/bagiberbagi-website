@@ -12,6 +12,11 @@ if (box && items.length > 0) {
   const nextBtn = box.querySelector('[data-lightbox-next]');
   const closeEls = [...box.querySelectorAll('[data-lightbox-close]')];
   const sources = items.map((el) => el.dataset.src);
+  // Alt diambil dari thumbnail yang diklik, bukan ditulis ulang di sini: yang
+  // dibuka besar adalah foto yang sama persis, jadi keterangannya juga sama dan
+  // cuma perlu satu sumber. Tanpa ini foto versi besar tampil tanpa keterangan
+  // sama sekali, padahal thumbnail-nya punya.
+  const alts = items.map((el) => el.querySelector('img')?.alt ?? '');
   const many = sources.length > 1;
   let idx = 0;
   let lastFocus = null;
@@ -23,6 +28,7 @@ if (box && items.length > 0) {
   function show(i) {
     idx = (i + sources.length) % sources.length;
     imgEl.src = sources[idx];
+    imgEl.alt = alts[idx];
     if (counter) counter.textContent = `${idx + 1} / ${sources.length}`;
   }
 

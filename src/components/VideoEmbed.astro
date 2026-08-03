@@ -18,6 +18,13 @@ export interface Props {
 const { video, fallbackPoster = null, title, eager = false, class: className = 'mb-8' } = Astro.props;
 
 const poster = video.poster ?? fallbackPoster;
+
+// Poster memakai foto cover jejak, jadi ia bukan hiasan dan pantas terindeks
+// seperti foto dokumentasi lain. Bunyinya "Cuplikan video", bukan "Dokumentasi"
+// seperti foto diam, supaya yang terbaca sesuai dengan apa yang benar-benar
+// terbuka saat diklik. Pembaca layar tak mendengarnya dua kali: tombol
+// pembungkusnya punya aria-label sendiri, dan itu menggantikan isi tombol.
+const posterAlt = `Cuplikan video dokumentasi: ${title}`;
 const isPortrait = video.orientation === 'portrait';
 
 // Video tegak dibatasi selebar 20rem lalu ditengahkan: dibiarkan selebar kolom,
@@ -65,7 +72,7 @@ const filePoster =
         {poster ? (
           <Image
             src={poster}
-            alt=""
+            alt={posterAlt}
             widths={posterWidths}
             sizes={posterSizes}
             loading={eager ? 'eager' : 'lazy'}

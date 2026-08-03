@@ -1,6 +1,6 @@
 // src/lib/format.test.ts
 import { test, expect } from 'bun:test';
-import { formatRupiah, calcTotal, buildWaLink, buildDonationMessage, formatProgramOptionLabel } from './format';
+import { formatRupiah, calcTotal, buildWaLink, buildDonationMessage, formatProgramOptionLabel, jejakPhotoAlt } from './format';
 
 test('formatRupiah formats with thousands separators and Rp prefix', () => {
   expect(formatRupiah(250000)).toBe('Rp 250.000');
@@ -34,4 +34,16 @@ test('buildDonationMessage mentions the selected package when provided', () => {
 test('formatProgramOptionLabel appends "(Segera Hadir)" only when not active', () => {
   expect(formatProgramOptionLabel({ label: 'Jumat Berkah', active: true })).toBe('Jumat Berkah');
   expect(formatProgramOptionLabel({ label: 'Ramadhan Berkah', active: false })).toBe('Ramadhan Berkah (Segera Hadir)');
+});
+
+test('jejakPhotoAlt describes the photo without an index when a card shows only one', () => {
+  expect(jejakPhotoAlt('Jumat Berkah di Masjid Nurul Hikmah, Bogor')).toBe(
+    'Dokumentasi Jumat Berkah di Masjid Nurul Hikmah, Bogor',
+  );
+});
+
+test('jejakPhotoAlt numbers each photo so one page never repeats an alt', () => {
+  const title = 'Jumat Berkah bersama 46Cyclist di Dukuh Atas';
+  expect(jejakPhotoAlt(title, 1)).toBe('Dokumentasi Jumat Berkah bersama 46Cyclist di Dukuh Atas, foto 1');
+  expect(jejakPhotoAlt(title, 2)).toBe('Dokumentasi Jumat Berkah bersama 46Cyclist di Dukuh Atas, foto 2');
 });

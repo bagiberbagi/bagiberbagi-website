@@ -14,6 +14,30 @@ export function formatMetric(metric: { label: string; value: number }): string {
     : metric.value.toLocaleString('id-ID');
 }
 
+/**
+ * Alt foto dokumentasi jejak. Satu sumber untuk kartu feed, foto utama detail,
+ * dan carousel-nya, supaya ketiganya tak menjawab pertanyaan yang sama dengan
+ * konvensi berbeda.
+ *
+ * Sebelumnya kartu dan carousel memakai `alt=""`. Untuk gambar hiasan itu
+ * benar, tapi foto lapangan justru bukti yang jadi seluruh argumen situs ini,
+ * jadi alt kosong menyembunyikannya sekaligus dari Google Images dan dari
+ * pembaca layar.
+ *
+ * Judul dipakai apa adanya, cuma diberi awalan: judul jejak sudah memuat
+ * program, tempat, dan kota ("Jumat Berkah di Masjid Nurul Hikmah, Bogor"),
+ * jadi menambahkan `location` di belakangnya justru mengulang kotanya dua kali
+ * (`location` entri itu "Baranangsiang, Bogor"). Awalan "Dokumentasi" sengaja
+ * netral: kita tak punya keterangan per foto, dan menebak isinya ("penyaluran
+ * ke panti") berisiko meleset dari yang benar-benar tampak di gambar.
+ *
+ * `index` diisi hanya saat satu jejak memajang banyak foto sekaligus, supaya
+ * tiap foto di satu halaman tak berakhir dengan alt yang identik.
+ */
+export function jejakPhotoAlt(title: string, index?: number): string {
+  return index === undefined ? `Dokumentasi ${title}` : `Dokumentasi ${title}, foto ${index}`;
+}
+
 export function calcTotal(pax: number): number {
   return pax * 25000;
 }

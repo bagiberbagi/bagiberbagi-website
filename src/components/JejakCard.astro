@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
-import { formatMetric } from '../lib/format';
+import { formatMetric, jejakPhotoAlt } from '../lib/format';
 import type { Jejak } from '../lib/jejak';
 import type { Pintu } from '../consts';
 
@@ -97,6 +97,10 @@ const coverWidths = isCompact ? [240, 301, 460, 602] : [360, 472, 700, 944];
 // dipersempit otomatis oleh TypeScript.
 const cover = jejak.cover;
 
+// Tanpa `index`: kartu cuma memajang satu foto, jadi tak ada alt kembar yang
+// perlu dibedakan di dalam satu halaman.
+const coverAlt = jejakPhotoAlt(jejak.title);
+
 const placeholderBadge = isWide ? 'w-16 h-16' : 'w-14 h-14';
 const placeholderIcon = isWide ? 30 : 26;
 const placeholderBg =
@@ -119,7 +123,7 @@ const placeholderBg =
       <div class="relative w-full aspect-[16/10] md:aspect-auto bg-gray-100">
         <Image
           src={cover}
-          alt=""
+          alt={coverAlt}
           widths={coverWidths}
           sizes={coverSizes}
           loading={eager ? 'eager' : 'lazy'}
@@ -129,7 +133,7 @@ const placeholderBg =
     ) : (
       <Image
         src={cover}
-        alt=""
+        alt={coverAlt}
         widths={coverWidths}
         sizes={coverSizes}
         loading={eager ? 'eager' : 'lazy'}

@@ -1,6 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
@@ -9,7 +10,7 @@ import Container from '../../components/Container.astro';
 import { getJejak } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getGlobalImpact } from '../../lib/impact';
-import { buildWaLink, formatMetric } from '../../lib/format';
+import { buildWaLink, formatMetric, jejakPhotoAlt } from '../../lib/format';
 import { PINTU } from '../../consts';
 
 // Showcase global "Jejak & Dampak": angka agregat seluruh situs + feed semua
@@ -60,9 +61,22 @@ const recordedPrograms = [...new Set(jejak.map((j) => labelBySlug.get(j.program)
 // Proxy dan menandai berkas aslinya "terpakai langsung" begitu ada properti
 // yang dibaca di luar pipeline gambar, sehingga PNG mentahnya ikut disalin ke
 // dist dan seluruh gunanya optimasi ini hilang.
-const gallery = [
-  ...new Set(jejak.flatMap((j) => [j.cover, ...j.gallery]).filter((img) => img !== null)),
-].slice(0, 8);
+// Judul jejak asalnya ikut dibawa, karena galeri ini menggabungkan foto dari
+// SEMUA jejak: tanpa itu alt tiap foto cuma bisa berbunyi "galeri lapangan",
+// padahal tiap foto sebetulnya milik satu kegiatan yang punya nama dan tempat.
+// Pemiliknya adalah jejak pertama yang memakai foto tersebut, sejalan dengan
+// pemenang dedup di bawah. Set-nya berisi modul gambar dan pembandingnya `has`,
+// jadi tetap identitas objek, bukan pembacaan properti.
+const seenPhotos = new Set<ImageMetadata>();
+const uniquePhotos: { img: ImageMetadata; title: string }[] = [];
+for (const j of jejak) {
+  for (const img of [j.cover, ...j.gallery]) {
+    if (img === null || seenPhotos.has(img)) continue;
+    seenPhotos.add(img);
+    uniquePhotos.push({ img, title: j.title });
+  }
+}
+const gallery = uniquePhotos.slice(0, 8);
 
 // Thumbnail dan sumber lightbox sengaja BEDA berkas: thumbnail hanya beberapa
 // ratus piksel, sementara lightbox membuka foto sampai memenuhi layar. Versi
@@ -70,8 +84,9 @@ const gallery = [
 // membuka lightbox tak menarik berkas satu sampai dua megabyte. getImage
 // dipanggil saat build, jadi tak ada biaya di sisi pengunjung.
 const galleryItems = await Promise.all(
-  gallery.map(async (img) => ({
+  gallery.map(async ({ img, title }) => ({
     img,
+    alt: jejakPhotoAlt(title),
     full: (await getImage({ src: img, format: 'webp', quality: 80 })).src,
   }))
 );
@@ -398,7 +413,7 @@ const STEPS_PENCATATAN = [
           <p class="text-body-sm text-muted">Klik foto untuk perbesar.</p>
         </div>
         <div class:list={['grid gap-2.5', galleryCols]}>
-          {galleryItems.map(({ img, full }, i) => (
+          {galleryItems.map(({ img, alt, full }, i) => (
             <button
               type="button"
               data-gallery-item
@@ -411,7 +426,7 @@ const STEPS_PENCATATAN = [
             >
               <Image
                 src={img}
-                alt=""
+                alt={alt}
                 widths={galleryLayout.widths}
                 sizes={galleryLayout.sizes}
                 loading="lazy"

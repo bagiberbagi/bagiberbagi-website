@@ -9,6 +9,7 @@ import { buildWaLink, buildDonationMessage, calcTotal, formatRupiah, formatMetri
 import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
+import { findPageSeo } from '../../lib/seo';
 import { PINTU, CATEGORY_CONTENT } from '../../consts';
 import programPromo from '../../assets/images/program-promo.png';
 
@@ -27,6 +28,17 @@ const { program } = Astro.props;
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
+// Halaman ini dulu tak pernah mengirim title/description sendiri ke
+// BaseLayout, jadi program tanpa entri kurasi di `seo.pages[]` (semua kecuali
+// Jumat Berkah) diam-diam jatuh ke title/description default situs — baru
+// kelihatan sekarang program aktif bertambah dari satu jadi empat. Dicek dulu
+// di sini: kalau entri kurasi ADA (mis. Jumat Berkah), biarkan menang seperti
+// semula (props di bawah dikosongkan, BaseLayout jatuh ke `page` bukan default
+// situs); kalau TIDAK ada, kirim title/description turunan program supaya
+// tetap unik per halaman.
+const seoEntry = await getEntry('seo', 'seo');
+const hasCuratedSeo = seoEntry ? Boolean(findPageSeo(seoEntry.data, Astro.url.pathname)) : false;
+
 // Identitas pintu induk: warna aksen (CSS var --cat) + tautan hub pintu, supaya
 // halaman jelas "dari pintu apa". Fallback ke pintu pertama bila tak ketemu.
 const pintu = PINTU.find((p) => p.id === program.pintu) ?? PINTU[0];
@@ -34,11 +46,27 @@ const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep
 const pintuHref = `/berbagi-${pintu.slug}/`;
 const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
 
+// Cabang CTA: self-serve (harga tetap) vs inquiry (paket custom/negosiasi),
+// berbasis slug program, bukan field schema — baru 2 program inquiry di rilis
+// ini (design.md keputusan #4; field eksplisit menyusul kalau jumlahnya
+// bertambah, lihat Open Questions).
+const INQUIRY_PROGRAMS = new Set(['community-giving', 'csr-food-program']);
+const RAMADHAN_PACKAGES = ['Sahur', 'Takjil', 'Buka Puasa'];
+const isInquiry = INQUIRY_PROGRAMS.has(program.slug);
+// Program self-serve berpaket lebih dari satu butuh paket dipilih dulu
+// sebelum donasi (spec program-donation-cta). null = program sepaket tunggal.
+const packages = program.slug === 'ramadhan-berbagi' ? RAMADHAN_PACKAGES : null;
+
 const defaultPax = 10;
+// Paket pertama jadi default server-rendered, supaya tombol donasi tetap
+// masuk akal tanpa JS; program-package-selector.js yang memperbarui href-nya
+// begitu pengunjung memilih paket lain.
 const waLink = buildWaLink(
   site.data.waNumber,
-  buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)))
+  buildDonationMessage(program.label, defaultPax, formatRupiah(calcTotal(defaultPax)), packages?.[0])
 );
+
+const inquiryWaLink = buildWaLink(site.data.waNumber, `Halo, saya ingin mendiskusikan program ${program.label}.`);
 
 // Kemitraan menempel ke program (mis. dapur mitra Jumat Berkah), jadi CTA mitra
 // hidup di halaman program. Sekunder: satu tautan halus, tak menyaingi Donasi.
@@ -67,7 +95,11 @@ const heroCover = jejak.find((j) => j.cover)?.cover ?? null;
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 ---
 
-<BaseLayout>
+<BaseLayout
+  title={hasCuratedSeo ? undefined : `${program.label} | bagiberbagi.id`}
+  description={hasCuratedSeo ? undefined : program.summary}
+  breadcrumbName={program.label}
+>
   <!-- HERO: dua kolom, latar hangat tint pintu, foto ber-glow warna pintu -->
   <section class="section" style={`${styleVars};background:linear-gradient(150deg,var(--cat-tint),#ffffff 58%)`}>
     <Container>
@@ -115,23 +147,63 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
             </div>
           )}
 
-          <!-- Panel donasi: harga (nilai) dan tombol (aksi) menyatu; hierarki
-               dijaga lewat peran, bukan dua kotak bersaing. -->
-          <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
-            <div class="eyebrow text-[var(--cat-deep)]">HARGA DONASI</div>
-            <div class="text-heading-sm md:text-heading-lg font-bold text-ink mt-1">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></div>
-            <p class="text-sm text-muted mt-1.5 mb-5">Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran.</p>
-            <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-program={program.label} data-track-source="program_page" data-track-pax="10" class="btn-primary w-full flex items-center justify-center">
-              Donasi Sekarang
-            </a>
-            <div class="text-center mt-3">
-              <a href="/#donasi" data-track="hitung_donasi" class="text-body-sm font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Hitung donasi dulu</a>
+          <!-- Panel CTA: harga (nilai) dan tombol (aksi) menyatu; hierarki
+               dijaga lewat peran, bukan dua kotak bersaing. Bercabang self-serve
+               (harga tetap) vs inquiry (custom/negosiasi) — spec program-donation-cta. -->
+          {isInquiry ? (
+            <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
+              <div class="eyebrow text-[var(--cat-deep)]">PAKET CUSTOM</div>
+              <p class="text-body-sm text-muted leading-relaxed mb-5">Paket, jadwal, dan bentuk laporan disesuaikan lewat diskusi langsung dengan tim kami.</p>
+              <a href={inquiryWaLink} target="_blank" rel="noopener" data-track="inquiry_click" data-track-program={program.label} data-track-source="program_page" class="btn-primary w-full flex items-center justify-center">
+                Diskusikan Program {program.label}
+              </a>
+              <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
+                Mitra UMKM atau relawan?
+                <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
+              </p>
             </div>
-            <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
-              Mitra UMKM atau relawan?
-              <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
-            </p>
-          </div>
+          ) : (
+            <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
+              <div class="eyebrow text-[var(--cat-deep)]">HARGA DONASI</div>
+              <div class="text-heading-sm md:text-heading-lg font-bold text-ink mt-1">Rp 25.000 <span class="text-body-sm font-semibold text-muted">/ pax</span></div>
+              <p class="text-sm text-muted mt-1.5 mb-5">Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran.</p>
+
+              {packages && (
+                <div class="mb-5">
+                  <div class="text-eyebrow font-bold text-muted mb-2">PILIH PAKET</div>
+                  <div
+                    class="flex flex-wrap gap-2"
+                    data-package-selector
+                    data-wa-number={site.data.waNumber}
+                    data-program-label={program.label}
+                    data-pax={defaultPax}
+                    role="radiogroup"
+                    aria-label="Pilih paket donasi"
+                  >
+                    {packages.map((pkg, i) => (
+                      <button
+                        type="button"
+                        data-package-option={pkg}
+                        aria-pressed={i === 0 ? 'true' : 'false'}
+                        class="rounded-full border border-border px-4 py-1.5 text-body-sm font-bold text-muted transition-colors aria-pressed:bg-[var(--cat)] aria-pressed:text-white aria-pressed:border-[var(--cat)] hover:border-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)] focus-visible:ring-offset-2"
+                      >{pkg}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <a href={waLink} target="_blank" rel="noopener" data-track="donate_click" data-track-program={program.label} data-track-source="program_page" data-track-pax="10" data-donate-link class="btn-primary w-full flex items-center justify-center">
+                Donasi Sekarang
+              </a>
+              <div class="text-center mt-3">
+                <a href="/#donasi" data-track="hitung_donasi" class="text-body-sm font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Hitung donasi dulu</a>
+              </div>
+              <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
+                Mitra UMKM atau relawan?
+                <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
+              </p>
+            </div>
+          )}
         </div>
 
         <div class="order-first md:order-last">
@@ -277,3 +349,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
     </section>
   )}
 </BaseLayout>
+
+<script>
+  import '../../scripts/program-package-selector.js';
+</script>

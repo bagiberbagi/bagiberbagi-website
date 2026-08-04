@@ -30,3 +30,18 @@ support.js
 
 # screenshot playwright ad-hoc di root
 /*.png
+
+# TLS material. Nothing in this repo should ever hold a certificate or a private
+# key: the Cloudflare Origin CA pair is pasted straight into /etc/ssl/cloudflare
+# on the VPS and lives nowhere else (deploy/RUNBOOK-tls-origin.md). This is here
+# only so that improvising a scratch file during that procedure cannot be staged
+# by a reflexive `git add -A`.
+*.pem
+*.key
+*.crt
+*.p12
+
+# The CI deploy key, which deploy/README.md tells you to generate at the repo
+# root. It has no extension, so none of the patterns above catch it.
+deploy_key
+deploy_key.pub

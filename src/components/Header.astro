@@ -51,7 +51,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 
 <header
   data-header
-  class="sticky top-0 z-50 px-3 sm:px-4 pt-2.5 relative"
+  class="sticky top-0 z-50 px-3 sm:px-4 pt-2.5"
 >
   {/* Padding kanan (pr-2.5) sengaja lebih kecil dari kiri: CTA/hamburger di
       ujung kanan (rounded-full) harus NEST konsentris di dalam cap kanan pil —
@@ -217,6 +217,29 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 </header>
 
 <style>
+  /* Panel nav mobile dibatasi tingginya dan diberi guliran sendiri.
+
+     Ini bukan soal estetika. [data-header] itu `position: sticky; top: 0`,
+     jadi begitu panel lebih tinggi dari viewport ia terpaku di tempatnya dan
+     sisa isinya TIDAK PERNAH bisa dicapai: menggulir halaman sampai dasar pun
+     tidak menggeser panel sedikit pun. Terukur 4 Agustus 2026: membuka submenu
+     Pintu Berbagi membuat panel jadi 1483px di viewport 844px, dan 8 dari 13
+     tautannya di luar layar, yang terakhir tombol "Donasi Sekarang".
+
+     Angkanya: tepi atas panel ada di 82px (10px pt-2.5 + 64px pil = --nav-h,
+     lalu mt-2). Sisa 1rem menyisakan napas di tepi bawah layar.
+
+     `vh` ditulis lebih dulu sebagai cadangan buat Safari lama yang belum
+     mengenal `dvh`; di peramban yang mengenalnya, baris kedua yang menang.
+     `overscroll-behavior: contain` menahan guliran supaya tidak diteruskan ke
+     halaman di belakang panel begitu ujungnya tercapai. */
+  #mobile-nav-panel {
+    max-height: calc(100vh - var(--nav-h) - 1rem);
+    max-height: calc(100dvh - var(--nav-h) - 1rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   /* Navbar HYBRID: di puncak halaman pil TRANSPARAN/flat supaya konteks hero
      kuning tembus (seamless, seperti sebelumnya). Setelah scroll (.is-scrolled)
      atau saat menu mobile terbuka (.menu-open) skin pil muncul: putih + blur +

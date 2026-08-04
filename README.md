@@ -122,7 +122,7 @@ Artinya: pemisahan "writer hanya boleh mengubah FAQ" tidak bisa dilakukan di Key
 
 - Perubahan kode lewat branch `feat/<nama>` atau `fix/<nama>`, di-merge ke `main` setelah terverifikasi. `main` men-deploy otomatis, jadi jangan commit kode langsung ke sana. Edit dokumentasi boleh langsung.
 - Sebelum merge: `bun run build`, `bunx astro check`, `bun test`.
-- Deploy jalan lewat GitHub Actions ke VPS (nginx + certbot, lihat `deploy/README.md`), lalu cache Cloudflare di-purge otomatis.
+- Deploy jalan lewat GitHub Actions ke VPS (nginx, TLS diterminasi Cloudflare, lihat `deploy/README.md`), lalu cache Cloudflare di-purge otomatis.
 
 ## Lisensi
 

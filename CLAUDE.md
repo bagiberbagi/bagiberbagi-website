@@ -17,7 +17,7 @@ Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & d
 
 ## Architecture
 
-Astro static site (`output: 'static'`, no adapter), Tailwind CSS, TypeScript strict. Deploys to a self-managed VPS (nginx + certbot, see `deploy/README.md`) via GitHub Actions on push to `main`.
+Astro static site (`output: 'static'`, no adapter), Tailwind CSS, TypeScript strict. Deploys to a self-managed VPS (nginx, TLS terminated at Cloudflare, see `deploy/README.md`) via GitHub Actions on push to `main`.
 
 For per-area architecture detail, see `.claude/rules/*.md`. Read only the file matching the task at hand, not all of them at once:
 

@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 # One-time VPS bootstrap for bagiberbagi.id (Ubuntu 22.04/24.04).
 # Run once as root on a fresh VPS: bash vps-setup.sh
+#
+# NEVER RUN THIS ON THE PRODUCTION VPS. It was never used to build it, and it
+# would overwrite the live nginx config. See deploy/README.md.
+#
+# ITS TLS FLOW IS OUT OF DATE AND THE SCRIPT WOULD FAIL AS WRITTEN.
+# nginx/bagiberbagi.id.conf now declares ssl_certificate paths under
+# /etc/ssl/cloudflare/, which do not exist on a fresh box, so the `nginx -t`
+# below fails before certbot ever runs. Production obtains TLS from a Cloudflare
+# Origin CA certificate instead of certbot (deploy/RUNBOOK-tls-origin.md
+# explains why). Bootstrapping a new box means running steps 1 and 2 of that
+# runbook before the nginx step here, and dropping the certbot line at the
+# bottom. Left unedited on purpose: rewriting a script nobody runs, against a
+# machine that does not exist, would only produce untested instructions.
 set -euo pipefail
 
 DOMAIN="bagiberbagi.id"

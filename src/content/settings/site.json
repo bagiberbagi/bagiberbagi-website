@@ -24,9 +24,9 @@
     "time": "06:00"
   },
   "nextAgenda": {
-    "location": "Pasar Minggu, Jakarta Selatan",
-    "targetPorsi": 100,
-    "collectedPorsi": 0,
+    "location": "Bogor",
+    "targetPorsi": 250,
+    "collectedPorsi": 87,
     "cutoff": "Kamis 18.00"
   }
 }

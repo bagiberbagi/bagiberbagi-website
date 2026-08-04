@@ -1,6 +1,10 @@
 # Deploy — VPS + nginx + GitHub Actions
 
-Static build (`dist/`) di-deploy ke VPS via `rsync` tiap push ke `main`. Nginx serve file statis langsung, TLS via Let's Encrypt (certbot).
+Static build (`dist/`) di-deploy ke VPS via `rsync` tiap push ke `main`. Nginx serve file statis langsung.
+
+**TLS diterminasi di Cloudflare, BUKAN di origin.** Diverifikasi 4 Agustus 2026: port 443 di VPS tidak punya listener sama sekali (`curl --resolve www.bagiberbagi.id:443:165.22.246.217` gagal konek), sementara port 80 menjawab 200. Sertifikat yang dilihat pengunjung milik Cloudflare. Konsekuensinya, ruas Cloudflare→origin melintas internet publik tanpa enkripsi, dan Encryption mode di Cloudflare karena itu efektif **Flexible** — memilih Full atau Full (Strict) akan mematikan situs dengan error 525 sampai origin benar-benar punya sertifikat.
+
+Nginx juga tidak memakai konvensi Debian di sini: berkas config aslinya ada di `sites-enabled`, bukan symlink ke `sites-available`. Jangan menebak path-nya, cari dengan `sudo nginx -T | grep 'configuration file .*bagiberbagi'`.
 
 ## Setup sekali jalan
 
@@ -63,4 +67,4 @@ Push/merge ke `main` → GitHub Actions otomatis: install → `bun test` → `as
 
 ## Update konten legal/domain
 
-Sertifikat TLS certbot auto-renew via systemd timer bawaan certbot (`certbot.timer`), gak perlu cron manual.
+Tidak ada sertifikat yang perlu di-renew di VPS: TLS-nya dipegang Cloudflare (lihat catatan di atas). Baris lama di sini menyebut certbot auto-renew, dan itu sudah tidak benar.

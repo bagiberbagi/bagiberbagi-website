@@ -144,26 +144,38 @@ ssh -p 32550 <user-sudo>@165.22.246.217
 Di dalam VPS:
 
 ```bash
-# 3. Cadangkan yang sekarang. Config live punya blok SSL certbot yang TIDAK ada
-#    di berkas repo, jadi jangan pernah menimpa mentah-mentah.
-sudo cp /etc/nginx/sites-available/bagiberbagi.id /root/bagiberbagi.id.conf.bak.$(date +%F)
+# 3. TEMUKAN berkas config yang benar-benar dipakai. Jangan menebak path.
+#    Konvensi Debian menaruh berkas di sites-available dan symlink-nya di
+#    sites-enabled, tapi VPS ini tidak dibootstrap dengan konvensi itu dan
+#    berkas aslinya ada di sites-enabled. `nginx -T` mencetak config yang
+#    sedang berjalan berikut asal berkasnya, jadi ia benar apa pun tata letaknya.
+CONF=$(sudo nginx -T 2>/dev/null | grep -m1 'configuration file .*bagiberbagi' | sed 's|.*configuration file \(.*\):|\1|')
+echo "file aktif: $CONF"
 
-# 4. Bandingkan dulu, jangan langsung timpa.
-sudo diff /etc/nginx/sites-available/bagiberbagi.id /tmp/bagiberbagi.id.conf
+# 4. Cadangkan.
+sudo cp "$CONF" /root/$(basename "$CONF").bak.$(date +%F)
+
+# 5. Bandingkan dulu, jangan langsung timpa.
+sudo diff "$CONF" /tmp/bagiberbagi.id.conf
 ```
 
-**Baca hasil diff itu sebelum melangkah.** Berkas di repo adalah versi tanpa blok
-TLS; certbot menyisipkan `listen 443 ssl`, path sertifikat, dan blok redirect
-sendiri ke berkas live. Yang benar adalah menyalin **hanya baris yang berubah**
-ke berkas live dengan editor, bukan menyalin seluruh berkas:
+**Baca hasil diff itu sebelum melangkah.** Berkas live tertinggal beberapa
+revisi dari repo, termasuk komentar yang masih menyebut Astro menghasilkan
+`faq.html` padahal sekarang format direktori. Yang benar adalah menyalin **hanya
+baris yang berubah** ke berkas live dengan editor, bukan menyalin seluruh berkas:
 
 - baris `add_header X-Content-Type-Options` dan `add_header Referrer-Policy` (baru)
-- baris `add_header Cache-Control` di dalam `location /` (baru)
+- baris `add_header Cache-Control` plus tiga header ulangan di dalam `location /` (baru)
 - daftar ekstensi di `location ~*` (tambah `webp|avif`)
-- `expires 30d` → `expires 1y` dan `Cache-Control` aset (diubah)
+- `expires 30d` → `expires 1y`, dan tiga header ulangan di blok aset itu juga
+
+**Jangan sentuh baris `index index.html;`.** Salah ketik satu huruf di situ
+(`index.htm`) membuat SELURUH halaman direktori menjawab 403 sementara berkas
+biasa seperti `/llms.txt` tetap 200. Ini sudah pernah terjadi dan gejalanya
+menyesatkan, karena situs terlihat "sebagian hidup".
 
 ```bash
-sudo nano /etc/nginx/sites-available/bagiberbagi.id
+sudo nano "$CONF"
 
 # 5. Uji sintaks. Jangan reload sebelum baris ini bilang "syntax is ok".
 sudo nginx -t
@@ -175,21 +187,34 @@ sudo systemctl reload nginx
 **Verifikasi dari laptop:**
 
 ```bash
-# foto webp harus ikut kebijakan panjang sekarang
-curl -sSI https://www.bagiberbagi.id/_astro/jumat-berkah.fhWFl395_Z1Xaz14.webp | grep -i cache-control
-# harapan: public, max-age=31536000, immutable
+# PALING PENTING, jalankan ini lebih dulu: setiap halaman DIREKTORI harus 200.
+# Semua rute situs ini adalah direktori (/faq/ -> /faq/index.html), dan
+# kesalahan pada `index` atau `try_files` membuat semuanya 403 sementara berkas
+# biasa tetap 200 — sehingga situs terlihat hidup padahal mati.
+for u in / /faq/ /jejak/ /organisasi/ /program/jumat-berkah/ /berbagi-makanan/; do
+  printf "%-28s %s\n" "$u" "$(curl -sS -o /dev/null -w '%{http_code}' https://www.bagiberbagi.id$u)"
+done
+# harapan: 200 di SEMUA baris. Satu saja 403 = rollback.
 
-# HTML harus punya Cache-Control
-curl -sSI https://www.bagiberbagi.id/ | grep -iE 'cache-control|x-content-type|referrer-policy'
+# Header diperiksa LANGSUNG ke origin, bukan lewat Cloudflare: edge masih
+# menyimpan salinan lama berikut header lamanya, jadi lewat CDN kamu bisa
+# melihat angka lama dan mengira config gagal.
+curl -sSI --resolve www.bagiberbagi.id:80:165.22.246.217 \
+  http://www.bagiberbagi.id/_astro/index.CZXMiEAz.css | grep -i cache-control
+# harapan: dua baris, `max-age=31536000` dan `public, immutable`.
+# Keduanya digabung jadi satu header di sisi klien; itu memang bentuknya.
 
-# halaman masih hidup
-curl -sS -o /dev/null -w "%{http_code}\n" https://www.bagiberbagi.id/jejak/
+# Ketiga header keamanan harus sampai ke HTML. Ini yang menangkap jebakan
+# pewarisan add_header.
+curl -sSI --resolve www.bagiberbagi.id:80:165.22.246.217 http://www.bagiberbagi.id/ \
+  | grep -icE 'content-security-policy|x-content-type-options|referrer-policy'
+# harapan: 3
 ```
 
 **Rollback:**
 
 ```bash
-sudo cp /root/bagiberbagi.id.conf.bak.<tanggal> /etc/nginx/sites-available/bagiberbagi.id
+sudo cp /root/<nama-cadangan> "$CONF"
 sudo nginx -t && sudo systemctl reload nginx
 ```
 

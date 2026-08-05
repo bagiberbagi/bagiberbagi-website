@@ -210,6 +210,9 @@ const hasStats = impact.jejakCount > 0 && stats.length > 0;
     gap: 28px 26px;
     margin-bottom: 56px;
   }
+  /* 900px = breakpoint `wide` (tailwind.config.mjs). Lihat catatan lengkapnya
+     di TrustSection.astro: lima komponen beranda berganti bentuk serentak di
+     ambang ini. */
   @media (min-width: 900px) { .imp-journey { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   .imp-step { display: flex; align-items: flex-start; gap: 10px; }

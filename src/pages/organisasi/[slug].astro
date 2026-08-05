@@ -175,11 +175,11 @@ const seoTitle =
         <div>
           <div class="mb-5">
             {org.logo ? (
-              <img
+              <Image
                 src={org.logo}
                 alt={org.label}
-                width="72"
-                height="72"
+                widths={[72, 144, 216]}
+                sizes="72px"
                 class="w-18 h-18 rounded-2xl object-contain bg-white border border-border p-2.5 shadow-cardSoft"
               />
             ) : (

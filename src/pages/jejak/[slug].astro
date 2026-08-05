@@ -229,7 +229,11 @@ const extraSchema = [
         )}
       </div>
 
-      <p class="text-body-sm text-muted leading-relaxed mb-7">{jejak.summary}</p>
+      {/* `body` (16px), sama dengan badan cerita Markdoc di bawah. Sebelumnya
+          ringkasan ini `body-sm`, jadi kalimat pembuka halaman terbaca lebih
+          kecil daripada cerita yang diperkenalkannya. Yang di sekitarnya tetap
+          `body-sm`: breadcrumb, baris tanggal/lokasi, dan satuan angka. */}
+      <p class="text-body text-muted leading-relaxed mb-7">{jejak.summary}</p>
 
       <!-- slot utama: video kalau ada, kalau tidak gambar besar, klik untuk perbesar -->
       {videoPlayer ? (

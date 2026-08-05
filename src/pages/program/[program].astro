@@ -137,12 +137,17 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
       <div class="grid md:grid-cols-2 gap-10 md:gap-12 items-stretch">
         <div>
-          <p class="text-body-sm text-muted leading-relaxed mb-6">{program.detail.description}</p>
+          {/* `body` (16px), bukan `body-sm`. Ini paragraf pembuka halaman, dan
+              di halaman ini `body-sm` sempat jadi bawaan sampai tak ada satu pun
+              teks 16px tersisa: yang seharusnya jadi pengecualian malah jadi
+              aturan. Peran `body-sm` tetap ada, cuma kembali ke label, baris
+              meta, satuan angka, dan tulisan pendukung. */}
+          <p class="text-body text-muted leading-relaxed mb-6">{program.detail.description}</p>
 
           {program.detail.features.length > 0 && (
             <div class="flex flex-col gap-2.5 mb-7">
               {program.detail.features.map((feature) => (
-                <div class="flex gap-2.5 text-sm text-ink/80">
+                <div class="flex gap-2.5 text-body text-ink/80">
                   <span class="flex-none mt-0.5 grid place-items-center w-5 h-5 rounded-full bg-[var(--cat-tint)] text-[var(--cat-deep)]">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"></path></svg>
                   </span>
@@ -158,7 +163,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           {isInquiry ? (
             <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
               <div class="eyebrow text-[var(--cat-deep)]">PAKET CUSTOM</div>
-              <p class="text-body-sm text-muted leading-relaxed mb-5">Paket, jadwal, dan bentuk laporan disesuaikan lewat diskusi langsung dengan tim kami.</p>
+              <p class="text-body text-muted leading-relaxed mb-5">Paket, jadwal, dan bentuk laporan disesuaikan lewat diskusi langsung dengan tim kami.</p>
               <a href={inquiryWaLink} target="_blank" rel="noopener" data-track="inquiry_click" data-track-program={program.label} data-track-source="program_page" class="btn-primary w-full flex items-center justify-center">
                 Diskusikan Program {program.label}
               </a>
@@ -223,7 +228,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                 >{i + 1}</span>
                 <div class="md:mt-4">
                   <h3 class="text-title-sm font-semibold mb-1 md:mb-1.5">{step.title}</h3>
-                  <p class="text-body-sm text-muted leading-relaxed md:px-1">{step.desc}</p>
+                  <p class="text-body text-muted leading-relaxed md:px-1">{step.desc}</p>
                 </div>
               </div>
             </li>
@@ -239,7 +244,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
       <Container>
         <div class="eyebrow text-[var(--cat)]">Rekam Jejak</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Jejak {program.label}</h2>
-        <p class="text-body-sm text-muted leading-relaxed mb-8 max-w-text">
+        <p class="text-body text-muted leading-relaxed mb-8 max-w-text">
           Program ini sudah berjalan <strong class="text-ink">{jejak.length} kali</strong>{mainMetric && (
             <Fragment>, dengan total <strong class="text-ink">{formatMetric(mainMetric)} {mainMetric.label}</strong></Fragment>
           )}. Berikut dokumentasi tiap pelaksanaannya beserta angka dampaknya.
@@ -263,7 +268,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
               <div class="flex-1 pl-6 pr-5 py-5 md:pl-7 md:pr-6 md:py-6">
                 <div class="text-micro font-bold uppercase tracking-wide text-muted mb-1.5">{jejakDateFmt.format(new Date(j.date))}</div>
                 <h3 class="text-title-sm font-semibold mb-1.5 transition-colors group-hover:text-[var(--cat-deep)]">{j.title}</h3>
-                <p class="text-body-sm text-muted leading-snug mb-3">{j.summary}</p>
+                <p class="text-body text-muted leading-snug mb-3">{j.summary}</p>
                 {j.metrics.length > 0 && (
                   <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-body-sm">
                     {j.metrics.map((m) => (
@@ -306,7 +311,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                   <Icon name={pintu.icon} size={20} />
                 </span>
                 <h3 class="text-title-sm font-semibold text-ink mb-1.5">{p.label}</h3>
-                <p class="text-body-sm text-muted leading-snug flex-1">{p.summary}</p>
+                <p class="text-body text-muted leading-snug flex-1">{p.summary}</p>
                 <span class:list={['mt-4 inline-flex items-center gap-1.5 font-bold text-body-sm', p.href ? 'text-[var(--cat-deep)]' : 'text-muted']}>
                   {p.href ? 'Lihat program' : 'Segera hadir'}
                   {p.href && <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg>}

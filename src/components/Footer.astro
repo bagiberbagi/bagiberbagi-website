@@ -65,7 +65,16 @@ const socialBtn = 'w-11 h-11 rounded-full bg-black/5 flex items-center justify-c
     <div class="grid gap-x-6 gap-y-9 grid-cols-2 sm:grid-cols-3 lg:grid-cols-[1.7fr_1fr_1fr_1fr_1fr] pt-12 pb-7">
       <div class="col-span-2 sm:col-span-3 lg:col-span-1">
         <a href="/#top" class="inline-flex items-center mb-4">
-          <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-8 w-auto" />
+          {/* Slot 179px, sama alasannya dengan logo di Header: tinggi dikunci
+              (h-8 = 32px) sehingga lebarnya tetap di semua ukuran layar. */}
+          <Image
+            src={logoHorizontal}
+            alt="bagiberbagi.id"
+            class="h-8 w-auto"
+            width={179}
+            widths={[179, 358, 537]}
+            sizes="179px"
+          />
         </a>
         <p class="text-body-sm text-muted leading-relaxed mb-4 max-w-[300px]">Gerakan donasi makanan yang transparan, dengan bukti sampai H+1.</p>
         <div class="flex gap-2.5 mb-3">

@@ -334,23 +334,34 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   /* ===== Pemilih paket ===== */
   .dc-pkg { display: flex; flex-direction: column; gap: 9px; }
   .dc-pkg-title { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.02em; color: #1c1917; }
-  .dc-pkg-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  /* Sama bahasa visual dengan .dc-chip di bawahnya: grid kolom sama-lebar
+     (bukan flex-wrap yang bisa menyisakan satu opsi sendirian di baris
+     kedua), sudut 13px, dan status terpilih border+tint alih-alih pil penuh
+     warna. Beda dari .dc-chip cuma satu: label tunggal, jadi tak perlu
+     struktur dua baris judul+harga. */
+  .dc-pkg-opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .dc-pkg-opt {
     border: 1.5px solid #e7e5e4;
     background: #fff;
-    border-radius: 999px;
-    padding: 11px 16px;
+    border-radius: 13px;
+    min-height: 44px;
+    padding: 8px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     font-size: 14px;
     font-weight: 700;
+    line-height: 1.25;
     color: #57534e;
     cursor: pointer;
     transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
   }
   .dc-pkg-opt:hover { border-color: var(--cat, #f4791d); }
   .dc-pkg-opt[aria-pressed='true'] {
-    border-color: var(--cat, #f4791d);
-    background: var(--cat, #f4791d);
-    color: #fff;
+    border: 2px solid var(--cat, #f4791d);
+    background: var(--cat-tint, #fff7ed);
+    color: var(--cat-deep, #c25d0f);
   }
 
   /* ===== Pemilih porsi ===== */

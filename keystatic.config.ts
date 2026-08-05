@@ -672,10 +672,17 @@ export default config({
         logo: fields.image({
           label: 'Logo',
           description: 'Kosongkan untuk memakai placeholder.',
-          // Logo kecil, tidak lewat astro:assets, sama seperti pola pengecualian
-          // unggahan non-galeri lain di situs ini (mis. laporan PDF jejak).
-          directory: 'public/uploads/organisasi',
-          publicPath: '/uploads/organisasi/',
+          // Unggahan mendarat di src/assets, bukan public/, supaya logo lewat
+          // astro:assets. publicPath wajib persis sama dengan kunci glob di
+          // src/lib/organisasi.ts.
+          //
+          // Dulu berkas ini ditaruh di public/ dengan alasan "logo kecil".
+          // Unggahan nyata pertama membantah alasan itu: 1079x979 piksel, 66 KB,
+          // JPEG mentah, dikirim sama persis di layar 320 maupun 1280, untuk
+          // mengisi kotak 44 piksel. Editor mengunggah apa yang dia punya, dan
+          // yang dia punya adalah berkas dari internet.
+          directory: 'src/assets/organisasi',
+          publicPath: '/src/assets/organisasi/',
         }),
         summary: fields.text({
           label: 'Ringkasan',

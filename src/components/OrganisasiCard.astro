@@ -136,11 +136,11 @@ const logoSize = isWide ? 'w-14 h-14' : 'w-11 h-11';
   <div class={bodyClass}>
     <div class="flex items-start gap-3 mb-3">
       {org.logo ? (
-        <img
+        <Image
           src={org.logo}
           alt={`Logo ${org.label}`}
-          width="56"
-          height="56"
+          widths={[44, 56, 88, 112, 168]}
+          sizes={isWide ? '56px' : '44px'}
           loading="lazy"
           class:list={['rounded-xl object-contain bg-white border border-border p-1.5 flex-none', logoSize]}
         />

@@ -1,4 +1,6 @@
 import { getCollection } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import { createImageResolver } from './assets';
 import type { JejakMetric, JejakPhoto } from './jejak';
 
 // jejak.ts sengaja TIDAK di-import statis: jejak.ts sudah mengimpor modul ini
@@ -10,11 +12,11 @@ export interface Organisasi {
   slug: string;
   label: string;
   /**
-   * Path string dari unggahan Keystatic (`public/uploads/organisasi/...`),
-   * disajikan apa adanya sebagai `<img>` — logo kecil, tidak lewat pipeline
-   * astro:assets seperti foto kartu program. null = belum diunggah / dikosongkan.
+   * Modul gambar hasil unggahan Keystatic ke `src/assets/organisasi/`, lewat
+   * pipeline `astro:assets` sama seperti foto program dan jejak.
+   * null = belum diunggah, dikosongkan, atau berkasnya tidak ketemu.
    */
-  logo: string | null;
+  logo: ImageMetadata | null;
   summary: string;
   detail: { description: string; since: string; instagram?: string; website?: string };
   active: boolean;
@@ -28,6 +30,24 @@ export interface Organisasi {
  * semuanya membaca dari sini, meniru pola `getPrograms` di `programs.ts`.
  * Tanpa field `order` (tidak ada di schema); daftar diurutkan alfabet.
  */
+/**
+ * Peta path -> modul gambar untuk logo organisasi. Pola glob wajib literal dan
+ * kuncinya harus persis sama dengan `publicPath` di keystatic.config.ts. Kalau
+ * salah satu sisi diubah, ubah keduanya bersamaan.
+ * Alasan unggahan tinggal di `src/assets/` ada di `lib/assets.ts`.
+ */
+const ORGANISASI_LOGOS = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/organisasi/*.{png,jpg,jpeg,webp,avif,gif}',
+  { eager: true }
+);
+
+/**
+ * Ubah path dari entri organisasi menjadi modul gambar. Mengembalikan null
+ * kalau berkasnya tak ada; kedua tempat yang merender logo sudah punya
+ * placeholder inisial untuk kasus itu, jadi build tidak perlu gagal.
+ */
+export const resolveOrganisasiLogo = createImageResolver('organisasi', ORGANISASI_LOGOS);
+
 export async function getOrganisasi(): Promise<Organisasi[]> {
   const entries = await getCollection('organisasi');
   return entries
@@ -36,7 +56,7 @@ export async function getOrganisasi(): Promise<Organisasi[]> {
       return {
         slug: e.id,
         ...e.data,
-        logo: e.data.logo ?? null,
+        logo: resolveOrganisasiLogo(e.data.logo),
         href: hasPage ? `/organisasi/${e.id}/` : undefined,
       };
     })
@@ -164,7 +184,7 @@ export async function getOrganisasiTotals(): Promise<{
  * halaman yang tidak ada.
  */
 export async function getOrganisasiRefs(): Promise<
-  Map<string, { label: string; href: string; logo: string | null }>
+  Map<string, { label: string; href: string; logo: ImageMetadata | null }>
 > {
   const pages = await getOrganisasiPages();
   return new Map(pages.map((o) => [o.slug, { label: o.label, href: o.href!, logo: o.logo }]));

@@ -6,7 +6,13 @@
   "organization": {
     "type": "NGO",
     "name": "bagiberbagi.id",
-    "logo": "/favicon/apple-touch-icon.png"
+    "logo": "/src/assets/images/logo/logo-horizontal-color.png",
+    "address": {
+      "locality": "Bogor",
+      "region": "Jawa Barat",
+      "country": "ID"
+    },
+    "foundingDate": ""
   },
   "pages": [
     {

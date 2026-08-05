@@ -20,7 +20,7 @@ import { getEntry } from 'astro:content';
 import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
 import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';
 import { findPageSeo } from '../lib/seo';
-import { resolveShareImage } from '../lib/share-image';
+import { resolveShareImage, resolveOrgLogo } from '../lib/share-image';
 import {
   assembleGraph,
   buildBreadcrumbList,
@@ -104,6 +104,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 // Satu-satunya tempat nilai gambar share diselesaikan: unggahan editor lewat
 // astro:assets, path tetap & route OG generate diteruskan apa adanya.
 const shareImage = await resolveShareImage(image, Astro.site);
+// Logo brand lewat pipeline yang sama dengan Header dan Footer, bukan salinan
+// terpisah di `public/`, supaya mengganti berkas logo mengubah ketiganya.
+const orgLogo = await resolveOrgLogo(seo.organization.logo, Astro.site!);
 
 const site = await getEntry('settings', 'site');
 const ids = makeIds({ siteUrl });
@@ -118,18 +121,18 @@ const organization = site
       '@id': ids.organization(ORG_SLUG),
       name: seo.organization.name,
       url: `${siteUrl}/`,
-      logo: new URL(seo.organization.logo, Astro.site).href,
+      logo: orgLogo,
       description: seo.defaultDescription,
       email: site.data.socials.email,
       // WhatsApp adalah kanal donasi sungguhan situs ini, bukan pelengkap, jadi
       // nomornya disebut sebagai contactPoint alih-alih cuma hidup di dalam
       // tautan `wa.me`. Bentuk E.164 dipakai apa adanya dari settings.
       //
-      // `address` dan `foundingDate` SENGAJA belum ada di sini. Keduanya berguna
-      // untuk entitas organisasi di mata mesin pencari, tapi keduanya juga
-      // pernyataan fakta: mengisinya dengan tebakan berarti menerbitkan data
-      // palsu yang dibaca mesin sebagai kebenaran. Field-nya sudah disiapkan di
-      // Keystatic, tinggal diisi pemilik.
+      // `address` diisi pemilik (Bogor, Jawa Barat) pada 5 Agustus 2026.
+      // `foundingDate` masih kosong dan sengaja dibiarkan begitu: ia pernyataan
+      // fakta tentang lembaga, dan menebaknya berarti menerbitkan data palsu
+      // yang dibaca mesin pencari sebagai kebenaran. Field-nya sudah ada di
+      // Keystatic, tinggal diisi begitu tanggalnya pasti.
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',

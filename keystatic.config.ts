@@ -173,7 +173,11 @@ export default config({
               defaultValue: 'NGO',
             }),
             name: fields.text({ label: 'Nama organisasi' }),
-            logo: fields.text({ label: 'Path logo', description: 'Contoh: /favicon/apple-touch-icon.png' }),
+            logo: fields.text({
+              label: 'Path logo',
+              description:
+                'Path berkas logo. Yang di dalam /src/assets/images/logo/ diciutkan otomatis; path lain (mis. /og-image.png) dipakai apa adanya.',
+            }),
             // Boleh dikosongkan. Yang kosong tidak dirender ke JSON-LD sama
             // sekali, jadi lebih baik kosong daripada diisi kira-kira: ini
             // dibaca mesin pencari sebagai pernyataan fakta tentang lembaga.

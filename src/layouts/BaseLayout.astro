@@ -1,4 +1,21 @@
 ---
+// `overflow-x-hidden` pada <body> di bawah DIPERTAHANKAN, dan ini alasannya,
+// supaya tidak dicabut lagi oleh orang yang mengira ia menutupi bug.
+//
+// Diukur 4 Agustus 2026 di 18 route x 6 lebar, dengan clip itu dilepas dulu:
+// luapan horizontal NOL di semua kombinasi. Jadi hari ini ia tidak sedang
+// menyembunyikan apa pun. Yang ia sembunyikan adalah regresi BERIKUTNYA.
+//
+// Biayanya nyata: selama ia terpasang, scrollWidth pada documentElement tak
+// akan pernah melebihi clientWidth, sehingga cara paling gampang mendeteksi
+// luapan selalu menjawab "bersih" apa pun keadaannya. Pass pertama audit itu
+// tertipu persis begitu, dan hasilnya sempat dilaporkan sebagai temuan.
+//
+// Tetap dipertahankan karena mencabutnya menukar potongan senyap dengan
+// guliran menyamping sungguhan di perangkat yang tak bisa diuji dari sini.
+// Gantinya: kalau memeriksa luapan, netralkan dulu clip-nya lewat
+// overflow-x visible pada body, jangan percaya angka mentahnya. Prosedur
+// lengkapnya ada di openspec/changes/fix-mobile-ergonomics/tasks.md.
 import { getEntry } from 'astro:content';
 import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
 import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';

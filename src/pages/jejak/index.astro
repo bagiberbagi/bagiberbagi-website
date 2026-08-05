@@ -224,8 +224,10 @@ const STEPS_PENCATATAN = [
        bukan `section`: bidang tint-nya harus menembus ke belakang pil navbar. -->
   <section class="section-hero bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
     <Container>
-      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-brand-orangeDark">Beranda</a>
+      {/* `inline-block py-3` = kotak sentuh 44px tanpa memindahkan hurufnya;
+           lihat catatan panjangnya di program/[program].astro. */}
+      <nav class="text-sm font-semibold text-muted mb-3" aria-label="Breadcrumb">
+        <a href="/" class="inline-block py-3 hover:text-brand-orangeDark">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-ink">Jejak &amp; Dampak</span>
       </nav>

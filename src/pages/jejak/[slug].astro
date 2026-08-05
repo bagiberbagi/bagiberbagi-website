@@ -171,10 +171,12 @@ const extraSchema = [
            JSON-LD yang diturunkan dari URL di `BaseLayout`. Pintu tidak jadi
            crumb karena bukan induk route-nya, identitasnya sudah dibawa badge
            di bawah ini. -->
-      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
+      {/* `inline-block py-3` = kotak sentuh 44px tanpa memindahkan hurufnya;
+           lihat catatan panjangnya di program/[program].astro. */}
+      <nav class="text-sm font-semibold text-muted mb-3" aria-label="Breadcrumb">
+        <a href="/" class="inline-block py-3 hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href="/jejak/" class="hover:text-[var(--cat-deep)]">Jejak</a>
+        <a href="/jejak/" class="inline-block py-3 hover:text-[var(--cat-deep)]">Jejak</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-[var(--cat-deep)]">{jejak.title}</span>
       </nav>

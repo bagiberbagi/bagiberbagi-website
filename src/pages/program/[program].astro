@@ -99,10 +99,19 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
   <!-- HERO: dua kolom, latar hangat tint pintu, foto ber-glow warna pintu -->
   <section class="section-hero" style={`${styleVars};background:linear-gradient(150deg,var(--cat-tint),#ffffff 58%)`}>
     <Container>
-      <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
-        <a href="/" class="hover:text-[var(--cat-deep)]">Beranda</a>
+      {/* `inline-block py-3` pada tiap tautan: kotak baris 20px + 24px padding
+          = 44px, tanpa satu piksel pun mengubah ukuran atau posisi hurufnya.
+          Inline-block-nya bukan hiasan — kalau tautannya tetap inline, padding
+          tetap ikut area sentuh tapi TIDAK menambah tinggi baris, jadi di 320px
+          (breadcrumb ini membungkus jadi dua baris) dua kotak 44px bertumpuk
+          24px dan satu ketukan bisa mendarat di tautan yang salah.
+          `mb-6` turun ke `mb-3` supaya jarak yang TERLIHAT antara crumb dan isi
+          di bawahnya tetap 24px seperti semula; yang tersisa cuma 12px padding
+          atas yang mendorong isi halaman turun. */}
+      <nav class="text-sm font-semibold text-muted mb-3" aria-label="Breadcrumb">
+        <a href="/" class="inline-block py-3 hover:text-[var(--cat-deep)]">Beranda</a>
         <span class="text-gray-300 mx-1.5">/</span>
-        <a href={pintuHref} class="hover:text-[var(--cat-deep)]">{pintu.label}</a>
+        <a href={pintuHref} class="inline-block py-3 hover:text-[var(--cat-deep)]">{pintu.label}</a>
         <span class="text-gray-300 mx-1.5">/</span>
         <span class="text-[var(--cat-deep)]">{program.label}</span>
       </nav>

@@ -1140,16 +1140,28 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     .s1-hero { padding: calc(74px + 104px) 0 128px; }
   }
 
+  /* Tautan crumb dulu setinggi hurufnya saja, 19,5px, jadi separuh tinggi
+     minimum sasaran sentuh. `min-height` pada tautannya, bukan `padding`,
+     supaya angkanya persis 44 dan tidak ikut bergeser kalau ukuran huruf atau
+     line-height crumb berubah. Barisnya sendiri jadi 44px, dan margin bawah
+     dipotong dari 56 ke 44 supaya jarak yang TERLIHAT antara tulisan crumb dan
+     eyebrow di bawahnya tetap sama; sisanya, 12px padding atas, itulah satu-
+     satunya yang benar-benar mendorong isi halaman turun. */
   .s1-crumb {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0 0 56px;
+    margin: 0 0 44px;
     font-size: 13px;
     font-weight: 600;
     color: #687281;
   }
-  .s1-crumb a { transition: color 0.18s ease; }
+  .s1-crumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transition: color 0.18s ease;
+  }
   .s1-crumb a:hover { color: var(--cat-deep); }
   .s1-crumb span[aria-hidden] { color: #b4bcc8; }
   .s1-crumb-now { color: #0f172a; }

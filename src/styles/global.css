@@ -10,6 +10,11 @@
   --container-article: 48rem;
   --container-text: 42rem;
   --container-form: 28rem;
+  /* Bukan tier isi halaman, jadi tidak masuk kosakata Container.astro: ini
+     lebar kolom samping daftar isi halaman legal, satu-satunya kolom tetap di
+     situs ini. Ada di sini supaya angkanya tidak jadi `w-[240px]` mentah di
+     markup, yang dilarang aturan layout-tiers untuk shell halaman. */
+  --container-sidebar: 15rem;
 }
 
 /* Dua angka yang dipakai bareng oleh .section dan .section-hero di bawah.

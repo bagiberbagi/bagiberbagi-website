@@ -88,6 +88,9 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     padding: 74px 20px 40px;
     background: radial-gradient(130% 100% at 76% 4%, #ffe45c 0%, #ffd900 52%, #f7c500 100%);
   }
+  /* 860px sengaja beda dari `wide` (900): ini ambang navbar (screens.nav di
+     tailwind.config.mjs), bukan ambang tata letak halaman, jadi padding hero
+     ikut lebar navbar-nya sendiri. Jangan "diselaraskan" ke 900. */
   @media (min-width: 860px) { .hero { padding: 74px 40px 56px; } }
 
   .hero-inner {
@@ -99,7 +102,11 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     align-items: center;
     padding: 40px 0;
   }
-  @media (min-width: 960px) { .hero-inner { grid-template-columns: 1fr 0.62fr; gap: 64px; padding: 56px 0; } }
+  /* 900px, bukan angka bebas: ini ambang `wide` (tailwind.config.mjs), sama
+     yang dipakai lima komponen lain untuk pindah dari bertumpuk ke tata letak
+     lebar. Angkanya ditulis mentah karena media query tak bisa membaca custom
+     property di dalam kondisinya, jadi cuma namanya yang tinggal di satu rumah. */
+  @media (min-width: 900px) { .hero-inner { grid-template-columns: 1fr 0.62fr; gap: 64px; padding: 56px 0; } }
 
   /* ===== Kolom kiri ===== */
   .hero-col { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }

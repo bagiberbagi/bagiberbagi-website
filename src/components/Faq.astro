@@ -42,7 +42,14 @@ const waLink = buildWaLink(site.data.waNumber);
     <div class="flex flex-col md:flex-row gap-4 mb-14">
       <div class="flex-1 bg-brand-blueTint rounded-card p-6">
         <label for="faq-search" class="block text-sm font-semibold text-ink mb-2.5">Cari Topik</label>
-        <div class="flex items-center gap-2.5 bg-white rounded-xl border border-border px-4 py-3 focus-within:ring-2 focus-within:ring-brand-blue/40 focus-within:border-brand-blue">
+        {/* Pembungkus ini `label`, bukan `div`, supaya seluruh kotak putih yang
+            terlihat sebagai field memang mengaktifkan input-nya. Sebagai `div`,
+            kotaknya terukur 302x48 tapi yang menerima ketukan cuma input di
+            dalamnya, 241x22: pinggiran atas dan bawah setinggi 13px terlihat
+            seperti field biasa dan tidak melakukan apa-apa waktu disentuh.
+            Isinya nol teks (svg-nya aria-hidden), jadi nama aksesibel input
+            tetap datang dari label "Cari Topik" di atas, tidak berganda. */}
+        <label for="faq-search" class="flex items-center gap-2.5 bg-white rounded-xl border border-border px-4 py-3 cursor-text focus-within:ring-2 focus-within:ring-brand-blue/40 focus-within:border-brand-blue">
           <svg aria-hidden="true" class="flex-none text-muted" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input
             id="faq-search"
@@ -51,7 +58,7 @@ const waLink = buildWaLink(site.data.waNumber);
             placeholder="Bagaimana cara berdonasi di bagiberbagi.id?"
             class="w-full bg-transparent text-body-sm text-ink placeholder:text-muted outline-none"
           />
-        </div>
+        </label>
       </div>
 
       <div class="bg-brand-blue rounded-card p-6 md:px-9 text-white text-center flex flex-col justify-center md:min-w-[240px]">

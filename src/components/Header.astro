@@ -51,7 +51,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 
 <header
   data-header
-  class="sticky top-0 z-50 px-3 sm:px-4 pt-2.5 relative"
+  class="sticky top-0 z-50 px-3 sm:px-4 pt-2.5"
 >
   {/* Padding kanan (pr-2.5) sengaja lebih kecil dari kiri: CTA/hamburger di
       ujung kanan (rounded-full) harus NEST konsentris di dalam cap kanan pil —
@@ -63,7 +63,20 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
       header = 10px margin atas + 64px pil = 74px. */}
   <div data-nav-pill class="max-w-wide mx-auto flex h-16 items-center gap-5 rounded-full border border-transparent pl-4 md:pl-5 pr-2.5 transition-all duration-300">
     <a href="/#top" class="flex items-center shrink-0">
-      <Image src={logoHorizontal} alt="bagiberbagi.id" class="h-9 w-auto" />
+      {/* Slot logo dikunci tingginya (h-9 = 36px), dan rasio berkas sumber
+          2522x451 membuat lebar terpakainya selalu 201px di lebar layar mana
+          pun. Karena itu `sizes` boleh berupa angka tetap, bukan vw: tidak ada
+          keadaan di mana slot ini melar. Tanpa widths+sizes, Astro memancarkan
+          satu berkas seukuran sumber tanpa srcset, dan logo 2522px 76 KB itu
+          ikut terunduh di SETIAP halaman cuma untuk mengisi 201px. */}
+      <Image
+        src={logoHorizontal}
+        alt="bagiberbagi.id"
+        class="h-9 w-auto"
+        width={201}
+        widths={[201, 402, 603]}
+        sizes="201px"
+      />
     </a>
 
     {/* Nav links di kiri dekat logo; CTA Donasi didorong ke kanan pil (ml-auto).
@@ -217,6 +230,29 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
 </header>
 
 <style>
+  /* Panel nav mobile dibatasi tingginya dan diberi guliran sendiri.
+
+     Ini bukan soal estetika. [data-header] itu `position: sticky; top: 0`,
+     jadi begitu panel lebih tinggi dari viewport ia terpaku di tempatnya dan
+     sisa isinya TIDAK PERNAH bisa dicapai: menggulir halaman sampai dasar pun
+     tidak menggeser panel sedikit pun. Terukur 4 Agustus 2026: membuka submenu
+     Pintu Berbagi membuat panel jadi 1483px di viewport 844px, dan 8 dari 13
+     tautannya di luar layar, yang terakhir tombol "Donasi Sekarang".
+
+     Angkanya: tepi atas panel ada di 82px (10px pt-2.5 + 64px pil = --nav-h,
+     lalu mt-2). Sisa 1rem menyisakan napas di tepi bawah layar.
+
+     `vh` ditulis lebih dulu sebagai cadangan buat Safari lama yang belum
+     mengenal `dvh`; di peramban yang mengenalnya, baris kedua yang menang.
+     `overscroll-behavior: contain` menahan guliran supaya tidak diteruskan ke
+     halaman di belakang panel begitu ujungnya tercapai. */
+  #mobile-nav-panel {
+    max-height: calc(100vh - var(--nav-h) - 1rem);
+    max-height: calc(100dvh - var(--nav-h) - 1rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   /* Navbar HYBRID: di puncak halaman pil TRANSPARAN/flat supaya konteks hero
      kuning tembus (seamless, seperti sebelumnya). Setelah scroll (.is-scrolled)
      atau saat menu mobile terbuka (.menu-open) skin pil muncul: putih + blur +

@@ -84,7 +84,13 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     text-wrap: pretty;
   }
 
-  /* ===== Pita proses ===== */
+  /* ===== Pita proses =====
+     900px di bawah ini = breakpoint `wide` (tailwind.config.mjs `screens`),
+     ambang beranda berganti dari bertumpuk jadi tata letak lebar. Empat
+     komponen lain memakai ambang yang sama dan berganti serentak dengannya,
+     jadi mengubah angka di satu berkas saja akan memecah barisan. Angkanya
+     ditulis literal karena CSS tak bisa membaca custom property di kondisi
+     media query; namanya yang jadi acuan, bukan angkanya. */
   .rail { position: relative; display: grid; grid-template-columns: 1fr; gap: 26px; }
   @media (min-width: 900px) { .rail { grid-template-columns: repeat(5, 1fr); gap: 18px; } }
 

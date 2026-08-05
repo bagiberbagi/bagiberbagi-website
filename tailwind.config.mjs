@@ -78,8 +78,24 @@ export default {
         menu: '0 24px 48px -24px rgba(15,23,42,0.22)',
         pill: '0 8px 20px -8px rgba(15,23,42,0.5)',
       },
+      // Kosakata breakpoint tinggal di sini, sementara kosakata lebar konten
+      // (tier Container) tinggal di `@theme` pada src/styles/global.css. Dua
+      // berkas, dua peran; jangan cari salah satunya di tempat yang lain.
+      //
+      // `nav` = ambang navbar berganti dari hamburger ke baris menu penuh.
+      // `wide` = ambang halaman berganti dari bertumpuk jadi tata letak lebar.
+      //   Bukan angka karangan: di 899px seluruh beranda masih satu kolom, di
+      //   900px rail jadi 5 kolom, imp-journey 4 kolom, cl-grid 2 kolom, river
+      //   muncul dan stack hilang, semuanya serentak. Ambang itu sudah lama
+      //   dipakai lima komponen, cuma belum pernah punya nama.
+      //
+      // Media query di scoped style tetap menulis angkanya sendiri, karena CSS
+      // tidak bisa membaca custom property di dalam kondisi media query. Yang
+      // dijamin di sini cuma satu: angkanya punya satu nama dan satu rumah,
+      // jadi kerjaan berikutnya memakai `wide:` daripada mengarang angka baru.
       screens: {
         nav: '860px',
+        wide: '900px',
       },
     },
   },

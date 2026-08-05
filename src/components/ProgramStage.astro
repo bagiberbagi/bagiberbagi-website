@@ -453,15 +453,18 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   }
   .ps-ticks { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
 
-  /* The bar is 3px; the anchor around it stays 22px tall so the tap target
-     clears the minimum even though the mark itself is a hairline. Size and
-     colour change directly rather than through a transform: scaling a 3px bar
-     lands it on half pixels and it renders furry. */
+  /* The bar itself stays a 3px hairline; the anchor around it is 44px tall so
+     the tap target clears the 44px minimum even though the mark it paints
+     does not. Below 768 the arrows are hidden (see `.ps-arrow` below), which
+     makes these ticks the only slide control a phone user has, so the anchor
+     size is not cosmetic. Size and colour change directly rather than through
+     a transform: scaling a 3px bar lands it on half pixels and it renders
+     furry. */
   .ps-tick {
     display: flex;
     align-items: center;
     width: 44px;
-    height: 22px;
+    height: 44px;
   }
   .ps-tick::before {
     content: '';
@@ -522,6 +525,12 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   @media (max-width: 767px) {
     .ps-cta { width: 100%; min-height: 48px; justify-content: center; }
     .ps-cta--statement { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 18px; }
+    /* The 44px tick anchor (up from 22px) eats 22px more headroom than the
+       inner padding below was budgeted for, which put it flush against the
+       CTA above. `padding-bottom` grows by that same 22px so the reserved
+       strip stays clear of the CTA at every width; `.ps-nav`'s own offset is
+       untouched. */
+    .ps-inner { padding-bottom: 98px; }
     .ps-nav { bottom: 16px; }
     .ps-tick { width: 30px; }
   }

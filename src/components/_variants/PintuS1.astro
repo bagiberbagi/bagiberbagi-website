@@ -1296,8 +1296,15 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
      Memberinya 1fr dari dua akan membuat daftar tujuh tautan duduk di kolom
      selebar 400px, dan itu bukan marginalia lagi. Di viewport 900 kolom baca
      jadi 524px, dan seluruh ambang container query di bawah diturunkan ke 520
-     supaya isinya berubah bentuk tepat saat kerangkanya berubah. */
+     supaya isinya berubah bentuk tepat saat kerangkanya berubah.
+
+     900px = breakpoint `wide` (tailwind.config.mjs → screens.wide). Angkanya
+     ditulis ulang di sini karena kondisi media query tidak bisa membaca custom
+     property maupun token Tailwind; yang bisa dijamin cuma namanya tercatat.
+     Kalau `wide` bergeser, empat media query di berkas ini ikut digeser tangan:
+     yang ini, `.s1-rail-track`, plafon tinggi rel, dan `.s1-close-mark`. */
   @media (min-width: 900px) {
+    /* = wide */
     .s1-grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 240px);
       gap: 56px;
@@ -1399,7 +1406,10 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
      gulir dan bukan cuma sepanjang isi relnya. */
   .s1-rail-track { display: none; }
 
+  /* 900px = breakpoint `wide`. Lihat catatan di media query `.s1-grid` di atas
+     soal kenapa angkanya tetap ditulis mentah di sini. */
   @media (min-width: 900px) {
+    /* = wide */
     .s1-rail-track {
       display: block;
       position: relative;
@@ -1435,8 +1445,9 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   /* Plafon tinggi rel 545px (hitungannya di catatan nomor 3 kepala file). Di
      bawah 560px tinggi viewport rel berhenti lengket dan ikut bergulir seperti
      blok biasa. Tidak ada yang disembunyikan dan tidak ada yang terpotong, jadi
-     ekor daftar isinya tetap bisa dijangkau. */
+     ekor daftar isinya tetap bisa dijangkau. 900px = breakpoint `wide`. */
   @media (min-width: 900px) and (max-height: 560px) {
+    /* = wide, layar pendek */
     .s1-rail { position: static; }
   }
 
@@ -1971,7 +1982,10 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     line-height: 0;
     pointer-events: none;
   }
+  /* 899px = tepat di bawah breakpoint `wide` (900px), jadi aturan ini berlaku
+     persis di lebar tempat rel dan kerangka dua kolomnya belum dirender. */
   @media (max-width: 899px) {
+    /* = di bawah wide */
     .s1-close-mark {
       right: -70px;
       bottom: -60px;

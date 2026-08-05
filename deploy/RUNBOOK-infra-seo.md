@@ -42,13 +42,18 @@ Setelan itu berlaku untuk seluruh hostname di zona, jadi ia menutup www sekaligu
 mempertahankan perilaku apex yang sudah benar.
 
 > **KOREKSI, 4 Agustus 2026.** Paragraf di bawah ini salah waktu ditulis dan
-> dibiarkan berdiri sebagai catatan. Dua kekeliruannya: origin **tidak** punya
-> sertifikat Let's Encrypt (port 443 tidak punya listener sama sekali, jadi mode
-> zona efektif Flexible), dan Flexible bukan penghalang buat menyalakan Always
-> Use HTTPS. Redirect loop lahir dari Flexible **plus redirect di sisi origin**,
-> sementara redirect di sisi edge justru aman. Langkah 1 memang dijalankan
-> dengan mode Flexible dan hasilnya benar. Ruas origin ditutup terpisah lewat
-> `RUNBOOK-tls-origin.md`.
+> dibiarkan berdiri sebagai catatan. Dua kekeliruannya: origin **tidak pernah**
+> punya sertifikat Let's Encrypt (pagi itu port 443 belum punya listener sama
+> sekali, jadi mode zona efektif Flexible), dan Flexible bukan penghalang buat
+> menyalakan Always Use HTTPS. Redirect loop lahir dari Flexible **plus redirect
+> di sisi origin**, sementara redirect di sisi edge justru aman. Langkah 1 memang
+> dijalankan dengan mode Flexible dan hasilnya benar.
+>
+> **Keadaan sekarang sudah berubah lagi**: sore harinya origin dipasangi
+> sertifikat Cloudflare Origin CA lewat `RUNBOOK-tls-origin.md` dan zona
+> dipindah ke **Full (strict)**. Jadi instruksi "pastikan mode bukan Flexible"
+> di bawah kebetulan cocok dengan keadaan hari ini, tapi alasan yang ditulisnya
+> tetap salah, dan sertifikatnya bukan certbot.
 
 **Sebelum menyalakan, pastikan mode SSL bukan Flexible.** Di halaman
 **SSL/TLS → Overview**, mode harus **Full (strict)** atau minimal **Full**.

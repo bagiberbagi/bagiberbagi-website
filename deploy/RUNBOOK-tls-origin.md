@@ -1,5 +1,16 @@
 # Runbook — TLS on the origin (Cloudflare Origin CA)
 
+> **EXECUTED 4 August 2026. Nothing here is pending.** Verified from outside the
+> next morning: the origin answers `200` on 443, presents an issuer of
+> `CloudFlare Origin SSL Certificate Authority` with `notAfter` 31 Jul 2041, and
+> all seven sampled routes return 200 through the edge. Port 80 still serves.
+> HSTS at the edge is now `max-age=15552000; includeSubDomains; preload`.
+>
+> Kept as the record of how the origin got its certificate, and as the procedure
+> to follow if it ever has to be replaced or moved to another box. Steps 0 and 5
+> also double as the rollback, so read the Rollback section before touching the
+> encryption mode again.
+
 Written 4 August 2026. This closes the last unencrypted leg of the request path.
 
 ```

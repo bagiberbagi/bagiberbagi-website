@@ -135,7 +135,14 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
         <Share url={shareUrl} title={program.label} text={program.summary} compact class="flex-none mt-1.5" />
       </div>
 
-      <div class="grid md:grid-cols-2 gap-10 md:gap-12 items-stretch">
+      {/* Pecah dua kolom di `wide` (900px), bukan di `md` (768px). Seluruh situs
+          berganti bentuk di 900 sejak ambang itu dinamai di tailwind.config.mjs,
+          dan halaman ini satu-satunya yang masih pecah 132px lebih awal. Yang
+          didapat kolom di 768 cuma 320px: cover jadi bilah tinggi kurus, dan
+          panel donasi dapat kotak selebar ponsel padahal isinya dirancang untuk
+          slot yang lebih lebar (chip "6 porsi" jadi dua baris, "Lainnya"
+          terpotong). Di bawah 900 halaman ini sekarang satu kolom penuh. */}
+      <div class="grid wide:grid-cols-2 gap-10 wide:gap-12 items-stretch">
         <div>
           {/* `body` (16px), bukan `body-sm`. Ini paragraf pembuka halaman, dan
               di halaman ini `body-sm` sempat jadi bawaan sampai tak ada satu pun
@@ -192,10 +199,17 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           )}
         </div>
 
-        <div class="order-first md:order-last">
+        {/* `wide:order-last`, bukan `md:order-last`, dan ini bukan sekadar ikut
+            rapi: begitu gridnya jadi satu kolom sampai 900px, `md:order-last`
+            akan melempar cover ke BAWAH kolom teks di rentang 768-899, jadi
+            halaman dibuka dengan paragraf dan fotonya baru muncul setelah panel
+            donasi. Urutannya harus berganti di ambang yang sama dengan
+            kolomnya. */}
+        <div class="order-first wide:order-last">
           {/* Kolom foto = separuh grid 2 kolom di Container tier `standard`
               (isi 944px di layar lebar) dikurangi gap 48px, sekitar 448px di
-              lg+; di antara md dan lg kontainer masih ikut lebar layar.
+              atas 1024. Antara 900 dan 1024 kontainer masih ikut lebar layar,
+              dan di bawah 900 kolomnya selebar kontainer penuh.
 
               Lewat `ProgramCover`, bukan lewat `getProgramCover` langsung,
               supaya program tanpa cover sendiri tampil dengan ikon pintunya.

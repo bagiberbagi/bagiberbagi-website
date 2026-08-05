@@ -132,6 +132,9 @@ const WA_GLYPH =
 
 <style>
   .cl-grid { display: grid; gap: 40px; align-items: center; }
+  /* 900px = breakpoint `wide` (tailwind.config.mjs). Lihat catatan lengkapnya
+     di TrustSection.astro: lima komponen beranda berganti bentuk serentak di
+     ambang ini. */
   @media (min-width: 900px) { .cl-grid { grid-template-columns: 1.15fr 1fr; gap: 64px; } }
 
   .cl-left { max-width: 46rem; }

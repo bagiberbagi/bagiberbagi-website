@@ -155,6 +155,11 @@ const pct = (value: number, total: number) => ((value / total) * 100).toFixed(3)
     display: none;
     width: 100%;
   }
+  /* 900px = breakpoint `wide` (tailwind.config.mjs). Lihat catatan lengkapnya
+     di TrustSection.astro. Di komponen ini ambangnya menukar dua tampilan yang
+     saling menggantikan: `.river` muncul dan `.stack` hilang di angka yang
+     sama, jadi kalau salah satu diubah tanpa yang lain, halaman ini akan
+     menampilkan keduanya sekaligus atau tidak sama sekali. */
   @media (min-width: 900px) { .river { display: block; } }
 
   .river-svg { display: block; width: 100%; height: auto; overflow: visible; }

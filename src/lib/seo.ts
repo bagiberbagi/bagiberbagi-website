@@ -6,6 +6,15 @@
  * judul/deskripsi sendiri-sendiri dan harus disamakan manual.
  */
 
+/**
+ * Slug node Organization situs, dipakai bareng setiap konsumen yang perlu
+ * merujuknya lewat `@id`: BaseLayout yang membangun node-nya, dan halaman
+ * yang merujuknya (mis. `author`/`publisher` pada Article di jejak detail).
+ * Ditaruh satu konstanta supaya slug-nya tak bisa berbeda di antara dua
+ * pemanggil itu.
+ */
+export const ORG_SLUG = 'bagiberbagi';
+
 export interface SeoPageEntry {
   path: string;
   title: string;

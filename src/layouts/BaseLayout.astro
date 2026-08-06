@@ -19,7 +19,7 @@
 import { getEntry } from 'astro:content';
 import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
 import { breadcrumbsFromUrl } from '@jdevalk/astro-seo-graph';
-import { findPageSeo } from '../lib/seo';
+import { findPageSeo, ORG_SLUG } from '../lib/seo';
 import { resolveShareImage, resolveOrgLogo } from '../lib/share-image';
 import {
   assembleGraph,
@@ -67,8 +67,6 @@ export interface Props {
   /** Extra JSON-LD pieces contributed by the page (e.g. FAQPage), merged into the same @graph. */
   extraSchema?: Record<string, unknown>[];
 }
-
-const ORG_SLUG = 'bagiberbagi';
 
 const props = Astro.props;
 
@@ -211,7 +209,7 @@ const graph = organization
         ids
       ),
       ...extraSchema.map((piece) => buildPiece(piece as Parameters<typeof buildPiece>[0])),
-    ])
+    ], { warnOnDanglingReferences: import.meta.env.DEV })
   : null;
 ---
 

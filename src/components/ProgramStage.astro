@@ -113,7 +113,7 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
 ---
 
 {slides.length > 0 && (
-  <section class="pstage" data-stage aria-labelledby="stage-title">
+  <section id="program-berjalan" class="pstage scroll-mt-24" data-stage aria-labelledby="stage-title">
     <div class="ps-track" data-stage-track>
       {slides.map((slide, index) => (
         <article

@@ -184,7 +184,7 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
       aria-label="Menu"
       aria-expanded="false"
       aria-controls="mobile-nav-panel"
-      class="nav:hidden ml-auto bg-gray-50 border-0 w-11 h-11 rounded-xl flex items-center justify-center text-ink"
+      class="nav:hidden ml-auto border-0 w-11 h-11 rounded-full flex items-center justify-center text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
     >
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
     </button>
@@ -312,6 +312,41 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
   }
   @media (prefers-reduced-motion: reduce) {
     .nav-link {
+      transition: none;
+    }
+  }
+
+  /* Hamburger: bentuk dan cincin fokus mengikuti tombol ikon bundar 44px yang
+     sudah ada di Share.astro, tapi latar diamnya DIBUANG. Di dalam pil, latar
+     abu solid berarti satu permukaan ditumpuk di atas permukaan yang sudah ada,
+     dan persegi-membulat di dalam bentuk yang serba 999px terbaca sebagai benda
+     dari sistem lain. Kotak sentuh 44x44 tidak ikut berubah.
+
+     Umpan baliknya meminjam .nav-link di atas, bukan `hover:bg-gray-100` milik
+     Share.astro, dengan alasan yang sama seperti yang tertulis di sana: latar
+     pil berganti-ganti (tembus pandang di atas hero kuning, putih setelah
+     digulir), dan satu nilai tint transparan bekerja benar di kedua keadaan
+     sementara satu warna solid hanya benar di salah satunya. Cincin fokusnya
+     menyimpang dari Share.astro karena alasan yang sama: brand-orange di atas
+     hero kuning cuma 1.9:1, di bawah 3:1 yang dituntut indikator fokus,
+     sedangkan ink 12.9:1 di atas kuning dan 17.9:1 di atas pil putih. */
+  #nav-toggle {
+    background-color: transparent;
+    transition: background-color 0.18s ease;
+  }
+  #nav-toggle:hover,
+  #nav-toggle:focus-visible {
+    background-color: rgba(15, 23, 42, 0.07);
+  }
+  /* Ditekan dan sedang terbuka memakai tint yang sama satu langkah lebih pekat.
+     Begitu panel terbuka tombol ini berperan sebagai tombol tutup, dan tanpa
+     latar diam tidak ada lagi yang menandai peran itu selain keadaan ini. */
+  #nav-toggle:active,
+  #nav-toggle[aria-expanded='true'] {
+    background-color: rgba(15, 23, 42, 0.12);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #nav-toggle {
       transition: none;
     }
   }

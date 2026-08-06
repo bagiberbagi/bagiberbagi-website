@@ -47,7 +47,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         Bagiberbagi menghubungkan niat baik dengan dampak nyata lewat ekosistem yang transparan dan terukur. Bukan sekadar donasi, tapi cara berbagi yang bisa kamu percaya.
       </p>
       <a href="#cara-kerja" class="hero-link">
-        Lihat Cara Kerjanya
+        <span class="hero-link-label">Lihat Cara Kerjanya</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
       </a>
     </div>
@@ -144,19 +144,31 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     max-width: 52ch;
     text-wrap: pretty;
   }
+  /* Garis bawah dulu duduk di .hero-link (seluruh kotak inline-flex), jadi ia
+     lanjut di bawah gap 10px + ikon panah 17px, total 27px lewat ujung teks
+     "Lihat Cara Kerjanya" (183,9px kotak vs 156,9px teks, terukur sama persis
+     di 320/390/430/768/1280px). Itu yang kebaca "aneh" di iPhone: garisnya
+     nggak berhenti di huruf terakhir. Border sekarang pindah ke
+     .hero-link-label yang cuma membungkus teksnya, jadi panjangnya ngikut
+     teks, bukan ngikut kotak. */
   .hero-link {
     display: inline-flex;
     align-items: center;
     gap: 10px;
     margin-top: 6px;
-    padding-bottom: 4px;
     font-size: 17px;
     font-weight: 700;
     color: #1c1917;
-    border-bottom: 2px solid rgba(28, 25, 23, 0.85);
-    transition: gap 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    transition: gap 0.18s ease, color 0.18s ease;
   }
-  .hero-link:hover { gap: 15px; color: #c25d0f; border-color: #c25d0f; }
+  .hero-link:hover { gap: 15px; color: #c25d0f; }
+  .hero-link-label {
+    padding-bottom: 4px;
+    border-bottom: 2px solid rgba(28, 25, 23, 0.85);
+    transition: border-color 0.18s ease;
+  }
+  .hero-link:hover .hero-link-label,
+  .hero-link:focus-visible .hero-link-label { border-color: #c25d0f; }
   .hero-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
   /* Ekor kartu donasi: tautan laporan yang dititipkan ke slot `foot`
@@ -176,6 +188,6 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   .hero-card-foot svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero-link, .hero-card-foot { transition: none; }
+    .hero-link, .hero-link-label, .hero-card-foot { transition: none; }
   }
 </style>

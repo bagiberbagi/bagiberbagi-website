@@ -134,9 +134,24 @@ already renders. The open question is whether it should gain one.
 2. **Is Rp 25.000 per porsi uniform across every food programme, forever?** This decides whether
    the price is one field in `settings` or a field on each programme. It is the difference
    between a five-minute change and a schema.
-3. **Will any card ever show a unit other than "porsi"?** If no, leave the word in the code where
-   it is honest and skip the fifteen strings entirely. If yes, they get threaded in the same pass
-   that introduces the reader, because doing it later means touching the same fifteen twice.
+3. ~~**Will any card ever show a unit other than "porsi"?**~~ **Answered: probably yes one day,
+   but everything is porsi for now.**
+
+   That is neither of the two options this question originally offered, and the question was
+   wrong to offer only two. Threading fifteen strings now buys nothing, because there is no
+   second unit to prove it against. Not thinking about it at all means touching those fifteen
+   twice later, once to introduce the field and once to use it.
+
+   **The cheap third path: `getAjakan()` carries `unit` in what it returns from day one, with the
+   value `'porsi'`, and the fifteen literals stay exactly as they are.** Nothing in the UI reads
+   it yet and nothing pretends to be configurable. When a second unit finally arrives, the change
+   is one pass over those fifteen strings, swapping a literal for `ajakan.unit`, with the field
+   already in place and already populated. No schema change at that point, no migration, and no
+   window where the admin offers a setting the page ignores.
+
+   The rule this follows: **reserve the seam, do not build the machine.** A field carried but
+   unread costs one line and lies to nobody. A field exposed in Keystatic but unread costs the
+   owner's trust the first time he changes it and nothing happens.
 4. **Should Community Giving gain a picker?** Only answerable by the owner, and it is the one
    question that is genuinely about product rather than structure.
 

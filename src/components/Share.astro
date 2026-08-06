@@ -18,8 +18,9 @@ const tgHref = `https://t.me/share/url?url=${enc(url)}&text=${enc(title)}`;
 const xHref = `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`;
 
 // Satu segmen ikon. Default tenang (abu lembut), isi muncul saat hover — jadi
-// utilitas sekunder, tidak bersaing dengan tombol Donasi.
-const seg = 'group inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-400 transition-colors duration-200 hover:bg-gray-100 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange';
+// utilitas sekunder, tidak bersaing dengan tombol Donasi. 44×44 supaya target
+// sentuhnya penuh, bukan cuma lingkaran 32px yang dicat di tengahnya.
+const seg = 'group inline-flex items-center justify-center w-11 h-11 rounded-full text-gray-400 transition-colors duration-200 hover:bg-gray-100 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange';
 ---
 
 <div
@@ -27,13 +28,13 @@ const seg = 'group inline-flex items-center justify-center w-8 h-8 rounded-full 
   data-share-url={url}
   data-share-title={title}
   data-share-text={text}
-  class:list={['inline-flex items-center gap-0.5', cls]}
+  class:list={['inline-flex items-center gap-2', cls]}
 >
-  <button type="button" data-share-native hidden class="inline-flex items-center gap-1.5 h-8 rounded-full px-2.5 text-body-sm font-semibold text-muted transition-colors duration-200 hover:bg-gray-100 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange">
+  <button type="button" data-share-native hidden class="inline-flex items-center justify-center gap-1.5 h-11 rounded-full px-4 text-body-sm font-semibold text-muted transition-colors duration-200 hover:bg-gray-100 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"></path></svg>
     {!compact && <span>Bagikan</span>}
   </button>
-  <span data-share-divider hidden class="w-px h-5 bg-border mx-0.5"></span>
+  <span data-share-divider hidden class="w-px h-6 bg-border"></span>
 
   <a href={waHref} target="_blank" rel="noopener" aria-label="Bagikan ke WhatsApp" class={seg}>
     <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 2.1.55 4.06 1.6 5.83L2 22l4.4-1.15a9.9 9.9 0 0 0 4.73 1.2h.01c5.46 0 9.91-4.45 9.91-9.91C21.06 6.45 17.5 2 12.04 2zm5.8 14.09c-.24.68-1.4 1.3-1.94 1.35-.5.05-.97.23-3.27-.68-2.77-1.09-4.5-3.88-4.64-4.06-.13-.18-1.1-1.46-1.1-2.78 0-1.32.7-1.97.94-2.24.24-.27.53-.34.7-.34l.5.01c.16.01.38-.06.59.45.24.58.82 2 .9 2.14.07.14.12.31.02.5-.09.18-.14.29-.28.45l-.42.49c-.14.14-.28.29-.12.57.16.28.72 1.18 1.54 1.91 1.06.95 1.95 1.24 2.23 1.38.28.14.44.12.6-.07.16-.18.69-.8.87-1.08.18-.27.36-.23.6-.14.25.09 1.58.75 1.85.89.27.14.45.2.52.32.07.11.07.66-.17 1.35z"></path></svg>

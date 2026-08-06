@@ -13,7 +13,7 @@
 // jatuh ke oranye brand kalau tidak — itu yang bikin kartu ini betah di hero
 // kuning maupun di halaman program yang berwarna pintu.
 import { Image } from 'astro:assets';
-import { calcTotal, buildWaLink, buildDonationMessage, formatRupiah } from '../lib/format';
+import { calcTotal, buildWaLink, formatRupiah } from '../lib/format';
 
 interface Agenda {
   location: string;
@@ -63,17 +63,31 @@ const progressPct = showProgress && agenda ? Math.round((collected / agenda.targ
 
 // Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
 const price = calcTotal(1);
-const PRESETS = [2, 6, 12];
-const DEFAULT_PORSI = 6;
+const PRESETS = [6, 12, 20];
 
-const initialTotal = formatRupiah(calcTotal(DEFAULT_PORSI));
-// Paket pertama jadi default server-rendered, supaya tombol donasi tetap masuk
-// akal tanpa JS; skrip kartu yang memperbarui href-nya begitu pengunjung
-// memilih paket lain.
-const initialWaLink = buildWaLink(
-  waNumber,
-  buildDonationMessage(programLabel, DEFAULT_PORSI, initialTotal, packages?.[0])
-);
+// Tidak ada porsi terpilih saat halaman dibuka. Sebelumnya 6 porsi sudah
+// tercentang, dan angka yang sudah dipilihkan itu membingkai keputusan orang
+// sebelum mereka sempat menimbang sendiri.
+//
+// Konsekuensinya kena ke jalur tanpa JS: dulu href WhatsApp sudah lengkap dari
+// server karena jumlahnya diketahui. Sekarang jumlahnya belum ada, jadi pesan
+// awalnya cuma tidak menyebut jumlah — ia tetap menyebut program (dan paketnya
+// kalau ada) lalu meminta bantuan menentukan porsinya lewat percakapan. Tombol
+// itu tetap sahih di titik mana pun: tanpa JS ia mengantar orang ke percakapan
+// yang benar, dengan JS ia mendapat angkanya begitu pengunjung memilih.
+//
+// Pesan ini disusun di sini saja, bukan juga di donation-card.js. Skrip tak
+// pernah merangkainya sendiri: teks yang dirender server ia pakai apa adanya,
+// dan tiap tombol paket membawa versinya sendiri lewat `data-package-open-msg`.
+const openMessage = (pkg?: string | null) =>
+  `Halo, saya ingin donasi program "${pkg ? `${programLabel} (Paket ${pkg})` : programLabel}". Boleh dibantu untuk jumlah porsinya?`;
+
+const initialWaLink = buildWaLink(waNumber, openMessage(packages?.[0]));
+
+// Nilai awal panel "Lainnya": 1 adalah porsi terkecil yang masuk akal, dan
+// satu-satunya angka yang tidak diam-diam jadi default baru. Kalau pengunjung
+// sudah menekan salah satu preset lebih dulu, skrip membawa angka itu ke sini.
+const CUSTOM_START_PORSI = 1;
 
 const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 ---
@@ -87,7 +101,6 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   data-price={price}
   data-program={programLabel}
   data-wa={waNumber}
-  data-default-porsi={DEFAULT_PORSI}
 >
   {photo && (
     <div class="dc-photo">
@@ -174,7 +187,13 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         <p class="dc-pkg-title">Pilih paket</p>
         <div class="dc-pkg-opts">
           {packages.map((pkg, i) => (
-            <button type="button" class="dc-pkg-opt" data-package-option={pkg} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <button
+              type="button"
+              class="dc-pkg-opt"
+              data-package-option={pkg}
+              data-package-open-msg={openMessage(pkg)}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
               {pkg}
             </button>
           ))}
@@ -192,9 +211,17 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 
       {note && <p class="dc-note">{note}</p>}
 
-      <div class="dc-chips">
+      {/* Tak satu pun chip tertekan saat halaman dibuka, jadi baris ini tak
+          punya "yang terpilih" untuk menerangkan dirinya ke pembaca layar.
+          role+label memberi grup itu nama sendiri, memakai kalimat yang sudah
+          jadi judul pemilih ini, supaya terdengar sebagai satu pilihan yang
+          memang menunggu dijawab dan bukan empat tombol yang berdiri sendiri.
+          Bukan radiogroup: chip-nya tombol aria-pressed (dan "Lainnya" membuka
+          panel, bukan menetapkan nilai), sementara radiogroup menjanjikan
+          navigasi panah antar-radio yang tak dipasang di sini. */}
+      <div class="dc-chips" role="group" aria-label="Pilih jumlah porsi">
         {PRESETS.map((n) => (
-          <button type="button" class="dc-chip" data-porsi={n} aria-pressed={n === DEFAULT_PORSI}>
+          <button type="button" class="dc-chip" data-porsi={n} aria-pressed="false">
             <span class="dc-chip-t">{n} porsi</span>
             <span class="dc-chip-s">{formatRupiah(calcTotal(n))}</span>
           </button>
@@ -211,7 +238,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
           type="number"
           min="1"
           max="999"
-          value={DEFAULT_PORSI}
+          value={CUSTOM_START_PORSI}
           data-porsi-input
           aria-label="Jumlah porsi"
           class="dc-step-input"
@@ -228,10 +255,19 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         data-track="donate_click"
         data-track-source={trackSource}
         data-track-program={programLabel}
-        data-track-pax={DEFAULT_PORSI}
         class="dc-cta"
       >
-        <span data-donasi-label>Donasi {DEFAULT_PORSI} Porsi · {initialTotal}</span>
+        {/* Tanpa porsi terpilih tombol ini tak boleh menyebut angka, jadi ia
+            menyebut tujuannya: percakapan WhatsApp. Tetap aktif, tidak
+            di-disable — pengunjung tanpa JS cuma punya tombol ini, dan tombol
+            mati berarti mereka tak bisa berdonasi sama sekali. Skrip kartu
+            menukar teksnya jadi "Donasi N Porsi · Rp ..." begitu ada pilihan.
+
+            `data-track-pax` sengaja absen di sini: Analytics.astro menyalin tiap
+            `data-track-*` apa adanya jadi properti event, jadi atribut kosong
+            akan mengirim pax="" seolah itu jumlah yang dipilih. Skrip yang
+            memasangnya begitu porsinya ada. */}
+        <span data-donasi-label>Donasi lewat WhatsApp</span>
       </a>
     </div>
 

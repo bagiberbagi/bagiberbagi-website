@@ -64,15 +64,25 @@ function initPicker(card) {
   const ctaLabel = card.querySelector('[data-donasi-label]');
   const packageOptions = Array.from(card.querySelectorAll('[data-package-option]'));
 
-  let porsi = parseInt(card.dataset.defaultPorsi || '6', 10);
+  // null = pengunjung belum memilih apa pun, dan itulah keadaan awal: kartu ini
+  // sengaja tidak memilihkan jumlah porsi lebih dulu. Selama masih null, tombol
+  // donasi memakai teks dan href yang dirender server, yang menyebut program
+  // tanpa menyebut jumlah.
+  let porsi = null;
   let custom = false;
   // Paket pertama sudah jadi default server-rendered, jadi state awal di sini
   // tinggal mengikutinya. null = program sepaket tunggal.
   let pkg = packageOptions[0]?.dataset.packageOption ?? null;
 
+  // Teks tombol sebelum ada pilihan. Diambil dari DOM, bukan ditulis ulang di
+  // sini, supaya kalimatnya cuma hidup di DonationCard.astro.
+  const openLabel = ctaLabel ? ctaLabel.textContent : '';
+
   function render() {
+    const chosen = porsi !== null;
+
     chips.forEach((chip) => {
-      const active = !custom && parseInt(chip.dataset.porsi, 10) === porsi;
+      const active = chosen && !custom && parseInt(chip.dataset.porsi, 10) === porsi;
       chip.classList.toggle('is-active', active);
       chip.setAttribute('aria-pressed', String(active));
     });
@@ -82,11 +92,23 @@ function initPicker(card) {
       customToggle.setAttribute('aria-pressed', String(custom));
     }
     if (stepper) stepper.hidden = !custom;
-    if (input && input.value !== String(porsi)) input.value = String(porsi);
+    if (input && chosen && input.value !== String(porsi)) input.value = String(porsi);
 
     packageOptions.forEach((opt) => {
       opt.setAttribute('aria-pressed', String(opt.dataset.packageOption === pkg));
     });
+
+    if (!chosen) {
+      if (ctaLabel) ctaLabel.textContent = openLabel;
+      // Satu-satunya hal yang menggeser href selagi porsi belum dipilih adalah
+      // pilihan paket, dan tiap tombol paket membawa pesan tanpa-porsi versinya
+      // sendiri. Program sepaket tunggal tak punya atribut itu, dan memang tak
+      // perlu: href dari server sudah benar dan tak berubah.
+      const openMsg = packageOptions.find((opt) => opt.dataset.packageOption === pkg)?.dataset
+        .packageOpenMsg;
+      if (cta && openMsg) cta.href = buildWaLink(waNumber, openMsg);
+      return;
+    }
 
     const total = formatRupiah(porsi * price);
     if (ctaLabel) ctaLabel.textContent = `Donasi ${porsi} Porsi · ${total}`;
@@ -96,6 +118,9 @@ function initPicker(card) {
     }
   }
 
+  // Satu-satunya pintu masuk ke `porsi`, dan ia menjepit ke 1..999 — jadi tak
+  // ada jalan ke nol atau minus, baik lewat tombol −, ketikan tangan, maupun
+  // input yang dikosongkan (NaN jatuh ke 1 di pemanggilnya).
   function set(next, isCustom) {
     porsi = Math.max(1, Math.min(999, next));
     custom = !!isCustom;
@@ -105,9 +130,12 @@ function initPicker(card) {
   chips.forEach((chip) => {
     chip.addEventListener('click', () => set(parseInt(chip.dataset.porsi, 10), false));
   });
-  customToggle?.addEventListener('click', () => set(porsi, true));
-  card.querySelector('[data-step-dec]')?.addEventListener('click', () => set(porsi - 1, true));
-  card.querySelector('[data-step-inc]')?.addEventListener('click', () => set(porsi + 1, true));
+  // Kalau belum ada pilihan, panel "Lainnya" mulai dari 1 — angka terkecil yang
+  // masuk akal, sama dengan `value` yang dirender server. Kalau pengunjung sudah
+  // menekan salah satu preset, angka itu yang terbawa ke panel.
+  customToggle?.addEventListener('click', () => set(porsi ?? 1, true));
+  card.querySelector('[data-step-dec]')?.addEventListener('click', () => set((porsi ?? 1) - 1, true));
+  card.querySelector('[data-step-inc]')?.addEventListener('click', () => set((porsi ?? 1) + 1, true));
   input?.addEventListener('input', () => set(parseInt(input.value, 10) || 1, true));
   packageOptions.forEach((opt) => {
     opt.addEventListener('click', () => {

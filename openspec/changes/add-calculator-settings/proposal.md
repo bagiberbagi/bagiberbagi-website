@@ -1,35 +1,37 @@
-# Calculator settings
+# The ask card
 
 ## Status
 
-**Draft. Not approved, not scheduled, nothing implemented.** This folder exists so the design
-survives the session that produced it. `design.md` holds the full recommendation.
+**Draft. Not approved, not scheduled, nothing implemented.** `design.md` holds the full
+recommendation. It was rewritten once already, after the owner corrected the premise.
 
 ## Why
 
-Every number the donation calculator uses is hardcoded. Rp 25.000 per porsi lives inside
-`calcTotal()` in `src/lib/format.ts`, the presets live in `DonationCard.astro`, and the Ramadhan
-package names live in `program/[program].astro` behind an `if` on the programme slug. The owner
-can edit the agenda's target and collected porsi from Keystatic and nothing else, so the one
-number most likely to change in real life — the price — needs a developer and a deploy.
+The card that carries the site's call to action is mounted in exactly two places, and each mount
+hand-assembles nine props plus a slot from three unrelated sources: the programmes collection,
+the `settings` singleton, and `impact.ts`. That assembly cost, not anything about content, is why
+the card is not reused anywhere else. Any third placement re-derives all of it and can drift.
 
-The owner also said the donation calculator will not be the only calculator, naming a
-"community calculator" as one example and leaving the rest open. That turns a three-value
-settings change into a modelling question, because moving the values now and discovering the
-shape later means moving them twice.
+Separately, every number inside it is hardcoded: Rp 25.000 per porsi inside `calcTotal()`, the
+presets in the component, the Ramadhan package names behind an `if` on the programme slug. The
+owner can edit the agenda's target and collected porsi from Keystatic and nothing else.
+
+The first version of this design treated the numbers as the problem and proposed a `calculators`
+collection. The owner corrected it: what he means by "calculator" is the card itself, always the
+reference, placeable anywhere, with arithmetic as one thing inside it rather than its definition.
 
 ## What changes
 
-See `design.md`. In one sentence: a `calculators` Keystatic collection, one YAML per calculator,
-which each programme points at through a `fields.relationship`, so today's hardcoded values
-become content and a second calculator with the same arithmetic costs one file and no code.
+See `design.md`. In one sentence: one reader that answers "what is the ask for this programme",
+mirroring how `getProgramCover()` is already the only answer to what a programme looks like, so
+mounting the card costs one prop instead of ten and the hardcoded numbers move to content as a
+rider rather than as the point.
 
 ## Blocked on
 
-Three questions, ranked, at the end of `design.md`. The first one blocks everything: what the
-community calculator actually counts, and whether it has a fixed price per unit. Community
-Giving is currently inquiry-only on purpose, so a fixed-price picker there would reverse an
-existing decision rather than extend it.
+Four questions at the end of `design.md`. The first is the name: `DonationCard` is already wrong,
+since the card renders on programmes whose ask is a conversation. The proposal is `ajakan`. That
+noun ends up in a component, a lib file, and every import, so it is cheap now and expensive later.
 
 ## Out of scope until those are answered
 

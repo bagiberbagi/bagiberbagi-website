@@ -69,8 +69,25 @@ const STAGES = await Promise.all(
         cukup kuat untuk dikenali, tetap terbaca sebagai latar. */}
     {/* Enam kartu berhenti di tiga kolom, bukan enam: satu baris enam bikin
         kolomnya selebar 200px dan kalimat tahapnya pecah jadi enam baris. Dua
-        baris tiga terbaca sebagai satu blok utuh. */}
-    <div class="grid gap-5 grid-cols-2 sm:grid-cols-3">
+        baris tiga terbaca sebagai satu blok utuh.
+
+        Alasan yang sama berlaku ke bawah, dan dulu dilanggar di sini. Dua kolom
+        di lebar HP menyisakan 165px per kartu, tinggal 117px untuk teks setelah
+        padding, sehingga kalimat tahapnya pecah jadi enam baris persis seperti
+        yang dihindari di atas. Satu kolom di bawah 640 mengembalikan lebar baca
+        kartunya, lalu naik dua kolom sebelum tiga supaya perubahannya bertahap
+        dan tidak melompat dari satu langsung ke tiga.
+
+        Tiga kolom sengaja menunggu `lg` (1024), bukan `md` (768): 768 sampai
+        1023 itu wilayah tablet portrait, dan di sana tiga kolom mengembalikan
+        kartu ke 216px, persis kesempitan yang sedang dihindari. Dua kolom
+        memegang seluruh rentang tablet, tiga kolom baru muncul di desktop.
+
+        `min-h-64` pada kartunya ikut dimulai dari dua kolom, lihat `sm:min-h-64`
+        di bawah. Tinggi paksa itu gunanya menyamakan kartu yang sebaris, dan
+        dalam satu kolom tidak ada kartu sebaris, jadi di lebar HP ia cuma
+        menambah sekitar 660px gulir untuk ruang kosong. */}
+    <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {STAGES.map((pintu) => (
         <a
           href={`/berbagi-${pintu.slug}/`}
@@ -78,7 +95,7 @@ const STAGES = await Promise.all(
           data-track-pintu={pintu.slug}
           data-fade
           style={`--cat:${pintu.color}`}
-          class="group relative overflow-hidden h-full min-h-64 rounded-card bg-white border border-border p-6 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
+          class="group relative overflow-hidden h-full sm:min-h-64 rounded-card bg-white border border-border p-6 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
         >
           <span aria-hidden="true" class="pointer-events-none absolute -right-5 -bottom-7 text-[var(--cat)] opacity-[0.13] transition-opacity duration-300 group-hover:opacity-25">
             <Icon name={pintu.icon} size={150} color="currentColor" />

@@ -83,10 +83,12 @@ const STAGES = await Promise.all(
         kartu ke 216px, persis kesempitan yang sedang dihindari. Dua kolom
         memegang seluruh rentang tablet, tiga kolom baru muncul di desktop.
 
-        `min-h-64` pada kartunya ikut dimulai dari dua kolom, lihat `sm:min-h-64`
-        di bawah. Tinggi paksa itu gunanya menyamakan kartu yang sebaris, dan
-        dalam satu kolom tidak ada kartu sebaris, jadi di lebar HP ia cuma
-        menambah sekitar 660px gulir untuk ruang kosong. */}
+        Kartunya tidak lagi punya tinggi paksa sama sekali. `min-h-64` dulu ada
+        untuk menyamakan kartu yang sebaris, padahal grid sudah melakukan itu
+        sendiri lewat stretch, jadi yang tersisa dari 256px itu cuma ruang
+        kosong. Diukur setelah dilepas: kartu 256px jadi 174px di 768 dan
+        154,8px di 1280, seksinya 1345px jadi 1099px di 768 dan 1096px jadi
+        913px di 1280, dan kartu sebaris tetap sama tinggi. */}
     <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {STAGES.map((pintu) => (
         <a
@@ -95,7 +97,7 @@ const STAGES = await Promise.all(
           data-track-pintu={pintu.slug}
           data-fade
           style={`--cat:${pintu.color}`}
-          class="group relative overflow-hidden h-full sm:min-h-64 rounded-card bg-white border border-border p-6 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
+          class="group relative overflow-hidden h-full rounded-card bg-white border border-border p-6 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
         >
           <span aria-hidden="true" class="pointer-events-none absolute -right-5 -bottom-7 text-[var(--cat)] opacity-[0.13] transition-opacity duration-300 group-hover:opacity-25">
             <Icon name={pintu.icon} size={150} color="currentColor" />

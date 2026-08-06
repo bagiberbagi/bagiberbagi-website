@@ -13,7 +13,7 @@
 // jatuh ke oranye brand kalau tidak — itu yang bikin kartu ini betah di hero
 // kuning maupun di halaman program yang berwarna pintu.
 import { Image } from 'astro:assets';
-import { calcTotal, buildWaLink, buildDonationMessage, formatRupiah } from '../lib/format';
+import { calcTotal, buildWaLink, formatRupiah } from '../lib/format';
 
 interface Agenda {
   location: string;
@@ -63,31 +63,52 @@ const progressPct = showProgress && agenda ? Math.round((collected / agenda.targ
 
 // Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
 const price = calcTotal(1);
-const PRESETS = [2, 6, 12];
-const DEFAULT_PORSI = 6;
+const PRESETS = [6, 12, 20];
 
-const initialTotal = formatRupiah(calcTotal(DEFAULT_PORSI));
-// Paket pertama jadi default server-rendered, supaya tombol donasi tetap masuk
-// akal tanpa JS; skrip kartu yang memperbarui href-nya begitu pengunjung
-// memilih paket lain.
-const initialWaLink = buildWaLink(
-  waNumber,
-  buildDonationMessage(programLabel, DEFAULT_PORSI, initialTotal, packages?.[0])
-);
+// Tidak ada porsi terpilih saat halaman dibuka. Sebelumnya 6 porsi sudah
+// tercentang, dan angka yang sudah dipilihkan itu membingkai keputusan orang
+// sebelum mereka sempat menimbang sendiri.
+//
+// Konsekuensinya kena ke jalur tanpa JS: dulu href WhatsApp sudah lengkap dari
+// server karena jumlahnya diketahui. Sekarang jumlahnya belum ada, jadi pesan
+// awalnya cuma tidak menyebut jumlah — ia tetap menyebut program (dan paketnya
+// kalau ada) lalu meminta bantuan menentukan porsinya lewat percakapan. Tombol
+// itu tetap sahih di titik mana pun: tanpa JS ia mengantar orang ke percakapan
+// yang benar, dengan JS ia mendapat angkanya begitu pengunjung memilih.
+//
+// Pesan ini disusun di sini saja, bukan juga di donation-card.js. Skrip tak
+// pernah merangkainya sendiri: teks yang dirender server ia pakai apa adanya,
+// dan tiap tombol paket membawa versinya sendiri lewat `data-package-open-msg`.
+const openMessage = (pkg?: string | null) =>
+  `Halo, saya ingin donasi program "${pkg ? `${programLabel} (Paket ${pkg})` : programLabel}". Boleh dibantu untuk jumlah porsinya?`;
+
+const initialWaLink = buildWaLink(waNumber, openMessage(packages?.[0]));
+
+// Nilai awal panel "Lainnya": 1 adalah porsi terkecil yang masuk akal, dan
+// satu-satunya angka yang tidak diam-diam jadi default baru. Kalau pengunjung
+// sudah menekan salah satu preset lebih dulu, skrip membawa angka itu ke sini.
+const CUSTOM_START_PORSI = 1;
 
 const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 ---
 
+{/* `scroll-mt-24` menempel kalau kartunya jadi sasaran anchor (`#donasi` di
+    beranda maupun di tiap halaman program). Header situs ini `sticky top-0` dan
+    `html { scroll-behavior: smooth }` menyala global, jadi tanpa ini kartunya
+    mendarat di y=0 dan tepi bawah pil navbar — 84px saat halaman sudah digulir,
+    74px saat masih di puncak — menutupi kepalanya. 96px menyisakan 12px napas
+    di kasus terburuk. Lihat `.claude/rules/section-ids.md`; catatan di sana
+    bahwa seksi paling atas halaman tak memerlukannya tidak berlaku di sini,
+    karena kartu ini duduk 464-591px dari puncak dokumen di lebar ponsel. */}
 <div
   id={id}
-  class:list={['dcard', !photo && 'is-flat']}
+  class:list={['dcard', !photo && 'is-flat', id && 'scroll-mt-24']}
   data-donation-card
   data-weekday={schedule?.weekday}
   data-time={schedule?.time}
   data-price={price}
   data-program={programLabel}
   data-wa={waNumber}
-  data-default-porsi={DEFAULT_PORSI}
 >
   {photo && (
     <div class="dc-photo">
@@ -174,7 +195,13 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         <p class="dc-pkg-title">Pilih paket</p>
         <div class="dc-pkg-opts">
           {packages.map((pkg, i) => (
-            <button type="button" class="dc-pkg-opt" data-package-option={pkg} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <button
+              type="button"
+              class="dc-pkg-opt"
+              data-package-option={pkg}
+              data-package-open-msg={openMessage(pkg)}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
               {pkg}
             </button>
           ))}
@@ -192,9 +219,17 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 
       {note && <p class="dc-note">{note}</p>}
 
-      <div class="dc-chips">
+      {/* Tak satu pun chip tertekan saat halaman dibuka, jadi baris ini tak
+          punya "yang terpilih" untuk menerangkan dirinya ke pembaca layar.
+          role+label memberi grup itu nama sendiri, memakai kalimat yang sudah
+          jadi judul pemilih ini, supaya terdengar sebagai satu pilihan yang
+          memang menunggu dijawab dan bukan empat tombol yang berdiri sendiri.
+          Bukan radiogroup: chip-nya tombol aria-pressed (dan "Lainnya" membuka
+          panel, bukan menetapkan nilai), sementara radiogroup menjanjikan
+          navigasi panah antar-radio yang tak dipasang di sini. */}
+      <div class="dc-chips" role="group" aria-label="Pilih jumlah porsi">
         {PRESETS.map((n) => (
-          <button type="button" class="dc-chip" data-porsi={n} aria-pressed={n === DEFAULT_PORSI}>
+          <button type="button" class="dc-chip" data-porsi={n} aria-pressed="false">
             <span class="dc-chip-t">{n} porsi</span>
             <span class="dc-chip-s">{formatRupiah(calcTotal(n))}</span>
           </button>
@@ -211,7 +246,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
           type="number"
           min="1"
           max="999"
-          value={DEFAULT_PORSI}
+          value={CUSTOM_START_PORSI}
           data-porsi-input
           aria-label="Jumlah porsi"
           class="dc-step-input"
@@ -228,10 +263,19 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         data-track="donate_click"
         data-track-source={trackSource}
         data-track-program={programLabel}
-        data-track-pax={DEFAULT_PORSI}
         class="dc-cta"
       >
-        <span data-donasi-label>Donasi {DEFAULT_PORSI} Porsi · {initialTotal}</span>
+        {/* Tanpa porsi terpilih tombol ini tak boleh menyebut angka, jadi ia
+            menyebut tujuannya: percakapan WhatsApp. Tetap aktif, tidak
+            di-disable — pengunjung tanpa JS cuma punya tombol ini, dan tombol
+            mati berarti mereka tak bisa berdonasi sama sekali. Skrip kartu
+            menukar teksnya jadi "Donasi N Porsi · Rp ..." begitu ada pilihan.
+
+            `data-track-pax` sengaja absen di sini: Analytics.astro menyalin tiap
+            `data-track-*` apa adanya jadi properti event, jadi atribut kosong
+            akan mengirim pax="" seolah itu jumlah yang dipilih. Skrip yang
+            memasangnya begitu porsinya ada. */}
+        <span data-donasi-label>Donasi lewat WhatsApp</span>
       </a>
     </div>
 
@@ -251,6 +295,11 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     display: flex;
     flex-direction: column;
     box-shadow: 0 26px 56px -20px rgba(124, 45, 18, 0.45), 0 2px 6px rgba(124, 45, 18, 0.08);
+    /* Baris chip di bawah harus tahu lebar kartunya, bukan lebar layar: kartu
+       yang sama muncul selebar 350px di ponsel dan selebar 435px di kolom kanan
+       hero desktop, dan di halaman program lebarnya lain lagi. Media query layar
+       menjawab pertanyaan yang salah di dua dari tiga tempat itu. */
+    container-type: inline-size;
   }
   /* Varian tanpa foto: dipasang di tengah halaman, bukan melayang di atas
      bidang warna hero, jadi bayangan tebalnya diturunkan jadi tepi tipis. */
@@ -378,7 +427,22 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
      harga di atasnya, jadi jaraknya dirapatkan balik dari gap .dc-pick. */
   .dc-note { margin: -6px 0 0; font-size: 13px; line-height: 1.5; color: #78716c; }
 
-  .dc-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  /* Dua kolom dulu, empat kolom kalau kartunya cukup lebar.
+     Empat chip sejajar butuh ruang teks 57,7px per chip, karena "20 porsi"
+     selebar itu dan judul chip tak boleh patah — satu judul yang turun ke baris
+     kedua sementara tetangganya tidak membuat barisnya terlihat rusak, dan
+     seluruh baris ikut meninggi mengikuti chip yang paling tinggi. 57,7px teks
+     berarti chip 72,7px, berarti kartu 363px; ambangnya 380 supaya ada sisa buat
+     font fallback yang lebih lebar.
+     Di bawah itu dua kolom, bukan tiga: tiga meninggalkan chip "Lainnya"
+     sendirian di baris kedua, sedangkan dua memberi 2x2 yang rata.
+     Ini juga yang menutup cacat lama di 320px, tempat ruang teks cuma 38px
+     sementara kata "Lainnya" sendiri 54,6px dan "500.000" 50px, jadi huruf
+     terakhirnya benar-benar keluar dari kotak chip. */
+  .dc-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  @container (min-width: 380px) {
+    .dc-chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
   .dc-chip {
     border: 1.5px solid #e7e5e4;
     background: #fff;

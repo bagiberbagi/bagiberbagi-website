@@ -80,7 +80,7 @@ const CARA_KERJA = [
   breadcrumbName="Organisasi"
 >
   <!-- HERO: latar biru muda, warna identitas entitas organisasi -->
-  <section class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
+  <section id="pembuka" class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
     <Container>
       <nav class="text-sm font-semibold text-muted mb-6" aria-label="Breadcrumb">
         <a href="/" class="hover:text-brand-blue">Beranda</a>
@@ -111,7 +111,7 @@ const CARA_KERJA = [
       organisasi", jadi mencampurnya dengan kegiatan tanpa organisasi akan
       membesarkan angka yang bukan milik mereka. */}
   {hasOrganisasi && (
-    <section class="py-10 md:py-14 bg-white">
+    <section id="angka" class="py-10 md:py-14 bg-white scroll-mt-24">
       <Container>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-ink p-5 text-center text-white">
@@ -137,7 +137,7 @@ const CARA_KERJA = [
   )}
 
   <!-- DIREKTORI: bentuknya ikut listMode (1 kartu lebar / 2 setara / grid) -->
-  <section class="section section-lg bg-surface-warm">
+  <section id="direktori" class="section section-lg bg-surface-warm scroll-mt-24">
     <Container>
       <div class="eyebrow">Daftar Organisasi</div>
       <h2 class="section-title font-semibold mb-8">Mereka yang berbagi bersama</h2>
@@ -163,7 +163,7 @@ const CARA_KERJA = [
   </section>
 
   <!-- CARA KERJA: kenapa organisasi punya halaman sendiri -->
-  <section class="section section-lg bg-white">
+  <section id="cara-kerja" class="section section-lg bg-white scroll-mt-24">
     <Container>
       <div class="eyebrow">Cara Kerjanya</div>
       <h2 class="section-title font-semibold mb-8">Kenapa organisasi punya halaman sendiri</h2>
@@ -196,7 +196,7 @@ const CARA_KERJA = [
       krem, tapi ia punya garis tepi sendiri jadi batasnya tetap terbaca.
       Halaman detail memilih sebaliknya (putih) karena di sana yang di atas CTA
       adalah Rekam Jejak yang krem. */}
-  <section class="section section-lg bg-surface-warm">
+  <section id="bergabung" class="section section-lg bg-surface-warm scroll-mt-24">
     <Container>
       <div class="text-center max-w-text mx-auto">
         <div class="eyebrow">Bergabung</div>

@@ -150,7 +150,13 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
      di 320/390/430/768/1280px). Itu yang kebaca "aneh" di iPhone: garisnya
      nggak berhenti di huruf terakhir. Border sekarang pindah ke
      .hero-link-label yang cuma membungkus teksnya, jadi panjangnya ngikut
-     teks, bukan ngikut kotak. */
+     teks, bukan ngikut kotak.
+
+     Lapis kedua atas pertanyaan pemilik ("garisnya malah ganggu gasih"):
+     border diam transparan saat rest, sama seperti pola .link di
+     global.css, jadi di kondisi diam yang bicara cuma warna teks + ikon
+     panah. Garis baru muncul saat hover/focus-visible sebagai penguat,
+     bukan hiasan permanen di bawah headline besar. */
   .hero-link {
     display: inline-flex;
     align-items: center;
@@ -164,7 +170,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   .hero-link:hover { gap: 15px; color: #c25d0f; }
   .hero-link-label {
     padding-bottom: 4px;
-    border-bottom: 2px solid rgba(28, 25, 23, 0.85);
+    border-bottom: 2px solid transparent;
     transition: border-color 0.18s ease;
   }
   .hero-link:hover .hero-link-label,

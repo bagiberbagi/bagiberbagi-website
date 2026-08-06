@@ -183,7 +183,6 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
                   rel={slide.whatsapp ? 'noopener' : undefined}
                   data-fade
                 >
-                  <span class="ps-dot" aria-hidden="true"></span>
                   <span class="ps-cta-text"><b>{slide.label}</b> {slide.statement}</span>
                   <span class="ps-cta-go">
                     {slide.ctaLabel}
@@ -409,15 +408,24 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
     transition: background-color 0.2s ease, border-color 0.2s ease;
   }
   .ps-cta:hover { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.34); }
-  .ps-dot {
+  .ps-cta-text { font-size: 14.5px; color: rgba(255, 255, 255, 0.85); }
+  /* The "live programme" mark used to be its own `<span>`, a flex sibling of
+     the sentence. `.ps-cta--statement` stacks that row into a column below
+     768px, which turned the mark into an orphan row of its own, floating in
+     the pill's top-left corner. Carrying it as a `::before` on the sentence
+     itself means it can never be stranded: it is always the sentence's own
+     first glyph, whichever direction the pill flows. */
+  .ps-cta-text::before {
+    content: '';
+    display: inline-block;
     width: 8px;
     height: 8px;
-    flex: none;
+    margin-right: 14px;
     border-radius: 50%;
     background: #34d399;
     box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.22);
+    vertical-align: middle;
   }
-  .ps-cta-text { font-size: 14.5px; color: rgba(255, 255, 255, 0.85); }
   .ps-cta-text b { color: #fff; font-weight: 700; }
   .ps-cta-go {
     display: inline-flex;
@@ -453,15 +461,18 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   }
   .ps-ticks { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; }
 
-  /* The bar is 3px; the anchor around it stays 22px tall so the tap target
-     clears the minimum even though the mark itself is a hairline. Size and
-     colour change directly rather than through a transform: scaling a 3px bar
-     lands it on half pixels and it renders furry. */
+  /* The bar itself stays a 3px hairline; the anchor around it is 44px tall so
+     the tap target clears the 44px minimum even though the mark it paints
+     does not. Below 768 the arrows are hidden (see `.ps-arrow` below), which
+     makes these ticks the only slide control a phone user has, so the anchor
+     size is not cosmetic. Size and colour change directly rather than through
+     a transform: scaling a 3px bar lands it on half pixels and it renders
+     furry. */
   .ps-tick {
     display: flex;
     align-items: center;
     width: 44px;
-    height: 22px;
+    height: 44px;
   }
   .ps-tick::before {
     content: '';
@@ -522,12 +533,18 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   @media (max-width: 767px) {
     .ps-cta { width: 100%; min-height: 48px; justify-content: center; }
     .ps-cta--statement { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 18px; }
+    /* The 44px tick anchor (up from 22px) eats 22px more headroom than the
+       inner padding below was budgeted for, which put it flush against the
+       CTA above. `padding-bottom` grows by that same 22px so the reserved
+       strip stays clear of the CTA at every width; `.ps-nav`'s own offset is
+       untouched. */
+    .ps-inner { padding-bottom: 98px; }
     .ps-nav { bottom: 16px; }
     .ps-tick { width: 30px; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .ps-dot { animation: psPulse 2.4s ease-in-out infinite; }
+    .ps-cta-text::before { animation: psPulse 2.4s ease-in-out infinite; }
   }
   @keyframes psPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }

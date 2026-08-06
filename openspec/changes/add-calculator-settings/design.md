@@ -71,21 +71,59 @@ const ajakan = await getAjakan('jumat-berkah');
 Two props instead of ten, and the second one is only there because analytics needs to know where
 the click happened. A new placement becomes an import, not an assembly job.
 
-## The term
+## The term, and why there turned out to be two of them
 
 `DonationCard` is already the wrong name: the card is mounted on programmes whose call to action
 is a conversation, not a donation, and the owner has said it will not stay donation-only.
 
-Proposed: **`ajakan`**, the ask. `AjakanCard.astro`, `src/lib/ajakan.ts`, `getAjakan()`. It fits
-the repo's habit of naming domain concepts with one Indonesian noun — pintu, jejak, dampak — and
-it stays true when the ask is to volunteer, to lend a room, or to partner, none of which are
-donations.
+The first version of this section offered `ajakan` and `aksi` as rival names for one thing. The
+owner's reply — "ajakan dan aksi bisa di anggap entitas juga deh" — sent us looking, and **one of
+them already exists in the codebase under another name.**
 
-Runner-up: `aksi`. Accurate but generic; it names the visitor's verb rather than the site's
-offer, and almost any interactive element is an "aksi".
+### `aksi` already exists, hardcoded, as `contribute`
 
-**This is the owner's call, and it is cheap now and expensive later**, because the noun ends up in
-a component name, a lib file, a collection, and every future mention.
+`CATEGORY_CONTENT` in `src/consts.ts` gives every one of the six pintu a `contribute` array of
+three `{ title, desc }` entries. They are ways to take part, written in the owner's own voice:
+
+```
+food:  Donasi paket · Salurkan surplus · Jadi mitra dapur
+goods: Pilah isi lemari · Kabari barang yang ada · Bantu susun standarnya
+```
+
+This is not decoration. `PintuS1.astro` reshapes the whole pintu page around it —
+`showForms = contribute.length === 0` and `joinAsSteps = contribute.length === 0` — so an empty
+`contribute` makes two other sections take over its job.
+
+**And not one of the eighteen carries a mechanism.** No href, no `wa.me`, no button. Grep returns
+zero. They describe a way to help and offer no way to do it.
+
+### The gap that names both entities
+
+Put the two halves side by side:
+
+| | has the words | has the mechanism |
+|---|---|---|
+| `contribute` on the pintu page | yes, per pintu, in the owner's voice | **no** |
+| `DonationCard` | thin: a label and a summary | yes: WhatsApp, quantity, packages, agenda |
+
+The pintu page says "Donasi paket" as prose with nothing to click, while the button that does
+exactly that lives on a card the pintu page never renders. That is the same concept split across
+two representations that cannot see each other.
+
+So:
+
+- **`aksi`** is the entity: one way to take part. It already has a title and a description for
+  all six pintu. What it lacks is a mechanism and a link to the programme that fulfils it.
+- **`ajakan`** is the card that presents a programme's available aksi with their mechanisms
+  attached. It is a component and a reader, not a second collection.
+
+This also explains `INQUIRY_PROGRAMS` without an `if`: Community Giving is not a special
+programme, it is a programme whose only aksi has a conversation as its mechanism instead of a
+quantity. The hardcoded slug list is a missing field.
+
+**Still the owner's call**, but the shape is no longer symmetric: `aksi` earns entity status
+because eighteen of them already exist as content, and `ajakan` stays a component because
+nobody is ever going to author one by hand.
 
 ## What the reader returns, and where the content lives
 
@@ -129,8 +167,10 @@ already renders. The open question is whether it should gain one.
 
 ## Open questions, ranked
 
-1. **The noun.** `ajakan`, `aksi`, or something of the owner's own. Everything else can start
-   once this is settled, and renaming later touches a component, a lib file, and every import.
+1. **Confirm the two-entity split.** `aksi` as the entity, one way to take part, promoted out of
+   the hardcoded `contribute` arrays; `ajakan` as the card that presents them. The alternative is
+   to leave `contribute` as prose and give the card a name only, which is less work now and keeps
+   the pintu page describing actions it cannot offer.
 2. **Is Rp 25.000 per porsi uniform across every food programme, forever?** This decides whether
    the price is one field in `settings` or a field on each programme. It is the difference
    between a five-minute change and a schema.

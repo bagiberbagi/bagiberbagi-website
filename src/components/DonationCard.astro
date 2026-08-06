@@ -92,9 +92,17 @@ const CUSTOM_START_PORSI = 1;
 const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 ---
 
+{/* `scroll-mt-24` menempel kalau kartunya jadi sasaran anchor (`#donasi` di
+    beranda maupun di tiap halaman program). Header situs ini `sticky top-0` dan
+    `html { scroll-behavior: smooth }` menyala global, jadi tanpa ini kartunya
+    mendarat di y=0 dan tepi bawah pil navbar — 84px saat halaman sudah digulir,
+    74px saat masih di puncak — menutupi kepalanya. 96px menyisakan 12px napas
+    di kasus terburuk. Lihat `.claude/rules/section-ids.md`; catatan di sana
+    bahwa seksi paling atas halaman tak memerlukannya tidak berlaku di sini,
+    karena kartu ini duduk 464-591px dari puncak dokumen di lebar ponsel. */}
 <div
   id={id}
-  class:list={['dcard', !photo && 'is-flat']}
+  class:list={['dcard', !photo && 'is-flat', id && 'scroll-mt-24']}
   data-donation-card
   data-weekday={schedule?.weekday}
   data-time={schedule?.time}

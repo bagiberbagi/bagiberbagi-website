@@ -100,7 +100,7 @@ const waLink = buildWaLink(site.data.waNumber);
             <h2 class="text-title-sm font-semibold text-brand-blue mb-2">{g.label}</h2>
             <div class="flex flex-col">
               {g.items.map((faq, i) => (
-                <div class="faq-item border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>
+                <div class="faq-item border-b-0 md:border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>
                   <button
                     type="button"
                     class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"

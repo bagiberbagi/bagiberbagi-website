@@ -147,8 +147,6 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
           </a>
 
           <div class="ps-inner">
-            {slide.caption && <p class="ps-caption">{slide.caption}</p>}
-
             <div class="ps-body">
               <p class="ps-index ps-index--top" aria-hidden="true">{slide.number}<span>/{total}</span></p>
               {slide.kicker && (
@@ -206,6 +204,20 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
               )}
 
             </div>
+
+            {/* Photo credit. It used to open the slide, ahead of the kicker,
+                where its pale small type sat directly on top of the "01/04"
+                index counter and the two fused into one meta-data blob that
+                out-ranked the section's own heading in reading order. It now
+                renders last in source (kept inside `.ps-inner` since it is
+                per-slide data, unlike `.ps-nav` which is one shared element
+                for the whole section) and the phone media query below pulls
+                it out of flow to sit visually below the tick row, left-aligned
+                with the text column. Desktop is untouched: `position: absolute`
+                pulls it into the top-right corner regardless of source order.
+                Optional field, so an empty caption simply renders nothing
+                here and leaves no gap below the ticks. */}
+            {slide.caption && <p class="ps-caption">{slide.caption}</p>}
 
           </div>
         </article>
@@ -409,23 +421,6 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   }
   .ps-cta:hover { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.34); }
   .ps-cta-text { font-size: 14.5px; color: rgba(255, 255, 255, 0.85); }
-  /* The "live programme" mark used to be its own `<span>`, a flex sibling of
-     the sentence. `.ps-cta--statement` stacks that row into a column below
-     768px, which turned the mark into an orphan row of its own, floating in
-     the pill's top-left corner. Carrying it as a `::before` on the sentence
-     itself means it can never be stranded: it is always the sentence's own
-     first glyph, whichever direction the pill flows. */
-  .ps-cta-text::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-right: 14px;
-    border-radius: 50%;
-    background: #34d399;
-    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.22);
-    vertical-align: middle;
-  }
   .ps-cta-text b { color: #fff; font-weight: 700; }
   .ps-cta-go {
     display: inline-flex;
@@ -527,28 +522,33 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
   }
   @media (min-width: 768px) { .ps-arrow { display: inline-flex; } }
 
-  /* Phone layout. The CTA becomes a full-width block and the source caption
-     drops underneath it, since there is no top-right corner to spare. The ticks
-     stay last and stay centred, the same role they have on desktop. */
+  /* Phone layout. The CTA becomes a full-width block. The caption moves to
+     the very foot of the band, below the tick row: it is pulled out of
+     `.ps-inner`'s flow (`position: absolute`, same technique the desktop
+     top-right placement already uses) and anchored bottom-left, `left: 20px`
+     matching `.ps-inner`'s own padding-left so it lines up with the kicker
+     and heading above it rather than the viewport edge. Stacking order,
+     bottom to top: caption, then the ticks, then the CTA.
+
+     `.ps-nav`'s offset grows from 16px to 38px to leave room for the caption
+     underneath it (caption sits at 10px, is ~17px tall for the one-line
+     captions every program currently has, plus an 11px gap). `.ps-inner`'s
+     padding-bottom grows in step so the CTA keeps the same ~38px clearance
+     above the ticks that it had before any of this: nav's new top edge sits
+     at 82px, plus 38px, is 120px. */
   @media (max-width: 767px) {
     .ps-cta { width: 100%; min-height: 48px; justify-content: center; }
     .ps-cta--statement { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 18px; }
-    /* The 44px tick anchor (up from 22px) eats 22px more headroom than the
-       inner padding below was budgeted for, which put it flush against the
-       CTA above. `padding-bottom` grows by that same 22px so the reserved
-       strip stays clear of the CTA at every width; `.ps-nav`'s own offset is
-       untouched. */
-    .ps-inner { padding-bottom: 98px; }
-    .ps-nav { bottom: 16px; }
+    .ps-inner { padding-bottom: 120px; }
+    .ps-nav { bottom: 38px; }
     .ps-tick { width: 30px; }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .ps-cta-text::before { animation: psPulse 2.4s ease-in-out infinite; }
-  }
-  @keyframes psPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
-    50% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+    .ps-caption {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 10px;
+      margin: 0;
+    }
   }
 </style>
 

@@ -25,9 +25,9 @@ const faqs = faqEntry.data.items.slice(0, 3);
       </p>
     </div>
 
-    <div class="flex flex-col border-t border-white/15">
+    <div class="flex flex-col border-t-0 lg:border-t border-white/15">
       {faqs.map((faq, i) => (
-        <div class="faq-item border-b border-white/15" data-faq data-q={faq.q} data-a={faq.a}>
+        <div class="faq-item border-b-0 lg:border-b border-white/15" data-faq data-q={faq.q} data-a={faq.a}>
           <button
             type="button"
             class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"

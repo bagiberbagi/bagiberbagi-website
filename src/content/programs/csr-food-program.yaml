@@ -2,10 +2,12 @@ label: CSR Food Program
 pintu: food
 order: 4
 active: true
-summary: Program CSR makanan untuk perusahaan, dengan paket dan laporan sesuai kebutuhan.
+summary: >-
+  Program CSR makanan untuk perusahaan: paket dan jadwal dirancang bersama tim
+  kami, lengkap dengan dokumentasi lapangan siap pakai untuk laporan internal.
 stage:
   kicker: Ketika perusahaan turun tangan
-  lead: ''
+  lead: Program CSR makanan untuk perusahaan, dengan paket dan laporan sesuai kebutuhan.
   status: Menunggu jejak pertama
   caption: Foto ilustrasi, bukan dokumentasi program ini
   ctaLabel: Diskusikan kerja sama

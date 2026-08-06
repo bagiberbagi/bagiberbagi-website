@@ -108,9 +108,14 @@ Enam temuan dari review adversarial, lima gugur setelah ditantang dua peninjau i
 - URL `customSitemaps` menduplikasi `site` — hardcoded, tapi tak punya jalur kegagalan
 - FAQ schema di `/faq/` — Google menghentikan hasil kaya FAQ untuk semua situs pada 7 Mei 2026, jadi markup itu tak lagi menghasilkan tampilan khusus. Tidak perlu dihapus, tidak perlu ditambah di halaman lain
 
-## Ketidakcocokan data yang ditemukan, dan sengaja tidak diperbaiki sendiri
+## Ketidakcocokan data yang ditemukan, lalu diputuskan pemilik
 
-Ditemukan saat membaca foto satu per satu untuk Track I. Ini soal catatan pemilik tentang kegiatannya sendiri, jadi bukan tempat kode menebak.
+Ditemukan saat membaca foto satu per satu untuk Track I, lalu diajukan ke pemilik alih-alih ditebak sendiri, sebab ini catatan tentang kegiatannya sendiri.
 
-- `jumat-berkah-2026-07-17` menulis `location: Baranangsiang, Bogor`, tapi watermark GPS pada foto ke-7 dan ke-8 menyebut **Tegallega, Kecamatan Bogor Tengah**, sekitar 570 m dari masjidnya
-- Entri yang sama menceritakan pembagian di jalan sebagai lanjutan **seusai** salat Jumat, sementara stempel waktu foto jalanan itu **10.33 dan 10.38**, sedangkan foto di masjid 12.38
+**Diputuskan 6 Agustus 2026: ikuti fotonya.** Entri `jumat-berkah-2026-07-17` disesuaikan.
+
+- `location` semula `Baranangsiang, Bogor`, sementara watermark GPS pada foto ke-7 dan ke-8 menyebut **Tegallega, Kecamatan Bogor Tengah**, sekitar 570 m dari masjidnya. Sekarang `Tegallega, Bogor Tengah`
+- Titik peta kedua semula berlabel `Baranangsiang, Bogor` pada `-6.606328, 106.809883`, koordinat yang tak cocok dengan foto mana pun dan letaknya justru ke arah berlawanan dari titik jalanan. Sekarang `Jalan Tegal Lega dan Jalan Pakuan II` pada `-6.598938, 106.812631`, diambil dari watermark
+- Urutannya terbalik. Narasinya menyebut pembagian di jalan sebagai lanjutan **seusai** salat Jumat, padahal stempel waktu foto jalanan **10.33 dan 10.38** sedangkan foto di masjid **12.38**. Badan tulisan, `summary`, dan dua caption ditata ulang: jalanan dulu pagi hari, masjid menyusul seusai salat Jumat
+- Koordinat masjid TIDAK diubah: foto pembuka berstempel `6.602134°S, 106.808839°E`, meleset sekitar 20 m dari nilai yang sudah tersimpan, jadi yang itu memang sudah benar
+- Yang masih belum berdasar bukti: kelurahan masjidnya sendiri. Tak satu pun foto di masjid membawa watermark alamat, cuma koordinat. `location` diisi `Tegallega` karena itu satu-satunya alamat yang terdokumentasi hari itu

@@ -2,11 +2,14 @@ label: Community Giving
 pintu: food
 order: 3
 active: true
-summary: Donasi makanan bersama komunitas untuk kegiatan berbagi rutin atau musiman.
+summary: >-
+  Donasi makanan untuk komunitas seperti klub olahraga, kelompok hobi, jamaah,
+  atau alumni yang ingin berbagi rutin maupun musiman, paketnya sesuai
+  kebutuhan.
 image: /src/assets/programs/community-giving-46cyclist.jpeg
 stage:
   kicker: Ketika komunitas bergerak bersama
-  lead: ''
+  lead: Donasi makanan bersama komunitas untuk kegiatan berbagi rutin atau musiman.
   status: ''
   caption: Komunitas 46Cyclist, Dukuh Atas, 31 Juli 2026
   ctaLabel: Diskusikan kerja sama

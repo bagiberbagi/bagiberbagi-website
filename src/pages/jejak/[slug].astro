@@ -2,6 +2,7 @@
 import { getEntry, render } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { makeIds } from '@jdevalk/seo-graph-core';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
@@ -9,10 +10,16 @@ import VideoEmbed from '../../components/VideoEmbed.astro';
 import LocationMap from '../../components/LocationMap.astro';
 import Container from '../../components/Container.astro';
 import { formatMetric } from '../../lib/format';
-import { buildJejakVideoSchema, buildJejakPlacesSchema, buildJejakImagesSchema } from '../../lib/schema';
+import {
+  buildJejakVideoSchema,
+  buildJejakPlacesSchema,
+  buildJejakImagesSchema,
+  buildJejakArticleSchema,
+} from '../../lib/schema';
 import { getJejakPages, getJejakMedia } from '../../lib/jejak';
 import { getPrograms, getProgramCover } from '../../lib/programs';
 import { getOrganisasiRefs } from '../../lib/organisasi';
+import { ORG_SLUG } from '../../lib/seo';
 import { PINTU } from '../../consts';
 
 // Satu route untuk setiap jejak terbit. Begitu editor menambah jejak di
@@ -116,10 +123,12 @@ const videoThumb =
 // dari potongan yang tampil. Judul panjang karena itu berdiri sendiri; nama
 // situs toh sudah tampil sebagai domain di baris yang sama.
 //
-// Ambangnya diukur, bukan ditebak: Google memotong sekitar 60 karakter, jadi
-// judul yang sudah melewati 45 tak lagi punya ruang untuk suffix itu.
+// Google memotong judul berdasarkan lebar piksel, bukan jumlah karakter, jadi
+// 60 karakter cuma perkiraan kasar. Angka 43 itu 60 dikurangi 17 karakter
+// suffix. Sebelumnya tertulis 45, dan itu meloloskan judul 44 sampai 45
+// karakter tetap mendapat suffix sampai hasilnya lewat titik potong.
 const seoTitle =
-  jejak.title.length > 45 ? jejak.title : `${jejak.title} | bagiberbagi.id`;
+  jejak.title.length > 43 ? jejak.title : `${jejak.title} | bagiberbagi.id`;
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
@@ -136,6 +145,22 @@ const imageSchema = buildJejakImagesSchema(
   }))
 );
 
+// Bentuk `@id` dan normalisasi siteUrl-nya sama persis dengan yang dipakai
+// BaseLayout waktu membangun node Organization: `Astro.site.href` tanpa slash
+// penutup, bukan `.origin`, yang diam-diam membuang segmen path kalau `site`
+// di astro.config suatu saat punya path. Dengan begitu `author` dan
+// `publisher` menunjuk node itu, bukan rujukan menggantung yang meleset
+// begitu salah satu sisinya berubah.
+const publisherOrgId = makeIds({ siteUrl: Astro.site!.href.replace(/\/$/, '') }).organization(ORG_SLUG);
+
+// Place selalu diterbitkan top-level, ada video atau tidak. Place yang
+// bersarang di dalam `VideoObject.contentLocation` memang tetap sah buat
+// expander JSON-LD yang ketat, tapi tak kelihatan kalau `@graph` dibaca
+// datar, termasuk oleh pemeriksaan `warnOnDanglingReferences` di BaseLayout.
+// Karena diterbitkan tanpa syarat di sini, VideoObject dan Article merujuk
+// satu node top-level yang sama, jadi satu koordinat tetap satu node.
+const placeSchema = buildJejakPlacesSchema(pageUrl, jejak.points);
+
 const extraSchema = [
   ...(video
     ? [
@@ -150,8 +175,23 @@ const extraSchema = [
           places: jejak.points,
         }),
       ]
-    : buildJejakPlacesSchema(pageUrl, jejak.points)),
+    : []),
+  ...placeSchema,
   ...imageSchema,
+  // Merujuk `@id` milik imageSchema, bukan URL-nya: URL itu sudah ada di node
+  // ImageObject tadi, dan schema.org menandai `image` sebagai `@type: @id`,
+  // jadi URL telanjang akan mengembang jadi node kedua tanpa tipe untuk file
+  // yang sama. Entri pertama itu `representativeOfPage`, yang memang paling
+  // pas ditunjuk `Article.image` kalau covernya ada.
+  buildJejakArticleSchema({
+    pageUrl,
+    headline: jejak.title,
+    description: jejak.summary,
+    datePublished: jejak.date,
+    image: imageSchema[0]?.['@id'],
+    publisherOrgId,
+    places: jejak.points,
+  }),
 ];
 ---
 

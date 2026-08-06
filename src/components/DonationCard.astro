@@ -97,15 +97,20 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 
           Lebar render: kolom kanan hero adalah 0.62fr dari grid `1fr 0.62fr`
           dengan gap 64px di dalam Container tier `wide` (isi 1200px), jadi
-          sekitar 435px di layar lebar; di bawah 960px kartunya selebar kolom.
-          Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR.
+          sekitar 435px di layar lebar; di bawah ambangnya kartunya selebar
+          kolom. Lebar terbesar dipilih dua kali lebar render untuk layar 2x DPR.
           Sebelumnya tanpa `widths`, sehingga satu berkas 1280w dikirim ke kotak
-          setinggi 246px di semua ukuran layar. */}
+          setinggi 246px di semua ukuran layar.
+
+          Ambangnya 900, mengikuti tempat `.hero-inner` pecah jadi dua kolom.
+          Angkanya sempat tertinggal di 960 setelah hero pindah, dan akibatnya
+          di 900 sampai 959 peramban meminta selebar layar penuh untuk kotak
+          yang cuma 289px. Kalau split hero bergeser lagi, geser di sini juga. */}
       <Image
         src={photo}
         alt={`Program ${programLabel}`}
         widths={[360, 440, 700, 880]}
-        sizes="(min-width: 960px) 440px, 100vw"
+        sizes="(min-width: 900px) 440px, 100vw"
         loading="eager"
         fetchpriority="high"
         class="dc-img"

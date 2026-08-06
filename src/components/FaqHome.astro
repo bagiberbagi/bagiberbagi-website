@@ -41,17 +41,28 @@ const faqs = faqEntry.data.items.slice(0, 3);
         </div>
       ))}
 
-      {/* Baris aksi di kanan: donasi (primer, kuning menonjol) + link ke FAQ penuh
-          (sekunder, putih redup) supaya tidak saling rebut. */}
-      <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pt-6">
-        <p class="text-body-sm text-white/85 m-0">
-          Sudah mantap?
-          <a href="#donasi" data-track="donate_click" data-track-source="faq_nudge" class="text-brand-yellow font-bold inline-flex items-center gap-1 hover:gap-2 transition-[gap] align-baseline">
+      {/* Baris aksi: donasi (primer) + link ke FAQ penuh (sekunder). Di lg ke
+          atas ini satu baris sejajar, dua ujung, teks+link seperti semula:
+          653px lebar sudah cukup buat "kuning menonjol vs putih redup" kebaca
+          sebagai primer/sekunder tanpa bantuan bentuk. Di bawah lg lebarnya
+          sempit dan keduanya jadi sama tinggi/sama rata kiri kalau dibiarkan
+          bentuk teks, jadi donasi jadi tombol kuning solid selebar penuh,
+          ditaruh di atas, supaya jelas dia aksi utama; link kedua turun jadi
+          teks kecil redup di bawahnya, bukan baris kedua yang sama beratnya. */}
+      <div class="flex flex-col gap-4 pt-6 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-x-6 lg:gap-y-3">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-baseline lg:gap-1">
+          <p class="text-body-sm text-white/85 m-0">Sudah mantap?</p>
+          <a
+            href="#donasi"
+            data-track="donate_click"
+            data-track-source="faq_nudge"
+            class="flex w-full items-center justify-center gap-1 rounded-full bg-brand-yellow px-6 py-3.5 text-body-sm font-bold text-brand-blue transition-[gap] hover:gap-2 lg:inline-flex lg:w-auto lg:rounded-none lg:bg-transparent lg:px-0 lg:py-0 lg:text-brand-yellow"
+          >
             Donasi sekarang
             <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
           </a>
-        </p>
-        <a href="/faq/" class="text-white/65 font-semibold text-body-sm inline-flex items-center gap-1.5 hover:text-white hover:gap-2.5 transition-all">
+        </div>
+        <a href="/faq/" class="text-micro font-medium text-white/50 inline-flex items-center gap-1.5 transition-all hover:text-white hover:gap-2.5 lg:text-body-sm lg:font-semibold lg:text-white/65">
           Lihat semua pertanyaan
           <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
         </a>

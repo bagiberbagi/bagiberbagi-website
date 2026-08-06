@@ -7,26 +7,15 @@ import { getPrograms } from './programs';
 import { getOrganisasiPages } from './organisasi';
 import { parseVideoUrl, type JejakVideoSource } from './video';
 import { parseCoordinates, type MapPoint } from './geo';
+import { dedupePhotos, type JejakPhoto } from './photos';
 
 /**
- * Foto jejak yang sudah siap dirender: berkasnya, alt yang PASTI terisi, dan
- * caption yang boleh kosong.
- *
- * `alt` sengaja tak pernah bertipe `string | null`. Semua alt kosong di situs
- * ini lahir dari sana: `<Image>` menolak alt undefined, jadi setiap pemakai
- * yang tak punya data terpaksa menulis `alt=""`, dan string kosong lolos
- * begitu saja. Dengan alt dijamin terisi di lapis pembacaan, tak ada lagi
- * pemanggil yang perlu mengarang nilai.
- *
- * `caption` sebaliknya nullable, karena ia memang boleh tak ada: caption
- * dibaca pengunjung yang melihat fotonya, jadi caption karangan lebih buruk
- * daripada tak ada caption sama sekali.
+ * `JejakPhoto` dan `dedupePhotos` tinggal di `./photos` supaya bisa diuji:
+ * berkas ini mengimpor `astro:content` di baris pertamanya, dan modul itu cuma
+ * ada di dalam runtime Astro, sehingga apa pun yang serumah dengannya tak bisa
+ * diimpor `bun test`. Diekspor ulang di sini supaya pemanggil lama tak berubah.
  */
-export interface JejakPhoto {
-  img: ImageMetadata;
-  alt: string;
-  caption: string | null;
-}
+export { dedupePhotos, type JejakPhoto };
 
 export interface JejakMetric {
   label: string;
@@ -236,35 +225,6 @@ export async function getJejak(): Promise<Jejak[]> {
  * dipakai sebagai poster video, jadi sitemap menunjuk berkas yang tak ada di
  * halaman mana pun sekaligus menambah berkas kembar di dist.
  */
-/**
- * Buang foto kembar dari sederet foto, PEMAKAI PERTAMA YANG MENANG, dan entri
- * kosong ikut terbuang.
- *
- * "Pertama menang" bukan detail sepele. Satu berkas boleh dipasang sebagai cover
- * sekaligus muncul di galeri, dan sesudah ada `alt`/`caption` per foto, kedua
- * entri itu bisa membawa keterangan berbeda. `new Map(pasangan)` menyimpan nilai
- * entri TERAKHIR untuk kunci yang sama sambil mempertahankan posisi entri
- * pertama, jadi foto pembuka akan tampil di posisinya sendiri tapi memakai
- * keterangan milik entri galeri — biasanya kosong, sehingga alt tulisan editor
- * di cover hilang tanpa suara.
- *
- * Perbandingannya lewat identitas modul gambar (`photo.img` sebagai kunci Set),
- * bukan `img.src`. Membaca properti modul gambar di luar pipeline menandai
- * berkas aslinya "terpakai langsung" dan menyalin berkas mentahnya ke dist.
- * `photo.img` sendiri aman: itu properti pembungkus JejakPhoto, bukan pembacaan
- * pada modul gambarnya.
- */
-export function dedupePhotos(photos: (JejakPhoto | null | undefined)[]): JejakPhoto[] {
-  const seen = new Set<ImageMetadata>();
-  const out: JejakPhoto[] = [];
-  for (const photo of photos) {
-    if (!photo || seen.has(photo.img)) continue;
-    seen.add(photo.img);
-    out.push(photo);
-  }
-  return out;
-}
-
 export interface JejakMedia {
   /** Video yang bisa diputar di tempat; berhak atas slot pembuka. */
   videoPlayer: JejakVideo | null;

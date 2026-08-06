@@ -5,14 +5,57 @@ import type { ProgramMenuCategoryData } from '../consts';
 export interface Props {
   category: ProgramMenuCategoryData;
   iconSize?: number;
+  /**
+   * `card` = kartu bertumpuk untuk grid mega-menu desktop, yang punya enam sel
+   * berdampingan dan ruang untuk tagline.
+   *
+   * `row` = baris ringkas untuk panel nav mobile. Di sana keenam pintu berdiri
+   * satu kolom, dan bentuk kartu membuat submenu jadi 936px tinggi cuma untuk
+   * daftar enam tujuan. Baris menyisakan ikon, nama, dan statusnya — persis apa
+   * yang dipakai orang untuk memilih tujuan — dan taglinenya diserahkan ke
+   * halaman pintu yang dituju, tempat kalimat itu memang jadi kalimat pembuka.
+   */
+  variant?: 'card' | 'row';
 }
 
-const { category, iconSize = 19 } = Astro.props;
+const { category, variant = 'card', iconSize = variant === 'row' ? 16 : 19 } = Astro.props;
 
 // Pintu aktif kalau minimal satu program di dalamnya aktif.
 const isActive = category.items.some((i) => i.active);
 ---
 
+{variant === 'row' ? (
+  <a
+    href={category.href}
+    data-track="menu_category"
+    data-track-category={category.label}
+    class="group flex items-center gap-2.5 rounded-xl border border-border bg-white px-2.5 py-2 transition-colors hover:border-[var(--cat)] hover:bg-[var(--cat-tint)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cat)]"
+    style={`--cat:${category.color};--cat-tint:${category.colorTint}`}
+  >
+    <span class="w-8 h-8 flex-none rounded-lg bg-[var(--cat-tint)] text-[var(--cat)] grid place-items-center transition-colors group-hover:bg-white">
+      <Icon name={category.icon} size={iconSize} />
+    </span>
+
+    <span class="min-w-0 flex-1 font-bold text-body-sm text-ink transition-colors group-hover:text-[var(--cat)]">
+      {category.label}
+    </span>
+
+    <span
+      class:list={[
+        'flex-none inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider',
+        isActive ? 'text-[var(--cat)]' : 'text-gray-400',
+      ]}
+    >
+      <span
+        class:list={[
+          'w-1.5 h-1.5 rounded-full',
+          isActive ? 'bg-[var(--cat)]' : 'bg-gray-300',
+        ]}
+      ></span>
+      {isActive ? 'Aktif' : 'Segera'}
+    </span>
+  </a>
+) : (
 <a
   href={category.href}
   data-track="menu_category"
@@ -59,3 +102,4 @@ const isActive = category.items.some((i) => i.active);
     {isActive ? 'Aktif' : 'Segera'}
   </span>
 </a>
+)}

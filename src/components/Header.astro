@@ -3,7 +3,7 @@ import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import { NAV_LINKS, PINTU, PINTU_LABEL } from '../consts';
 import type { ProgramMenuCategoryData } from '../consts';
-import { getProgramsByPintu } from '../lib/programs';
+import { getProgramCover, getProgramsByPintu } from '../lib/programs';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
 import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
 
@@ -184,13 +184,20 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
       aria-label="Menu"
       aria-expanded="false"
       aria-controls="mobile-nav-panel"
-      class="nav:hidden ml-auto bg-gray-50 border-0 w-11 h-11 rounded-xl flex items-center justify-center text-ink"
+      class="nav:hidden ml-auto border-0 w-11 h-11 rounded-full flex items-center justify-center text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink"
     >
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
     </button>
   </div>
 
-  <nav id="mobile-nav-panel" class="hidden nav:hidden max-w-wide mx-auto mt-2 flex-col gap-0.5 bg-white border border-border rounded-2xl shadow-cardSm px-5 pb-5 pt-3">
+  {/* Radius + shadow disamakan dengan panel mega-menu desktop di atas
+      (rounded-card + shadow-menu), bukan dengan nilai sendiri: keduanya benda
+      yang sama, cuma di lebar layar yang berbeda. shadow-cardSm sebelumnya
+      dipinjam dari kartu, dan di bidang selebar layar ia terlalu rapat untuk
+      terbaca — panelnya jadi seperti menempel pada header, bukan mengambang
+      seperti pil di atasnya. Warna bordernya sudah sama dengan border pil saat
+      menu terbuka (#eef0f3), jadi cuma radius dan shadow yang perlu disusulkan. */}
+  <nav id="mobile-nav-panel" class="hidden nav:hidden max-w-wide mx-auto mt-2 flex-col gap-0.5 bg-white border border-border rounded-card shadow-menu px-5 pb-5 pt-3">
     {NAV_LINKS.map((link) => (
       link.id === 'program' ? (
         <div data-program-menu-mobile>
@@ -204,15 +211,69 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
             {link.label}
             <svg aria-hidden="true" data-program-chevron-mobile width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
-          <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-6 pl-3 pb-3">
-            <a href="/#pintu" class="eyebrow text-brand-orange inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
+          {/* Submenu ini dulu memakai kartu grid desktop apa adanya, bertumpuk
+              satu kolom: enam kartu 156px plus jarak 24px membuat panelnya
+              1481px, dan program aktif di ujungnya menyusut jadi tombol setinggi
+              41.7px tanpa bidang sama sekali. Jadi yang paling padat justru
+              yang paling penting.
+
+              Sekarang terbalik: pintu turun jadi baris ringkas (varian `row`
+              di ProgramMenuCategory) karena di daftar ini pintu cuma tujuan,
+              dan program aktif naik jadi kartu bergambar dengan bahan yang
+              memang dimilikinya — sampul lewat getProgramCover, label, dan
+              summary — sekeluarga dengan kartu flagship panel desktop di atas.
+
+              Indentasi pl-3 ikut dilepas. Itu satu-satunya alasan isi submenu
+              berdiri 12px lebih dalam dari Jejak/Tentang/FAQ di sebelahnya,
+              sementara kotak-kotaknya sendiri sudah cukup menandai bahwa ini
+              tingkat kedua. */}
+          <div id="mobile-program-panel" data-program-panel-mobile class="hidden flex-col gap-3 pb-3">
+            <a href="/#pintu" class="eyebrow mb-0 text-brand-orange inline-flex items-center gap-1 hover:text-brand-orangeDark transition-colors">
               {PINTU_LABEL}
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
             </a>
-            {PROGRAM_MENU.map((cat) => (
-              <ProgramMenuCategory category={cat} iconSize={14} />
-            ))}
-            <a href="/program/jumat-berkah/" class="btn-primary btn-sm text-center">Lihat Program Jumat Berkah</a>
+            <div class="flex flex-col gap-1.5">
+              {PROGRAM_MENU.map((cat) => (
+                <ProgramMenuCategory category={cat} variant="row" />
+              ))}
+            </div>
+            {/* Tujuannya dibaca dari entri program, bukan ditulis
+                `/program/jumat-berkah/`: slug itu milik Keystatic, dan sebuah
+                rename di sana meninggalkan tautan mati yang tak ada yang
+                memberitahu. */}
+            {flagship && flagship.href && (
+              <a
+                href={flagship.href}
+                data-track="program_click"
+                data-track-program={flagship.label}
+                class="group flex items-center gap-3 rounded-xl border border-brand-orange/40 bg-brand-orangeTint p-2.5 transition-colors hover:border-brand-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange"
+              >
+                {/* alt kosong disengaja: seluruh kartu ini satu tautan yang sudah
+                    menyebut nama programnya, jadi sampulnya dekorasi. */}
+                <Image
+                  src={getProgramCover(flagship)}
+                  alt=""
+                  class="h-16 w-16 flex-none rounded-lg object-cover"
+                  width={64}
+                  widths={[64, 128, 192]}
+                  sizes="64px"
+                  loading="lazy"
+                />
+                <span class="min-w-0 flex-1">
+                  <span class="label block text-brand-orangeDark">Program Aktif</span>
+                  <span class="mt-1 block text-body-sm font-bold text-ink">{flagship.label}</span>
+                  <span class="mt-0.5 block text-micro leading-snug text-muted">{flagship.summary}</span>
+                  {/* Panahnya mengalir di dalam teks, bukan jadi item flex
+                      sendiri: di 320px kalimatnya pecah dua baris, dan sebagai
+                      item flex panah itu terlempar ke tepi kanan baris kedua,
+                      jauh dari kata terakhirnya. */}
+                  <span class="mt-1.5 block text-micro font-bold text-brand-orangeDark">
+                    Lihat Program {flagship.label}
+                    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" class="ml-0.5 inline-block align-middle transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                  </span>
+                </span>
+              </a>
+            )}
           </div>
         </div>
       ) : (
@@ -312,6 +373,41 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
   }
   @media (prefers-reduced-motion: reduce) {
     .nav-link {
+      transition: none;
+    }
+  }
+
+  /* Hamburger: bentuk dan cincin fokus mengikuti tombol ikon bundar 44px yang
+     sudah ada di Share.astro, tapi latar diamnya DIBUANG. Di dalam pil, latar
+     abu solid berarti satu permukaan ditumpuk di atas permukaan yang sudah ada,
+     dan persegi-membulat di dalam bentuk yang serba 999px terbaca sebagai benda
+     dari sistem lain. Kotak sentuh 44x44 tidak ikut berubah.
+
+     Umpan baliknya meminjam .nav-link di atas, bukan `hover:bg-gray-100` milik
+     Share.astro, dengan alasan yang sama seperti yang tertulis di sana: latar
+     pil berganti-ganti (tembus pandang di atas hero kuning, putih setelah
+     digulir), dan satu nilai tint transparan bekerja benar di kedua keadaan
+     sementara satu warna solid hanya benar di salah satunya. Cincin fokusnya
+     menyimpang dari Share.astro karena alasan yang sama: brand-orange di atas
+     hero kuning cuma 1.9:1, di bawah 3:1 yang dituntut indikator fokus,
+     sedangkan ink 12.9:1 di atas kuning dan 17.9:1 di atas pil putih. */
+  #nav-toggle {
+    background-color: transparent;
+    transition: background-color 0.18s ease;
+  }
+  #nav-toggle:hover,
+  #nav-toggle:focus-visible {
+    background-color: rgba(15, 23, 42, 0.07);
+  }
+  /* Ditekan dan sedang terbuka memakai tint yang sama satu langkah lebih pekat.
+     Begitu panel terbuka tombol ini berperan sebagai tombol tutup, dan tanpa
+     latar diam tidak ada lagi yang menandai peran itu selain keadaan ini. */
+  #nav-toggle:active,
+  #nav-toggle[aria-expanded='true'] {
+    background-color: rgba(15, 23, 42, 0.12);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #nav-toggle {
       transition: none;
     }
   }

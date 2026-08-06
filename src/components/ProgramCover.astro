@@ -47,7 +47,12 @@ const { program, pintu, variant = 'tile', muted = false, alt = '' } = Astro.prop
 const isHero = variant === 'hero';
 const vars = `--pc:${pintu.color};--pc-tint:${pintu.colorTint}`;
 const widths = isHero ? [360, 448, 680, 896] : [72, 144, 216];
-const sizes = isHero ? '(min-width: 1024px) 448px, (min-width: 768px) 50vw, 100vw' : '72px';
+// Ambang tengahnya 900, bukan 768, karena itulah tempat halaman program pecah
+// jadi dua kolom (`wide:grid-cols-2` di program/[program].astro). Selama masih
+// satu kolom, cover-nya selebar container, jadi `50vw` di sini akan meminta
+// setengah dari yang sebenarnya dipakai. Angka ini terikat pada breakpoint
+// halaman itu: kalau di sana bergeser, geser di sini juga.
+const sizes = isHero ? '(min-width: 1024px) 448px, (min-width: 900px) 50vw, 100vw' : '72px';
 ---
 
 {program.image ? (

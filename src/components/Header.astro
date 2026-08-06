@@ -190,7 +190,14 @@ const navActive = (link: (typeof NAV_LINKS)[number]) => {
     </button>
   </div>
 
-  <nav id="mobile-nav-panel" class="hidden nav:hidden max-w-wide mx-auto mt-2 flex-col gap-0.5 bg-white border border-border rounded-2xl shadow-cardSm px-5 pb-5 pt-3">
+  {/* Radius + shadow disamakan dengan panel mega-menu desktop di atas
+      (rounded-card + shadow-menu), bukan dengan nilai sendiri: keduanya benda
+      yang sama, cuma di lebar layar yang berbeda. shadow-cardSm sebelumnya
+      dipinjam dari kartu, dan di bidang selebar layar ia terlalu rapat untuk
+      terbaca — panelnya jadi seperti menempel pada header, bukan mengambang
+      seperti pil di atasnya. Warna bordernya sudah sama dengan border pil saat
+      menu terbuka (#eef0f3), jadi cuma radius dan shadow yang perlu disusulkan. */}
+  <nav id="mobile-nav-panel" class="hidden nav:hidden max-w-wide mx-auto mt-2 flex-col gap-0.5 bg-white border border-border rounded-card shadow-menu px-5 pb-5 pt-3">
     {NAV_LINKS.map((link) => (
       link.id === 'program' ? (
         <div data-program-menu-mobile>

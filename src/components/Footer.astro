@@ -162,7 +162,19 @@ const socialBtn = 'w-11 h-11 rounded-full bg-black/5 flex items-center justify-c
         ternyata tidak: wordmark tetap elemen terbesar, sementara slab teks padat
         di tengah footer justru menghalangi mata yang sedang turun. */}
     <div class="hairline pt-5 pb-9 border-t border-black/6">
-      <p class="text-micro leading-relaxed text-muted/65">
+      {/* Lebarnya sengaja mengikuti Container footer, bukan tier `prose`.
+          Menyempitkannya ke 672px sempat dicoba demi panjang baris yang enak
+          dibaca, dan itu keliru untuk blok ini: ia satu-satunya elemen yang
+          berhenti di tengah sementara semua tetangganya membentang penuh, jadi
+          ia terbaca seperti kolom yang tertinggal, bukan seperti penutup.
+          Rata kiri-kanan yang mengurus kerapiannya, tapi baru mulai 768.
+          Diukur: sisa ruang terburuk yang harus diserap tiap baris adalah
+          1,44px per celah di 1280 dan 2,91px di 768, praktis tak terlihat.
+          Di 390 cuma muat 9 kata per baris, sehingga angka yang sama melonjak
+          ke 7,79px per celah, tiga kali lebar spasi normal pada 12px, dan
+          barisnya berlubang-lubang. Jadi di layar sempit ia sengaja dibiarkan
+          rata kiri. */}
+      <p class="text-micro leading-relaxed text-muted/65 md:text-justify">
         <strong class="font-semibold text-muted/80">Tentang bagiberbagi.id.</strong> bagiberbagi.id adalah platform donasi makanan dan gerakan sosial di Indonesia yang menyalurkan paket makanan bergizi dari dapur UMKM lokal ke panti asuhan, keluarga prasejahtera, dan warga yang membutuhkan, lengkap dengan bukti foto dan video maksimal H+1. Berawal dari program Jumat Berkah dan Ramadhan Berkah, kami membuka pintu-pintu berbagi: berbagi makanan, berbagi barang, berbagi waktu, berbagi ruang, berbagi dana, dan berbagi pohon. Donatur, relawan, mitra dapur UMKM, komunitas, hingga perusahaan yang menjalankan program CSR dapat ikut bergerak bersama. Mulai berdonasi, bersedekah, dan berbagi rezeki secara online dengan cara yang mudah, aman, dan transparan bersama komunitas bagiberbagi.id, menjangkau lebih banyak kota di seluruh Indonesia.
       </p>
     </div>

@@ -530,7 +530,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
       belum punya shadow, jadi 74 angka yang benar. Rel dan target lompat
       memakai 94 karena mereka bekerja saat halaman sudah digulir; lihat catatan
       nomor 4 di kepala file sebelum menyamakan kedua angka itu. */}
-  <section class="s1-hero">
+  <section id="pembuka" class="s1-hero">
     <Container width="wide">
       <nav class="s1-crumb" aria-label="Breadcrumb">
         <a href="/">Beranda</a>
@@ -589,7 +589,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
 
   {/* MOMEN: satu foto full-bleed, cuma untuk pintu yang punya dokumentasi. */}
   {photos && (
-    <section class="s1-moment">
+    <section id="momen" class="s1-moment">
       <Image
         src={photos.lead}
         alt={photos.leadAlt}
@@ -977,7 +977,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
       yaitu pengecualian yang memang diizinkan untuk minimal closing CTA.
       Watermark tidak lagi hilang di mobile, cuma mengecil, supaya penutupnya tak
       jadi blok tengah polos di atas bidang ink setinggi 300px. */}
-  <section class="s1-close">
+  <section id="penutup" class="s1-close">
     <Container width="wide">
       <div class="s1-close-inner">
         <p class="s1-eyebrow s1-eyebrow-dark" data-fade>{pintu.label}</p>

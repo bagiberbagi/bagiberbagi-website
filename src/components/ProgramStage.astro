@@ -147,8 +147,6 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
           </a>
 
           <div class="ps-inner">
-            {slide.caption && <p class="ps-caption">{slide.caption}</p>}
-
             <div class="ps-body">
               <p class="ps-index ps-index--top" aria-hidden="true">{slide.number}<span>/{total}</span></p>
               {slide.kicker && (
@@ -206,6 +204,18 @@ const idAt = (index: number) => slides[(index + slides.length) % slides.length].
               )}
 
             </div>
+
+            {/* Photo credit, deliberately last: it used to open the slide, ahead
+                of the kicker, where its pale small type sat directly on top of
+                the "01/04" index counter and the two fused into one meta-data
+                blob that out-ranked the section's own heading in reading order.
+                Trailing it after the CTA keeps the information (still useful as
+                a provenance note) without it competing for the first thing read.
+                Desktop is untouched: `position: absolute` below pulls it into
+                the top-right corner regardless of source order, so this move is
+                phone-only in effect. Optional field, so an empty caption simply
+                renders nothing here. */}
+            {slide.caption && <p class="ps-caption">{slide.caption}</p>}
 
           </div>
         </article>

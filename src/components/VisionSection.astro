@@ -78,11 +78,16 @@ const STAGES = await Promise.all(
         kartunya, lalu naik dua kolom sebelum tiga supaya perubahannya bertahap
         dan tidak melompat dari satu langsung ke tiga.
 
+        Tiga kolom sengaja menunggu `lg` (1024), bukan `md` (768): 768 sampai
+        1023 itu wilayah tablet portrait, dan di sana tiga kolom mengembalikan
+        kartu ke 216px, persis kesempitan yang sedang dihindari. Dua kolom
+        memegang seluruh rentang tablet, tiga kolom baru muncul di desktop.
+
         `min-h-64` pada kartunya ikut dimulai dari dua kolom, lihat `sm:min-h-64`
         di bawah. Tinggi paksa itu gunanya menyamakan kartu yang sebaris, dan
         dalam satu kolom tidak ada kartu sebaris, jadi di lebar HP ia cuma
         menambah sekitar 660px gulir untuk ruang kosong. */}
-    <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+    <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {STAGES.map((pintu) => (
         <a
           href={`/berbagi-${pintu.slug}/`}

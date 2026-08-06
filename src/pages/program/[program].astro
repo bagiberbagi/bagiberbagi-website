@@ -226,7 +226,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   <!-- CARA KERJA: timeline tersambung, nomor bulat selang-seling pintu/biru -->
   {steps.length > 0 && (
-    <section class="section bg-white" style={styleVars}>
+    <section id="cara-kerja" class="section bg-white scroll-mt-24" style={styleVars}>
       <Container>
         <div class="text-center max-w-text mx-auto mb-12">
           <div class="eyebrow text-[var(--cat)]">Cara Kerja</div>
@@ -254,7 +254,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   <!-- REKAM JEJAK -->
   {jejak.length > 0 && (
-    <section class="section bg-gray-50" style={styleVars}>
+    <section id="rekam-jejak" class="section bg-gray-50 scroll-mt-24" style={styleVars}>
       <Container>
         <div class="eyebrow text-[var(--cat)]">Rekam Jejak</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-4">Jejak {program.label}</h2>
@@ -310,7 +310,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
   <!-- PROGRAM LAIN SEPINTU -->
   {siblings.length > 0 && (
-    <section class="section bg-white" style={styleVars}>
+    <section id="program-lain" class="section bg-white scroll-mt-24" style={styleVars}>
       <Container>
         <div class="text-center max-w-text mx-auto mb-12">
           <div class="eyebrow text-[var(--cat)]">Masih di {pintu.label}</div>

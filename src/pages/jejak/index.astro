@@ -222,7 +222,7 @@ const STEPS_PENCATATAN = [
 >
   <!-- HERO: latar hangat brand (senada hero pintu), teks tengah. `section-hero`,
        bukan `section`: bidang tint-nya harus menembus ke belakang pil navbar. -->
-  <section class="section-hero bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
+  <section id="pembuka" class="section-hero bg-linear-[160deg] from-brand-orangeTint to-white to-60%">
     <Container>
       {/* `inline-block py-3` = kotak sentuh 44px tanpa memindahkan hurufnya;
            lihat catatan panjangnya di program/[program].astro. */}
@@ -249,7 +249,7 @@ const STEPS_PENCATATAN = [
 
   {/* ANGKA AGREGAT: kartu pertama gelap (kali kegiatan = konteks pengali), metrik ber-tint */}
   {hasJejak && (
-    <section class="py-10 md:py-14 bg-white">
+    <section id="angka" class="py-10 md:py-14 bg-white scroll-mt-24">
       <Container>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
           <div class="rounded-card bg-ink p-5 text-center text-white">
@@ -271,7 +271,7 @@ const STEPS_PENCATATAN = [
 
   <!-- FEED JEJAK: bentuknya ikut feedMode (1 kartu lebar / 2 kartu setara /
        unggulan + grid), dengan filter pintu -->
-  <section class="section bg-gray-50">
+  <section id="rekam-jejak" class="section bg-gray-50 scroll-mt-24">
     <Container>
       <div class="eyebrow">Rekam Jejak</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Dokumentasi tiap kegiatan</h2>
@@ -405,7 +405,7 @@ const STEPS_PENCATATAN = [
 
   {/* GALERI LAPANGAN: foto unik dari seluruh jejak, klik untuk perbesar */}
   {gallery.length > 0 && (
-    <section class="py-10 md:py-14 bg-white">
+    <section id="galeri" class="py-10 md:py-14 bg-white scroll-mt-24">
       <Container>
         <div class="flex flex-wrap items-baseline justify-between gap-2 mb-5">
           <h2 class="text-title font-semibold text-ink">Galeri lapangan</h2>
@@ -442,7 +442,7 @@ const STEPS_PENCATATAN = [
   )}
 
   <!-- CARA KAMI MENCATAT: menjelaskan asal angka di atas, tetap tampil walau jejak nol -->
-  <section class="section bg-gray-50">
+  <section id="cara-pencatatan" class="section bg-gray-50 scroll-mt-24">
     <Container>
       <div class="eyebrow">Cara Pencatatan</div>
       <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-6">Cara kami mencatat</h2>
@@ -461,7 +461,7 @@ const STEPS_PENCATATAN = [
   </section>
 
   <!-- CTA penutup: donasi (primer) + transparansi formal (sekunder) -->
-  <section class="section bg-white">
+  <section id="penutup" class="section bg-white scroll-mt-24">
     <Container>
       <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
         <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Dukung penyaluran berikutnya</h2>

@@ -27,6 +27,7 @@ For per-area architecture detail, see `.claude/rules/*.md`. Read only the file m
 - **Read `.claude/rules/layout-tiers.md`** when picking a container width for a new section/page or porting a mockup into components — covers the `Container.astro` tier system and the mockup-to-token workflow.
 - **Read `.claude/rules/analytics.md`** when touching `src/lib/analytics.ts`, `Analytics.astro`, or `ConsentBanner.astro`, or adding an analytics provider — covers the switchboard and consent gating.
 - **Read `.claude/rules/frontend-scripts.md`** when adding or editing a `src/scripts/*.js` module — covers the one-script-per-component convention.
+- **Read `.claude/rules/section-ids.md`** when adding a page or section, or touching an existing `id` on a `<section>` — covers the Indonesian kebab-case naming convention, `scroll-mt-24` under the sticky header, and the load-bearing ids that must never be renamed.
 
 ## Git conventions
 

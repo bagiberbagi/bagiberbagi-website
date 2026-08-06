@@ -156,7 +156,7 @@ const seoTitle =
        berisi angka utama dan satu foto lapangan. Bentuknya menggemakan hero
        beranda (bidang warna + kartu putih di kanan), jadi separuh layar kanan
        tak lagi kosong seperti versi satu kolom sebelumnya. -->
-  <section class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
+  <section id="profil" class="section-hero section-lg bg-linear-[160deg] from-brand-blueTint to-white to-60%">
     <Container>
       <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 mb-8">
         <nav class="text-sm font-semibold text-muted" aria-label="Breadcrumb">
@@ -312,7 +312,7 @@ const seoTitle =
        selalu muncul di bidang yang sama di seluruh situs. Grafik riaknya TIDAK
        ikut ke sini: itu milik beranda. -->
   {hasJejak && (
-    <section class="od section section-lg bg-brand-blue text-white">
+    <section id="dampak" class="od section section-lg bg-brand-blue text-white scroll-mt-24">
       <div aria-hidden="true" class="od-glow od-glow-top"></div>
       <div aria-hidden="true" class="od-glow od-glow-bottom"></div>
 
@@ -383,7 +383,7 @@ const seoTitle =
       Seksi ini muncul sendiri begitu kegiatan kedua tercatat, dan sejak titik
       itu daftarnya memang membawa isi baru. */}
   {jejak.length > 1 ? (
-    <section class="section section-lg bg-white">
+    <section id="rekam-jejak" class="section section-lg bg-white scroll-mt-24">
       <Container>
         <div class="eyebrow">Rekam Jejak</div>
         <h2 class="section-title font-semibold mb-8">Jejak {org.label}</h2>
@@ -400,7 +400,7 @@ const seoTitle =
       </Container>
     </section>
   ) : !hasJejak ? (
-    <section class="section section-lg bg-white">
+    <section id="rekam-jejak" class="section section-lg bg-white scroll-mt-24">
       <Container>
         <div class="eyebrow">Rekam Jejak</div>
         <h2 class="section-title font-semibold mb-8">Jejak {org.label}</h2>
@@ -420,7 +420,7 @@ const seoTitle =
       menghapus batasnya, dan seksi Rekam Jejak memang tidak selalu ada (ia
       hilang saat kegiatannya baru satu), jadi yang harus selalu benar adalah
       pasangan CTA dengan apa pun yang kebetulan berdiri sebelum ia. */}
-  <section class="section section-lg bg-surface-warm">
+  <section id="bergabung" class="section section-lg bg-surface-warm scroll-mt-24">
     <Container>
       <div class="text-center max-w-text mx-auto">
         <div class="eyebrow">Bergabung</div>

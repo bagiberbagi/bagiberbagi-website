@@ -123,10 +123,12 @@ const videoThumb =
 // dari potongan yang tampil. Judul panjang karena itu berdiri sendiri; nama
 // situs toh sudah tampil sebagai domain di baris yang sama.
 //
-// Ambangnya diukur, bukan ditebak: Google memotong sekitar 60 karakter, jadi
-// judul yang sudah melewati 45 tak lagi punya ruang untuk suffix itu.
+// Google memotong judul berdasarkan lebar piksel, bukan jumlah karakter, jadi
+// 60 karakter cuma perkiraan kasar. Angka 43 itu 60 dikurangi 17 karakter
+// suffix. Sebelumnya tertulis 45, dan itu meloloskan judul 44 sampai 45
+// karakter tetap mendapat suffix sampai hasilnya lewat titik potong.
 const seoTitle =
-  jejak.title.length > 45 ? jejak.title : `${jejak.title} | bagiberbagi.id`;
+  jejak.title.length > 43 ? jejak.title : `${jejak.title} | bagiberbagi.id`;
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 

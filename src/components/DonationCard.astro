@@ -287,6 +287,11 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
     display: flex;
     flex-direction: column;
     box-shadow: 0 26px 56px -20px rgba(124, 45, 18, 0.45), 0 2px 6px rgba(124, 45, 18, 0.08);
+    /* Baris chip di bawah harus tahu lebar kartunya, bukan lebar layar: kartu
+       yang sama muncul selebar 350px di ponsel dan selebar 435px di kolom kanan
+       hero desktop, dan di halaman program lebarnya lain lagi. Media query layar
+       menjawab pertanyaan yang salah di dua dari tiga tempat itu. */
+    container-type: inline-size;
   }
   /* Varian tanpa foto: dipasang di tengah halaman, bukan melayang di atas
      bidang warna hero, jadi bayangan tebalnya diturunkan jadi tepi tipis. */
@@ -414,7 +419,22 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
      harga di atasnya, jadi jaraknya dirapatkan balik dari gap .dc-pick. */
   .dc-note { margin: -6px 0 0; font-size: 13px; line-height: 1.5; color: #78716c; }
 
-  .dc-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  /* Dua kolom dulu, empat kolom kalau kartunya cukup lebar.
+     Empat chip sejajar butuh ruang teks 57,7px per chip, karena "20 porsi"
+     selebar itu dan judul chip tak boleh patah — satu judul yang turun ke baris
+     kedua sementara tetangganya tidak membuat barisnya terlihat rusak, dan
+     seluruh baris ikut meninggi mengikuti chip yang paling tinggi. 57,7px teks
+     berarti chip 72,7px, berarti kartu 363px; ambangnya 380 supaya ada sisa buat
+     font fallback yang lebih lebar.
+     Di bawah itu dua kolom, bukan tiga: tiga meninggalkan chip "Lainnya"
+     sendirian di baris kedua, sedangkan dua memberi 2x2 yang rata.
+     Ini juga yang menutup cacat lama di 320px, tempat ruang teks cuma 38px
+     sementara kata "Lainnya" sendiri 54,6px dan "500.000" 50px, jadi huruf
+     terakhirnya benar-benar keluar dari kotak chip. */
+  .dc-chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  @container (min-width: 380px) {
+    .dc-chips { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
   .dc-chip {
     border: 1.5px solid #e7e5e4;
     background: #fff;

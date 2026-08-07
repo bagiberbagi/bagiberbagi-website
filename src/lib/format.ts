@@ -53,15 +53,27 @@ export function buildWaLink(waNumber: string, text?: string): string {
  * (mis. Ramadhan Berbagi: Sahur/Takjil/Buka Puasa), paket yang dipilih ikut
  * disebut di pesan supaya tim tak perlu menanyakan ulang lewat WhatsApp.
  * Program dengan satu paket (Jumat Berkah) tetap tanpa embel-embel ini.
+ *
+ * `askPackage` menutup keadaan yang muncul begitu paket tak lagi punya default:
+ * pengunjung sudah menentukan jumlah porsi tapi belum menyentuh baris paket.
+ * Tanpa ini pesannya berangkat menyebut jumlah tanpa menyebut paket sama sekali,
+ * dan tim menerima "12 pax Ramadhan Berbagi" tanpa tahu Sahur atau Buka Puasa.
+ * Bedanya dengan sekadar diam: pesannya menyatakan sendiri apa yang masih
+ * kurang, jadi percakapan mulai dari pertanyaan yang benar.
+ *
+ * Program sepaket tunggal tak pernah mengirimkannya — tidak ada yang bisa
+ * ditanyakan — jadi pesan Jumat Berkah tidak berubah satu karakter pun.
  */
 export function buildDonationMessage(
   program: string,
   pax: number,
   totalFormatted: string,
-  packageName?: string
+  packageName?: string,
+  askPackage = false
 ): string {
   const programLabel = packageName ? `${program} (Paket ${packageName})` : program;
-  return `Halo, saya ingin donasi program "${programLabel}" untuk ${pax} pax (Total: ${totalFormatted}).`;
+  const base = `Halo, saya ingin donasi program "${programLabel}" untuk ${pax} pax (Total: ${totalFormatted}).`;
+  return askPackage ? `${base} Boleh dibantu untuk pilihan paketnya?` : base;
 }
 
 export function formatProgramOptionLabel(opt: { label: string; active: boolean }): string {

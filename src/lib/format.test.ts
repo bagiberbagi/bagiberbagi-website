@@ -31,6 +31,29 @@ test('buildDonationMessage mentions the selected package when provided', () => {
   expect(msg).toBe('Halo, saya ingin donasi program "Ramadhan Berbagi (Paket Takjil)" untuk 10 pax (Total: Rp 250.000).');
 });
 
+test('buildDonationMessage asks for the package when the visitor picked a quantity but no package', () => {
+  const msg = buildDonationMessage('Ramadhan Berbagi', 10, 'Rp 250.000', undefined, true);
+  expect(msg).toBe(
+    'Halo, saya ingin donasi program "Ramadhan Berbagi" untuk 10 pax (Total: Rp 250.000). Boleh dibantu untuk pilihan paketnya?'
+  );
+});
+
+test('buildDonationMessage never asks for a package once one is chosen', () => {
+  // Guards the combination that would read as nonsense: naming Takjil in the
+  // same sentence that asks which package the visitor wants. The script only
+  // sets askPackage while pkg is null, and this pins that down at the boundary.
+  const msg = buildDonationMessage('Ramadhan Berbagi', 10, 'Rp 250.000', 'Takjil', false);
+  expect(msg).not.toContain('pilihan paketnya');
+});
+
+test('buildDonationMessage leaves a single-package programme untouched', () => {
+  // Jumat Berkah has nothing to pick, so this change must not alter one
+  // character of its message.
+  expect(buildDonationMessage('Jumat Berkah', 10, 'Rp 250.000')).toBe(
+    'Halo, saya ingin donasi program "Jumat Berkah" untuk 10 pax (Total: Rp 250.000).'
+  );
+});
+
 test('formatProgramOptionLabel appends "(Segera Hadir)" only when not active', () => {
   expect(formatProgramOptionLabel({ label: 'Jumat Berkah', active: true })).toBe('Jumat Berkah');
   expect(formatProgramOptionLabel({ label: 'Ramadhan Berkah', active: false })).toBe('Ramadhan Berkah (Segera Hadir)');

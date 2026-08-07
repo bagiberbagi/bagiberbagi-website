@@ -70,9 +70,10 @@ function initPicker(card) {
   // tanpa menyebut jumlah.
   let porsi = null;
   let custom = false;
-  // Paket pertama sudah jadi default server-rendered, jadi state awal di sini
-  // tinggal mengikutinya. null = program sepaket tunggal.
-  let pkg = packageOptions[0]?.dataset.packageOption ?? null;
+  // null di sini berarti dua hal sekaligus, dan keduanya benar: program ini
+  // sepaket tunggal, ATAU pengunjung belum memilih paket. Tak ada paket yang
+  // dipilihkan lebih dulu, aturan yang sama dengan porsi di atas.
+  let pkg = null;
 
   // Teks tombol sebelum ada pilihan. Diambil dari DOM, bukan ditulis ulang di
   // sini, supaya kalimatnya cuma hidup di DonationCard.astro.
@@ -102,18 +103,26 @@ function initPicker(card) {
       if (ctaLabel) ctaLabel.textContent = openLabel;
       // Satu-satunya hal yang menggeser href selagi porsi belum dipilih adalah
       // pilihan paket, dan tiap tombol paket membawa pesan tanpa-porsi versinya
-      // sendiri. Program sepaket tunggal tak punya atribut itu, dan memang tak
-      // perlu: href dari server sudah benar dan tak berubah.
+      // sendiri. Selama `pkg` masih null pencarian ini tak menemukan apa pun,
+      // jadi href dari server bertahan — dan itu memang jawaban yang benar,
+      // sebab server merender pesan untuk keadaan "belum memilih apa-apa".
       const openMsg = packageOptions.find((opt) => opt.dataset.packageOption === pkg)?.dataset
         .packageOpenMsg;
       if (cta && openMsg) cta.href = buildWaLink(waNumber, openMsg);
       return;
     }
 
+    // Porsi sudah dipilih tapi paket belum, dan program ini punya paket: pesannya
+    // ikut menanyakan paket. Tanpa cabang ini tim menerima jumlah porsi tanpa
+    // tahu paket mana yang dimaksud.
+    const askPackage = packageOptions.length > 0 && pkg === null;
     const total = formatRupiah(porsi * price);
     if (ctaLabel) ctaLabel.textContent = `Donasi ${porsi} Porsi · ${total}`;
     if (cta) {
-      cta.href = buildWaLink(waNumber, buildDonationMessage(program, porsi, total, pkg ?? undefined));
+      cta.href = buildWaLink(
+        waNumber,
+        buildDonationMessage(program, porsi, total, pkg ?? undefined, askPackage)
+      );
       cta.dataset.trackPax = String(porsi);
     }
   }

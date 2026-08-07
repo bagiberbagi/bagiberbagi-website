@@ -100,10 +100,31 @@ a single file without 3. None of them block Track A, C or E.
       so Ramadhan can preselect Sahur deliberately while another programme preselects nothing.
       (c) is the one that fits the model, since every other special case in this change is
       becoming a field.
-- [ ] **Q3. Who writes the fifteen WhatsApp messages?** Every non-food aksi needs one.
+
+      **Answered 7 August 2026, option (a): "Paket ramadhan (sahur, takjil, dll) tidak perlu ada
+      default."** Already shipped ahead of this change, on `fix/package-no-default`, because it
+      is a live inconsistency rather than something to wait on a schema for.
+
+      **The fix was bigger than removing a default, and this is the part worth carrying into the
+      schema.** Taking the default away opens a state that could not previously exist: quantity
+      chosen, package untouched. The message would then name a number and no package, and the
+      team receives "12 pax Ramadhan Berbagi" with no way to know which one. Silence is worse
+      than a wrong default, because a wrong default is at least answerable. So the message now
+      states what it is still missing, matching how quantity already behaves.
+
+      **So when `packages` becomes content, the mechanism must keep all four states honest**, not
+      only the two the old code had. `buildDonationMessage` carries an `askPackage` flag for this.
+- [x] **Q3. Who writes the fifteen WhatsApp messages?** Every non-food aksi needs one.
       Track D can draft each from its own `desc`, but the copy-voice rule says the owner's words
       are used verbatim, so a derived draft may not be acceptable even as a starting point.
-      **Track D is blocked until this is answered.**
+      ~~**Track D is blocked until this is answered.**~~
+
+      **Answered 7 August 2026: "kamu isi aja nanti aku evaluasi." Track D is unblocked.**
+      Drafts are in `MESSAGES.md`, deliberately as a document rather than as content files, so
+      they can be marked up before anything ships.
+
+      Writing them found something the design missed, and it is now **Q7** below: two of the
+      fifteen are not messages at all.
 - [ ] **Q4. Should Community Giving gain a quantity picker?** The only question here that is
       about the product rather than the structure. Under this model the answer is a field change
       in `src/content/aksi/food.json`, not a code change.
@@ -114,6 +135,13 @@ a single file without 3. None of them block Track A, C or E.
 - [ ] **Q6. Does `inquiry_click` survive?** See F5. **Recommendation: keep both event names**,
       `donate_click` for `quantity` and `inquiry_click` for `conversation`, so the historical
       conversion series stays comparable across the change.
+- [ ] **Q7. Two of the fifteen aksi are not messages, so what are they?** Found while drafting
+      `MESSAGES.md`. Dana's "Periksa dulu catatan penyalurannya" asks the visitor to open
+      `/jejak/` and read; Pohon's "Rawat pohon yang sudah ada" asks nothing of bagiberbagi at all.
+      `design.md` states there is no `link` kind, and the Dana row is a counter-example: a real
+      internal page that no relationship derives. **Recommendation: `none` for Pohon, which is
+      correct rather than a compromise, and a `link` kind restricted to internal routes for Dana.**
+      Full reasoning and the two rejected alternatives are in `MESSAGES.md`.
 
 ---
 

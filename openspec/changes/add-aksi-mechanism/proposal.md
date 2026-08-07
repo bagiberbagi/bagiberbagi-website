@@ -38,6 +38,22 @@ through the admin.
 The owner set it deliberately: *"aku butuh mekanisme yg bold, pekerjaan banyak bukan masalah
 bagiku."* The plan is eleven tracks. Seven need no approval, four need his eyes before merging.
 
+## What this replaces
+
+`add-calculator-settings` is **cancelled**, not archived, and its folder is deleted. It was
+opened to make the donation card's numbers editable, on the premise that hardcoded values were
+the blocker. The owner corrected that premise twice, and by the end nothing of its framing was
+left to archive:
+
+> "aku tidak menganggap calculator itu sebatas itung2an sih … yg kumaksd kalkulator itu adalah
+> ya card yg akan selalu jadi rujukan itu dan bisa di tempel dimana2 gt nantinya."
+
+The blocker was never the numbers, it was the **mount cost**. A folder kept around only to say
+"we thought about this wrongly" is a folder the next reader has to open to find that out. Its
+three findings that were measured rather than assumed survive here in `design.md`: the fifteen
+"porsi" literals, `calcTotal()`'s `25000` reaching a vanilla script with no `astro:content`, and
+the two slug-matched `if`s. Those were the useful output; the framing around them was not.
+
 ## Deliberately not in this change
 
 Threading the roughly fifteen hardcoded "porsi" literals. The reader carries `unit` from day one

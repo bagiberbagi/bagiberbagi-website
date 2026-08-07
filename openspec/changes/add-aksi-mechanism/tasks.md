@@ -86,6 +86,20 @@ a single file without 3. None of them block Track A, C or E.
       today that is true, because `calcTotal` knows nothing about the selected package. If Sahur
       and Buka Puasa should cost differently the field has to be `{ name, pricePerUnit }[]` —
       free to decide now, a content migration later.
+
+      **Q2b, found on 7 August 2026 while reconciling the old spec against the live page.** The
+      two controls in the same card now follow opposite rules. Quantity has no default, on your
+      instruction, so the visitor chooses freely. **Package still defaults to the first one**
+      (`aria-pressed="true"` on Sahur), so a visitor who taps straight through sends
+      `Ramadhan Berbagi (Paket Sahur)` without ever having chosen it.
+
+      Three ways out, and this change is where it gets decided because packages become data here:
+      **(a)** packages get no default either, matching quantity, and the message names the
+      programme alone until one is picked; **(b)** the default stays and is made visible as a
+      default rather than as a selection; **(c)** the entry declares its own default in content,
+      so Ramadhan can preselect Sahur deliberately while another programme preselects nothing.
+      (c) is the one that fits the model, since every other special case in this change is
+      becoming a field.
 - [ ] **Q3. Who writes the fifteen WhatsApp messages?** Every non-food aksi needs one.
       Track D can draft each from its own `desc`, but the copy-voice rule says the owner's words
       are used verbatim, so a derived draft may not be acceptable even as a starting point.
@@ -113,31 +127,47 @@ any of them.
 Files: `openspec/changes/add-aksi-mechanism/**` and `openspec/changes/add-calculator-settings/**`.
 No code. Runs in parallel with everything.
 
-- [ ] A1 Create `openspec/changes/add-aksi-mechanism/` with `.openspec.yaml`
+- [x] A1 Create `openspec/changes/add-aksi-mechanism/` with `.openspec.yaml`
       (`schema: spec-driven`, `created: <date>`), `proposal.md`, `design.md` (the approved design,
       moved in whole), and this `tasks.md`. The eleven migration steps that currently sit inside
       `design.md` belong here as tracks, not there — remove them from `design.md` when it moves,
       so there is exactly one ordering of the work in the repository.
-- [ ] A2 `proposal.md` needs the four sections the last change used: **Why**, **What Changes**
+- [x] A2 `proposal.md` needs the four sections the last change used: **Why**, **What Changes**
       (split Group 1 / Group 2), **Capabilities**, **Impact** (code, content, dependencies, where
       the risk concentrates), plus the **Parallelisation** table above.
-- [ ] A3 Delta specs under `add-aksi-mechanism/specs/`. At least two capabilities move:
-      - `content-cms` — the `aksi` collection, its six singletons, and the extension agreement.
-      - `program-donation-cta` — **this capability is not in `openspec/specs/` yet.** It lives in
-        the still-open change `openspec/changes/add-food-programs-organisasi/specs/program-donation-cta/spec.md`,
-        and its requirements are written in terms of slug-based branching, which this change
-        deletes. Decide with the owner whether `add-food-programs-organisasi` archives first
-        (making the requirement real before it is modified) or whether this change amends the
-        open one in place. **Do not leave two changes describing the same CTA in opposite terms.**
-      - `analytics-tracking` — only if Q6 comes back as "rename or drop an event".
-- [ ] A4 Decide the fate of `openspec/changes/add-calculator-settings/`. It holds `proposal.md`
+- [x] A3 Delta specs under `add-aksi-mechanism/specs/`. Three capabilities, written 7 August 2026:
+      - `aksi-and-ajakan` — **new capability.** The entity, the closed pintu set, the reader, and
+        the ban on slug-branching.
+      - `content-cms` — MODIFIED `Layout-bound content stays out of the CMS`, since
+        `CATEGORY_CONTENT.contribute` leaves it; plus the extension agreement and the
+        `fields.conditional` wire-shape verification, both as requirements rather than review notes.
+      - `program-donation-cta` — MODIFIED, both requirements repointed from slug tests to mechanism.
+      - `analytics-tracking` — not written; it depends on Q6 and is a one-scenario delta once
+        that is answered.
+
+      **The ordering question is resolved: `add-food-programs-organisasi` archived first**, on
+      7 August 2026, so `program-donation-cta` is a real capability in `openspec/specs/` and this
+      change MODIFIES it rather than two open changes describing the same CTA in opposite terms.
+      That archive was possible because its two remaining tasks turned out to be dischargeable —
+      one mechanically, one by production — see that change's `STATUS.md`.
+
+      Reconciling the two surfaced a live defect neither had noticed, now carried here as **Q2b**:
+      package silently defaults to the first entry while quantity deliberately defaults to nothing.
+- [x] A4 Decide the fate of `openspec/changes/add-calculator-settings/`. It holds `proposal.md`
       as well as `design.md`, and this change supersedes only the latter. Two honest options,
       both fine, neither allowed to be left implicit: **cancel** it (delete the folder, and say
       so in the new `proposal.md`'s Why), or **archive** it as a rejected framing. Pick one and
       write one sentence in the new proposal saying which.
-- [ ] A5 Confirm `openspec validate` (or whatever the repo's checker is, if any) is clean on the
+
+      **Cancelled and deleted**, with the reasoning in this change's `proposal.md` under "What
+      this replaces". Archiving was the alternative and it loses: the folder's framing was
+      corrected twice by the owner, so what would be preserved is a wrong premise the next reader
+      has to open the folder to discover. Its three measured findings survive in `design.md`.
+- [x] A5 Confirm `openspec validate` (or whatever the repo's checker is, if any) is clean on the
       new folder; if there is no checker, confirm the folder's shape matches
-      `openspec/changes/fix-mobile-ergonomics/` file for file.
+      `openspec/changes/fix-mobile-ergonomics/` file for file. — `openspec validate --all --strict`
+      reports **13 passed, 0 failed**. Before this it reported 2 failed, both for the same reason:
+      a change with no `specs/` deltas. `.openspec.yaml` added to match the archived changes.
 
 **Done when**: the gate passes (trivially, no code changed), `add-aksi-mechanism/` is complete,
 and A4's decision is written down in prose rather than implied by a deletion.

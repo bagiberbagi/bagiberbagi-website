@@ -14,6 +14,7 @@ Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & d
 - `bun run preview` — preview the production build
 - `bun test` — run unit tests (`src/lib/*.test.ts`, yaitu `format` + `impact`)
 - `bunx astro check` — type-check `.astro` files
+- `bun run check:assets` — after a build, fail if `dist` carries an image no page references (see `.claude/rules/image-pipeline.md`)
 
 ## Architecture
 

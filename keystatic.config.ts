@@ -550,13 +550,6 @@ export default config({
           },
           { label: 'Nilai yang Kami Pegang' }
         ),
-        cta: fields.object(
-          {
-            title: fields.text({ label: 'Judul' }),
-            text: fields.text({ label: 'Teks', multiline: true }),
-          },
-          { label: 'Ajakan (CTA)' }
-        ),
       },
     }),
   },

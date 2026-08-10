@@ -18,6 +18,21 @@ import logoMark from '../assets/images/logo/logo-mark.png';
 import Container from './Container.astro';
 import { buildWaLink } from '../lib/format';
 
+// Seksi ini lahir sebagai penutup beranda dan sekarang dipasang juga di
+// `/tentang/` dan `/jejak/`, jadi dua hal yang memang berbeda per halaman
+// diangkat jadi prop. Sisanya sengaja tidak: pilihan perannya, kalimat
+// penolongnya, dan bentuk kartunya sama di mana pun, dan menjadikannya prop
+// cuma membuka jalan bagi tiga versi yang perlahan menyimpang.
+interface Props {
+  /** Eyebrow di atas kalimat. Beda per halaman karena ia menyambung dari apa
+   *  yang baru saja dibaca pengunjung, bukan dari isi seksi ini. */
+  kick?: string;
+  /** Membedakan penutup tiap halaman di analitik. */
+  source?: string;
+}
+
+const { kick = 'Sebelum kamu pergi', source = 'closing_home' } = Astro.props;
+
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
 
@@ -45,7 +60,7 @@ const WA_GLYPH =
   <Container width="wide">
     <div class="cl-grid">
       <div class="cl-left">
-        <p class="eyebrow" data-fade>Sebelum kamu pergi</p>
+        <p class="eyebrow" data-fade>{kick}</p>
 
         {/* Kalimatnya sendiri yang jadi judul seksi: berubah begitu pilihan
             ditekan, jadi pengunjung melihat maksudnya terbentuk.
@@ -125,7 +140,7 @@ const WA_GLYPH =
               rel="noopener"
               data-send
               data-track="join_click"
-              data-track-source="closing_picker"
+              data-track-source={source}
               data-track-pick={PICKS[0]!.id}
               class="cl-send"
             >

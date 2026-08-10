@@ -136,10 +136,6 @@ const about = defineCollection({
         })
       ),
     }),
-    cta: z.object({
-      title: z.string(),
-      text: z.string(),
-    }),
   }),
 });
 

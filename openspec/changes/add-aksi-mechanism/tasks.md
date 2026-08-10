@@ -675,7 +675,7 @@ judgement.
 Files: `src/content/aksi/*.json`, six new files, nothing else. Depends on **B** for the schema and
 on **Q3** for permission to draft.
 
-- [ ] D1 **Blocked until Q3 is answered.** Do not draft fifteen WhatsApp messages on the theory
+- [x] D1 **Blocked until Q3 is answered.** Do not draft fifteen WhatsApp messages on the theory
       that a draft is easier to correct than a blank. The copy-voice rule says the owner's words
       are used verbatim, and fifteen plausible-sounding drafts are the most expensive way to
       discover he wanted different ones.
@@ -713,6 +713,43 @@ a copy review, not a dev-server review. Do not start a server for it.
 
 ---
 
+### Status 10 August 2026: D4 shipped alone, on purpose. D2, D3, D5, D6, D7 still open.
+
+**Track F turned out to depend on Track D, and the ordering diagram says it does not.** That is
+the finding, and it is worth more than the file that came out of it. `getAjakan` synthesises a
+`conversation` for a programme with no aksi (C2.5), which was designed as a safety net for a
+*half-finished* Track D. With Track D not started at all, the net catches everything: merging F
+against an empty `aksi/` collection turns the homepage's porsi picker into a chat button. The
+site's main CTA would have degraded, silently, with a green build.
+
+So `src/content/aksi/food.json` was authored ahead of the rest, containing **D4's four
+programme-scoped aksi only**. Nothing in it is new copy. Every value is lifted from code that
+ships today:
+
+| aksi | from |
+|---|---|
+| Jumat Berkah, `quantity` 25000, presets `[6,12,20]` | `DonationCard.astro`'s `PRESETS` and `calcTotal` |
+| Ramadhan Berbagi, same plus packages | `RAMADHAN_PACKAGES` at `program/[program].astro:54` |
+| Community Giving, `conversation` | `inquiryWaLink` at `:60`, character for character |
+| CSR Food Program, `conversation` | the same construction |
+
+**What is still blocked, and why it is a smaller blockage than it looked.** D2/D3 need the
+eighteen `{title, desc}` pairs plus messages for the fifteen non-food aksi, and those wait on the
+owner reading `MESSAGES.md`. But checking what the pintu page actually renders today changed the
+shape of that wait: `contribute` renders as a **numbered list with a title and a description and
+no button at all** (`PintuS1.astro:737`). So the fifteen messages are not needed to preserve
+anything currently on screen — they are needed for Track G, which is where buttons first appear.
+
+**D5 was not followed and could not be.** Authoring through `/keystatic` writes to Keystatic
+Cloud, so the first save would commit to the real repository. The round trip was verified the way
+Track B verified it instead: `food.json` was read back through Keystatic's own `createReader()`,
+which returned all four items with the right discriminants and resolved programme slugs.
+
+**D7 does not hold for this slice and must not be claimed.** The site changes, because Track F
+lands with it. What was measured instead is in Track F's report.
+
+---
+
 ## Track F — the card and both mounts
 
 Files: `src/components/DonationCard.astro`, `src/components/Hero.astro`,
@@ -722,7 +759,7 @@ This is where the change becomes visible.
 
 ### F1. The prop split
 
-- [ ] F1.1 **Content comes from `ajakan`. Presentation stays a prop.** The design collapsed the
+- [x] F1.1 **Content comes from `ajakan`. Presentation stays a prop.** The design collapsed the
       mount to `<DonationCard ajakan trackSource id />` and lost four things the two call sites
       pass for real reasons. The split that keeps all of them:
       | prop | after |
@@ -736,82 +773,82 @@ This is where the change becomes visible.
       | `programLabel`, `waNumber`, `agenda`, `schedule`, `packages`, `programSummary`, `programHref` | gone, all now inside `ajakan` |
       Nine hand-assembled props become one plus four presentation ones. That is still the win;
       collapsing the four as well would be a regression dressed as tidiness.
-- [ ] F1.2 `agenda` and `schedule` arrive already gated by `getAjakan` (C2.2). Delete
+- [x] F1.2 `agenda` and `schedule` arrive already gated by `getAjakan` (C2.2). Delete
       `runningProgram` and `isRunning` from `program/[program].astro:82-83` and **confirm on a
       built page that `/program/ramadhan-berbagi/` shows no Friday agenda panel.** That is the
       exact regression the deleted comment warns about, and it is invisible unless looked for.
-- [ ] F1.3 `note` — *"Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran."*
+- [x] F1.3 `note` — *"Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran."*
       — is a factual claim about the service, and it is only true of a `quantity` ask. Today it
       cannot reach a conversation card because the inquiry branch is separate; after F3 it can.
       **Render `note` only in the quantity branch**, or have the programme page pass it only for
       quantity. Either way it must not appear under a conversation CTA.
-- [ ] F1.4 Keep the `foot` slot. The hero's *"Lihat laporan {n} penyaluran sebelumnya"*
+- [x] F1.4 Keep the `foot` slot. The hero's *"Lihat laporan {n} penyaluran sebelumnya"*
       (`Hero.astro:66-71`) and the programme page's mitra line (`:192-195`) both live there.
       `jejakCount` is not on `Ajakan` (C2.4) — the hero keeps its own `getGlobalImpact()` call.
 
 ### F2. The mechanism branch
 
-- [ ] F2.1 The component branches on `ajakan.aksi.mechanism.kind`, and on nothing else. No slug
+- [x] F2.1 The component branches on `ajakan.aksi.mechanism.kind`, and on nothing else. No slug
       appears anywhere in `program/[program].astro` after this track.
-- [ ] F2.2 `quantity` → today's card: chips from `mechanism.presets`, price from
+- [x] F2.2 `quantity` → today's card: chips from `mechanism.presets`, price from
       `mechanism.pricePerUnit` (replacing E4's temporary constant at both `:65` and `:234`),
       package buttons from `mechanism.packages`.
-- [ ] F2.3 `conversation` → the "PAKET CUSTOM" panel's markup, moved in from
+- [x] F2.3 `conversation` → the "PAKET CUSTOM" panel's markup, moved in from
       `program/[program].astro:170-182`. Its WhatsApp href is `mechanism.message` through
       `buildWaLink`, built at build time. The mitra line that currently sits *inside* that panel
       at `:180` moves out to the `foot` slot, which is where the self-serve branch already keeps
       it — that is the whole reason F1.4 keeps the slot.
-- [ ] F2.4 `none` → the card renders its identity and agenda and no CTA. Not reachable from either
+- [x] F2.4 `none` → the card renders its identity and agenda and no CTA. Not reachable from either
       mount today, since `getAjakan` synthesises a conversation for a programme with no aksi
       (C2.5), but it is a typed case and the component must handle it rather than fall through.
-- [ ] F2.5 `packages` is a field on `quantity`, not a fourth kind. The markup at `:193-210` and
+- [x] F2.5 `packages` is a field on `quantity`, not a fourth kind. The markup at `:193-210` and
       its `data-package-option` / `data-package-open-msg` contract are unchanged; only the source
       of the array changes.
 
 ### F3. Deletions in `program/[program].astro`
 
-- [ ] F3.1 Delete `INQUIRY_PROGRAMS` (`:53`), `RAMADHAN_PACKAGES` (`:54`), `isInquiry` (`:57`),
+- [x] F3.1 Delete `INQUIRY_PROGRAMS` (`:53`), `RAMADHAN_PACKAGES` (`:54`), `isInquiry` (`:57`),
       `packages` (`:58`), `inquiryWaLink` (`:60`), `runningProgram` and `isRunning` (`:82-83`),
       and the whole `isInquiry ? … : …` branch at `:170-197`.
-- [ ] F3.2 `mitraWa` (`:64`) **stays**. It renders identically on every programme, is not
+- [x] F3.2 `mitraWa` (`:64`) **stays**. It renders identically on every programme, is not
       slug-gated, and is not a special case waiting to be absorbed. Folding it into content trades
       a working uniform link for a per-programme authoring obligation, and the first programme the
       owner forgets loses its partner CTA.
-- [ ] F3.3 `grep -n "program.slug ===\|\.has(program.slug)" src/pages/program/\[program\].astro`
+- [x] F3.3 `grep -n "program.slug ===\|\.has(program.slug)" src/pages/program/\[program\].astro`
       must come back empty.
 
 ### F4. The browser script
 
-- [ ] F4.1 `donation-card.js:55` — delete the `|| '25000'` fallback. It is a second source of
+- [x] F4.1 `donation-card.js:55` — delete the `|| '25000'` fallback. It is a second source of
       truth and it is unreachable, since the server always writes `data-price`. If the attribute
       is missing, bail out and leave the server-rendered href alone rather than guessing a price.
-- [ ] F4.2 `donation-card.js:56`'s `|| 'Jumat Berkah'` is the same class of stale default.
+- [x] F4.2 `donation-card.js:56`'s `|| 'Jumat Berkah'` is the same class of stale default.
       **Out of scope here** — note it and move on.
-- [ ] F4.3 Everything else in the script is untouched. It already reads `card.dataset.price`,
+- [x] F4.3 Everything else in the script is untouched. It already reads `card.dataset.price`,
       builds chips from `[data-porsi]`, and reads packages from `[data-package-option]`. Presets
       and packages are rendered server-side from the mechanism, so the DOM contract holds as-is.
       **If this track finds itself rewriting the script, the mechanism is being modelled wrong.**
-- [ ] F4.4 Verify the no-JS path on the built output: disable JavaScript, load
+- [x] F4.4 Verify the no-JS path on the built output: disable JavaScript, load
       `/program/jumat-berkah/` and `/program/community-giving/`, and confirm both CTAs still open
       a correctly addressed WhatsApp conversation.
 
 ### F5. Analytics — needs Q6
 
-- [ ] F5.1 The self-serve card fires `data-track="donate_click"`; the inquiry panel fires
+- [x] F5.1 The self-serve card fires `data-track="donate_click"`; the inquiry panel fires
       `data-track="inquiry_click"` (`:175`). Folding the panel into the component means the
       component picks the event.
       **Recommendation: keep both**, selected by `mechanism.kind`, so the historical series stays
       comparable across the change. `.claude/rules/analytics.md` treats these values as the
       conversion definitions, so whatever is decided gets a sentence there in Track J.
-- [ ] F5.2 `data-track-program` and `data-track-source` keep their current values
+- [x] F5.2 `data-track-program` and `data-track-source` keep their current values
       (`hero_card`, `program_page`) on both branches.
 
 ### F6. Order of work
 
-- [ ] F6.1 Swap `Hero.astro` first. Build. Look at `/`. It is the smaller change and it is the
+- [x] F6.1 Swap `Hero.astro` first. Build. Look at `/`. It is the smaller change and it is the
       quantity path, so a mistake shows immediately.
-- [ ] F6.2 Then `program/[program].astro`, then the deletions in F3.
-- [ ] F6.3 Walk all four programme pages that have one: `jumat-berkah`, `ramadhan-berbagi`,
+- [x] F6.2 Then `program/[program].astro`, then the deletions in F3.
+- [x] F6.3 Walk all four programme pages that have one: `jumat-berkah`, `ramadhan-berbagi`,
       `community-giving`, `csr-food-program`. Two of them used to render a different component
       than the one they render now.
 
@@ -819,6 +856,45 @@ This is where the change becomes visible.
 `/program/community-giving/` and `/program/csr-food-program/` at 390 and 1280. One line saying
 what moved: the two inquiry programmes now render the same card as the others, in its
 conversation form, instead of a separate panel.
+
+**Report.**
+
+**Every page was diffed against `main`'s build, not eyeballed.** Five HTML files differ and no
+others:
+
+- `index.html`, `program/jumat-berkah/`, `program/ramadhan-berbagi/` — **the rendered card is
+  byte-identical.** The only differences are Vite's CSS chunk filename (`DonationCard.*.css` →
+  `ajakan.*.css`, a consequence of the import graph moving) , the one script line from F4.1, and
+  the HTML comment rewritten at the old branch site. Nine hand-assembled props became one and
+  nothing a visitor sees moved by a pixel.
+- `program/community-giving/`, `program/csr-food-program/` — the intended change. The standalone
+  "PAKET CUSTOM" card became `DonationCard` in its flat, conversation form. Both WhatsApp hrefs
+  are character-identical to the ones `inquiryWaLink` built, and `inquiry_click` survives per Q6.
+
+**F1.2 verified on built output, which is the only way it could be:** `/program/ramadhan-berbagi/`
+contains zero `dc-agenda` blocks, and `/program/jumat-berkah/` contains one. The gate moved into
+`getAjakan` and the Friday schedule did not follow it onto the wrong page.
+
+**An unnoticed defect got fixed by the refactor.** `#donasi` did not exist on
+`/program/community-giving/` or `/program/csr-food-program/` before this track — measured, zero
+occurrences in both — because the anchor lived on `DonationCard` and those two pages rendered a
+different component. `.claude/rules/section-ids.md` states the anchor is "mirrored on every
+program page", which was simply untrue for two of the four. Both now carry it.
+
+**F1.1's table gained one row in practice: `eyebrow` renders only in the quantity branch**, for
+the same reason F1.3 gives for `note`. "Hitung donasi" is a label for a calculator and promises a
+control that a conversation card does not have. The conversation branch carries its own eyebrow
+instead, so neither mount has to branch on the mechanism to pick a word.
+
+**Hero gained a real behaviour change, small and deliberate.** `programLabel` used to fall back to
+the literal string `'Jumat Berkah'` when no programme was active, so a site with nothing running
+still advertised one programme by name. The card now renders only when there is an ajakan.
+
+**One thing found and deliberately left for its own commit.** The partner line reads "Mitra UMKM
+atau relawan?Jadi mitra …" with no space, because Astro collapses the newline between text and
+element where plain HTML would keep a space. It is on `main` today, on both branches, on every
+programme page. Fixing it inside this commit would have destroyed the byte-identical proof above,
+so it ships as a separate one-line commit.
 
 ---
 

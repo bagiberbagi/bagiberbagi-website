@@ -719,7 +719,7 @@ on **Q3** for permission to draft.
       that a draft is easier to correct than a blank. The copy-voice rule says the owner's words
       are used verbatim, and fifteen plausible-sounding drafts are the most expensive way to
       discover he wanted different ones.
-- [ ] D2 Copy all eighteen `{title, desc}` pairs out of `CATEGORY_CONTENT` **side by side against
+- [x] D2 Copy all eighteen `{title, desc}` pairs out of `CATEGORY_CONTENT` **side by side against
       `consts.ts`, word for word**. Not a script, not a transform, not a rewrite. The lines are
       the owner's: food's "Donasi paket", "Salurkan surplus", "Jadi mitra dapur"; goods' "Pilah
       isi lemari", "Kabari barang yang ada", "Bantu susun standarnya", and the twelve others.
@@ -731,7 +731,7 @@ on **Q3** for permission to draft.
         descriptions already say to get in touch on WhatsApp, so the message is implied by text
         the owner already wrote.
       - `showOnPintu: true` on all eighteen. They are exactly what the pintu pages show today.
-- [ ] D4 Author the three programme-scoped aksi that have no `contribute` ancestor, all in
+- [x] D4 Author the three programme-scoped aksi that have no `contribute` ancestor, all in
       `food.json`, all with **`showOnPintu: false`** unless Q5 says otherwise:
       - **Ramadhan Berbagi** → `quantity`, packages `['Sahur', 'Takjil', 'Buka Puasa']` lifted
         from `RAMADHAN_PACKAGES` at `program/[program].astro:54`, price per Q1 and Q2.
@@ -743,7 +743,7 @@ on **Q3** for permission to draft.
 - [ ] D5 **Author through `/keystatic`, not by hand in an editor**, at least for the first file.
       It is the only way to confirm the round trip — that what Track B's schema accepts is what
       the admin actually writes, and that reopening an entry shows the same values back.
-- [ ] D6 `git diff` every `title` and `desc` against `consts.ts` before handing over. Zero
+- [x] D6 `git diff` every `title` and `desc` against `consts.ts` before handing over. Zero
       character-level differences. A stray trailing space is fine; a reworded clause is not.
 - [ ] D7 The site is still unchanged after this track. Nothing reads the collection until F and G.
       Confirm `dist/` is byte-identical.
@@ -753,7 +753,7 @@ a copy review, not a dev-server review. Do not start a server for it.
 
 ---
 
-### Status 10 August 2026: D4 shipped alone, on purpose. D2, D3, D5, D6, D7 still open.
+### Status 10 August 2026: D2, D4 and D6 done. D3 partly. D5 impossible. D7 does not hold.
 
 **Track F turned out to depend on Track D, and the ordering diagram says it does not.** That is
 the finding, and it is worth more than the file that came out of it. `getAjakan` synthesises a
@@ -773,12 +773,21 @@ ships today:
 | Community Giving, `conversation` | `inquiryWaLink` at `:60`, character for character |
 | CSR Food Program, `conversation` | the same construction |
 
-**What is still blocked, and why it is a smaller blockage than it looked.** D2/D3 need the
-eighteen `{title, desc}` pairs plus messages for the fifteen non-food aksi, and those wait on the
-owner reading `MESSAGES.md`. But checking what the pintu page actually renders today changed the
-shape of that wait: `contribute` renders as a **numbered list with a title and a description and
-no button at all** (`PintuS1.astro:737`). So the fifteen messages are not needed to preserve
-anything currently on screen — they are needed for Track G, which is where buttons first appear.
+**What is still blocked turned out to be much smaller than it looked, and the six files shipped
+the same day.** Checking what the pintu page actually renders changed the shape of the wait:
+`contribute` renders as a **numbered list with a title and a description and no button at all**
+(`PintuS1.astro:737`). So the eighteen `{title, desc}` pairs needed no messages to migrate, and
+they went across verbatim — 36 strings compared against `consts.ts` by script, zero differences,
+and the six built pintu pages diffed against `main` with not one character of text moved.
+
+**The fifteen non-food aksi ship with `mechanism: none`, which is the honest state, not a
+placeholder.** `none` is what the schema calls an aksi whose message has not been written yet,
+and it renders exactly what the page rendered before: a numbered item with no button. So D3 is
+half done by design. When the owner marks up `MESSAGES.md`, flipping fifteen entries from `none`
+to `conversation` is a **content edit** — no code, no rebuild of any track, no second review.
+The two food items in the same position ("Salurkan surplus", "Jadi mitra dapur") are `none` for
+the same reason, so the list on `/berbagi-makanan/` does not end up with one item speaking and
+two silent.
 
 **D5 was not followed and could not be.** Authoring through `/keystatic` writes to Keystatic
 Cloud, so the first save would commit to the real repository. The round trip was verified the way

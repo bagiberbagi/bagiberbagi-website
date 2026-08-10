@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { collection, config, fields, singleton } from '@keystatic/core';
-import { PINTU } from './src/consts';
+import { PINTU, type PintuId } from './src/consts';
 
 /**
  * Field gambar share reusable — dipakai di blok SEO (seoFields) dan di tiap
@@ -96,6 +96,94 @@ function legalPage(id: 'privacy' | 'terms' | 'transparency', label: string) {
   });
 }
 
+/**
+ * Satu singleton "Aksi" per pintu: daftar cara ikut yang dulu terkunci di
+ * `CATEGORY_CONTENT.contribute` (consts.ts) dan tak pernah bisa disentuh editor.
+ *
+ * Sama seperti `legalPage()` di atas, ini mengembalikan singleton langsung, dan
+ * kuncinya ditulis literal di `singletons` di bawah. `ui.navigation` butuh kunci
+ * literal, jadi `Object.fromEntries(PINTU_IDS.map(...))` tidak bisa dipakai
+ * walaupun terlihat lebih rapi. `AKSI_KEYS` yang menjaga keduanya tetap sejalan:
+ * menambah pintu baru di `PINTU_IDS` bikin berkas ini gagal dikompilasi sampai
+ * singleton-nya ikut ditulis.
+ */
+function aksiPintu(id: PintuId) {
+  const pintu = PINTU.find((p) => p.id === id)!;
+  return singleton({
+    label: `Aksi — ${pintu.label}`,
+    path: `src/content/aksi/${id}`,
+    format: 'json',
+    schema: {
+      items: fields.array(
+        fields.object({
+          title: fields.text({ label: 'Judul aksi' }),
+          desc: fields.text({ label: 'Deskripsi', multiline: true }),
+          program: fields.relationship({
+            label: 'Program yang menjalankannya',
+            description:
+              'Kosongkan kalau belum ada program yang menjalankan aksi ini. Wajib diisi kalau mekanismenya "Pilih jumlah lalu WhatsApp" — tanpa program, tombolnya tidak dirender.',
+            collection: 'programs',
+          }),
+          showOnPintu: fields.checkbox({
+            label: 'Tampilkan di halaman pintu',
+            description:
+              'Matikan untuk aksi yang cuma jadi tombol di kartu programnya, tanpa menambah panjang daftar "Cara ikut" di halaman pintu.',
+            defaultValue: true,
+          }),
+          mechanism: fields.conditional(
+            fields.select({
+              label: 'Mekanisme',
+              description: 'Apa yang terjadi saat pembaca menekan aksi ini.',
+              options: [
+                { label: 'Belum ada tombol', value: 'none' },
+                { label: 'Percakapan WhatsApp', value: 'conversation' },
+                { label: 'Pilih jumlah lalu WhatsApp', value: 'quantity' },
+              ],
+              defaultValue: 'conversation',
+            }),
+            {
+              none: fields.empty(),
+              conversation: fields.object({
+                message: fields.text({
+                  label: 'Isi pesan WhatsApp',
+                  description: 'Kalimat yang sudah terisi di aplikasi pembaca. Kosong = tombolnya tidak dirender.',
+                  multiline: true,
+                }),
+              }),
+              quantity: fields.object({
+                unit: fields.text({ label: 'Satuan', defaultValue: 'porsi' }),
+                pricePerUnit: fields.integer({ label: 'Harga per satuan (Rp)', defaultValue: 25000 }),
+                presets: fields.array(fields.integer({ label: 'Jumlah' }), {
+                  label: 'Pilihan cepat',
+                  itemLabel: (p) => String(p.value ?? ''),
+                }),
+                packages: fields.array(fields.text({ label: 'Nama paket' }), {
+                  label: 'Paket (opsional)',
+                  description: 'Kosongkan untuk program berpaket tunggal.',
+                  itemLabel: (p) => p.value || 'Paket',
+                }),
+              }),
+            }
+          ),
+        }),
+        { label: 'Aksi', itemLabel: (p) => p.fields.title.value || 'Aksi' }
+      ),
+    },
+  });
+}
+
+// Kunci singleton per pintu. `satisfies Record<PintuId, string>` yang bikin
+// penambahan pintu di consts.ts berhenti di compiler, bukan diam-diam lolos
+// sampai halaman pintunya kosong tanpa ada yang tahu kenapa.
+const AKSI_KEYS = {
+  food: 'aksiFood',
+  goods: 'aksiGoods',
+  time: 'aksiTime',
+  space: 'aksiSpace',
+  money: 'aksiMoney',
+  tree: 'aksiTree',
+} as const satisfies Record<PintuId, string>;
+
 export default config({
   storage: {
     kind: 'cloud',
@@ -122,6 +210,16 @@ export default config({
       Halaman: ['home', 'about', 'programs', 'organisasi', 'jejak'],
       'Konten Situs': ['faq', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
+      // Enam pintu, urutannya mengikuti PINTU di consts.ts supaya sidebar dan
+      // beranda menyebut hal yang sama dalam urutan yang sama.
+      Aksi: [
+        AKSI_KEYS.food,
+        AKSI_KEYS.goods,
+        AKSI_KEYS.time,
+        AKSI_KEYS.space,
+        AKSI_KEYS.money,
+        AKSI_KEYS.tree,
+      ],
       'Pengaturan Situs': ['settings', 'seo', 'analytics'],
     },
   },
@@ -136,6 +234,15 @@ export default config({
     privacy: legalPage('privacy', 'Kebijakan Privasi'),
     terms: legalPage('terms', 'Syarat & Ketentuan'),
     transparency: legalPage('transparency', 'Transparansi'),
+
+    // Enam daftar "cara ikut", satu per pintu. Kuncinya harus literal (lihat
+    // aksiPintu di atas), jadi AKSI_KEYS cuma penjaga drift, bukan sumber kunci.
+    aksiFood: aksiPintu('food'),
+    aksiGoods: aksiPintu('goods'),
+    aksiTime: aksiPintu('time'),
+    aksiSpace: aksiPintu('space'),
+    aksiMoney: aksiPintu('money'),
+    aksiTree: aksiPintu('tree'),
 
     // SEO dipisah dari Site Settings: yang satu identitas & kontak, yang satu
     // teks yang muncul di hasil pencarian dan share preview. Dibaca dua tempat

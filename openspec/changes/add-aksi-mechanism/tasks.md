@@ -137,10 +137,26 @@ a single file without 3. None of them block Track A, C or E.
       `conversation` mechanism, which is what it renders today, so nothing about that page moves.
       What changes is why: it stops being a slug in `INQUIRY_PROGRAMS` and becomes a programme
       whose aksi declares a conversation.
-- [ ] **Q5. Should the CSR and community ways-in appear on `/berbagi-makanan/`?** Track D sets
+- [x] **Q5. Should the CSR and community ways-in appear on `/berbagi-makanan/`?** Track D sets
       `showOnPintu: false` on all three programme-scoped aksi so the numbered list stays at its
       current three items. Flipping them on lengthens it to six and surfaces two real ways to
       take part that the pintu page hides today.
+
+      **Answered 10 August 2026: stays at three.** Decided here rather than by the owner, on
+      their instruction to carry on, because it is one boolean per entry and reversible the day
+      anyone disagrees.
+
+      Two reasons, and the second is the one that changed the answer. First, the pintu page is a
+      channel page: it explains why the pintu exists and hands the reader to a programme. Six
+      numbered items is a directory, and a directory competes with the programme list sitting
+      right below it. Second, the CSR and community paths are no longer hidden the way the
+      question assumed. `ClosingSection`'s picker offers "dapur saya" and "lewat perusahaan" and
+      now closes three pages, the homepage, `/tentang/` and `/jejak/`, so both asks already reach
+      the reader with a message written for them.
+
+      **What would reverse it:** the picker never landing on the pintu pages *and* the enquiries
+      from those two paths staying near zero. Then `/berbagi-makanan/` really is where they are
+      missing, and the flag flips.
 - [x] **Q6. Does `inquiry_click` survive?** See F5. **Recommendation: keep both event names**,
       `donate_click` for `quantity` and `inquiry_click` for `conversation`, so the historical
       conversion series stays comparable across the change.
@@ -236,54 +252,124 @@ collection when this track ends, so the site is byte-identical.
 `keystatic.config.ts` today. Its on-disk JSON shape is the single most fragile assumption in the
 design, and B4 exists to find out what it actually is before any reader is written against it.
 
-- [ ] B1 Add the `aksi` collection to `src/content.config.ts`: `glob({ pattern: '*.json', base:
+- [x] B1 Add the `aksi` collection to `src/content.config.ts`: `glob({ pattern: '*.json', base:
       './src/content/aksi' })`, schema `{ items: z.array(aksiItem).default([]) }`. Six files, one
       per `PintuId`, id = the pintu id.
-- [ ] B2 **The schema is permissive; the reader is strict.** This is the rule that closes the
+- [x] B2 **The schema is permissive; the reader is strict.** This is the rule that closes the
       sharpest gap in the design, which had `pricePerUnit: z.number().positive()` and
       `presets: […].min(1)`. `fields.integer` in this repo is written with `defaultValue` and no
       `validation: { isRequired: true }` (`keystatic.config.ts:363,368,582`), so clearing the box
       writes `null`; `fields.array` accepts zero items. Either one would throw inside
       `astro:content` and take the whole build down from the admin UI, with no developer present.
-      So:
-      - `pricePerUnit: z.number().positive().nullish()`
-      - `presets: z.array(z.number().positive()).default([])`
-      - `message: z.string().default('')`
-      - `program: z.string().nullish()` — `fields.relationship` writes `null` when cleared, the
-        same reason `fields.image` fields in this repo are `.nullish()` and not `.optional()`.
+
+      **Shipped even more permissive than the list below, and B4 is why.** Reading Keystatic's
+      serialisers showed every empty field omits its key rather than writing a value, so the
+      constraint that mattered was not `.positive()` but tolerating an absent key at every level
+      including `value` itself. What shipped:
+      - `pricePerUnit: z.number().nullish()` — `.positive()` dropped, see B4.1
+      - `presets: z.array(z.number().nullish()).default([])`
+      - `packages: z.array(z.string().nullish()).default([])`
+      - `message: z.string().nullish()`, inside a `value` that is itself `.nullish()`
+      - `title: z.string().default('')`, `desc: z.string().nullish()`
+      - `program: z.string().nullish()` — `fields.relationship` writes `undefined` when cleared
+      - `showOnPintu: z.boolean().default(true)` — safe as a `.default()`, and it is the one
+        field where that is true: `fields.checkbox` serialises `{ value }` unconditionally, so
+        `false` is written explicitly and can never be mistaken for an absent key.
       Every one of these is normalised or warned about in Track C, never rejected here.
-- [ ] B3 Add the Keystatic side in the **same commit**: an `aksiPintu(id: PintuId)` factory
+- [x] B3 Add the Keystatic side in the **same commit**: an `aksiPintu(id: PintuId)` factory
       returning a `singleton()`, six entries in `singletons`, and an `Aksi` group in
       `ui.navigation`. `format: 'json'` on both sides.
-      - [ ] B3.1 **The six singleton keys must be literal.** `keystatic.config.ts:74-78` already
+      - [x] B3.1 **The six singleton keys must be literal.** `keystatic.config.ts:74-78` already
             records why, in the comment above `legalPage()`: `ui.navigation` needs literal keys
             to reference them, so a computed key from `Object.fromEntries(PINTU_IDS.map(...))`
             does not work. Guard the drift with
             `const AKSI_KEYS = { food: 'aksiFood', … } satisfies Record<PintuId, string>` so
             adding a pintu to `PINTU_IDS` fails to compile until its singleton exists.
-      - [ ] B3.2 `mechanism` is `fields.conditional` over a three-option select
+
+            **`satisfies` alone was not enough.** With `satisfies Record<PintuId, string>` the
+            property types widen to `string`, and `ui.navigation` demands the literal union of
+            singleton keys, so it failed to compile with a type error naming `Aksi: string[]`.
+            `as const satisfies Record<PintuId, string>` keeps both halves: literal values for
+            navigation, exhaustiveness against `PintuId`.
+      - [x] B3.2 `mechanism` is `fields.conditional` over a three-option select
             (`none` / `conversation` / `quantity`), default `conversation`.
-      - [ ] B3.3 Field descriptions in Indonesian, matching the tone of the existing ones. The
+      - [x] B3.3 Field descriptions in Indonesian, matching the tone of the existing ones. The
             `program` relationship's description must say it is required when the mechanism is
             "pilih jumlah", since the schema cannot enforce that (see B2).
-- [ ] B4 **The spike, before Track C starts and before anything is authored by hand.** Open
-      `/keystatic`, save one throwaway aksi of each of the three mechanism kinds, read the JSON
-      on disk, and correct the zod in `content.config.ts` to match what Keystatic actually wrote.
-      Nothing reads the collection yet, so a mismatch costs one edit here and a rewrite later.
-      - [ ] B4.1 **Paste the three raw JSON bodies into the track's report.** Track C is written
-            against them and cannot start without them.
-      - [ ] B4.2 If `fields.conditional` turns out not to nest inside `fields.array` in
-            `@keystatic/core@0.5.51`, fall back to a flat `kind` select plus every mechanism
-            field side by side in one object. The admin form is uglier, zod still discriminates
-            on `kind`, and `readAksi()` in Track C absorbs the difference so nothing downstream
-            notices. **Say in the report which of the two shapes shipped.**
-      - [ ] B4.3 Delete the throwaway entries. This track ships an empty
-            `src/content/aksi/` — Track D fills it.
-- [ ] B5 Confirm `/keystatic` lists six Aksi singletons and that each one saves and reloads. A
+- [x] B4 **The spike, before Track C starts and before anything is authored by hand.** Run as a
+      round-trip against Keystatic's own `createReader()` rather than through the admin UI:
+      `storage.kind` is `'cloud'`, so saving a throwaway entry from `/keystatic` would commit it
+      to the real repository through Keystatic Cloud. Reading the serialisers in
+      `@keystatic/core@0.5.51` and then feeding hand-written files back through `parseProps`
+      tests the same code the admin uses, without writing anything to the cloud.
+
+      - [x] B4.1 **The three raw JSON bodies, verified accepted by `createReader()` and by
+            `astro:content`.**
+
+            `discriminant: 'none'` — `fields.empty()` serialises `{ value: undefined }`, so the
+            `value` key is absent from the file entirely:
+            ```json
+            { "title": "Aksi none", "showOnPintu": true,
+              "mechanism": { "discriminant": "none" } }
+            ```
+            `discriminant: 'conversation'`:
+            ```json
+            { "title": "Aksi conversation", "desc": "Punya surplus makanan layak?",
+              "showOnPintu": true,
+              "mechanism": { "discriminant": "conversation",
+                "value": { "message": "Halo, saya punya surplus makanan." } } }
+            ```
+            `discriminant: 'quantity'`:
+            ```json
+            { "title": "Aksi quantity", "program": "jumat-berkah", "showOnPintu": false,
+              "mechanism": { "discriminant": "quantity",
+                "value": { "unit": "porsi", "pricePerUnit": 25000,
+                           "presets": [10, 20, 50], "packages": [] } } }
+            ```
+
+            **The finding Track C has to be built on: an empty field is an ABSENT KEY, not a
+            null.** Every serialiser in `@keystatic/core@0.5.51` returns `{ value: undefined }`
+            for its empty state, and `undefined` disappears when the file is written as JSON:
+            `text` → `value === '' ? undefined : value`; `integer` and `relationship` →
+            `value === null ? undefined : value`; `empty()` → `undefined` always. The design and
+            B2 both said "writes `null`", which is what the *reader* hands back after filling
+            defaults, not what is on disk. Both are covered by `.nullish()`, so nothing had to
+            change twice — but a Track C reader written to test `x === null` would miss every
+            real case.
+
+            Confirmed by round-trip on the sparsest file a Keystatic save can produce
+            (`{ "discriminant": "quantity", "value": { "presets": [], "packages": [] } }`):
+            `createReader()` returns `unit: ""`, `pricePerUnit: null`, `presets: []`.
+
+      - [x] B4.2 **`fields.conditional` nests inside `fields.array` and the fallback was not
+            needed.** `parseProps` recurses through `array` → `object` → `conditional` with no
+            special case, and it enforces that a conditional object carries exactly the keys
+            `discriminant` and `value` and nothing else. The `{ discriminant, value }` wire shape
+            the design guessed is correct. **The nested shape shipped**, not the flat `kind`
+            select.
+      - [x] B4.3 Delete the throwaway entries. **Track B ships no `src/content/aksi/` at all**,
+            not an empty directory: verified that `bun run build` succeeds with the directory
+            absent, so no `.gitkeep` is needed to keep a collection-with-no-entries valid. Track D
+            creates the six files.
+- [x] B5 Confirm `/keystatic` lists six Aksi singletons and that each one saves and reloads. A
       silently empty list is the extension-mismatch failure this repo has already had once.
-- [ ] B6 Confirm `bun run build` still emits the same page count as `main` and that
+
+      Verified structurally rather than by hand in the admin, because the admin writes to
+      Keystatic Cloud: the build emits `/keystatic/singleton/aksiFood/` through `…/aksiTree/`,
+      six routes, which only exist for registered singletons; `astro check` proves the six
+      `ui.navigation` keys resolve against the singleton union; and `createReader()` read both
+      test files back through the same parser the admin uses. The extension agreement holds,
+      `format: 'json'` on the Keystatic side and `pattern: '*.json'` on the Astro side.
+- [x] B6 Confirm `bun run build` still emits the same page count as `main` and that
       `git diff --stat` against a pre-change `dist/` is empty. Adding a collection nothing reads
       must change nothing.
+
+      **Measured by checksumming every file in `dist/` outside `dist/keystatic/`, building both
+      with and without the change: 360 files, one differs.** That one is
+      `_astro/KeystaticAdmin.*.js`, the admin application's own bundle, which changes because six
+      singletons were added to it. Every page, image, feed and script a visitor can reach is
+      byte-identical. Page count goes 55 → 61, all six new pages being the
+      `/keystatic/singleton/aksi*/` admin routes.
 
 **Done when**: the gate passes, `dist/` is unchanged, and the report carries the three raw JSON
 bodies from B4.1 plus the B4.2 verdict.

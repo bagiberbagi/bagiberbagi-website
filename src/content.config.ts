@@ -379,4 +379,69 @@ const analytics = defineCollection({
   }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, organisasi, home, jejak, footer, analytics };
+// ===== aksi =====
+//
+// Satu berkas per pintu, isinya daftar "cara ikut" pintu itu. Menggantikan
+// `CATEGORY_CONTENT.contribute` di consts.ts, yang selama ini tidak bisa
+// disentuh editor sama sekali.
+//
+// SCHEMA DI SINI PERMISIF, PEMBACANYA YANG KETAT. Ini aturannya, bukan
+// kelalaian. Admin Keystatic bisa menulis nilai yang tidak masuk akal tanpa
+// developer di dekatnya: `fields.integer` tanpa `validation.isRequired`
+// menulis `null` begitu kotaknya dikosongkan, dan `fields.array` menerima nol
+// item. Kalau zod di sini menolaknya, `astro:content` melempar dan seluruh
+// build mati gara-gara satu klik di CMS. Jadi semua yang bisa kosong ditulis
+// `.nullish()` atau `.default([])` di sini, lalu `src/lib/aksi.ts` yang
+// memutuskan mana yang layak dirender dan mana yang dibuang dengan
+// `console.warn`. Pola yang sama dipakai `createImageResolver`,
+// `getProgramSection()`, dan flag `misconfigured` di analytics.ts.
+//
+// Bentuk `mechanism` mengikuti apa yang benar-benar ditulis `fields.conditional`
+// ke disk, yaitu `{ discriminant, value }`, diverifikasi lewat spike B4
+// sebelum satu pembaca pun ditulis.
+const aksiMechanism = z.discriminatedUnion('discriminant', [
+  z.object({
+    discriminant: z.literal('none'),
+    // `fields.empty()` menulis null. Dibuat `unknown` supaya bentuk apa pun
+    // yang datang dari sisi Keystatic tidak pernah menjatuhkan build.
+    value: z.unknown().nullish(),
+  }),
+  z.object({
+    discriminant: z.literal('conversation'),
+    value: z
+      .object({ message: z.string().nullish() })
+      .nullish(),
+  }),
+  z.object({
+    discriminant: z.literal('quantity'),
+    value: z
+      .object({
+        // Dibawa sejak hari pertama dan belum dibaca siapa pun. Lima belas
+        // literal "porsi" di DonationCard tetap seperti sekarang; ini cuma
+        // menyediakan tempatnya, bukan mesinnya.
+        unit: z.string().nullish(),
+        pricePerUnit: z.number().nullish(),
+        presets: z.array(z.number().nullish()).default([]),
+        packages: z.array(z.string().nullish()).default([]),
+      })
+      .nullish(),
+  }),
+]);
+
+const aksiItem = z.object({
+  title: z.string().default(''),
+  desc: z.string().nullish(),
+  // `fields.relationship` menulis null saat dikosongkan, dan slug-nya bisa
+  // basi persis seperti `home.programSection.items`, jadi pembacanya wajib
+  // membuang rujukan yang tak menunjuk program mana pun.
+  program: z.string().nullish(),
+  showOnPintu: z.boolean().default(true),
+  mechanism: aksiMechanism,
+});
+
+const aksi = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/aksi' }),
+  schema: z.object({ items: z.array(aksiItem).default([]) }),
+});
+
+export const collections = { legal, settings, seo, about, faq, programs, organisasi, home, jejak, footer, analytics, aksi };

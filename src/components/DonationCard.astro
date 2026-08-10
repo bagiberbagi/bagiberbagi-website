@@ -79,10 +79,23 @@ const PRESETS = [6, 12, 20];
 // Pesan ini disusun di sini saja, bukan juga di donation-card.js. Skrip tak
 // pernah merangkainya sendiri: teks yang dirender server ia pakai apa adanya,
 // dan tiap tombol paket membawa versinya sendiri lewat `data-package-open-msg`.
-const openMessage = (pkg?: string | null) =>
-  `Halo, saya ingin donasi program "${pkg ? `${programLabel} (Paket ${pkg})` : programLabel}". Boleh dibantu untuk jumlah porsinya?`;
+//
+// Paketnya pun tidak dipilihkan lebih dulu, alasannya sama persis dengan porsi.
+// Dulu paket pertama sudah `aria-pressed="true"` sejak halaman dibuka, jadi
+// orang yang langsung menekan tombol mengirim "Paket Sahur" tanpa pernah
+// memilihnya — dua kontrol di kartu yang sama memakai aturan berlawanan.
+// Sekarang keduanya kosong sampai pengunjung menyentuhnya.
+const hasPackages = !!packages && packages.length > 0;
 
-const initialWaLink = buildWaLink(waNumber, openMessage(packages?.[0]));
+const openMessage = (pkg?: string | null) => {
+  const label = pkg ? `${programLabel} (Paket ${pkg})` : programLabel;
+  // Yang ditanyakan cuma yang memang belum diketahui. Program sepaket tunggal
+  // tak pernah menanyakan paket, sebab tidak ada yang bisa dipilih.
+  const ask = !pkg && hasPackages ? 'paket dan jumlah porsinya' : 'jumlah porsinya';
+  return `Halo, saya ingin donasi program "${label}". Boleh dibantu untuk ${ask}?`;
+};
+
+const initialWaLink = buildWaLink(waNumber, openMessage(null));
 
 // Nilai awal panel "Lainnya": 1 adalah porsi terkecil yang masuk akal, dan
 // satu-satunya angka yang tidak diam-diam jadi default baru. Kalau pengunjung
@@ -194,13 +207,13 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
       <div class="dc-pkg" data-package-selector role="radiogroup" aria-label="Pilih paket donasi">
         <p class="dc-pkg-title">Pilih paket</p>
         <div class="dc-pkg-opts">
-          {packages.map((pkg, i) => (
+          {packages.map((pkg) => (
             <button
               type="button"
               class="dc-pkg-opt"
               data-package-option={pkg}
               data-package-open-msg={openMessage(pkg)}
-              aria-pressed={i === 0 ? 'true' : 'false'}
+              aria-pressed="false"
             >
               {pkg}
             </button>

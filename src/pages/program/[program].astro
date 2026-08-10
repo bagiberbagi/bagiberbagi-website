@@ -166,7 +166,10 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
               trackSource="program_page"
             >
               <p slot="foot" class="text-sm text-muted">
-                Mitra UMKM atau relawan?
+                {/* Spasi ditulis eksplisit. Astro memampatkan baris baru antara
+                    teks dan elemen, tidak seperti HTML biasa, jadi tanpa ini
+                    kalimatnya terbaca "relawan?Jadi mitra" tanpa jeda. */}
+                Mitra UMKM atau relawan?{' '}
                 <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
               </p>
             </DonationCard>

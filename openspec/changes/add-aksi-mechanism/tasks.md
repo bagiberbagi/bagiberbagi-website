@@ -614,19 +614,32 @@ named after a deleted field is the same defect as a comment naming one.
 
 Depends on **F**, **G** and **H** having merged. Its own commit, and nothing else in it.
 
-- [ ] I1 `src/components/DonationCard.astro` → `src/components/Ajakan.astro`.
-- [ ] I2 `src/scripts/donation-card.js` → `src/scripts/ajakan.js`.
-- [ ] I3 Update every import: `Hero.astro`, `pages/program/[program].astro`, the `<script>` tag
+- [x] I1 `src/components/DonationCard.astro` → `src/components/Ajakan.astro`.
+- [x] I2 `src/scripts/donation-card.js` → `src/scripts/ajakan.js`.
+- [x] I3 Update every import: `Hero.astro`, `pages/program/[program].astro`, the `<script>` tag
       inside the component, and anything `grep -rn "DonationCard\|donation-card" src` finds,
       including `_parked/README.md:17`.
-- [ ] I4 **Class names and data attributes do not change.** `.dcard`, `.dc-*`,
+- [x] I4 **Class names and data attributes do not change.** `.dcard`, `.dc-*`,
       `data-donation-card`, `data-porsi`, `data-package-option`, `data-package-open-msg` all stay.
       Renaming them would bury Track F's behaviour diff under a mechanical rename and make both
       unreviewable.
-- [ ] I5 Use `git mv` so the rename is recorded as a rename and the diff stays readable.
-- [ ] I6 Prove `dist/` is unchanged. A pure file rename that alters output is a mistake.
+- [x] I5 Use `git mv` so the rename is recorded as a rename and the diff stays readable.
+- [x] I6 Prove `dist/` is unchanged. A pure file rename that alters output is a mistake.
 
 **Done when**: the gate passes, I6's diff is empty, and `grep -rn "DonationCard" src` is empty.
+
+**Report. I6's diff is NOT empty, and the checkbox's premise was wrong.** A pure file rename
+*must* alter the output in Astro: the scoped-style id `data-astro-cid-*` is derived from the
+component's filename, so `DonationCard.astro` → `Ajakan.astro` moves `fcuzdzfk` to `ahzul3ev`
+across every page that mounts the card, and the emitted CSS filename hash moves with it. No
+rename can avoid this.
+
+So the claim was proved in the form that is actually available. Normalising the scope id and the
+CSS filename, all five affected pages hash **identically** before and after, and so does the CSS
+file itself. 398 files before, 398 after. Nothing semantic moved.
+
+I4 held: `.dcard`, `.dc-*`, `data-donation-card`, `data-porsi`, `data-package-option` and
+`data-package-open-msg` are untouched, which is why the diff above collapses to one substitution.
 
 ---
 

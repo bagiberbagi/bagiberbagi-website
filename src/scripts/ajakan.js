@@ -1,4 +1,4 @@
-// Perilaku kartu donasi (DonationCard.astro): tanggal agenda berikutnya,
+// Perilaku kartu ajakan (Ajakan.astro): tanggal agenda berikutnya,
 // pemilih paket, pemilih porsi, dan tombol WhatsApp yang pesannya ikut berubah.
 //
 // Tanggal sengaja dihitung di klien, bukan saat build. Situs ini statis dan
@@ -87,7 +87,7 @@ function initPicker(card) {
   let pkg = null;
 
   // Teks tombol sebelum ada pilihan. Diambil dari DOM, bukan ditulis ulang di
-  // sini, supaya kalimatnya cuma hidup di DonationCard.astro.
+  // sini, supaya kalimatnya cuma hidup di Ajakan.astro.
   const openLabel = ctaLabel ? ctaLabel.textContent : '';
 
   function render() {

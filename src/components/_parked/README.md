@@ -35,7 +35,8 @@ akan menampilkan `NaN` tanpa satu pun peringatan. Komponen parkir yang rusak
 saat dibangunkan lebih buruk daripada tidak ada komponennya.
 
 Yang ikut hilang, dan tabel di atas dulu tidak menyebutnya: kalkulator itu punya
-**dropdown pemilih program**, sesuatu yang `DonationCard.astro` memang tidak
+**dropdown pemilih program**, sesuatu yang `Ajakan.astro` (dulu
+`DonationCard.astro`) memang tidak
 punya. Kartu itu selalu berada di dalam konteks satu program (program berjalan
 di hero, program halaman itu sendiri di halaman program), jadi ia tak pernah
 perlu bertanya program mana. Menghidupkan lagi pemilih lintas-program bukan

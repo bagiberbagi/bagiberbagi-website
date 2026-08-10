@@ -417,7 +417,7 @@ const aksiMechanism = z.discriminatedUnion('discriminant', [
     value: z
       .object({
         // Dibawa sejak hari pertama dan belum dibaca siapa pun. Lima belas
-        // literal "porsi" di DonationCard tetap seperti sekarang; ini cuma
+        // literal "porsi" di Ajakan.astro tetap seperti sekarang; ini cuma
         // menyediakan tempatnya, bukan mesinnya.
         unit: z.string().nullish(),
         pricePerUnit: z.number().nullish(),

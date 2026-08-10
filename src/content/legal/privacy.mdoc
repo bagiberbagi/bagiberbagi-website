@@ -121,7 +121,7 @@ Untuk pemrosesan yang sedikit itu, ini dasar hukum yang kami pakai:
 
 ## Berapa Lama Data Disimpan
 
-- **Catatan akses server:** mengikuti pengaturan bawaan paket nginx di server, yang pada pengaturan standarnya menyimpan sekitar dua minggu lalu menghapus file lamanya otomatis. Kami belum mengubah pengaturan itu, dan angkanya belum kami cek langsung di server, jadi kalau ternyata berbeda kami perbarui kalimat ini.
+- **Catatan akses server:** 14 hari, lalu file lamanya dihapus otomatis. Itu pengaturan bawaan paket nginx di Ubuntu, yang kami pakai apa adanya tanpa mengubahnya.
 - **Catatan lalu lintas di Cloudflare:** mengikuti kebijakan penyimpanan Cloudflare sendiri, di luar kendali kami.
 - **Percakapan WhatsApp:** selama masih relevan untuk penyaluran dan laporannya, dan kami hapus lebih cepat kalau Anda meminta.
 - **Foto dan cerita di halaman jejak:** terbit terus sebagai laporan publik, kecuali ada permintaan penghapusan.
@@ -157,7 +157,7 @@ Situs ini hanya kumpulan file statis. Tidak ada database pengunjung, tidak ada h
 Ini yang kami pasang di sisi teknis:
 
 - seluruh lalu lintas dialihkan ke HTTPS di sisi Cloudflare, dan browser diminta mengingat pilihan itu selama 180 hari lewat header HSTS;
-- kalau domain ini sudah terdaftar pada daftar preload HSTS, browser modern langsung memakai HTTPS sejak permintaan pertama. Kalau belum, permintaan pertama Anda, sebelum browser mengingat aturan itu, masih bisa berangkat lewat HTTP dan baru dialihkan setelah sampai di Cloudflare. Status pendaftarannya belum kami pastikan, dan hasilnya kami tulis di sini setelah kami cek;
+- domain ini **belum** terdaftar pada daftar preload HSTS, dan kami sudah memeriksanya langsung ke daftar itu. Artinya permintaan pertama Anda, sebelum browser mengingat aturan HTTPS dari kunjungan sebelumnya, masih bisa berangkat lewat HTTP dan baru dialihkan setelah sampai di Cloudflare. Kunjungan berikutnya sudah langsung HTTPS;
 - browser dilarang menebak sendiri tipe file yang diterimanya;
 - saat Anda pindah ke situs lain, situs itu hanya menerima nama domain kami, bukan alamat halaman persis yang Anda buka sebelumnya;
 - halaman admin untuk tim berada di jalur terpisah, dan alamatnya memang bisa dibuka siapa saja, tapi tidak ada satu pun isi yang bisa dilihat atau diubah sebelum masuk sebagai editor.

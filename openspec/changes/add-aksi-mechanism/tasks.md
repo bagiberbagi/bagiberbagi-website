@@ -383,7 +383,7 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
 
 ### C1. `src/lib/aksi.ts`
 
-- [ ] C1.1 Types:
+- [x] C1.1 Types:
       ```ts
       export type AksiMechanism =
         | { kind: 'none' }
@@ -399,16 +399,16 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
         mechanism: AksiMechanism;
       }
       ```
-- [ ] C1.2 `readAksi(raw): Aksi[]` — **pure**, the only place the `fields.conditional` wire shape
+- [x] C1.2 `readAksi(raw): Aksi[]` — **pure**, the only place the `fields.conditional` wire shape
       is visible, and the only thing in this change that flattens `{discriminant, value}` into
       `{kind, …}`. It joins `format.ts` and `impact.ts`'s `aggregateMetrics` in `bun test`.
-- [ ] C1.3 `getAksiByPintu(pintuId)` and `getAksiForProgram(slug)`, both async, both resolving
+- [x] C1.3 `getAksiByPintu(pintuId)` and `getAksiForProgram(slug)`, both async, both resolving
       `program` through `programs.ts`.
-- [ ] C1.4 **Dangling references degrade, they do not throw.** Copy `getProgramSection()` in
+- [x] C1.4 **Dangling references degrade, they do not throw.** Copy `getProgramSection()` in
       `src/lib/home.ts` line for line: drop empty slugs, drop slugs that resolve to nothing, drop
       duplicates. An aksi whose `program` no longer exists keeps its title and description and
       loses its mechanism's destination, exactly like a jejak with a dead `organisasi`.
-- [ ] C1.5 **Invalid `quantity` numbers degrade, they do not throw.** Closes gap 3, the half the
+- [x] C1.5 **Invalid `quantity` numbers degrade, they do not throw.** Closes gap 3, the half the
       schema cannot cover:
       - `pricePerUnit` null, zero or negative → `console.warn` naming the pintu and the aksi
         title, and the mechanism becomes `conversation` with a message derived from the
@@ -418,7 +418,7 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
         `[6, 12, 20]`** — a hidden default is a second source of truth, and it is the same class
         of thing as the `|| '25000'` that Track F deletes.
       - `unit` empty → `'porsi'`.
-- [ ] C1.6 `resolvePintuHref(aksi, waNumber): string | null` — pure, tested. The destination of
+- [x] C1.6 `resolvePintuHref(aksi, waNumber): string | null` — pure, tested. The destination of
       **one aksi's button on the pintu page**, which is not the same thing as the card's own CTA:
       | mechanism | returns |
       |---|---|
@@ -427,17 +427,17 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
       | `quantity` with a resolvable `program.href` | `` `${program.href}#donasi` `` |
       | `quantity` with `program === null` | `null` + `console.warn` |
       | `quantity` where the programme resolves but `href` is `undefined` | `null` + `console.warn` |
-- [ ] C1.7 That last row closes gap 5 and needs a test of its own. `programs.ts:73` sets `href`
+- [x] C1.7 That last row closes gap 5 and needs a test of its own. `programs.ts:73` sets `href`
       only when `hasPage` is true, so attaching a quantity aksi to any inactive programme — a
       thing the admin's relationship picker allows, since it lists every programme — would
       otherwise render the literal string `undefined#donasi` on a live pintu page.
-- [ ] C1.8 `unit` is carried and read by nobody. The roughly fifteen `"porsi"` literals in
+- [x] C1.8 `unit` is carried and read by nobody. The roughly fifteen `"porsi"` literals in
       `DonationCard.astro`, `donation-card.js` and `buildDonationMessage` stay exactly as they
       are. **Do not thread them in this change.** Reserve the seam, do not build the machine.
 
 ### C2. `src/lib/ajakan.ts`
 
-- [ ] C2.1 ```ts
+- [x] C2.1 ```ts
       export interface Ajakan {
         aksi: Aksi;
         program: Program;
@@ -447,43 +447,62 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
       }
       export async function getAjakan(programSlug: string): Promise<Ajakan | null>;
       ```
-- [ ] C2.2 **`agenda` is gated inside the reader, not at the mount.** Closes the worst gap in the
+- [x] C2.2 **`agenda` is gated inside the reader, not at the mount.** Closes the worst gap in the
       design. `program/[program].astro:83` computes
       `isRunning = (await getPrograms()).find(p => p.active)?.slug === program.slug` and passes
       `agenda={isRunning ? site.data.nextAgenda : null}`. The comment above it says what happens
       without the test: *"tanpa penjagaan ini jadwal Jumat ikut nongol di halaman Ramadhan
       Berbagi"*. Move that test into `getAjakan` verbatim, carry the comment with it, and gate
       `schedule` the same way — the mount currently gates both.
-- [ ] C2.3 **No `cover` on `Ajakan`.** The hero passes a photo and the programme page
+- [x] C2.3 **No `cover` on `Ajakan`.** The hero passes a photo and the programme page
       deliberately passes none, which is what selects the flat panel via
       `class:list={['dcard', !photo && 'is-flat', …]}` at `DonationCard.astro:104`. A
       non-optional `cover` on the reader would grow a photo header on every programme page.
       Photo choice is presentation, so it stays a prop — see F2.
-- [ ] C2.4 **No `jejakCount` on `Ajakan`.** It is slot content the hero owns, not something the
+- [x] C2.4 **No `jejakCount` on `Ajakan`.** It is slot content the hero owns, not something the
       card renders. `Hero.astro` keeps its own `getGlobalImpact()` call and its own `slot="foot"`.
       Modelling it here would be a field nothing reads, which is the exact thing C1.8 refuses.
-- [ ] C2.5 **A programme with no aksi never returns `null`.** `null` is reserved for a slug that
+- [x] C2.5 **A programme with no aksi never returns `null`.** `null` is reserved for a slug that
       does not resolve to a programme at all. A programme that resolves but has no aksi attached
       gets a synthesised `conversation` mechanism built from `settings.waNumber` and the message
       the page hardcodes today —
       `` `Halo, saya ingin mendiskusikan program ${label}.` `` — plus a build-time
       `console.warn`. A half-finished Track D therefore degrades to what already ships instead of
       deleting the site's main CTA.
-- [ ] C2.6 `getAjakan` picks **one** aksi: the first, in array order, whose `program` resolves to
+- [x] C2.6 `getAjakan` picks **one** aksi: the first, in array order, whose `program` resolves to
       that slug. Both mounts render one card with one mechanism today. Many-aksi-per-card is not
       modelled; adding it later changes `ajakan.ts` and neither caller.
 
 ### C3. Tests
 
-- [ ] C3.1 `readAksi()` against the three raw JSON bodies from B4.1, one test per mechanism kind.
-- [ ] C3.2 `readAksi()` against each degradation in C1.5, asserting the returned shape **and**
+- [x] C3.1 `readAksi()` against the three raw JSON bodies from B4.1, one test per mechanism kind.
+- [x] C3.2 `readAksi()` against each degradation in C1.5, asserting the returned shape **and**
       that nothing throws.
-- [ ] C3.3 `resolvePintuHref()` across all five rows of C1.6.
-- [ ] C3.4 Keep the tests pure. `aksi.ts` must not import `astro:content` at module scope, for
+- [x] C3.3 `resolvePintuHref()` across all five rows of C1.6.
+- [x] C3.4 Keep the tests pure. `aksi.ts` must not import `astro:content` at module scope, for
       the same reason `impact.ts` imports `jejak.ts` lazily inside its async functions.
 
 **Done when**: the gate passes, `bun test` shows the new cases, and nothing in `src/` imports
 either new file yet.
+
+**Report.** Shipped as three files: `src/lib/aksi.ts` (types, `readAksi`, `resolvePintuHref`,
+`getAksiByPintu`, `getAksiForProgram`), `src/lib/ajakan.ts` (`getAjakan`), `src/lib/aksi.test.ts`
+(17 cases, `bun test` 61 pass across 6 files, up from 44 across 5). Nothing in `src/` imports
+either reader; the only mention outside them is one comment in `content.config.ts`.
+
+Two things came out different from the spec, both deliberate:
+
+- **`readAksi` takes `(pintu, items, bySlug)`, not `(raw)`.** C1.2 asks for it to be pure and
+  C1.3 asks the pintu id to reach the warnings; passing the resolved programme map in is what
+  lets both hold at once, and it is the same shape `aggregateMetrics` already uses.
+- **The tests capture `console.warn` instead of letting it print.** Ten warning lines per run
+  would have trained the next reader to ignore them, and worse, C1.5's requirement that the
+  warning *names the pintu and the aksi title* had no test at all. `withWarnings()` fixes both:
+  the log is clean and five cases now assert on the message text.
+
+One case earns its own line because it is the only degradation that stays silent: an unknown
+`discriminant` becomes `none` with **no** warning. `none` is a legitimate state, and Keystatic's
+select cannot produce any other value, so the only way to get there is a hand edit in git.
 
 ---
 

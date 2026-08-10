@@ -4,19 +4,34 @@
       "title": "Tunjuk titik yang panas",
       "desc": "Ceritakan lewat WhatsApp jalan atau kawasan di sekitarmu yang terik dan tidak punya peneduh, supaya daftar lokasi tanamnya tidak kami susun dari peta saja.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin menunjukkan jalan atau kawasan di sekitar saya yang terik dan belum punya peneduh. Boleh saya kirimkan lokasinya?"
+        }
+      }
     },
     {
       "title": "Tawarkan lahan atau bibit",
       "desc": "Kalau kamu punya lahan yang bisa ditanami atau bibit yang siap dipindahkan, kabari kami, karena dua hal itu yang paling sering menahan penanaman.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya lahan yang bisa ditanami atau bibit yang siap dipindahkan."
+        }
+      }
     },
     {
       "title": "Rawat pohon yang sudah ada",
       "desc": "Pohon muda lebih sering mati karena tidak terawat daripada karena kurang bibit, jadi menyiram dan menjaga yang sudah tumbuh di sekitarmu sudah menolong hari ini juga.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ikut merawat pohon yang sudah tumbuh di sekitar saya. Apa lagi yang bisa saya lakukan?"
+        }
+      }
     }
   ]
 }

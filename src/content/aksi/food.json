@@ -10,7 +10,11 @@
         "value": {
           "unit": "porsi",
           "pricePerUnit": 25000,
-          "presets": [6, 12, 20],
+          "presets": [
+            6,
+            12,
+            20
+          ],
           "packages": []
         }
       }
@@ -19,13 +23,23 @@
       "title": "Salurkan surplus",
       "desc": "Punya surplus makanan layak? Kami jemput dan salurkan tepat sasaran.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya surplus makanan yang masih layak dan ingin disalurkan. Boleh dijemput?"
+        }
+      }
     },
     {
       "title": "Jadi mitra dapur",
       "desc": "UMKM kuliner bergabung memasak untuk penyaluran mingguan.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya usaha kuliner dan ingin jadi Mitra Dapur UMKM."
+        }
+      }
     },
     {
       "title": "Ramadhan Berbagi",
@@ -37,8 +51,16 @@
         "value": {
           "unit": "porsi",
           "pricePerUnit": 25000,
-          "presets": [6, 12, 20],
-          "packages": ["Sahur", "Takjil", "Buka Puasa"]
+          "presets": [
+            6,
+            12,
+            20
+          ],
+          "packages": [
+            "Sahur",
+            "Takjil",
+            "Buka Puasa"
+          ]
         }
       }
     },

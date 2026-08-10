@@ -515,12 +515,12 @@ Files: `src/lib/format.ts`, `src/lib/format.test.ts`, `src/scripts/calculator.js
 The design said `calcTotal`'s only other caller is `DonationCard.astro`. That is wrong twice over,
 and this track's scope is the correction.
 
-- [ ] E1 `calcTotal(pax: number, pricePerUnit: number)`. **A required second parameter, not a
+- [x] E1 `calcTotal(pax: number, pricePerUnit: number)`. **A required second parameter, not a
       default** — a default would keep `25000` alive as a fallback and reintroduce the second
       source of truth this whole change exists to remove.
-- [ ] E2 `src/lib/format.test.ts` gains the argument. Add a case asserting that two different
+- [x] E2 `src/lib/format.test.ts` gains the argument. Add a case asserting that two different
       prices give two different totals, so the literal cannot creep back.
-- [ ] E3 **`src/scripts/calculator.js:13` also calls `calcTotal(pax)`.** It is imported by
+- [x] E3 **`src/scripts/calculator.js:13` also calls `calcTotal(pax)`.** It is imported by
       `src/components/_parked/DonationCalculator.astro:82`, and `tsconfig.json` includes `**/*`
       with only `dist` excluded, so it is in `astro check`'s scope. Being parked means it fails
       as a silent `NaN` rather than loudly. Two acceptable answers, pick one and say which:
@@ -530,18 +530,48 @@ and this track's scope is the correction.
         nothing outside `_parked/` imports it, and `index.astro:28` only mentions it in a comment.
       **Recommendation: delete both.** A parked component that would produce `NaN` if ever
       unparked is worse than no component.
-- [ ] E4 **`DonationCard.astro` has two call sites, not one**: `:65` (`const price = calcTotal(1)`)
+- [x] E4 **`DonationCard.astro` has two call sites, not one**: `:65` (`const price = calcTotal(1)`)
       and `:234` (`{formatRupiah(calcTotal(n))}` inside the preset chip label). The chip labels
       are the numbers a visitor actually reads, so missing `:234` ships wrong prices with a green
       build. Update both to take a `PRICE_PER_UNIT` constant declared at the top of the file with
       the comment *"temporary; replaced by `ajakan.aksi.mechanism.pricePerUnit` in Track F"*.
-- [ ] E5 **Touch nothing else in `DonationCard.astro`.** Track F owns the rest of that file.
-- [ ] E6 Prove `dist/` is unchanged. Build before and after, diff `dist/**/*.html`. Any difference
+- [x] E5 **Touch nothing else in `DonationCard.astro`.** Track F owns the rest of that file.
+- [x] E6 Prove `dist/` is unchanged. Build before and after, diff `dist/**/*.html`. Any difference
       is a defect in this track, not an improvement: the arithmetic is identical, only its
       plumbing moved.
 
 **Done when**: the gate passes, E6's diff is empty, and the report says which of E3's two answers
 shipped.
+
+**Report.**
+
+**E3 shipped the deletion**, the recommended answer. Both `_parked/DonationCalculator.astro` and
+`src/scripts/calculator.js` are gone.
+
+Verifying the README's premise before acting on it found it was loose, and that is worth
+recording because it slightly weakens the case for deleting. `_parked/README.md` said the
+calculator was "dilebur ke `DonationCard.astro`", folded in. It was not folded in whole: the
+calculator had a **programme dropdown** and `DonationCard` has none. The card is always inside a
+single programme's context — the running programme in the hero, that page's programme on a
+programme page — so it never asks which programme. Reviving a cross-programme picker would be a
+new design decision rather than a restoration. That distinction is now written into
+`_parked/README.md` under "Yang sudah dihapus dari sini" so the next reader is not told a
+half-true story about where the design went.
+
+**E6 measured, not assumed: 398 files in `dist/`, checksummed with and without the track, zero
+differences.** Built the stashed tree and the working tree and diffed the manifests.
+
+**Track E crossed into Track J's territory, deliberately, for four lines.** Deleting the
+calculator made four statements in the docs false — `.claude/rules/frontend-scripts.md` listing
+"donation calculator" among the scripts, `.claude/rules/content-model.md` naming
+`DonationCalculator` as a consumer of the programmes collection, the same file's line about the
+"client-side calculator script", and `.claude/rules/layout-tiers.md` naming its panel. Leaving a
+rules file asserting a component that no longer exists is a defect this track introduced, so this
+track fixed it rather than deferring to J. Two files outside every track's territory needed the
+same treatment: `_parked/README.md` and the comment at `src/pages/index.astro:28`.
+
+`content-model.md` also gained the sentence explaining why `calcTotal`'s second parameter is
+required rather than defaulted, since that is the rule a future reader is most likely to undo.
 
 ---
 

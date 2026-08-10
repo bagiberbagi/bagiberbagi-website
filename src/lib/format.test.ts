@@ -7,9 +7,16 @@ test('formatRupiah formats with thousands separators and Rp prefix', () => {
   expect(formatRupiah(0)).toBe('Rp 0');
 });
 
-test('calcTotal multiplies pax by the fixed per-pax price of 25000', () => {
-  expect(calcTotal(1)).toBe(25000);
-  expect(calcTotal(10)).toBe(250000);
+test('calcTotal multiplies pax by the price it is given', () => {
+  expect(calcTotal(1, 25000)).toBe(25000);
+  expect(calcTotal(10, 25000)).toBe(250000);
+});
+
+// Guards the reason the second parameter is required rather than defaulted: as
+// long as two prices give two answers, 25000 cannot creep back as a fallback.
+test('calcTotal follows the price, so two prices give two totals', () => {
+  expect(calcTotal(10, 25000)).toBe(250000);
+  expect(calcTotal(10, 40000)).toBe(400000);
 });
 
 test('buildWaLink without text returns a bare wa.me link', () => {

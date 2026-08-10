@@ -208,7 +208,10 @@ export default config({
     // persis dengan kunci singleton/collection di bawah.
     navigation: {
       Halaman: ['home', 'about', 'programs', 'organisasi', 'jejak'],
-      'Konten Situs': ['faq', 'footer'],
+      // `ketentuan` di sini adalah Ketentuan Program (operasional, tampil di
+      // halaman program), berbeda dari `terms` di grup Legal yang merupakan
+      // Syarat dan Ketentuan layanan. Dua peran, dua tempat, dua nama.
+      'Konten Situs': ['faq', 'ketentuan', 'footer'],
       Legal: ['privacy', 'terms', 'transparency'],
       // Enam pintu, urutannya mengikuti PINTU di consts.ts supaya sidebar dan
       // beranda menyebut hal yang sama dalam urutan yang sama.
@@ -369,6 +372,33 @@ export default config({
             description:
               'Seret untuk mengurutkan. Pertanyaan dikelompokkan per kategori di halaman FAQ; urutan di sini menentukan urutan di dalam kelompoknya.',
             itemLabel: (props) => props.fields.q.value || 'Pertanyaan',
+          }
+        ),
+      },
+    }),
+
+    // Ketentuan yang berlaku untuk SEMUA program. Yang khas satu program
+    // ditulis di entri program itu (Program → Detail halaman → Ketentuan
+    // program), dan menimpa butir di sini kalau judulnya sama.
+    ketentuan: singleton({
+      label: 'Ketentuan Program',
+      path: 'src/content/ketentuan/ketentuan',
+      format: 'json',
+      schema: {
+        items: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Judul' }),
+            body: fields.text({
+              label: 'Isi',
+              description: 'Satu atau dua kalimat. Baris baru ikut tampil apa adanya.',
+              multiline: true,
+            }),
+          }),
+          {
+            label: 'Butir ketentuan',
+            description:
+              'Tampil di semua halaman program, dalam keadaan tertutup, di bawah ketentuan khas program itu. Seret untuk mengurutkan. Isinya sebaiknya cuma menyatakan ulang apa yang sudah ada di halaman Syarat dan Ketentuan — kalau ada yang baru, tambahkan di sana juga supaya kedua halaman tidak berbeda isi.',
+            itemLabel: (props) => props.fields.title.value || 'Butir ketentuan',
           }
         ),
       },
@@ -753,6 +783,22 @@ export default config({
               label: 'Poin keunggulan',
               itemLabel: (props) => props.value || 'Poin',
             }),
+            ketentuan: fields.array(
+              fields.object({
+                title: fields.text({ label: 'Judul' }),
+                body: fields.text({
+                  label: 'Isi',
+                  description: 'Satu atau dua kalimat. Baris baru ikut tampil apa adanya.',
+                  multiline: true,
+                }),
+              }),
+              {
+                label: 'Ketentuan program',
+                description:
+                  'Yang cuma berlaku di program ini: tenggat pesanan, area penyaluran, isi paket. Tampil di seksi Ketentuan halaman program, dalam keadaan TERBUKA, di atas ketentuan yang berlaku untuk semua program. Untuk menimpa salah satu butir bersama, tulis judulnya persis sama di sini.',
+                itemLabel: (props) => props.fields.title.value || 'Ketentuan',
+              }
+            ),
           },
           {
             label: 'Detail halaman',

@@ -46,7 +46,7 @@ function program(over: Partial<Program> = {}): Program {
       ctaWhatsapp: false,
       ctaMessage: '',
     },
-    detail: { eyebrow: 'PROGRAM AKTIF', description: 'Ada.', features: [] },
+    detail: { eyebrow: 'PROGRAM AKTIF', description: 'Ada.', features: [], ketentuan: [] },
     href: '/program/jumat-berkah/',
     ...over,
   };

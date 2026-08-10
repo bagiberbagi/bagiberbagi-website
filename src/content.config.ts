@@ -20,6 +20,17 @@ const jejakPhotoSchema = z.object({
   caption: z.string().default(''),
 });
 
+// Satu butir ketentuan program: judul yang bisa dipindai mata, plus isinya.
+// Dipakai dua kali — di singleton `ketentuan` (berlaku semua program) dan di
+// `programs.detail.ketentuan` (khas satu program) — supaya keduanya tak bisa
+// berbeda bentuk. Keduanya default '' karena Keystatic menulis baris array
+// yang fieldnya dikosongkan tanpa kunci sama sekali; pembacanya yang membuang
+// butir tanpa judul atau tanpa isi (lihat src/lib/ketentuan.ts).
+const ketentuanItem = z.object({
+  title: z.string().default(''),
+  body: z.string().default(''),
+});
+
 const legal = defineCollection({
   loader: glob({ pattern: '*.mdoc', base: './src/content/legal' }),
   schema: z.object({
@@ -204,8 +215,14 @@ const programs = defineCollection({
         eyebrow: z.string().default('PROGRAM AKTIF'),
         description: z.string().default(''),
         features: z.array(z.string()).default([]),
+        // Ketentuan yang cuma berlaku di program ini (tenggat pesanan, area,
+        // isi paket). Duduk di dalam `detail` karena isinya khusus halaman:
+        // program tanpa halaman tak punya tempat memajangnya. Yang berlaku
+        // untuk semua program tinggal di singleton `ketentuan`, dan keduanya
+        // digabung di src/lib/ketentuan.ts.
+        ketentuan: z.array(ketentuanItem).default([]),
       })
-      .default({ eyebrow: 'PROGRAM AKTIF', description: '', features: [] }),
+      .default({ eyebrow: 'PROGRAM AKTIF', description: '', features: [], ketentuan: [] }),
   }),
 });
 
@@ -444,4 +461,20 @@ const aksi = defineCollection({
   schema: z.object({ items: z.array(aksiItem).default([]) }),
 });
 
-export const collections = { legal, settings, seo, about, faq, programs, organisasi, home, jejak, footer, analytics, aksi };
+/**
+ * Ketentuan yang berlaku untuk SEMUA program, satu singleton array. Urutan
+ * tampil = urutan array (bisa diseret di Keystatic), alasan yang sama dengan
+ * `faq` dan `footer`: urutannya berarti, jumlahnya kecil, dan tak ada butir
+ * yang perlu route sendiri.
+ *
+ * Isinya sengaja cuma menyatakan ulang apa yang sudah terbit di `/syarat`
+ * dengan suara operasional. Kewajiban platform tetap satu pintu di sana; dua
+ * dokumen yang menyatakan kewajiban tentang transaksi yang sama akan saling
+ * bertentangan cepat atau lambat.
+ */
+const ketentuan = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/ketentuan' }),
+  schema: z.object({ items: z.array(ketentuanItem).default([]) }),
+});
+
+export const collections = { legal, settings, seo, about, faq, programs, organisasi, home, jejak, footer, analytics, aksi, ketentuan };

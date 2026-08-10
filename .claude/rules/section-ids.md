@@ -12,12 +12,13 @@
   - `/#donasi` — `Header.astro`, `FaqHome.astro`. Lands on the Hero's donation card, not the Hero section: the card itself carries `id="donasi"` (mirrored on every program page, where `Ajakan.astro` carries the same `id="donasi"` inside `program/[program].astro`'s hero — neither Hero section gets its own id for this reason). **This sentence was aspirational until August 2026 and is now true.** `/program/community-giving/` and `/program/csr-food-program/` rendered a separate "PAKET CUSTOM" card instead of `Ajakan`, so they carried no `#donasi` at all — measured, zero occurrences — and any link to it landed nowhere. Both render `Ajakan` now, in its conversation form, and the pintu pages link straight at `/program/<slug>/#donasi`
   - `#cara-kerja` — `Hero.astro`
   - `#program` — `_variants/PintuS1.astro`. Conditional: the link and the section it targets share the same `hasPrograms` guard, so they always render together or not at all
+  - `#ketentuan` — `program/[program].astro`'s donation panel. Conditional on both ends: the link and the section share the same "is the merged terms list non-empty" guard, so the link can never point at a section that wasn't rendered
   - `#dampak`, `#kepercayaan`, `#faq` (the standalone `Faq.astro`), `#konsep`, `#bentuk`, `#rekam-jejak`, `#pintu-lain` — already present before this convention was written down; not linked from elsewhere today, but keep the names stable regardless
 - Two pages are deliberately left without additional ids: `jejak/[slug].astro` and the three legal pages (`privasi`/`syarat`/`transparansi` via `LegalLayout.astro`) are each one continuous `<section>` wrapping the whole article, so there's nothing for an id to distinguish it from. The legal pages already have working in-page navigation on their prose `<h2>`s, via Markdoc's auto-generated heading slugs — a separate, older mechanism, untouched by this convention.
 
 ## Re-running the anchor check
 
-Extracts every `href="...#slug"` from `src/` + `astro.config.mjs` and every `id="..."` from a `bun run build` output, then reports any href whose target page has no matching id. Relative hrefs (`href="#slug"`, no leading `/`) can't be resolved to a target page from the string alone, so the script keeps a small hand-maintained `RELATIVE_ANCHOR_TARGETS` map of source file → target page(s) for the handful of files that use them (`Hero.astro`, `FaqHome.astro`, `ProgramStage.astro`, `PintuS1.astro`, `Faq.astro`, `LegalLayout.astro`, plus `SolutionSection.astro`'s SVG-internal `<mpath>` reference, mapped to nothing since it isn't page navigation). A relative href from a file outside that map is reported as `UNMAPPED` rather than silently skipped.
+Extracts every `href="...#slug"` from `src/` + `astro.config.mjs` and every `id="..."` from a `bun run build` output, then reports any href whose target page has no matching id. Relative hrefs (`href="#slug"`, no leading `/`) can't be resolved to a target page from the string alone, so the script keeps a small hand-maintained `RELATIVE_ANCHOR_TARGETS` map of source file → target page(s) for the handful of files that use them (`Hero.astro`, `FaqHome.astro`, `ProgramStage.astro`, `PintuS1.astro`, `Faq.astro`, `LegalLayout.astro`, `program/[program].astro`, plus `SolutionSection.astro`'s SVG-internal `<mpath>` reference, mapped to nothing since it isn't page navigation). A relative href from a file outside that map is reported as `UNMAPPED` rather than silently skipped.
 
 Save as a scratch file and run `bun run build` first:
 
@@ -37,6 +38,10 @@ const RELATIVE_ANCHOR_TARGETS = {
   'PintuS1.astro': ['berbagi-makanan/index.html', 'berbagi-barang/index.html', 'berbagi-waktu/index.html', 'berbagi-ruang/index.html', 'berbagi-dana/index.html', 'berbagi-pohon/index.html'],
   'Faq.astro': ['faq/index.html'],
   'LegalLayout.astro': ['privasi/index.html', 'syarat/index.html', 'transparansi/index.html'],
+  // Grows when a programme is activated in Keystatic — it's one source file
+  // generating N pages, and the map only takes literal paths. A programme added
+  // here but not built shows up as MISSING-PAGE, which is the right failure.
+  '[program].astro': ['program/jumat-berkah/index.html', 'program/ramadhan-berbagi/index.html', 'program/community-giving/index.html', 'program/csr-food-program/index.html'],
 };
 
 function walk(dir, exts, out = []) {

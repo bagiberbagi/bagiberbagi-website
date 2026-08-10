@@ -1,0 +1,118 @@
+---
+/**
+ * Seksi Ketentuan di halaman program: apa yang perlu diketahui seseorang
+ * sebelum ikut. Isinya operasional, bukan dokumen hukum kedua — kewajiban
+ * platform tetap satu pintu di /syarat, dan seksi ini menautkannya.
+ *
+ * Butirnya `<details>` asli, bukan accordion ber-script. Alasannya bukan selera:
+ * dengan JavaScript mati, accordion ber-script memajang judul yang isinya tak
+ * bisa dibuka sama sekali, dan untuk teks yang pengunjungnya justru diminta
+ * membaca sebelum donasi, itu seksi yang gagal pada satu-satunya tugasnya.
+ * `<details>` juga bisa dioperasikan lewat keyboard tanpa satu baris kode, dan
+ * ikut terbuka waktu halaman dicetak.
+ *
+ * Butir milik program tampil terbuka, butir bersama tertutup: yang khas program
+ * ini adalah yang tak boleh terlewat, yang bersama sifatnya rujukan.
+ *
+ * Lapisan bersama sekarang kosong, atas keputusan pemilik: apa pun yang berlaku
+ * untuk semua program adalah kewajiban layanan, dan tempatnya /syarat. Awalnya
+ * lapisan itu sengaja menyatakan ulang tujuh klausa /syarat dengan kata ganti
+ * "kamu"; yang dibaca pemilik dari hasilnya bukan terjemahan register melainkan
+ * satu kalimat yang sama ditulis di dua tempat. Mekanismenya ditahan, bukan
+ * dihapus, karena aturan operasional lintas program memang mungkin muncul (mis.
+ * seluruh program berhenti selama libur panjang) dan hal seperti itu bukan
+ * urusan /syarat. Selama kosong ia tak menambah apa pun ke halaman.
+ */
+import Container from './Container.astro';
+import type { Pintu } from '../consts';
+import type { MergedKetentuan } from '../lib/ketentuan';
+
+interface Props {
+  items: MergedKetentuan[];
+  pintu: Pintu;
+}
+
+const { items, pintu } = Astro.props;
+const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
+
+// Kalimat pembuka menyesuaikan isi yang benar-benar ada, dan sejak lapisan
+// bersama dikosongkan, cabang yang biasa jalan adalah "cuma butir program".
+// Dua penanda dipakai, bukan satu, supaya kalimatnya tak pernah menyuruh
+// pembaca mencari blok yang tidak dirender.
+const hasOwn = items.some((item) => item.scope === 'program');
+const hasShared = items.some((item) => item.scope === 'shared');
+---
+
+{items.length > 0 && (
+  /* `bg-white` + `border-t`, bukan `bg-gray-50`: dua tetangganya (Cara Kerja
+     dan Rekam Jejak) sama-sama kondisional, jadi warna apa pun yang dipilih
+     akan menempel tanpa batas ke salah satunya tergantung apa yang kebetulan
+     dirender. Garis tipisnya milik seksi ini sendiri, jadi batasnya tetap ada
+     siapa pun yang duduk di atas. */
+  <section id="ketentuan" class="section bg-white border-t border-border scroll-mt-24" style={styleVars}>
+    {/* Tier bawaan halaman ini, `standard` (1024), supaya seksi ini sebaris
+        dengan Cara Kerja, Rekam Jejak, dan Program Lain. Sempat dipasang `prose`
+        (672) dengan alasan "isinya paragraf untuk dibaca", dan itu keliru:
+        lebarnya jadi satu-satunya yang menyimpang di halaman ini (672 lawan
+        1024 di empat seksi lain, sementara ukuran huruf semuanya sudah sama),
+        jadi yang terlihat bukan kolom baca yang nyaman melainkan seksi yang
+        salah ukuran. Kenyamanan bacanya diurus di tempat yang benar, yaitu
+        `max-w-text` pada tiap paragraf, persis cara Rekam Jejak menangani
+        paragraf pengantarnya. */}
+    <Container>
+      <div class="mb-8">
+        <div class="eyebrow text-[var(--cat)]">Ketentuan</div>
+        <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-3">
+          Yang perlu kamu tahu sebelum ikut
+        </h2>
+        <p class="text-body text-muted leading-relaxed max-w-text">
+          {hasOwn && hasShared
+            ? 'Ketentuan yang khas program ini terbuka di atas. Sisanya berlaku untuk semua program dan bisa kamu buka satu per satu.'
+            : hasOwn
+              ? 'Ketentuan berikut khusus untuk program ini. Aturan yang berlaku untuk seluruh layanan ada di Syarat dan Ketentuan, tertaut di bawah.'
+              : 'Ketentuan berikut berlaku untuk semua program di bagiberbagi.id. Buka satu per satu untuk membacanya.'}
+        </p>
+      </div>
+
+      <div class="border-t border-border">
+        {items.map((item) => (
+          <details open={item.scope === 'program'} class="group border-b border-border">
+            {/* `list-none` mematikan marker di Chrome dan Firefox, aturan
+                `::-webkit-details-marker` untuk Safari. Dua-duanya perlu.
+                `py-4` di atas baris judul memberi area sentuh sekitar 60px. */}
+            <summary class="flex items-start justify-between gap-4 py-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <h3 class="text-title-sm font-semibold text-ink">{item.title}</h3>
+              <svg
+                aria-hidden="true"
+                class="flex-none mt-1 text-[var(--cat-deep)] transition-transform duration-200 group-open:rotate-180"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M6 9l6 6 6-6"></path></svg>
+            </summary>
+            {/* Barisnya selebar kontainer, isinya dibatasi `max-w-text`: yang
+                menyamakan seksi ini dengan halaman adalah garis dan bingkainya,
+                sedangkan yang menjaga bacaan tetap enak adalah panjang barisnya,
+                dan keduanya tak perlu memakai angka yang sama.
+                `whitespace-pre-line` supaya baris baru yang editor tulis di
+                field multiline ikut tampil, tanpa perlu markdown. */}
+            <p class="pb-5 text-body text-muted leading-relaxed whitespace-pre-line max-w-text">{item.body}</p>
+          </details>
+        ))}
+      </div>
+
+      <p class="mt-7 text-body-sm text-muted leading-relaxed max-w-text">
+        Ketentuan di atas melengkapi{' '}
+        <a href="/syarat/" class="font-semibold text-[var(--cat-deep)] underline underline-offset-2 hover:no-underline">Syarat dan Ketentuan</a>{' '}
+        layanan dan{' '}
+        <a href="/privasi/" class="font-semibold text-[var(--cat-deep)] underline underline-offset-2 hover:no-underline">Kebijakan Privasi</a>{' '}
+        yang berlaku untuk seluruh situs.
+      </p>
+    </Container>
+  </section>
+)}

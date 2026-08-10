@@ -1,6 +1,7 @@
 import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
 import type { PintuId } from '../consts';
+import type { KetentuanItem } from './ketentuan';
 import { createImageResolver } from './assets';
 import defaultProgramCover from '../assets/images/program-promo.png';
 
@@ -31,7 +32,16 @@ export interface Program {
     ctaWhatsapp: boolean;
     ctaMessage: string;
   };
-  detail: { eyebrow: string; description: string; features: string[] };
+  detail: {
+    eyebrow: string;
+    description: string;
+    features: string[];
+    /**
+     * Ketentuan yang cuma berlaku di program ini. Digabung dengan ketentuan
+     * bersama oleh `getKetentuan` (lib/ketentuan.ts), bukan dibaca langsung.
+     */
+    ketentuan: KetentuanItem[];
+  };
   /** Terisi hanya jika program punya halaman detail (aktif + deskripsi terisi). */
   href?: string;
 }

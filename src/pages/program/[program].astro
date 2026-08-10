@@ -5,10 +5,12 @@ import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
 import Ajakan from '../../components/Ajakan.astro';
+import Ketentuan from '../../components/Ketentuan.astro';
 import ProgramCover from '../../components/ProgramCover.astro';
 import { buildWaLink, formatMetric } from '../../lib/format';
 import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
 import { getAjakan } from '../../lib/ajakan';
+import { getKetentuan } from '../../lib/ketentuan';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
 import { findPageSeo, ogKeyFromPath } from '../../lib/seo';
@@ -60,6 +62,11 @@ const mitraWa = buildWaLink(site.data.waNumber, `Halo, saya ingin menjadi mitra 
 // Langkah "cara kerja" spesifik pintu (mis. Makanan: Order, Kurasi, Penyaluran,
 // Laporan). Kosong untuk pintu yang belum diisi, blok-nya lalu disembunyikan.
 const steps = CATEGORY_CONTENT[program.pintu]?.howItWorks ?? [];
+
+// Ketentuan program: butir khas program ini digabung dengan butir yang berlaku
+// untuk semua program. Kosong dua-duanya = seksinya tak dirender, dan tautan di
+// panel donasi ikut hilang supaya tak menunjuk id yang tak ada.
+const ketentuan = await getKetentuan(program.detail.ketentuan);
 
 // Program lain di pintu yang sama, untuk memperlihatkan keterkaitan. Ditampilkan
 // maksimal 3 (yang aktif/ber-halaman didahulukan); selebihnya lewat tautan
@@ -165,13 +172,25 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
               note="Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran."
               trackSource="program_page"
             >
-              <p slot="foot" class="text-sm text-muted">
-                {/* Spasi ditulis eksplisit. Astro memampatkan baris baru antara
-                    teks dan elemen, tidak seperti HTML biasa, jadi tanpa ini
-                    kalimatnya terbaca "relawan?Jadi mitra" tanpa jeda. */}
-                Mitra UMKM atau relawan?{' '}
-                <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
-              </p>
+              <Fragment slot="foot">
+                {/* Tautan ke seksi ketentuan hanya dirender kalau seksinya ada,
+                    jadi ia tak pernah menunjuk id yang tak dirender. Ia duduk
+                    di atas baris mitra karena urusannya donasi yang sedang
+                    dipertimbangkan, bukan jalur sekunder. */}
+                {ketentuan.length > 0 && (
+                  <p class="text-sm text-muted">
+                    <a href="#ketentuan" class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Baca ketentuan program</a>{' '}
+                    sebelum donasi.
+                  </p>
+                )}
+                <p class:list={['text-sm text-muted', ketentuan.length > 0 && 'mt-1.5']}>
+                  {/* Spasi ditulis eksplisit. Astro memampatkan baris baru antara
+                      teks dan elemen, tidak seperti HTML biasa, jadi tanpa ini
+                      kalimatnya terbaca "relawan?Jadi mitra" tanpa jeda. */}
+                  Mitra UMKM atau relawan?{' '}
+                  <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
+                </p>
+              </Fragment>
             </Ajakan>
           )}
         </div>
@@ -228,6 +247,11 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
       </Container>
     </section>
   )}
+
+  <!-- KETENTUAN: operasional, bukan dokumen hukum kedua. Duduk sebelum Rekam
+       Jejak: pengunjung sudah tahu programnya apa dan jalannya bagaimana, dan
+       keputusan ikut atau tidak diambil di sini, sebelum buktinya dipajang. -->
+  <Ketentuan items={ketentuan} pintu={pintu} />
 
   <!-- REKAM JEJAK -->
   {jejak.length > 0 && (

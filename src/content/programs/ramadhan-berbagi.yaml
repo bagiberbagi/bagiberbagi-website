@@ -29,3 +29,14 @@ detail:
     - "Tiga pilihan paket: Sahur, Takjil, dan Buka Puasa"
     - Paket makanan sehat bergizi dari UMKM terkurasi
     - Foto & video penyaluran dikirim maksimal H+1
+  ketentuan:
+    - title: Kapan program ini buka
+      body: >-
+        Ramadhan Berbagi berjalan hanya selama bulan Ramadhan. Di luar bulan
+        itu halaman ini tetap ada sebagai catatan, dan pesanan dibuka lagi
+        menjelang Ramadhan berikutnya.
+    - title: Tiga paket, satu harga
+      body: >-
+        Sahur, Takjil, dan Buka Puasa memakai harga per porsi yang sama, jadi
+        yang kamu pilih adalah waktunya, bukan kelasnya. Sebutkan paket yang
+        kamu maksud di percakapan supaya tim menyiapkan yang tepat.

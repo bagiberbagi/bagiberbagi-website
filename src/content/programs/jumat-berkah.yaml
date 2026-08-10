@@ -23,3 +23,21 @@ detail:
     - Paket makanan sehat bergizi dari UMKM terkurasi
     - Diantar langsung ke penerima yang tepat setiap hari Jumat
     - Foto & video penyaluran dikirim maksimal H+1
+  ketentuan:
+    - title: Kapan pesanan ditutup
+      body: >-
+        Penyaluran berjalan setiap Jumat, dan pesanan untuk Jumat itu perlu
+        masuk sehari sebelumnya supaya tim punya waktu memesan ke dapur mitra.
+        Tenggat persisnya berbeda tiap pekan dan selalu disebut di percakapan,
+        jadi tanyakan saja saat kamu mulai. Pesanan yang lewat tenggat ikut
+        Jumat berikutnya.
+    - title: Area penyaluran
+      body: >-
+        Titik penyaluran ditentukan per agenda, jadi belum ada daftar area
+        tetap. Sebutkan saja lokasi yang kamu maksud di percakapan, tim akan
+        bilang apakah pekan itu terjangkau atau perlu menunggu agenda di
+        sekitar sana.
+    - title: Tidak ada minimum pesanan
+      body: >-
+        Berapa pun jumlah porsi yang kamu pilih diterima, satu porsi sekali
+        pun. Tidak ada batas bawah dan tidak ada paket wajib.

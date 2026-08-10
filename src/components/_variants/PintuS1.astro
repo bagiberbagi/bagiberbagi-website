@@ -130,9 +130,9 @@
  *    apa yang tersedia. Kalimat konsep pintu naik jadi PERNYATAAN PEMBUKA
  *    badan halaman, tanpa eyebrow dan tanpa h2, karena satu paragraf di bawah
  *    kepala seksi setinggi 48px itu persis pola judul-tanpa-isi. Daftar bentuk
- *    berbagi jadi seksi sendiri hanya untuk pintu yang belum punya `contribute`
- *    (kalau punya, `contribute` yang mengerjakan peran itu dengan lebih baik,
- *    dan merender keduanya cuma pengulangan).
+ *    berbagi jadi seksi sendiri hanya untuk pintu yang belum punya satu pun
+ *    aksi (kalau punya, daftar aksinya yang mengerjakan peran itu dengan lebih
+ *    baik, dan merender keduanya cuma pengulangan).
  *
  * 12. NERACA DAMPAK SATU BARIS PER METRIK, bukan grid. Versi pertama merender
  *    metrik sebagai grid dua sampai tiga kolom, tiap metrik jadi sel bergaris
@@ -241,9 +241,17 @@ import { formatMetric } from '../../lib/format';
 import heroJumatBerkah from '../../assets/images/hero-jumat-berkah.png';
 import jumatBerkahDistribusi from '../../assets/images/jumat-berkah-distribusi.png';
 
+/** Satu item "cara ikut", tautannya sudah dirakit halaman pemanggilnya. */
+export interface AksiItem {
+  title: string;
+  desc: string;
+  cta: { href: string; label: string; external: boolean } | null;
+}
+
 interface Props {
   pintu: Pintu;
   content: CategoryContent | undefined;
+  aksiItems: AksiItem[];
   programs: Program[];
   active: Program[];
   upcoming: Program[];
@@ -258,6 +266,7 @@ interface Props {
 const {
   pintu,
   content,
+  aksiItems,
   active,
   upcoming,
   otherPintu,
@@ -303,7 +312,7 @@ const photos = PINTU_PHOTOS[pintu.id];
  * pernyataan pembuka badan halaman, termasuk pintu yang sudah punya
  * `CATEGORY_CONTENT`, karena tidak satu pun pintu punya kalimat "apa ini"
  * di tempat lain. Daftar `examples` cuma dipakai kalau pintunya belum punya
- * `contribute`. Sengaja tanpa angka: yang belum berjalan tidak punya angka
+ * satu pun aksi. Sengaja tanpa angka: yang belum berjalan tidak punya angka
  * yang bisa ditelusuri.
  */
 interface PintuConcept {
@@ -403,7 +412,11 @@ const programsAreOpen = active.length > 0;
 const showProgramGroupLabels = active.length > 0 && upcoming.length > 0;
 const forWhom = content?.forWhom ?? [];
 const env = content?.env;
-const contribute = content?.contribute ?? [];
+// Dulu field `contribute` di consts.ts, sekarang koleksi `aksi` yang
+// dipegang editor. Yang sampai ke sini cuma yang ditandai tampil di halaman
+// pintu; aksi tingkat-program (mis. Ramadhan Berbagi) sengaja tidak menambah
+// panjang daftar ini.
+const aksiList = aksiItems;
 const faq = content?.faq ?? [];
 
 /**
@@ -443,11 +456,11 @@ const pintuIndex = PINTU.findIndex((p) => p.id === pintu.id) + 1;
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 /**
- * Seksi bentuk berbagi cuma untuk pintu yang belum punya `contribute`. Kalau
- * `contribute` ada, ia mengerjakan peran yang sama dengan deskripsi per item,
- * dan untuk makanan tiga dari empat contohnya memang kalimat yang sama.
+ * Seksi bentuk berbagi cuma untuk pintu yang belum punya satu pun aksi. Kalau
+ * daftar aksinya terisi, ia mengerjakan peran yang sama dengan deskripsi per
+ * item, dan untuk makanan tiga dari empat contohnya memang kalimat yang sama.
  */
-const showForms = contribute.length === 0;
+const showForms = aksiList.length === 0;
 
 /**
  * Kepala seksi cerita mengikuti sisi yang benar-benar TERISI DAN TERENDER.
@@ -462,7 +475,7 @@ const storyNote = hasWhomList ? env?.headline : undefined;
 const hasStory = hasWhomList || Boolean(photos && env?.headline);
 
 /**
- * Satu blok memikul "cara ikut" dan "alur" sekaligus. Kalau `contribute` terisi,
+ * Satu blok memikul "cara ikut" dan "alur" sekaligus. Kalau daftar aksinya terisi,
  * ia yang jadi daftar bernomor dan alur turun jadi strip kecil di kakinya. Kalau
  * kosong, ALUR yang naik jadi daftar bernomornya, memakai bentuk blok yang sama
  * persis. Versi pertama menaikkan alur jadi isi utama tapi membiarkan gayanya
@@ -471,8 +484,15 @@ const hasStory = hasWhomList || Boolean(photos && env?.headline);
  */
 const flowIsPintuSpecific = Boolean(content?.howItWorks?.length);
 const flowSteps = flowIsPintuSpecific ? content!.howItWorks! : INTAKE_FLOW;
-const joinAsSteps = contribute.length === 0;
-const stepItems = joinAsSteps ? flowSteps : contribute;
+const joinAsSteps = aksiList.length === 0;
+// Dua cabang di atas membawa bentuk yang berbeda: `flowSteps` cuma judul dan
+// deskripsi, daftar aksi juga membawa tombol. Diseragamkan DI SINI, bukan di
+// dalam `<ol>`, supaya template-nya memetakan satu bentuk saja. Menguji tipe
+// item di dalam loop bukan sekadar kurang rapi, itu error di TS strict karena
+// `flowSteps` memang tidak punya `cta`.
+const stepItems: AksiItem[] = joinAsSteps
+  ? flowSteps.map((s) => ({ title: s.title, desc: s.desc, cta: null }))
+  : aksiList;
 const joinId = joinAsSteps ? 'alur' : 'cara-ikut';
 const joinEyebrow = joinAsSteps ? 'Alur' : 'Cara Ikut';
 const joinTitle = joinAsSteps
@@ -486,7 +506,7 @@ const joinLead = joinAsSteps
     : 'Ini yang kami kerjakan begitu tawaranmu masuk, dari pesan pertama sampai pasangannya ketemu.'
   : 'Pilih jalan yang paling dekat dengan yang sudah kamu punya. Semuanya berakhir di penerima yang sama.';
 
-// Ekor blok cuma ada di cabang `contribute`, tempat ia benar-benar membawa
+// Ekor blok cuma ada di cabang daftar aksi, tempat ia benar-benar membawa
 // informasi baru. Di cabang alur, judul bloknya sudah mengatakan bahwa ini
 // tahap penerimaan tawaran, jadi kalimat tambahan cuma jadi penyangkalan kedua
 // dan versi pertama malah melempar pembaca ke rekam jejak yang pasti kosong.
@@ -739,12 +759,24 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
                   <span class="s1-step-n">{pad2(i + 1)}</span>
                   <h3 class="s1-step-title">{s.title}</h3>
                   <p class="s1-step-desc">{s.desc}</p>
+                  {s.cta && (
+                    <a
+                      class="s1-step-cta"
+                      href={s.cta.href}
+                      {...(s.cta.external ? { target: '_blank', rel: 'noopener' } : {})}
+                      data-track="aksi_click"
+                      data-track-source={`pintu_${pintu.id}`}
+                      data-track-aksi={s.title}
+                    >
+                      {s.cta.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ol>
 
             {/* Strip alur cuma muncul saat daftar bernomor di atasnya sudah
-                dipakai `contribute`. Kalau tidak, alur ITU daftar bernomornya
+                dipakai daftar aksi. Kalau tidak, alur ITU daftar bernomornya
                 dan strip ini tidak pernah dirender. */}
             {!joinAsSteps && (
               <div class="s1-strip">
@@ -1641,7 +1673,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
   }
 
   /* ---------- Daftar bernomor: cara ikut, atau alur ---------- */
-  /* Bentuknya satu, dipakai `contribute` kalau ada dan dipakai alur kalau tidak.
+  /* Bentuknya satu, dipakai daftar aksi kalau ada dan dipakai alur kalau tidak.
      Blok yang memikul halaman tidak boleh memakai gaya catatan kaki. Sengaja
      tanpa garis antar langkah: angkanya sendiri (01, 02, 03...) sudah
      menandai urutan dan batas tiap langkah, garis di atasnya jadi penanda
@@ -1681,6 +1713,28 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
     color: #505d6f;
     max-width: 52ch;
   }
+  /* Tombol aksi, cuma muncul kalau aksinya punya mekanisme. Kolomnya ditulis
+     eksplisit: `.s1-step` itu grid, jadi anak keempat tanpa penempatan mendarat
+     di kolom pertama, tepat di bawah nomornya. Warna pintu dipakai sebagai
+     garis tepi, bukan sebagai isian, supaya ia terbaca sekunder terhadap tombol
+     donasi utama di halaman program. */
+  .s1-step-cta {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 18px;
+    border: 1.5px solid var(--cat);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cat-deep);
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+  .s1-step-cta:hover,
+  .s1-step-cta:focus-visible { background: var(--cat); color: #fff; }
+
   /* Baris, bukan grid kolom: panjang deskripsi antar langkah bisa dua kali lipat
      berbeda, dan grid kolom menyamakan tinggi barisnya sehingga langkah pendek
      menyisakan empat sampai lima baris kosong di bawahnya. */
@@ -1691,9 +1745,16 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
       gap: 32px;
     }
     .s1-step-n { grid-row: auto; padding-top: 0; }
+    /* Kolom ketiga adalah kolom deskripsi di lebar ini, jadi tombolnya duduk
+       tepat di bawah kalimat yang menjelaskannya, bukan di bawah judulnya. */
+    .s1-step-cta { grid-column: 3; }
   }
 
-  /* Strip alur, cuma dipakai sebagai ekor blok `contribute`. Isinya selalu
+  @media (prefers-reduced-motion: reduce) {
+    .s1-step-cta { transition: none; }
+  }
+
+  /* Strip alur, cuma dipakai sebagai ekor blok daftar aksi. Isinya selalu
      `content.howItWorks` yang tahapnya pendek dan seragam, jadi grid kolom di
      sini tidak menghasilkan kolom ragged. Alur generik yang deskripsinya panjang
      tidak pernah sampai ke sini: ia naik jadi `.s1-steps`. */

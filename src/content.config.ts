@@ -381,9 +381,9 @@ const analytics = defineCollection({
 
 // ===== aksi =====
 //
-// Satu berkas per pintu, isinya daftar "cara ikut" pintu itu. Menggantikan
-// `CATEGORY_CONTENT.contribute` di consts.ts, yang selama ini tidak bisa
-// disentuh editor sama sekali.
+// Satu berkas per pintu, isinya daftar "cara ikut" pintu itu. Dulu hidup
+// sebagai field `contribute` di `CATEGORY_CONTENT` (consts.ts), tempat editor
+// tidak bisa menyentuhnya sama sekali; field itu sudah dihapus.
 //
 // SCHEMA DI SINI PERMISIF, PEMBACANYA YANG KETAT. Ini aturannya, bukan
 // kelalaian. Admin Keystatic bisa menulis nilai yang tidak masuk akal tanpa
@@ -417,7 +417,7 @@ const aksiMechanism = z.discriminatedUnion('discriminant', [
     value: z
       .object({
         // Dibawa sejak hari pertama dan belum dibaca siapa pun. Lima belas
-        // literal "porsi" di DonationCard tetap seperti sekarang; ini cuma
+        // literal "porsi" di Ajakan.astro tetap seperti sekarang; ini cuma
         // menyediakan tempatnya, bukan mesinnya.
         unit: z.string().nullish(),
         pricePerUnit: z.number().nullish(),

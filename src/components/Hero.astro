@@ -5,7 +5,7 @@
 // donasi. Kalkulator donasi yang dulu jadi seksi terpisah pindah ke sini, jadi
 // anchor #donasi ikut pindah dan tetap hidup.
 //
-// Kartunya sendiri sekarang tinggal di DonationCard.astro, karena halaman
+// Kartunya sendiri sekarang tinggal di Ajakan.astro, karena halaman
 // program memakai pemilih porsi yang sama (versi tanpa kepala foto).
 //
 // Hero ini bidang bespoke (lihat catatan pengecualian di DESIGN_SYSTEM.md):
@@ -14,7 +14,7 @@
 //
 // Foto lapangan tidak lagi jadi latar seluruh hero, melainkan kepala kartu.
 // Konsekuensinya bidang kuning bersih dan headline tidak lagi bersaing dengan foto.
-import DonationCard from './DonationCard.astro';
+import Ajakan from './Ajakan.astro';
 import { getPrograms, getProgramCover } from '../lib/programs';
 import { getGlobalImpact } from '../lib/impact';
 import { getAjakan } from '../lib/ajakan';
@@ -58,7 +58,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         ditulis tangan, jadi situs tanpa program aktif tetap mengiklankan satu
         program dengan nama yang belum tentu masih benar. */}
     {ajakan && (
-      <DonationCard
+      <Ajakan
         id="donasi"
         ajakan={ajakan}
         photo={programCover}
@@ -70,7 +70,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
             <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
           </a>
         )}
-      </DonationCard>
+      </Ajakan>
     )}
   </div>
 </section>
@@ -180,7 +180,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   .hero-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
   /* Ekor kartu donasi: tautan laporan yang dititipkan ke slot `foot`
-     DonationCard. Style-nya tinggal di sini karena isi slot ikut scope
+     Ajakan. Style-nya tinggal di sini karena isi slot ikut scope
      komponen pemanggil. */
   .hero-card-foot {
     display: inline-flex;

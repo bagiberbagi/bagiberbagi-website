@@ -96,7 +96,7 @@ const price = calcTotal(1, pricePerUnit);
 // itu tetap sahih di titik mana pun: tanpa JS ia mengantar orang ke percakapan
 // yang benar, dengan JS ia mendapat angkanya begitu pengunjung memilih.
 //
-// Pesan ini disusun di sini saja, bukan juga di donation-card.js. Skrip tak
+// Pesan ini disusun di sini saja, bukan juga di ajakan.js. Skrip tak
 // pernah merangkainya sendiri: teks yang dirender server ia pakai apa adanya,
 // dan tiap tombol paket membawa versinya sendiri lewat `data-package-open-msg`.
 //
@@ -200,7 +200,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
           <p class="label dc-agenda-kick">Agenda berikutnya</p>
           <span class="dc-agenda-count" data-agenda-count></span>
         </div>
-        {/* Tanggal diisi donation-card.js dari jadwal mingguan, bukan saat
+        {/* Tanggal diisi ajakan.js dari jadwal mingguan, bukan saat
             build, supaya tidak basi begitu Jumatnya lewat. */}
         <p class="dc-agenda-when">
           <span data-agenda-date>Jumat berikutnya</span> <span class="dc-sep">·</span> {agenda.location}
@@ -607,5 +607,5 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
 </style>
 
 <script>
-  import '../scripts/donation-card.js';
+  import '../scripts/ajakan.js';
 </script>

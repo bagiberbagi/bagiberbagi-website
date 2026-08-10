@@ -12,7 +12,7 @@ import type { Program } from './programs';
  *
  * - **`cover`.** Hero mengoper foto, halaman program sengaja tidak, dan justru
  *   ketiadaan foto itu yang memilih panel rata lewat
- *   `class:list={['dcard', !photo && 'is-flat', …]}` di `DonationCard.astro`.
+ *   `class:list={['dcard', !photo && 'is-flat', …]}` di `Ajakan.astro`.
  *   Menaruh `cover` di sini berarti setiap halaman program tiba-tiba tumbuh
  *   kepala foto. Pilihan foto itu urusan tampilan, jadi ia tetap prop.
  * - **`jejakCount`.** Itu isi slot milik hero, bukan sesuatu yang dirender

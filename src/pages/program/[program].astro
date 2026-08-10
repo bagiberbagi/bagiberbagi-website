@@ -4,7 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
 import Icon from '../../components/Icon.astro';
 import Share from '../../components/Share.astro';
-import DonationCard from '../../components/DonationCard.astro';
+import Ajakan from '../../components/Ajakan.astro';
 import ProgramCover from '../../components/ProgramCover.astro';
 import { buildWaLink, formatMetric } from '../../lib/format';
 import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
@@ -158,7 +158,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                yang bercabang di mekanisme aksinya, jadi halaman ini tak perlu
                tahu program mana yang punya harga tetap dan mana yang tidak. -->
           {ajakan && (
-            <DonationCard
+            <Ajakan
               id="donasi"
               ajakan={ajakan}
               eyebrow="Hitung donasi"
@@ -172,7 +172,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
                 Mitra UMKM atau relawan?{' '}
                 <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
               </p>
-            </DonationCard>
+            </Ajakan>
           )}
         </div>
 

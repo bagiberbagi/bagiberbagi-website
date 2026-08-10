@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "title": "Periksa dulu catatan penyalurannya",
+      "desc": "Sebelum mengirim uang, kamu bisa membuka halaman Jejak & Dampak dan melihat sendiri kegiatan apa saja yang sudah kami catat di sana.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Daftar minat zakat atau sedekahmu",
+      "desc": "Selama pintu ini masih kami siapkan, kabari lebih dulu lewat WhatsApp, supaya begitu jalurnya resmi dibuka, kamu jadi yang pertama kami hubungi.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Bawa anggaran CSR kantormu",
+      "desc": "Kalau kamu yang memegang anggaran CSR, ajak kami bicara lewat WhatsApp soal bentuk laporan dan dokumentasi yang perusahaanmu butuhkan.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    }
+  ]
+}

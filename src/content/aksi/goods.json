@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "title": "Pilah isi lemari",
+      "desc": "Sisihkan yang masih layak tapi sudah lama tidak kamu pakai, lalu simpan terpisah supaya tidak tercampur lagi saat pintu ini dibuka.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Kabari barang yang ada",
+      "desc": "Kirim foto dan daftar barangnya lewat WhatsApp, supaya kami tahu barang jenis apa yang paling banyak tersedia sebelum alur penyalurannya kami rancang.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Bantu susun standarnya",
+      "desc": "Kalau kamu terbiasa mengurus gudang atau pengiriman barang, ceritakan pengalamanmu, supaya cara memilah dan mengantarnya tidak kami tentukan sendiri.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    }
+  ]
+}

@@ -579,21 +579,34 @@ required rather than defaulted, since that is the rule a future reader is most l
 
 File: `src/consts.ts`. Depends on **G** having merged.
 
-- [ ] H1 Remove `contribute` from the `CategoryContent` interface (`consts.ts:141`) and from all
+- [x] H1 Remove `contribute` from the `CategoryContent` interface (`consts.ts:141`) and from all
       six entries (`:166, 199, 217, 235, 253, 285`). The eighteen `{title, desc}` pairs now live
       in `src/content/aksi/*.json`, put there by Track D as a verbatim diff.
-- [ ] H2 `grep -rn "contribute" src` must come back empty except for prose in comments, which
+- [x] H2 `grep -rn "contribute" src` must come back empty except for prose in comments, which
       should be corrected rather than left describing a field that no longer exists.
-- [ ] H3 `PINTU_CONCEPT[*].examples` in `PintuS1.astro:311-362` — twenty-four strings feeding the
+- [x] H3 `PINTU_CONCEPT[*].examples` in `PintuS1.astro:311-362` — twenty-four strings feeding the
       `#bentuk` section. **Keep them.** They are the empty-pintu fallback, which Track G's
       decision makes reachable for the first time (see G1). Only remove them if Track G came back
       having deleted the `showForms` branch, and if so this checkbox moves into that track.
-- [ ] H4 `concept.what` stays. It feeds every pintu's opening paragraph and has nothing to do
+- [x] H4 `concept.what` stays. It feeds every pintu's opening paragraph and has nothing to do
       with this change.
-- [ ] H5 Prove `dist/` is unchanged against post-G `main`. If a single pintu page moves, either G
+- [x] H5 Prove `dist/` is unchanged against post-G `main`. If a single pintu page moves, either G
       did not fully repoint or Track D's copy is not verbatim. Both are bugs, not surprises.
 
 **Done when**: the gate passes, H2's grep is clean, and H5's diff is empty.
+
+**Report.** `dist/` is byte-identical, `diff -r` across the whole tree, zero differences.
+
+H2's grep leaves exactly three mentions and all three are deliberate: one line each in
+`consts.ts`, `content.config.ts` and `PintuS1.astro` saying, in the past tense, that the list used
+to live in `contribute` and where it went. That is what the checkbox asks for — a comment that
+still *describes* a live field would be the defect, a comment that records where the data moved
+from is the thing a future reader needs. Two unrelated hits stay untouched: the analytics event
+name `pintu_contribute` in `VisionSection.astro`, and the English word "contributed" in a
+`BaseLayout.astro` doc-comment about JSON-LD.
+
+The local in `PintuS1` was renamed `contribute` → `aksiList` at the same time, since a variable
+named after a deleted field is the same defect as a comment naming one.
 
 ---
 
@@ -601,19 +614,32 @@ File: `src/consts.ts`. Depends on **G** having merged.
 
 Depends on **F**, **G** and **H** having merged. Its own commit, and nothing else in it.
 
-- [ ] I1 `src/components/DonationCard.astro` → `src/components/Ajakan.astro`.
-- [ ] I2 `src/scripts/donation-card.js` → `src/scripts/ajakan.js`.
-- [ ] I3 Update every import: `Hero.astro`, `pages/program/[program].astro`, the `<script>` tag
+- [x] I1 `src/components/DonationCard.astro` → `src/components/Ajakan.astro`.
+- [x] I2 `src/scripts/donation-card.js` → `src/scripts/ajakan.js`.
+- [x] I3 Update every import: `Hero.astro`, `pages/program/[program].astro`, the `<script>` tag
       inside the component, and anything `grep -rn "DonationCard\|donation-card" src` finds,
       including `_parked/README.md:17`.
-- [ ] I4 **Class names and data attributes do not change.** `.dcard`, `.dc-*`,
+- [x] I4 **Class names and data attributes do not change.** `.dcard`, `.dc-*`,
       `data-donation-card`, `data-porsi`, `data-package-option`, `data-package-open-msg` all stay.
       Renaming them would bury Track F's behaviour diff under a mechanical rename and make both
       unreviewable.
-- [ ] I5 Use `git mv` so the rename is recorded as a rename and the diff stays readable.
-- [ ] I6 Prove `dist/` is unchanged. A pure file rename that alters output is a mistake.
+- [x] I5 Use `git mv` so the rename is recorded as a rename and the diff stays readable.
+- [x] I6 Prove `dist/` is unchanged. A pure file rename that alters output is a mistake.
 
 **Done when**: the gate passes, I6's diff is empty, and `grep -rn "DonationCard" src` is empty.
+
+**Report. I6's diff is NOT empty, and the checkbox's premise was wrong.** A pure file rename
+*must* alter the output in Astro: the scoped-style id `data-astro-cid-*` is derived from the
+component's filename, so `DonationCard.astro` → `Ajakan.astro` moves `fcuzdzfk` to `ahzul3ev`
+across every page that mounts the card, and the emitted CSS filename hash moves with it. No
+rename can avoid this.
+
+So the claim was proved in the form that is actually available. Normalising the scope id and the
+CSS filename, all five affected pages hash **identically** before and after, and so does the CSS
+file itself. 398 files before, 398 after. Nothing semantic moved.
+
+I4 held: `.dcard`, `.dc-*`, `data-donation-card`, `data-porsi`, `data-package-option` and
+`data-package-open-msg` are untouched, which is why the diff above collapses to one substitution.
 
 ---
 
@@ -625,7 +651,7 @@ Files: `.claude/rules/content-model.md`, `.claude/rules/routing-taxonomy.md`,
 This change makes two of these files wrong as written. That is not a footnote: they are the files
 the next session loads instead of reading the code.
 
-- [ ] J1 `content-model.md` — add an `aksi` bullet next to `programs` and `organisasi`. It must
+- [x] J1 `content-model.md` — add an `aksi` bullet next to `programs` and `organisasi`. It must
       carry: six `*.json` files, one per `PintuId`; **written by Keystatic as six singletons and
       read by Astro as one collection**, the same split `legal` already uses and for the same
       reason (a fixed set whose ids are hardcoded in `consts.ts` must not get add/delete/rename
@@ -633,29 +659,43 @@ the next session loads instead of reading the code.
       why `Object.fromEntries` does not work; the three mechanism kinds; the `program`
       relationship being optional and defensively resolved; and the rule that the schema is
       permissive while the reader warns and degrades.
-- [ ] J2 `content-model.md` — the `format.ts` bullet at the end says it holds the pure functions
+- [x] J2 `content-model.md` — the `format.ts` bullet at the end says it holds the pure functions
       used by both server markup and the client calculator. `calcTotal` now takes a price. Correct
       the sentence, and record that `readAksi()`/`resolvePintuHref()` joined `format.ts` and
       `aggregateMetrics` as the unit-tested pure surface.
-- [ ] J3 `routing-taxonomy.md` — the `CATEGORY_CONTENT` sentence currently lists `contribute` as
+- [x] J3 `routing-taxonomy.md` — the `CATEGORY_CONTENT` sentence currently lists `contribute` as
       one of its blocks and calls the whole thing "still hardcoded and a candidate to move into
       Keystatic". After Track H that is false for exactly one block. Rewrite it to say
       `contribute` left for the `aksi` collection, that the remaining blocks (`story`, `stats`,
       `howItWorks`, `forWhom`, `env`, `faq`, `ctaTitle`/`ctaText`) are still hardcoded, and why
       only `contribute` moved: it was the one claiming a mechanism it did not have.
-- [ ] J4 `routing-taxonomy.md` — add the pintu page's new empty state. `showForms` and
+- [x] J4 `routing-taxonomy.md` — add the pintu page's new empty state. `showForms` and
       `joinAsSteps` were unreachable while `contribute` was hardcoded and full; now that the list
       is editor-owned they are reachable, and `#bentuk` fed by `concept.examples` is what a pintu
       with no aksi falls back to.
-- [ ] J5 `analytics.md` — **only if Q6 changed an event name.** If both `donate_click` and
+- [x] J5 `analytics.md` — **only if Q6 changed an event name.** If both `donate_click` and
       `inquiry_click` survive as recommended, record instead that the two events are now selected
       by `mechanism.kind` rather than by a slug list, since that file treats these values as the
       conversion definitions.
-- [ ] J6 Do not restructure these files. Add and correct in place; they are read by every future
+- [x] J6 Do not restructure these files. Add and correct in place; they are read by every future
       session and their existing shape is load-bearing.
 
 **Done when**: the gate passes and every sentence in the three files that this change falsified
 has been corrected or deleted. Read them end to end, not just the paragraphs named above.
+
+**Report. Reading end to end found two more files than the three the track names.** `layout-tiers.md`,
+`frontend-scripts.md` and `section-ids.md` each named `DonationCard` or the calculator script, so
+the sweep covered five files, not three.
+
+- J1, J2, J3, J4 done as specified.
+- **J5 applies in its second form.** Q6 kept both event names, so `analytics.md` now records that
+  `donate_click` and `inquiry_click` are selected by `aksi.mechanism.kind` rather than by a
+  hardcoded slug list, plus the third event this change introduced, `aksi_click` on the pintu
+  pages.
+- **`section-ids.md` carried a claim this change turned from false into true**, which is the most
+  useful correction of the five. It said `#donasi` is "mirrored on every program page". It was
+  not: `/program/community-giving/` and `/program/csr-food-program/` rendered a separate card and
+  carried no `#donasi` at all. The sentence now says so, and says when it started being true.
 
 ---
 
@@ -679,7 +719,7 @@ on **Q3** for permission to draft.
       that a draft is easier to correct than a blank. The copy-voice rule says the owner's words
       are used verbatim, and fifteen plausible-sounding drafts are the most expensive way to
       discover he wanted different ones.
-- [ ] D2 Copy all eighteen `{title, desc}` pairs out of `CATEGORY_CONTENT` **side by side against
+- [x] D2 Copy all eighteen `{title, desc}` pairs out of `CATEGORY_CONTENT` **side by side against
       `consts.ts`, word for word**. Not a script, not a transform, not a rewrite. The lines are
       the owner's: food's "Donasi paket", "Salurkan surplus", "Jadi mitra dapur"; goods' "Pilah
       isi lemari", "Kabari barang yang ada", "Bantu susun standarnya", and the twelve others.
@@ -691,7 +731,7 @@ on **Q3** for permission to draft.
         descriptions already say to get in touch on WhatsApp, so the message is implied by text
         the owner already wrote.
       - `showOnPintu: true` on all eighteen. They are exactly what the pintu pages show today.
-- [ ] D4 Author the three programme-scoped aksi that have no `contribute` ancestor, all in
+- [x] D4 Author the three programme-scoped aksi that have no `contribute` ancestor, all in
       `food.json`, all with **`showOnPintu: false`** unless Q5 says otherwise:
       - **Ramadhan Berbagi** → `quantity`, packages `['Sahur', 'Takjil', 'Buka Puasa']` lifted
         from `RAMADHAN_PACKAGES` at `program/[program].astro:54`, price per Q1 and Q2.
@@ -703,7 +743,7 @@ on **Q3** for permission to draft.
 - [ ] D5 **Author through `/keystatic`, not by hand in an editor**, at least for the first file.
       It is the only way to confirm the round trip — that what Track B's schema accepts is what
       the admin actually writes, and that reopening an entry shows the same values back.
-- [ ] D6 `git diff` every `title` and `desc` against `consts.ts` before handing over. Zero
+- [x] D6 `git diff` every `title` and `desc` against `consts.ts` before handing over. Zero
       character-level differences. A stray trailing space is fine; a reworded clause is not.
 - [ ] D7 The site is still unchanged after this track. Nothing reads the collection until F and G.
       Confirm `dist/` is byte-identical.
@@ -713,7 +753,7 @@ a copy review, not a dev-server review. Do not start a server for it.
 
 ---
 
-### Status 10 August 2026: D4 shipped alone, on purpose. D2, D3, D5, D6, D7 still open.
+### Status 10 August 2026: D2, D4 and D6 done. D3 partly. D5 impossible. D7 does not hold.
 
 **Track F turned out to depend on Track D, and the ordering diagram says it does not.** That is
 the finding, and it is worth more than the file that came out of it. `getAjakan` synthesises a
@@ -733,12 +773,21 @@ ships today:
 | Community Giving, `conversation` | `inquiryWaLink` at `:60`, character for character |
 | CSR Food Program, `conversation` | the same construction |
 
-**What is still blocked, and why it is a smaller blockage than it looked.** D2/D3 need the
-eighteen `{title, desc}` pairs plus messages for the fifteen non-food aksi, and those wait on the
-owner reading `MESSAGES.md`. But checking what the pintu page actually renders today changed the
-shape of that wait: `contribute` renders as a **numbered list with a title and a description and
-no button at all** (`PintuS1.astro:737`). So the fifteen messages are not needed to preserve
-anything currently on screen — they are needed for Track G, which is where buttons first appear.
+**What is still blocked turned out to be much smaller than it looked, and the six files shipped
+the same day.** Checking what the pintu page actually renders changed the shape of the wait:
+`contribute` renders as a **numbered list with a title and a description and no button at all**
+(`PintuS1.astro:737`). So the eighteen `{title, desc}` pairs needed no messages to migrate, and
+they went across verbatim — 36 strings compared against `consts.ts` by script, zero differences,
+and the six built pintu pages diffed against `main` with not one character of text moved.
+
+**The fifteen non-food aksi ship with `mechanism: none`, which is the honest state, not a
+placeholder.** `none` is what the schema calls an aksi whose message has not been written yet,
+and it renders exactly what the page rendered before: a numbered item with no button. So D3 is
+half done by design. When the owner marks up `MESSAGES.md`, flipping fifteen entries from `none`
+to `conversation` is a **content edit** — no code, no rebuild of any track, no second review.
+The two food items in the same position ("Salurkan surplus", "Jadi mitra dapur") are `none` for
+the same reason, so the list on `/berbagi-makanan/` does not end up with one item speaking and
+two silent.
 
 **D5 was not followed and could not be.** Authoring through `/keystatic` writes to Keystatic
 Cloud, so the first save would commit to the real repository. The round trip was verified the way
@@ -907,14 +956,14 @@ This is the point of the whole change: the numbered list stops being inert prose
 
 ### G1. The finding that makes this cheap, and which must be re-verified first
 
-- [ ] G1.1 **Confirm before doing anything else that both `contribute.length === 0` branches are
+- [x] G1.1 **Confirm before doing anything else that both `contribute.length === 0` branches are
       unreachable today.** All six `PINTU_IDS` have a three-item `contribute`
       (`consts.ts:166, 199, 217, 235, 253, 285`), and `berbagi-[pintu].astro:20` passes the object
       straight through, so `showForms` (`:450`) and `joinAsSteps` (`:474`) are constant `false` at
       build. Verify by building and grepping `dist/berbagi-*/index.html` for `id="bentuk"` — it
       must appear zero times. **If it appears anywhere, stop and re-plan this track**, because
       then repointing the source is a visual change on a live page.
-- [ ] G1.2 **Keep both flags. Repoint their source.** Keeping a guard that has never fired looks
+- [x] G1.2 **Keep both flags. Repoint their source.** Keeping a guard that has never fired looks
       like cargo and here it is the opposite: while `contribute` was hardcoded and full the empty
       state *could not* happen, and after this change the list is editor-owned, so it becomes
       reachable for the first time. Deleting a guard exactly as it starts being able to fire is
@@ -923,17 +972,17 @@ This is the point of the whole change: the numbered list stops being inert prose
       - const contribute = content?.contribute ?? [];
       + const aksiList = aksi.filter((a) => a.showOnPintu);
       ```
-- [ ] G1.3 `showForms`, `joinAsSteps`, `joinId` (`alur` / `cara-ikut`), `joinEyebrow`, `joinTitle`,
+- [x] G1.3 `showForms`, `joinAsSteps`, `joinId` (`alur` / `cara-ikut`), `joinEyebrow`, `joinTitle`,
       `joinLead`, `flowNote`, the `.s1-strip` guard and the whole `jumpLinks` block keep their
       exact logic. Only the array they test changes.
 
 ### G2. The type problem the design did not name
 
-- [ ] G2.1 `stepItems = joinAsSteps ? flowSteps : aksiList` (`:475`) is a union of two unrelated
+- [x] G2.1 `stepItems = joinAsSteps ? flowSteps : aksiList` (`:475`) is a union of two unrelated
       shapes, and the `alur` branch's items have no `mechanism`. Reading `item.mechanism` inside
       `<li class="s1-step">` at `:738-742` is a **type error under TS strict**, not a no-op that
       renders nothing.
-- [ ] G2.2 **Normalise in the frontmatter, not in the template.** Build one
+- [x] G2.2 **Normalise in the frontmatter, not in the template.** Build one
       `{ title: string; desc: string; cta: { href: string; label: string } | null }[]` from either
       branch, so the `<ol>` at `:736` maps over one shape and never branches on the item's type.
       The alternative — wrapping the CTA in `{!joinAsSteps && …}` inside the loop — leaves the
@@ -941,44 +990,78 @@ This is the point of the whole change: the numbered list stops being inert prose
 
 ### G3. The one markup change
 
-- [ ] G3.1 Each `<li class="s1-step">` gains an optional CTA below `.s1-step-desc`. The href is
+- [x] G3.1 Each `<li class="s1-step">` gains an optional CTA below `.s1-step-desc`. The href is
       resolved by `resolvePintuHref()` in `berbagi-[pintu].astro`, not in the component, so
       `PintuS1` stays link-building-free the way `contactWa` and `notifyWa` already arrive
       pre-built.
-- [ ] G3.2 Behaviour per mechanism:
+- [x] G3.2 Behaviour per mechanism:
       | mechanism | CTA on the pintu page |
       |---|---|
       | `none` | nothing rendered — the `<li>` is byte-identical to today |
       | `conversation` | `buildWaLink(waNumber, message)`, fully formed server-side, works with JS off |
       | `quantity` with a page-having programme | `` `${program.href}#donasi` `` |
       | `quantity` with no usable destination | no CTA, plus the build-time warn from C1.6 |
-- [ ] G3.3 `#donasi` is a real target: `DonationCard` is mounted with `id="donasi"` and
+- [x] G3.3 `#donasi` is a real target: `DonationCard` is mounted with `id="donasi"` and
       `scroll-mt-24` in both `Hero.astro:56` and `program/[program].astro:175`. Click through one
       and confirm the card is not hidden behind the sticky header.
-- [ ] G3.4 Add the scoped `.s1-step-cta` style. `.s1-step` is a grid at `:1651` with a different
+- [x] G3.4 Add the scoped `.s1-step-cta` style. `.s1-step` is a grid at `:1651` with a different
       shape below 768 at `:1688`; check the CTA sits correctly in both.
-- [ ] G3.5 `berbagi-[pintu].astro` gains one `getAksiByPintu()` call and one prop; `PintuS1`'s
+- [x] G3.5 `berbagi-[pintu].astro` gains one `getAksiByPintu()` call and one prop; `PintuS1`'s
       `Props` gains `aksi: Aksi[]`.
-- [ ] G3.6 `contactWa` and `notifyWa` at the hero and the foot of the pintu page are untouched.
+- [x] G3.6 `contactWa` and `notifyWa` at the hero and the foot of the pintu page are untouched.
       They are "tell me when this opens", not ways to take part.
 
 ### G4. Verification
 
-- [ ] G4.1 Walk all six pintu pages. Track D's `showOnPintu: false` on the three
+- [x] G4.1 Walk all six pintu pages. Track D's `showOnPintu: false` on the three
       programme-scoped aksi keeps every list at its current length, so any change in the number
       of `<li>` elements is a defect.
-- [ ] G4.2 Diff `dist/berbagi-*/index.html` against `main`. The only differences should be the
+- [x] G4.2 Diff `dist/berbagi-*/index.html` against `main`. The only differences should be the
       new CTA anchors. Any change to a heading, an eyebrow, a jump link or a step's text means
       either Track D's copy is not verbatim or a flag was repointed wrongly.
-- [ ] G4.3 Temporarily empty one `src/content/aksi/*.json`, build, and confirm the page falls back
+- [x] G4.3 Temporarily empty one `src/content/aksi/*.json`, build, and confirm the page falls back
       cleanly: `#bentuk` appears, the join block becomes `id="alur"` with the "Alurnya" label, the
       `.s1-strip` disappears, and the jump links follow. **Then restore the file.** This is the
       branch G1.2 exists to protect and it has never once executed on a real page.
 
-**Hand over**: a dev server, plus `/berbagi-makanan/`, `/berbagi-barang/`, `/berbagi-waktu/`,
-`/berbagi-ruang/`, `/berbagi-dana/` and `/berbagi-pohon/` at 390 and 1280. One line saying what
 moved: every numbered "cara ikut" item now has a button under it, and five of the six pintu are
 offering a real way to take part for the first time.
+
+**Report.**
+
+**The hand-over line above is wrong for this slice and the correction matters.** Five of the six
+pintu are *not* offering a real way to take part yet, because fifteen of the eighteen aksi ship
+with `mechanism: none` while their messages wait on the owner reading `MESSAGES.md`. **One button
+appeared, on `/berbagi-makanan/` under "Donasi paket"**, going to `/program/jumat-berkah/#donasi`.
+
+That is deliberate, not a shortfall. `none` is the schema's state for an aksi whose message has
+not been written yet, and it renders exactly what the page renders today: a numbered item with a
+title, a description and nothing else. So the fifteen flip from silent to speaking as a **content
+edit**, with no code change and no second review of this track.
+
+**G1.1 re-verified before anything was touched:** `id="bentuk"` appears zero times across all six
+built pintu pages, so both empty-state branches were indeed unreachable.
+
+**G4.2 measured, and it is the proof that Track D's copy is verbatim.** Diffed all six pages
+against `main`: the only differences anywhere are the CSS chunk filename and the single new
+anchor on `/berbagi-makanan/`. Not one heading, eyebrow, jump link or step's text moved by a
+character — which could not be true if any of the eighteen `{title, desc}` pairs had been
+reworded. A separate script compared all 36 strings against `consts.ts` directly: zero
+differences.
+
+**G4.3 ran the branch that had never executed.** Emptying `tree.json` and building gave exactly
+the designed fallback: `#bentuk` returns, the join block becomes `id="alur"` with three generic
+intake steps, `id="cara-ikut"` and `.s1-strip` disappear, and the jump link follows from
+`#cara-ikut` to `#alur`. The other five pintu were unaffected. File restored.
+
+**G3.3 measured rather than eyeballed:** clicking the new button lands on
+`/program/jumat-berkah/#donasi` with the card top at 96px and the sticky header bottom at 74px,
+so 22px of clearance.
+
+**One label is new copy and needs the owner's eye when the messages land.** `conversation` aksi
+render a button reading "Hubungi lewat WhatsApp", chosen to match the site's existing "Donasi
+lewat WhatsApp" and "Kirim lewat WhatsApp". Nothing renders it today, since every conversation
+aksi on a pintu page is `none`, so it costs nothing to change.
 ```
 
 **Path**: the file above is the deliverable content for `/Users/ekodedypurnomo/Developer/Project/bagiberbagi-website/openspec/changes/add-aksi-mechanism/tasks.md`. Nothing was written to disk — this workflow is read-only.

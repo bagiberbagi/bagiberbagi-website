@@ -5,6 +5,7 @@ import { getEntry } from 'astro:content';
 import { buildWaLink } from '../lib/format';
 import { getProgramsByPintu } from '../lib/programs';
 import { getPintuImpact } from '../lib/impact';
+import { getAksiByPintu, resolvePintuHref } from '../lib/aksi';
 import { PINTU, CATEGORY_CONTENT } from '../consts';
 
 // Landing pintu (flat /berbagi-[pintu]). Pintu = kategori: halaman ini memikul
@@ -32,12 +33,39 @@ const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribus
 const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pintu.label} dibuka.`);
 
 const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
+
+// Daftar "cara ikut" pintu ini, plus tujuan tombolnya. Tautan dirakit DI SINI,
+// bukan di dalam PintuS1: komponen itu sudah menerima `contactWa` dan
+// `notifyWa` dalam keadaan jadi, dan menjaganya bebas dari perakitan tautan
+// berarti ia tak perlu tahu nomor WhatsApp sama sekali.
+//
+// `href` null berarti aksinya tidak punya tombol, dan itu keadaan yang sah,
+// bukan kegagalan: mekanisme "none" adalah tempat parkir aksi yang pesannya
+// belum ditulis. Lima belas dari delapan belas aksi ada di keadaan itu hari
+// ini, jadi daftarnya masih persis seperti sebelum perubahan ini.
+const AKSI_CTA_LABEL = {
+  conversation: 'Hubungi lewat WhatsApp',
+  quantity: 'Hitung donasi',
+} as const;
+
+const aksiItems = (await getAksiByPintu(pintu.id))
+  .filter((a) => a.showOnPintu)
+  .map((a) => {
+    const href = resolvePintuHref(a, site.data.waNumber);
+    const label = a.mechanism.kind === 'none' ? null : AKSI_CTA_LABEL[a.mechanism.kind];
+    return {
+      title: a.title,
+      desc: a.desc,
+      cta: href && label ? { href, label, external: a.mechanism.kind === 'conversation' } : null,
+    };
+  });
 ---
 
 <BaseLayout title={`Pintu ${pintu.label} | bagiberbagi.id`} description={pintu.seoDescription} breadcrumbName={pintu.label}>
   <PintuS1
     pintu={pintu}
     content={content}
+    aksiItems={aksiItems}
     programs={programs}
     active={active}
     upcoming={upcoming}

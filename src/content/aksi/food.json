@@ -1,10 +1,10 @@
 {
   "items": [
     {
-      "title": "Jumat Berkah",
-      "desc": "",
+      "title": "Donasi paket",
+      "desc": "Donasi ke program aktif, lalu kami salurkan dan kirim laporannya.",
       "program": "jumat-berkah",
-      "showOnPintu": false,
+      "showOnPintu": true,
       "mechanism": {
         "discriminant": "quantity",
         "value": {
@@ -14,6 +14,18 @@
           "packages": []
         }
       }
+    },
+    {
+      "title": "Salurkan surplus",
+      "desc": "Punya surplus makanan layak? Kami jemput dan salurkan tepat sasaran.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Jadi mitra dapur",
+      "desc": "UMKM kuliner bergabung memasak untuk penyaluran mingguan.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
     },
     {
       "title": "Ramadhan Berbagi",

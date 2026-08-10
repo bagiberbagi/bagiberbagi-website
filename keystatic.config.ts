@@ -731,9 +731,40 @@ export default config({
       schema: {
         title: fields.slug({
           name: { label: 'Judul' },
+          // Slug jejak adalah URL halamannya, dan bentuknya diwajibkan:
+          // <program>-YYYY-MM-DD-<area>, mis. jumat-berkah-2026-07-31-bogor.
+          //
+          // Tombol "regenerate" TIDAK BISA menghasilkan bentuk ini, dan itu
+          // batas API-nya, bukan salah setelan: `generate` cuma menerima judul
+          // (`(name: string) => string`), sementara program dan tanggal hidup di
+          // field lain yang tak terlihat olehnya. Jadi menekan regenerate selalu
+          // menghasilkan judul yang di-slug-kan, dan itulah yang terjadi pada dua
+          // entri Agustus 2026: satu jadi
+          // `jumat-berkah-2026-07-17-jumat-berkah-masjid-nurul-hikmah-bogor`,
+          // satu lagi kehilangan tanggalnya sama sekali.
+          //
+          // Karena bentuknya tak bisa dibuatkan, ia dijaga di sini. `pattern`
+          // menolak simpan sampai slugnya benar, jadi konvensi ini berhenti
+          // bergantung pada ingatan editor.
+          //
+          // Batas 1-3 ruas untuk area itu yang membedakan area dari judul yang
+          // kepanjangan: `dukuh-atas` (2) lolos, `jumat-berkah-masjid-nurul-hikmah-bogor`
+          // (6) ditolak. Tanpa batas itu, regex ini menerima judul apa pun asal
+          // ada tanggalnya.
           slug: {
             label: 'Slug',
-            description: 'Ikuti konvensi program-slug-YYYY-MM-DD, contoh: jumat-berkah-2026-07-18.',
+            description:
+              'Bentuknya wajib: program-YYYY-MM-DD-area, contoh jumat-berkah-2026-07-31-bogor. ' +
+              'Tombol regenerate tidak bisa menyusun bentuk ini karena ia hanya membaca judul, ' +
+              'jadi tanggal dan areanya ditulis tangan.',
+            validation: {
+              pattern: {
+                regex: /^[a-z0-9]+(?:-[a-z0-9]+)*-\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+){1,3}$/,
+                message:
+                  'Slug harus berbentuk program-YYYY-MM-DD-area, contoh: jumat-berkah-2026-07-31-bogor. ' +
+                  'Huruf kecil semua, tanpa spasi, dan areanya paling banyak tiga kata.',
+              },
+            },
           },
         }),
         program: fields.relationship({

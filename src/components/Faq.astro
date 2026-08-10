@@ -98,9 +98,20 @@ const waLink = buildWaLink(site.data.waNumber);
         {groups.map((g) => (
           <div class="faq-cat mb-10 last:mb-0 scroll-mt-24" id={g.slug} data-cat={g.slug}>
             <h2 class="text-title-sm font-semibold text-brand-blue mb-2">{g.label}</h2>
+            {/* Garis cuma DI ANTARA pertanyaan, tidak di bawah yang terakhir.
+                Tiap kategori di sini dibuka oleh <h2>-nya sendiri dan tidak
+                punya garis atas, jadi garis di bawah item terakhir tidak
+                menutup apa pun — ia menggantung di ruang kosong sebelum judul
+                kategori berikutnya. Kategori berisi satu pertanyaan karena itu
+                tidak bergaris sama sekali, yang memang benar: tidak ada yang
+                perlu dipisahkan.
+
+                FaqHome sengaja berbeda dan tetap menggarisi item terakhirnya:
+                daftarnya dibuka garis atas di wadahnya, jadi garis penutup itu
+                pasangan pembukanya, bukan ekor yang menggantung. */}
             <div class="flex flex-col">
               {g.items.map((faq, i) => (
-                <div class="faq-item border-b-0 md:border-b border-border" data-faq data-q={faq.q} data-a={faq.a}>
+                <div class="faq-item border-b-0 md:border-b md:last:border-b-0 border-border" data-faq data-q={faq.q} data-a={faq.a}>
                   <button
                     type="button"
                     class="faq-trigger w-full flex items-center justify-between gap-4 text-left py-5"

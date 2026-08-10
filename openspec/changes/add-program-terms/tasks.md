@@ -37,6 +37,7 @@ Everything below is done except the content, which is the owner's.
 | no script | `<details>` + `group-open:rotate-180` and `::-webkit-details-marker` both emitted in the built CSS; no script tag added to the page |
 | anchor lands clear of the header | jumping to `#ketentuan` puts the section top at 96px with a 74px sticky header |
 | touch target | every `<summary>` measures 56px tall at both 1280 and 390 |
+| uniform with the page | after the tier correction, all five sections measure 1024 wide with content starting at x=168 at 1280, and 390 / x=0 at mobile. The reading measure inside each term stays 672 |
 
 ## Open, and it needs the owner
 

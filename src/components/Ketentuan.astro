@@ -39,15 +39,22 @@ const hasOwn = items.some((item) => item.scope === 'program');
      dirender. Garis tipisnya milik seksi ini sendiri, jadi batasnya tetap ada
      siapa pun yang duduk di atas. */
   <section id="ketentuan" class="section bg-white border-t border-border scroll-mt-24" style={styleVars}>
-    {/* Tier `prose` (672), bukan `standard` (1024) seperti sisa halaman ini:
-        isinya paragraf untuk dibaca, dan kosakata tier sudah punya namanya. */}
-    <Container width="prose">
+    {/* Tier bawaan halaman ini, `standard` (1024), supaya seksi ini sebaris
+        dengan Cara Kerja, Rekam Jejak, dan Program Lain. Sempat dipasang `prose`
+        (672) dengan alasan "isinya paragraf untuk dibaca", dan itu keliru:
+        lebarnya jadi satu-satunya yang menyimpang di halaman ini (672 lawan
+        1024 di empat seksi lain, sementara ukuran huruf semuanya sudah sama),
+        jadi yang terlihat bukan kolom baca yang nyaman melainkan seksi yang
+        salah ukuran. Kenyamanan bacanya diurus di tempat yang benar, yaitu
+        `max-w-text` pada tiap paragraf, persis cara Rekam Jejak menangani
+        paragraf pengantarnya. */}
+    <Container>
       <div class="mb-8">
         <div class="eyebrow text-[var(--cat)]">Ketentuan</div>
         <h2 class="text-heading-sm md:text-heading-lg font-semibold mb-3">
           Yang perlu kamu tahu sebelum ikut
         </h2>
-        <p class="text-body text-muted leading-relaxed">
+        <p class="text-body text-muted leading-relaxed max-w-text">
           {hasOwn
             ? 'Ketentuan yang khas program ini terbuka di atas. Sisanya berlaku untuk semua program dan bisa kamu buka satu per satu.'
             : 'Ketentuan berikut berlaku untuk semua program di bagiberbagi.id. Buka satu per satu untuk membacanya.'}
@@ -75,14 +82,18 @@ const hasOwn = items.some((item) => item.scope === 'program');
                 stroke-linejoin="round"
               ><path d="M6 9l6 6 6-6"></path></svg>
             </summary>
-            {/* `whitespace-pre-line` supaya baris baru yang editor tulis di
+            {/* Barisnya selebar kontainer, isinya dibatasi `max-w-text`: yang
+                menyamakan seksi ini dengan halaman adalah garis dan bingkainya,
+                sedangkan yang menjaga bacaan tetap enak adalah panjang barisnya,
+                dan keduanya tak perlu memakai angka yang sama.
+                `whitespace-pre-line` supaya baris baru yang editor tulis di
                 field multiline ikut tampil, tanpa perlu markdown. */}
-            <p class="pb-5 text-body text-muted leading-relaxed whitespace-pre-line">{item.body}</p>
+            <p class="pb-5 text-body text-muted leading-relaxed whitespace-pre-line max-w-text">{item.body}</p>
           </details>
         ))}
       </div>
 
-      <p class="mt-7 text-body-sm text-muted leading-relaxed">
+      <p class="mt-7 text-body-sm text-muted leading-relaxed max-w-text">
         Ketentuan di atas melengkapi{' '}
         <a href="/syarat/" class="font-semibold text-[var(--cat-deep)] underline underline-offset-2 hover:no-underline">Syarat dan Ketentuan</a>{' '}
         layanan dan{' '}

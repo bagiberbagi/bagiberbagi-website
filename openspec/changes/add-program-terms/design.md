@@ -120,8 +120,26 @@ collides with one neighbour or the other depending on what rendered. It takes `b
 `border-t border-border`, so the boundary is drawn by the section itself and holds whatever sits
 above it.
 
-Reading width is the `prose` tier (672), not the page's `standard` (1024). These are paragraphs to
-be read, and the tier vocabulary already has a name for that.
+**The section uses the page's own tier, `standard` (1024), and caps the reading measure per
+paragraph instead.** It shipped as `prose` (672) first, on the argument that these are paragraphs to
+be read and the tier vocabulary has a name for that. The owner rejected it on sight: *"sizing nya
+aja yg kurang cocok, jadi tidak seragam dg halaman nya."*
+
+They were right, and measuring says why precisely. Every other section on the page is 1024 with its
+content starting at x=168; the eyebrow, heading, and body sizes were already identical across all
+five sections. So width was the **only** thing that differed, which makes it read not as a
+comfortable reading column but as one section that got its size wrong.
+
+The fix separates the two jobs the tier had been doing at once:
+
+| job | who does it now |
+|---|---|
+| line up with the rest of the page | `Container` at `standard`, rows spanning the full 944 |
+| keep the line length readable | `max-w-text` on each paragraph, so the measure is still 672 |
+
+This is not a new pattern. `rekam-jejak`, the section directly beneath, does exactly this with its
+own lead paragraph. The frame is what makes a page look uniform; the measure is what makes prose
+readable, and the two never had to be the same number.
 
 ## Open question
 

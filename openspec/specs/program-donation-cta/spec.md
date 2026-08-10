@@ -4,15 +4,21 @@
 TBD - created by archiving change add-food-programs-organisasi. Update Purpose after archive.
 ## Requirements
 ### Requirement: Program page renders a CTA appropriate to its package type
-The `/program/[program]` page SHALL render one of two CTA variants based on the program's package type: a self-serve donation panel (fixed price, immediate WhatsApp donation link) for programs with a fixed package, or an inquiry CTA ("Diskusikan Program") for programs with a custom/negotiated package.
+The `/program/[program]` page SHALL render the CTA its programme's aksi mechanism declares. The choice SHALL come from content, never from a slug tested against a hardcoded list.
 
-#### Scenario: Fixed-package program shows self-serve panel
-- **WHEN** a visitor views the page for a program with a fixed package (e.g. Jumat Berkah)
-- **THEN** the page SHALL show the price panel with a donation button linking to a pre-filled WhatsApp message naming the programme
+This replaces `INQUIRY_PROGRAMS` and the `isInquiry ? … : …` branch in `program/[program].astro`. The two behaviours the branch produced are unchanged on screen; only their source moves. The "PAKET CUSTOM" panel moves from a branch in the page into a branch in the component, keyed on the mechanism.
 
-#### Scenario: Custom-package program shows inquiry CTA
-- **WHEN** a visitor views the page for a program with a custom/negotiated package (e.g. Community Giving, CSR Food Program)
-- **THEN** the page SHALL show a "Diskusikan Program {label}" button linking to a WhatsApp inquiry message, and SHALL NOT show the fixed-price self-serve panel
+#### Scenario: Quantity mechanism shows the self-serve panel
+- **WHEN** a visitor views a programme whose aksi mechanism is `quantity`
+- **THEN** the page SHALL show the picker and a donation button linking to a pre-filled WhatsApp message naming the programme
+
+#### Scenario: Conversation mechanism shows the inquiry CTA
+- **WHEN** a visitor views a programme whose aksi mechanism is `conversation`
+- **THEN** the page SHALL show a "Diskusikan Program {label}" button linking to that aksi's own WhatsApp message, and SHALL NOT show the picker
+
+#### Scenario: Changing a programme's CTA needs no code change
+- **WHEN** an editor switches a programme's mechanism between `quantity` and `conversation`
+- **THEN** the rendered CTA SHALL change accordingly with no edit to `program/[program].astro`
 
 ### Requirement: The donation link is valid before the visitor has chosen a quantity
 The self-serve panel SHALL NOT preselect a quantity. Its call to action SHALL be usable with nothing chosen, in which case the WhatsApp message names the programme and asks for the quantity in words rather than asserting a number the visitor did not pick.
@@ -31,21 +37,21 @@ The no-JS path is what makes this a requirement rather than a preference. The pa
 - **THEN** the `data-track-pax` attribute SHALL be absent rather than empty, because `Analytics.astro` copies `data-track-*` verbatim and an empty value would enter the funnel as a selection
 
 ### Requirement: A multi-package programme carries its package in the donation message
-For a self-serve programme offering more than one fixed package (e.g. Ramadhan Berbagi: Sahur, Takjil, Buka Puasa), the generated WhatsApp message SHALL name the package the panel is currently showing.
+For a programme whose `quantity` mechanism declares more than one package, the generated WhatsApp message SHALL name the package the panel is currently showing. The package list SHALL come from that programme's own aksi content, replacing the `RAMADHAN_PACKAGES` constant and the `program.slug === 'ramadhan-berbagi'` test.
+
+The markup that consumes the list is unchanged; only where the array comes from changes.
 
 #### Scenario: Donation link reflects the selected package
 - **WHEN** a visitor selects "Takjil" on the Ramadhan Berbagi page and proceeds to donate
 - **THEN** the message SHALL reference Takjil, e.g. `donasi program "Ramadhan Berbagi (Paket Takjil)"`
 
-#### Scenario: Package defaults to the first, and this contradicts the quantity rule
-- **WHEN** a visitor opens `/program/ramadhan-berbagi/` and taps the CTA without touching the package row
-- **THEN** the message SHALL name `Ramadhan Berbagi (Paket Sahur)` — verified live on 7 August 2026, `aria-pressed="true"` on the first button
+#### Scenario: A seasonal programme gains packages without a developer
+- **WHEN** an editor adds a package list to another programme's aksi
+- **THEN** that programme's page SHALL render the package row, with no code change
 
-  This is recorded as the shipped behaviour, **not endorsed as correct.** An earlier draft of this
-  spec claimed the page "SHALL require the visitor to select one package before the donation link
-  is built", which was never true. The real state is worse than a wrong spec: quantity now
-  deliberately has no default so the visitor chooses freely, while package still silently has one,
-  so a visitor who taps straight through sends "Paket Sahur" without ever choosing it. The two
-  controls sit in the same card and follow opposite rules. **Open question for the owner**, listed
-  as Q2 in `add-aksi-mechanism`, which is where the packages become data.
+#### Scenario: Package preselection is declared, not implicit
+- **WHEN** a programme's page is rendered with a package row
+- **THEN** whether a package starts selected SHALL be a property of the content, not a consequence of being first in the array
+
+  This closes the inconsistency recorded when `add-food-programs-organisasi` was archived: quantity deliberately has no default so the visitor chooses freely, while package silently defaults to the first entry, so a visitor who taps straight through sends `Ramadhan Berbagi (Paket Sahur)` without ever having chosen it. Two controls in the same card following opposite rules. The owner picks which rule wins; the requirement here is only that the answer stop being an accident of array order.
 

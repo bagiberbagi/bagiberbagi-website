@@ -2,9 +2,15 @@
 
 ## Status
 
-**Designed and implemented in one pass, one content decision still open.** The mechanism is
-built and the shared block is seeded; the per-programme block is empty on purpose, because its
-content is the owner's to write. `KETENTUAN.md` holds the draft and the questions.
+**Built, and the content half is two programmes in.** Jumat Berkah carries three terms and Ramadhan
+Berbagi two; Community Giving and CSR Food Program are still waiting on facts only the owner has,
+so they render no terms section at all. `KETENTUAN.md` holds what was decided and the four
+questions left.
+
+The shared block was seeded with seven items and is now **deliberately empty**: on 11 August 2026
+the owner ruled out saying anything on a programme page that could be said on `/syarat`, which took
+all nine items with it. Two of them carried wording that existed nowhere else and were moved there
+rather than dropped. See decision 4 in `design.md`.
 
 ## Why
 
@@ -31,9 +37,10 @@ donation panel gains one line pointing at it.
 
 Its content comes from two places merged into one list:
 
-- a **shared block**, one `ketentuan` singleton, holding the terms that hold for every programme
 - a **per-programme block**, `detail.ketentuan` on the programme entry, holding what only that
-  programme can say
+  programme can say, which is the layer the change exists for
+- a **shared block**, one `ketentuan` singleton, for an operational rule spanning every programme
+  that is nonetheless not a `/syarat` obligation. Empty today, and expected to stay that way
 
 The merge is by title: a programme item whose title matches a shared item replaces it, anything
 else is appended. Programme items render open, shared items render closed, and the whole thing is

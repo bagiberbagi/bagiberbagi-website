@@ -1,9 +1,16 @@
 ## ADDED Requirements
 
 ### Requirement: Shared programme terms live in one singleton
-The terms that hold for every programme SHALL live in a `ketentuan` singleton
+The operational rules that hold for every programme SHALL live in a `ketentuan` singleton
 (`src/content/ketentuan/ketentuan.json`), an ordered array of `{ title, body }`, editable in the
 Keystatic admin with drag-to-reorder.
+
+An obligation of the platform SHALL NOT be written there. `/syarat` is the single home for
+anything that binds the platform to a participant, so this singleton carries only what spans
+programmes *and* is not such an obligation, e.g. every programme pausing over a long holiday. It
+ships empty, which is its expected steady state; the field description in `keystatic.config.ts`
+SHALL say so, since an editor with a blank array and no guidance will fill it with the nearest
+plausible thing.
 
 It SHALL be a singleton array rather than a collection, for the reason already settled for `faq`
 and `footer`: display order matters, the entry count stays small, and no item is individually
@@ -20,9 +27,9 @@ needs to know about a programme.
 - **THEN** every programme page SHALL reflect the new order, with no code change
 
 #### Scenario: Both configs agree on the extension
-- **WHEN** an editor opens Ketentuan Program in the admin
-- **THEN** the seeded items SHALL be listed, because `format: 'json'` in `keystatic.config.ts` and
-  the `*.json` glob in `src/content.config.ts` name the same files
+- **WHEN** an editor opens Ketentuan Program in the admin and adds an item
+- **THEN** it SHALL be written to and read back from the same file, because `format: 'json'` in
+  `keystatic.config.ts` and the `*.json` glob in `src/content.config.ts` name it identically
 
 ### Requirement: A programme carries its own terms inside its detail block
 The `programs` collection SHALL gain `detail.ketentuan`, an ordered array of `{ title, body }`.
@@ -38,7 +45,8 @@ component and the section id — one word for one role.
 
 #### Scenario: An untouched programme entry stays valid
 - **WHEN** the schema gains the field and no existing `*.yaml` is edited
-- **THEN** the build SHALL succeed and every programme page SHALL render its shared terms only
+- **THEN** the build SHALL succeed, and a programme with no terms of its own SHALL render no terms
+  section at all while the shared singleton is empty
 
 #### Scenario: A programme gains a term without a developer
 - **WHEN** an editor adds a term to a programme in the admin

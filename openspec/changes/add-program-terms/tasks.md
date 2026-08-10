@@ -13,8 +13,21 @@ Everything below is done except the content, which is the owner's.
 - [x] **Tests.** `src/lib/ketentuan.test.ts`, 8 cases: ordering, scope tagging, override, loose title
   matching, empty rows dropped, duplicate-within-block first-wins, empty programme block, both
   blocks empty.
-- [x] **Shared content.** `src/content/ketentuan/ketentuan.json`, seven items, every one traceable to
-  a `/syarat` clause. See `KETENTUAN.md`.
+- [x] ~~**Shared content.** `src/content/ketentuan/ketentuan.json`, seven items, every one traceable
+  to a `/syarat` clause.~~ **Reversed 11 August 2026 on the owner's instruction**: nothing that can
+  live on `/syarat` may be repeated on a programme page, which was true of all nine items by then.
+  The singleton is `{"items": []}`; two items whose wording existed nowhere else were moved into
+  `/syarat` first. See `KETENTUAN.md` §1 and `design.md` decision 4.
+- [x] **The four withheld clauses, approved and published.** Anti-fraud, schedule-change notice,
+  redirect announced beforehand, receipt on request. Each one is a `/syarat` clause now;
+  `updatedAt` moved to 11 August 2026.
+- [x] **Programme content, two of four.** Jumat Berkah three terms (cut-off without an hour, area
+  without a city, no minimum stated outright), Ramadhan Berbagi two (Ramadhan-only, three packages
+  one price). The last also settles Q2 out of `add-aksi-mechanism`: `packages: string[]` stays.
+- [x] **Copy and guidance follow the reversal.** The section's intro sentence gained a third branch
+  for "programme items only", the Keystatic field description now tells an editor to write
+  obligations on `/syarat` instead of here, and `content-model.md` records the empty layer plus its
+  visible consequence.
 - [x] **Component and mount.** `src/components/Ketentuan.astro`; mounted between Cara Kerja and Rekam
   Jejak in `src/pages/program/[program].astro`, with a conditional `#ketentuan` link in the donation
   panel's `foot` slot.
@@ -31,8 +44,8 @@ Everything below is done except the content, which is the owner's.
 | `bun run build` | 62 pages, no new warning |
 | `bun run check:assets` | 278 images in dist, all referenced |
 | anchor check | 17 ok, 0 broken, 0 unmapped, with `[program].astro` added to the map |
-| stored shape | round-tripped through `createReader(cwd, config)`, Keystatic's own parser: singleton 7 rows, programme block 9 rows across both, 0 shape mismatches. A programme whose yaml has **no** `ketentuan` key reads back `[]`, so the absent-key case is safe on both sides |
-| section renders | `id="ketentuan"` and the panel link present on all four programme pages |
+| stored shape | round-tripped through `createReader(cwd, config)`, Keystatic's own parser, while the singleton still held 7 rows and the programme block 9: 0 shape mismatches. A programme whose yaml has **no** `ketentuan` key reads back `[]`, so the absent-key case is safe on both sides — which is what the empty singleton relies on now |
+| section renders | after the reversal, in `dist`: Jumat Berkah 3 terms and Ramadhan 2, each with `id="ketentuan"` and exactly one panel link; Community Giving and CSR Food Program have neither, link and id at 0 together on both. No shared wording survives anywhere under `dist/program/` |
 | merge on screen | temporary rows on Jumat Berkah proved it: 2 programme items open above 6 shared items closed, and `laporan   PENYALURAN` replaced `Laporan penyaluran` rather than joining it. Rows reverted before commit |
 | no script | `<details>` + `group-open:rotate-180` and `::-webkit-details-marker` both emitted in the built CSS; no script tag added to the page |
 | anchor lands clear of the header | jumping to `#ketentuan` puts the section top at 96px with a 74px sticky header |
@@ -41,12 +54,14 @@ Everything below is done except the content, which is the owner's.
 
 ## Open, and it needs the owner
 
-- [ ] **Write the per-programme terms.** `KETENTUAN.md` §3 holds a draft per active programme and the
-  questions behind each gap. Two of them are the shape "is this value a rule or just this week's
-  value", about `nextAgenda.cutoff` and `nextAgenda.location`.
-- [ ] **Decide on the four withheld lines** in `KETENTUAN.md` §2, the anti-fraud one first.
-- [ ] **Decide whether the donation panel's `note` and shared item 2 should both exist**, the open
-  question at the end of `design.md`.
+Four facts, listed in `KETENTUAN.md` §4. Until they arrive, two programme pages carry no terms
+section at all.
+
+- [ ] **Jumat Berkah: what is in one portion?**
+- [ ] **Ramadhan Berbagi: what is in each of the three packages?**
+- [ ] **Community Giving: lead time before the chosen date, and any minimum.**
+- [ ] **CSR Food Program: which documents can actually be issued, and any minimum budget.** The
+  most consequential of the four — a company cannot release budget on photographs.
 
 ## Known and left alone
 

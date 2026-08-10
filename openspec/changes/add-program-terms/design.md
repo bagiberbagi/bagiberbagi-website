@@ -30,6 +30,13 @@ six files, five of them empty, sitting between the two layers that do the work.
 Why not per-programme only: four active programmes would mean four copies of the same seven
 sentences about payment and cancellation, drifting apart one edit at a time.
 
+**The shared layer is empty as of 11 August 2026, and the argument above survives it.** The owner
+asked for anything that could live on `/syarat` to be moved there, which took all nine items with
+it (see decision 4). The four-copies problem it was built to prevent does not come back, because
+those sentences are not on the programme pages at all now, in one copy or four. What the layer is
+still for is the case neither `/syarat` nor a single programme owns: an operational rule spanning
+programmes, such as every programme pausing over a long holiday. Empty, it renders nothing.
+
 ## 3. Merge by title, programme wins, programme items first
 
 **Decided by the owner** in the shape "menambah atau menimpa". The mechanism:
@@ -53,17 +60,45 @@ reference material and belongs under it. This also means an override moves the t
 programme's own block, which is correct: a programme that had to override a shared term has
 something specific to say about it.
 
-## 4. The shared block only says what `/syarat` already says
+## 4. Anything `/syarat` can say lives only on `/syarat`
 
-The seed content in `src/content/ketentuan/ketentuan.json` is a rewrite of `/syarat` into
-second-person operational voice. Every one of its seven items traces to a clause already published
-there. Nothing in it is new.
+**Revised 11 August 2026 by the owner**, and the revision is the point of the decision now, so the
+original is kept underneath it rather than deleted.
 
-This is a rule about how the file was written, not a constraint the code enforces — the owner can
-put anything in it. It exists because the seed was written by an agent, and an agent writing
-"pesanan ditutup H-2" from plausibility rather than from fact would publish a false operational
-promise in the owner's name. Anything that read as an improvement but was not in `/syarat` went to
-`KETENTUAN.md` as a proposal instead.
+*"Aku tidak ingin ada redundant konten di ketentuan program dan syarat, yg sekiranya bisa masuk ke
+syarat maka bisa dipindah saja kesana. Jadi untuk ketentuan yg ada di program akan tetap
+relevan."*
+
+Every shared item was a `/syarat` clause rewritten in second person, so the test "could this live
+on `/syarat`" caught all nine. Two of them had only just been written and were already on `/syarat`
+by then; the other seven needed two sentences added there before they could be dropped, because a
+move that loses wording is a deletion wearing a different name:
+
+| what was only in the shared block | where it went on `/syarat` |
+|---|---|
+| the confirmed amount already covers delivery and documentation | Penggunaan Dana, as its own line |
+| ask for a donation receipt early so its format can be prepared | Donasi, appended to the receipt clause |
+
+Everything else was already covered clause for clause, verified item by item before the file was
+emptied.
+
+**What the original decision said, and why it was reasonable.** The seed was a rewrite of `/syarat`
+into second-person operational voice, seven items, each traceable to a published clause, nothing
+new. It was a rule about how the file was written rather than a constraint the code enforces,
+because the seed was written by an agent, and an agent writing "pesanan ditutup H-2" from
+plausibility rather than fact would publish a false operational promise in the owner's name.
+Anything that read as an improvement but was not in `/syarat` went to `KETENTUAN.md` as a proposal
+instead.
+
+**Why it did not hold.** The intended value was register: the same obligation, in the words of
+someone about to donate, at the moment of deciding. What it produced was the same sentence
+published twice, and the owner read the duplication before the register. The half of the rule that
+still holds is the half that matters, that an agent must not invent operational facts; what changed
+is where a true one goes when it is not programme-specific, which is `/syarat` and nowhere else.
+
+The cost, accepted knowingly: a programme with nothing of its own to say renders no terms section
+at all. Community Giving and CSR Food Program are in that state today, and their donation panels
+drop the `#ketentuan` link with it, since link and section share one guard.
 
 The same discipline explains what is *not* seeded: no minimum, no order deadline, no coverage
 area, no lead time. Those are the useful parts, and none of them can be derived from anything
@@ -79,14 +114,17 @@ this section, printed by the same donation panel:
 | distribution location ("Bogor") | `settings.site.nextAgenda.location` |
 
 Writing any of them into a terms sentence would create a second copy that goes stale silently the
-day the first one changes. So the seed says the donation "sudah termasuk pengantaran dan
-dokumentasi" without naming the amount, and says nothing at all about the cut-off or the area.
+day the first one changes.
 
-The last two also carry a subtler problem, and it is the reason a terms sentence cannot simply be
-derived from them either: `nextAgenda` describes the **next agenda**, not a standing rule. "Kamis
-18.00" is this week's cut-off and "Bogor" is this week's location. Turning either into "pesanan
-ditutup setiap Kamis 18.00" or "area penyaluran Bogor" is an inference from a single week's value,
-and only the owner can say whether the inference holds. `KETENTUAN.md` asks it that way.
+The last two also carry a subtler problem: `nextAgenda` describes the **next agenda**, not a
+standing rule. "Kamis 18.00" is this week's cut-off and "Bogor" is this week's location. Turning
+either into "pesanan ditutup setiap Kamis 18.00" or "area penyaluran Bogor" is an inference from a
+single week's value, so `KETENTUAN.md` put it to the owner as a question rather than guessing.
+
+**The owner answered on 11 August 2026, and the answer was "neither is a rule".** So Jumat Berkah's
+terms say orders need a day's head start without naming an hour, and ask the visitor to name their
+location rather than naming a service area. Both sentences are shorter than the versions that
+guessed, and unlike them they cannot be made false by next week's agenda.
 
 ## 5. Native `<details>`, no script
 
@@ -141,12 +179,14 @@ This is not a new pattern. `rekam-jejak`, the section directly beneath, does exa
 own lead paragraph. The frame is what makes a page look uniform; the measure is what makes prose
 readable, and the two never had to be the same number.
 
-## Open question
+## The open question, closed
 
-**Does the donation panel's `note` prop now duplicate a term?** The panel prints "Sudah termasuk
-pengantaran dan dokumentasi foto serta video penyaluran" as a note under the button, and shared
-item 2 says the same thing at more length. Two statements of one fact, eleven hundred pixels
-apart, is the shape decision 4 warns about. It is left alone here because the note is what makes
-the button honest on its own, and removing it to avoid a duplicate would weaken the more important
-of the two surfaces. Worth revisiting once the owner has written the per-programme terms, since the
-answer depends on how much the programme block ends up saying.
+**Did the donation panel's `note` prop duplicate a term?** The panel prints "Sudah termasuk
+pengantaran dan dokumentasi foto serta video penyaluran" under the button, and the shared block's
+second item said the same thing at more length. The question was parked until the per-programme
+terms existed, since the answer depended on what they turned out to say.
+
+They say nothing about what a donation covers, and the shared block is empty, so the note is the
+only place on the page carrying that fact. It stays, unchanged. The sentence it echoes now lives on
+`/syarat` under Penggunaan Dana, which is a different surface for a different reader rather than a
+second copy on the same screen.

@@ -5,6 +5,14 @@
       "body": "Donasi dimulai dari percakapan WhatsApp dengan tim kami. Kamu memilih program dan jumlahnya, tim mengonfirmasi, lalu pembayaran lewat transfer bank atau e-wallet (OVO, GoPay, DANA) sesuai instruksi tim. Situs ini tidak meminta kamu membuat akun."
     },
     {
+      "title": "Kalau ada yang minta transfer di luar percakapan",
+      "body": "Instruksi pembayaran hanya datang dari percakapan WhatsApp dengan tim kami, di nomor yang tertera di situs ini. Kami tidak pernah meminta pembayaran ke rekening pribadi di luar percakapan itu. Kalau kamu menerima permintaan transfer lewat jalur lain, atas nama siapa pun, jangan ditransfer dan konfirmasi dulu ke nomor kami."
+    },
+    {
+      "title": "Kalau kamu butuh bukti donasi",
+      "body": "Bukti donasi bisa kamu minta lewat percakapan yang sama, dan tim akan menyiapkannya sesuai keperluanmu. Sebutkan saja di awal supaya bentuknya disiapkan sejak awal."
+    },
+    {
       "title": "Yang termasuk dalam donasi",
       "body": "Donasimu sudah termasuk pengantaran ke penerima dan dokumentasi foto serta video penyaluran. Dana yang masuk dipakai untuk pengadaan bahan, produksi dan pengemasan bersama mitra UMKM, distribusi, dokumentasi, dan biaya operasional platform."
     },
@@ -14,11 +22,11 @@
     },
     {
       "title": "Jadwal bisa berubah",
-      "body": "Waktu pelaksanaan menyesuaikan kondisi lapangan: cuaca, keamanan, ketersediaan mitra, dan hal lain di luar kendali kami."
+      "body": "Waktu pelaksanaan menyesuaikan kondisi lapangan: cuaca, keamanan, ketersediaan mitra, dan hal lain di luar kendali kami. Kalau jadwalnya bergeser, kami kabari lewat percakapan yang sama."
     },
     {
       "title": "Kalau penyaluran tidak bisa dijalankan",
-      "body": "Donasimu dialihkan ke program lain yang tujuan dan manfaatnya serupa, dan pengalihannya kami sampaikan terbuka kepada donatur."
+      "body": "Donasimu dialihkan ke program lain yang tujuan dan manfaatnya serupa. Pengalihan itu kami sampaikan lebih dulu, sebelum dijalankan, bukan setelahnya."
     },
     {
       "title": "Pembatalan dan pengembalian dana",

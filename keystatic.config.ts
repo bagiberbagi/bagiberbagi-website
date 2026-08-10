@@ -747,22 +747,40 @@ export default config({
           // menolak simpan sampai slugnya benar, jadi konvensi ini berhenti
           // bergantung pada ingatan editor.
           //
-          // Batas 1-3 ruas untuk area itu yang membedakan area dari judul yang
-          // kepanjangan: `dukuh-atas` (2) lolos, `jumat-berkah-masjid-nurul-hikmah-bogor`
-          // (6) ditolak. Tanpa batas itu, regex ini menerima judul apa pun asal
-          // ada tanggalnya.
+          // ATURAN AREA. Satu jejak sering menyentuh beberapa titik, dan slugnya
+          // sebaiknya ikut memberi tahu di mana saja, bukan cuma titik pertama.
+          //
+          //   1. Tempat bernama disebut namanya (panti, masjid, taman).
+          //   2. Beberapa titik di kawasan yang sama cukup disebut sekali.
+          //   3. Urutannya: titik pembuka dulu, lalu kawasan yang menampung sisanya.
+          //   4. Paling banyak empat kata, supaya URL-nya masih terbaca.
+          //
+          // Contohnya entri 7 Agustus 2026: empat titik, satu di Panti PYI Taheul
+          // (Tanah Sareal) dan tiga sisanya di Bogor Tengah. Menamainya dari titik
+          // pertama saja (`tanah-sareal`) menyembunyikan tiga titik lain yang
+          // justru di kecamatan berbeda; `pyi-taheul-bogor-tengah` menyebut
+          // keduanya tanpa mengulang kawasan yang sama dua kali.
+          //
+          // Batas empat kata itu yang membedakan area dari judul yang kepanjangan.
+          // `dukuh-atas` (2) dan `pyi-taheul-bogor-tengah` (4) lolos, sementara
+          // `jumat-berkah-masjid-nurul-hikmah-bogor` (6) ditolak. Tanpa batas itu
+          // regex ini menerima judul apa pun asal ada tanggalnya.
           slug: {
             label: 'Slug',
             description:
               'Bentuknya wajib: program-YYYY-MM-DD-area, contoh jumat-berkah-2026-07-31-bogor. ' +
-              'Tombol regenerate tidak bisa menyusun bentuk ini karena ia hanya membaca judul, ' +
-              'jadi tanggal dan areanya ditulis tangan.',
+              'Areanya boleh menyebut beberapa tempat kalau kegiatannya memang menyentuh beberapa titik, ' +
+              'tapi kawasan yang sama cukup ditulis sekali dan totalnya maksimal empat kata, ' +
+              'contoh pyi-taheul-bogor-tengah. Tombol regenerate tidak bisa menyusun bentuk ini karena ' +
+              'ia hanya membaca judul, jadi tanggal dan areanya ditulis tangan.',
             validation: {
               pattern: {
-                regex: /^[a-z0-9]+(?:-[a-z0-9]+)*-\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+){1,3}$/,
+                regex: /^[a-z0-9]+(?:-[a-z0-9]+)*-\d{4}-\d{2}-\d{2}(?:-[a-z0-9]+){1,4}$/,
                 message:
-                  'Slug harus berbentuk program-YYYY-MM-DD-area, contoh: jumat-berkah-2026-07-31-bogor. ' +
-                  'Huruf kecil semua, tanpa spasi, dan areanya paling banyak tiga kata.',
+                  'Slug harus berbentuk program-YYYY-MM-DD-area, contoh: jumat-berkah-2026-07-31-bogor ' +
+                  'atau jumat-berkah-2026-08-07-pyi-taheul-bogor-tengah. Huruf kecil semua, tanpa spasi, ' +
+                  'dan areanya paling banyak empat kata. Kalau satu kawasan disinggahi beberapa kali, ' +
+                  'tulis kawasannya sekali saja.',
               },
             },
           },

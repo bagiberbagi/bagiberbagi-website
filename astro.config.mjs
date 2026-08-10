@@ -60,11 +60,11 @@ export default defineConfig({
     // Pada build statis ini terbit sebagai stub meta-refresh ber-noindex, bukan
     // HTTP 30x. Cukup untuk pembaca manusia, dan noindex-nya menjaga stub itu
     // tidak ikut terindeks menggantikan halaman aslinya.
-    '/jejak/jumat-berkah-2026-07-17': '/jejak/jumat-berkah-2026-07-17-tegallega/',
+    '/jejak/jumat-berkah-2026-07-17': '/jejak/jumat-berkah-2026-07-17-nurul-hikmah-tegallega/',
     '/jejak/jumat-berkah-2026-07-17-jumat-berkah-masjid-nurul-hikmah-bogor':
-      '/jejak/jumat-berkah-2026-07-17-tegallega/',
+      '/jejak/jumat-berkah-2026-07-17-nurul-hikmah-tegallega/',
     '/jejak/jumat-berkah-asuhan-pyi-yatim-and-zakat-cab-taheul-jl-heulang':
-      '/jejak/jumat-berkah-2026-08-07-tanah-sareal/',
+      '/jejak/jumat-berkah-2026-08-07-pyi-taheul-bogor-tengah/',
   },
 
   // Keystatic Cloud's local-dev auth flow redirects to 127.0.0.1 specifically

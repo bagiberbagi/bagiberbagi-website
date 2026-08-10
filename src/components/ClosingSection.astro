@@ -15,11 +15,11 @@
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import logoMark from '../assets/images/logo/logo-mark.png';
-import Container from './Container.astro';
+import Container, { type ContainerWidth } from './Container.astro';
 import { buildWaLink } from '../lib/format';
 
 // Seksi ini lahir sebagai penutup beranda dan sekarang dipasang juga di
-// `/tentang/` dan `/jejak/`, jadi dua hal yang memang berbeda per halaman
+// `/tentang/` dan `/jejak/`, jadi tiga hal yang memang berbeda per halaman
 // diangkat jadi prop. Sisanya sengaja tidak: pilihan perannya, kalimat
 // penolongnya, dan bentuk kartunya sama di mana pun, dan menjadikannya prop
 // cuma membuka jalan bagi tiga versi yang perlahan menyimpang.
@@ -29,9 +29,19 @@ interface Props {
   kick?: string;
   /** Membedakan penutup tiap halaman di analitik. */
   source?: string;
+  /** Tier lebar, mengikuti halaman yang memasangnya. Beranda dan `/tentang/`
+   *  disusun dari komponen yang masing-masing memegang lebarnya sendiri, jadi
+   *  `wide` di sana. `/jejak/` sebaliknya: halaman itu memilih satu tier untuk
+   *  semua seksinya supaya tepi kiri-kanan tak melangkah keluar di seksi
+   *  terakhir, jadi ia menyerahkan `standard` ke sini. */
+  width?: ContainerWidth;
 }
 
-const { kick = 'Sebelum kamu pergi', source = 'closing_home' } = Astro.props;
+const {
+  kick = 'Sebelum kamu pergi',
+  source = 'closing_home',
+  width = 'wide',
+} = Astro.props;
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -57,7 +67,7 @@ const WA_GLYPH =
 ---
 
 <section id="penutup" class="closing py-24 md:py-32 bg-white scroll-mt-24" data-picker data-wa={waBase}>
-  <Container width="wide">
+  <Container {width}>
     <div class="cl-grid">
       <div class="cl-left">
         <p class="eyebrow" data-fade>{kick}</p>

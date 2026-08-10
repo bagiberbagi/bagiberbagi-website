@@ -1,16 +1,16 @@
 ---
-import { getEntry } from 'astro:content';
 import { Image, getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import JejakCard from '../../components/JejakCard.astro';
 import Container from '../../components/Container.astro';
+import ClosingSection from '../../components/ClosingSection.astro';
 import { getJejak, dedupePhotos } from '../../lib/jejak';
 import { getPrograms } from '../../lib/programs';
 import { getOrganisasiRefs } from '../../lib/organisasi';
 import { getGlobalImpact } from '../../lib/impact';
-import { buildWaLink, formatMetric } from '../../lib/format';
+import { formatMetric } from '../../lib/format';
 import { PINTU } from '../../consts';
 
 // Showcase global "Jejak & Dampak": angka agregat seluruh situs + feed semua
@@ -28,14 +28,12 @@ import { PINTU } from '../../consts';
 // Lebar konten efektif di layar lebar = 1024 dikurangi padding Container
 // (md:px-10 kiri-kanan) = 944px. Angka itu yang jadi dasar semua hitungan
 // `sizes`/`widths` gambar di bawah; kalau tier seksi diubah, hitung ulang.
-const [jejak, programs, impact, organisasiRefs, site] = await Promise.all([
+const [jejak, programs, impact, organisasiRefs] = await Promise.all([
   getJejak(),
   getPrograms(),
   getGlobalImpact(),
   getOrganisasiRefs(),
-  getEntry('settings', 'site'),
 ]);
-if (!site) throw new Error('settings/site entry not found');
 
 // Atribusi organisasi di kartu: logo saja, tanpa tautan (akar kartu sudah
 // `<a>`). Peta hanya berisi organisasi ber-halaman, jadi jejak yang menyebut
@@ -188,11 +186,6 @@ const FEED_REVEAL_STEP = 9;
 // Maksimal 4 kartu angka (1 kali-kegiatan + 3 metrik teratas) supaya grid tak
 // pecah kalau editor menambah label metrik baru.
 const topMetrics = impact.metrics.slice(0, 3);
-
-const donateWa = buildWaLink(
-  site.data.waNumber,
-  'Halo, saya ingin ikut mendukung penyaluran berikutnya setelah melihat halaman Jejak & Dampak.'
-);
 
 const hasJejak = jejak.length > 0;
 
@@ -460,35 +453,15 @@ const STEPS_PENCATATAN = [
     </Container>
   </section>
 
-  <!-- CTA penutup: donasi (primer) + transparansi formal (sekunder) -->
-  <section id="penutup" class="section bg-white scroll-mt-24">
-    <Container>
-      <div class="rounded-card p-7 md:p-10 text-white text-center bg-gradient-to-br from-brand-orange to-brand-orangeDark">
-        <h2 class="text-heading-sm md:text-heading font-semibold mb-2.5">Dukung penyaluran berikutnya</h2>
-        <p class="text-body text-white/90 leading-relaxed max-w-text mx-auto mb-6">
-          Donasi kamu masuk ke kegiatan berikutnya, dan hasilnya dicatat di halaman ini seperti jejak di atas.
-        </p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <a
-            href={donateWa}
-            target="_blank"
-            rel="noopener"
-            data-track="donate_click"
-            data-track-source="jejak_page"
-            class="btn-secondary text-brand-orangeDark"
-          >
-            Donasi lewat WhatsApp
-          </a>
-          <a
-            href="/transparansi/"
-            class="inline-flex items-center rounded-full border-2 border-white/60 px-8 py-4 font-bold text-base text-white transition hover:bg-white/15 hover:-translate-y-0.5"
-          >
-            Kebijakan &amp; Laporan
-          </a>
-        </div>
-      </div>
-    </Container>
-  </section>
+  {/* Penutup: pemilih peran yang sama dengan beranda dan /tentang/, bukan kartu
+      oranye "Dukung penyaluran berikutnya" yang dulu duduk di sini. Kartu itu
+      cuma punya satu jalur, donasi, padahal orang yang selesai membaca dua
+      belas catatan kegiatan sering datang dengan pertanyaan lain: mereka punya
+      dapur, punya waktu, atau bicara atas nama perusahaan. Pemilih ini menjawab
+      keempatnya, dan jalur donasinya tetap ada sebagai pilihan pertama.
+      Tautan "Kebijakan & Laporan" ikut lepas dan itu tidak menghilangkan apa
+      pun: /transparansi/ ada di footer setiap halaman. */}
+  <ClosingSection kick="Setelah lihat jejaknya" source="closing_jejak" width="standard" />
 
   {gallery.length > 0 && <Lightbox />}
 </BaseLayout>

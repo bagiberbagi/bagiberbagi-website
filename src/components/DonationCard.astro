@@ -61,8 +61,13 @@ const collected = agenda ? Math.min(agenda.collectedPorsi, agenda.targetPorsi) :
 const remaining = agenda ? Math.max(agenda.targetPorsi - collected, 0) : 0;
 const progressPct = showProgress && agenda ? Math.round((collected / agenda.targetPorsi) * 100) : 0;
 
+// SEMENTARA; diganti `ajakan.aksi.mechanism.pricePerUnit` di Track F.
+// Sampai kartu ini membaca aksinya, harganya berhenti di sini sebagai satu
+// konstanta bernama, bukan sebagai angka yang tertanam di dalam `calcTotal`.
+const PRICE_PER_UNIT = 25000;
+
 // Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
-const price = calcTotal(1);
+const price = calcTotal(1, PRICE_PER_UNIT);
 const PRESETS = [6, 12, 20];
 
 // Tidak ada porsi terpilih saat halaman dibuka. Sebelumnya 6 porsi sudah
@@ -244,7 +249,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         {PRESETS.map((n) => (
           <button type="button" class="dc-chip" data-porsi={n} aria-pressed="false">
             <span class="dc-chip-t">{n} porsi</span>
-            <span class="dc-chip-s">{formatRupiah(calcTotal(n))}</span>
+            <span class="dc-chip-s">{formatRupiah(calcTotal(n, PRICE_PER_UNIT))}</span>
           </button>
         ))}
         <button type="button" class="dc-chip" data-porsi-custom aria-pressed="false">

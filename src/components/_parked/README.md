@@ -14,7 +14,6 @@ pakai, ketahuan saat itu juga, bukan nanti saat mau dipakai lagi.
 
 | Komponen | Kenapa dilepas dari beranda |
 |---|---|
-| `DonationCalculator.astro` | dilebur ke `DonationCard.astro`, kartu yang memegang pemilih porsi dan anchor `#donasi` di hero beranda maupun di halaman program |
 | `Stats.astro` | band angka belum dibutuhkan di beranda |
 | `ProgramFeatures.astro` | pesannya sudah dibawa seksi Masalah dan Solusi |
 | `ProgramHighlights.astro` | program aktif sekarang hidup di kartu hero. **Baca catatan di bawah** |
@@ -23,6 +22,24 @@ pakai, ketahuan saat itu juga, bukan nanti saat mau dipakai lagi.
 | `JoinUs.astro` | digantikan `ClosingSection.astro`, penutup pemilih peran |
 | `NextFridayChip.astro` | chip hitung mundur dari hero lama, sengaja disimpan untuk dipakai di tempat lain |
 | `JejakTerbaru.astro` | disembunyikan sejak sebelum revamp, desainnya belum selaras dengan beranda |
+
+## Yang sudah dihapus dari sini
+
+`DonationCalculator.astro` dan `src/scripts/calculator.js` dihapus 10 Agustus 2026,
+bukan sekadar dilepas dari beranda.
+
+Alasannya: `calcTotal()` sekarang menuntut harga per satuan sebagai argumen kedua
+yang wajib, karena harga itu milik program dan bukan milik situs. Kalkulator
+parkir memanggilnya dengan satu argumen, jadi kalau suatu hari dipasang lagi ia
+akan menampilkan `NaN` tanpa satu pun peringatan. Komponen parkir yang rusak
+saat dibangunkan lebih buruk daripada tidak ada komponennya.
+
+Yang ikut hilang, dan tabel di atas dulu tidak menyebutnya: kalkulator itu punya
+**dropdown pemilih program**, sesuatu yang `DonationCard.astro` memang tidak
+punya. Kartu itu selalu berada di dalam konteks satu program (program berjalan
+di hero, program halaman itu sendiri di halaman program), jadi ia tak pernah
+perlu bertanya program mana. Menghidupkan lagi pemilih lintas-program bukan
+memulihkan desain lama, itu keputusan desain baru.
 
 ## Catatan penting soal `ProgramHighlights`
 

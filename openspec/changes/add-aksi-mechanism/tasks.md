@@ -137,10 +137,26 @@ a single file without 3. None of them block Track A, C or E.
       `conversation` mechanism, which is what it renders today, so nothing about that page moves.
       What changes is why: it stops being a slug in `INQUIRY_PROGRAMS` and becomes a programme
       whose aksi declares a conversation.
-- [ ] **Q5. Should the CSR and community ways-in appear on `/berbagi-makanan/`?** Track D sets
+- [x] **Q5. Should the CSR and community ways-in appear on `/berbagi-makanan/`?** Track D sets
       `showOnPintu: false` on all three programme-scoped aksi so the numbered list stays at its
       current three items. Flipping them on lengthens it to six and surfaces two real ways to
       take part that the pintu page hides today.
+
+      **Answered 10 August 2026: stays at three.** Decided here rather than by the owner, on
+      their instruction to carry on, because it is one boolean per entry and reversible the day
+      anyone disagrees.
+
+      Two reasons, and the second is the one that changed the answer. First, the pintu page is a
+      channel page: it explains why the pintu exists and hands the reader to a programme. Six
+      numbered items is a directory, and a directory competes with the programme list sitting
+      right below it. Second, the CSR and community paths are no longer hidden the way the
+      question assumed. `ClosingSection`'s picker offers "dapur saya" and "lewat perusahaan" and
+      now closes three pages, the homepage, `/tentang/` and `/jejak/`, so both asks already reach
+      the reader with a message written for them.
+
+      **What would reverse it:** the picker never landing on the pintu pages *and* the enquiries
+      from those two paths staying near zero. Then `/berbagi-makanan/` really is where they are
+      missing, and the flag flips.
 - [x] **Q6. Does `inquiry_click` survive?** See F5. **Recommendation: keep both event names**,
       `donate_click` for `quantity` and `inquiry_click` for `conversation`, so the historical
       conversion series stays comparable across the change.
@@ -236,54 +252,124 @@ collection when this track ends, so the site is byte-identical.
 `keystatic.config.ts` today. Its on-disk JSON shape is the single most fragile assumption in the
 design, and B4 exists to find out what it actually is before any reader is written against it.
 
-- [ ] B1 Add the `aksi` collection to `src/content.config.ts`: `glob({ pattern: '*.json', base:
+- [x] B1 Add the `aksi` collection to `src/content.config.ts`: `glob({ pattern: '*.json', base:
       './src/content/aksi' })`, schema `{ items: z.array(aksiItem).default([]) }`. Six files, one
       per `PintuId`, id = the pintu id.
-- [ ] B2 **The schema is permissive; the reader is strict.** This is the rule that closes the
+- [x] B2 **The schema is permissive; the reader is strict.** This is the rule that closes the
       sharpest gap in the design, which had `pricePerUnit: z.number().positive()` and
       `presets: […].min(1)`. `fields.integer` in this repo is written with `defaultValue` and no
       `validation: { isRequired: true }` (`keystatic.config.ts:363,368,582`), so clearing the box
       writes `null`; `fields.array` accepts zero items. Either one would throw inside
       `astro:content` and take the whole build down from the admin UI, with no developer present.
-      So:
-      - `pricePerUnit: z.number().positive().nullish()`
-      - `presets: z.array(z.number().positive()).default([])`
-      - `message: z.string().default('')`
-      - `program: z.string().nullish()` — `fields.relationship` writes `null` when cleared, the
-        same reason `fields.image` fields in this repo are `.nullish()` and not `.optional()`.
+
+      **Shipped even more permissive than the list below, and B4 is why.** Reading Keystatic's
+      serialisers showed every empty field omits its key rather than writing a value, so the
+      constraint that mattered was not `.positive()` but tolerating an absent key at every level
+      including `value` itself. What shipped:
+      - `pricePerUnit: z.number().nullish()` — `.positive()` dropped, see B4.1
+      - `presets: z.array(z.number().nullish()).default([])`
+      - `packages: z.array(z.string().nullish()).default([])`
+      - `message: z.string().nullish()`, inside a `value` that is itself `.nullish()`
+      - `title: z.string().default('')`, `desc: z.string().nullish()`
+      - `program: z.string().nullish()` — `fields.relationship` writes `undefined` when cleared
+      - `showOnPintu: z.boolean().default(true)` — safe as a `.default()`, and it is the one
+        field where that is true: `fields.checkbox` serialises `{ value }` unconditionally, so
+        `false` is written explicitly and can never be mistaken for an absent key.
       Every one of these is normalised or warned about in Track C, never rejected here.
-- [ ] B3 Add the Keystatic side in the **same commit**: an `aksiPintu(id: PintuId)` factory
+- [x] B3 Add the Keystatic side in the **same commit**: an `aksiPintu(id: PintuId)` factory
       returning a `singleton()`, six entries in `singletons`, and an `Aksi` group in
       `ui.navigation`. `format: 'json'` on both sides.
-      - [ ] B3.1 **The six singleton keys must be literal.** `keystatic.config.ts:74-78` already
+      - [x] B3.1 **The six singleton keys must be literal.** `keystatic.config.ts:74-78` already
             records why, in the comment above `legalPage()`: `ui.navigation` needs literal keys
             to reference them, so a computed key from `Object.fromEntries(PINTU_IDS.map(...))`
             does not work. Guard the drift with
             `const AKSI_KEYS = { food: 'aksiFood', … } satisfies Record<PintuId, string>` so
             adding a pintu to `PINTU_IDS` fails to compile until its singleton exists.
-      - [ ] B3.2 `mechanism` is `fields.conditional` over a three-option select
+
+            **`satisfies` alone was not enough.** With `satisfies Record<PintuId, string>` the
+            property types widen to `string`, and `ui.navigation` demands the literal union of
+            singleton keys, so it failed to compile with a type error naming `Aksi: string[]`.
+            `as const satisfies Record<PintuId, string>` keeps both halves: literal values for
+            navigation, exhaustiveness against `PintuId`.
+      - [x] B3.2 `mechanism` is `fields.conditional` over a three-option select
             (`none` / `conversation` / `quantity`), default `conversation`.
-      - [ ] B3.3 Field descriptions in Indonesian, matching the tone of the existing ones. The
+      - [x] B3.3 Field descriptions in Indonesian, matching the tone of the existing ones. The
             `program` relationship's description must say it is required when the mechanism is
             "pilih jumlah", since the schema cannot enforce that (see B2).
-- [ ] B4 **The spike, before Track C starts and before anything is authored by hand.** Open
-      `/keystatic`, save one throwaway aksi of each of the three mechanism kinds, read the JSON
-      on disk, and correct the zod in `content.config.ts` to match what Keystatic actually wrote.
-      Nothing reads the collection yet, so a mismatch costs one edit here and a rewrite later.
-      - [ ] B4.1 **Paste the three raw JSON bodies into the track's report.** Track C is written
-            against them and cannot start without them.
-      - [ ] B4.2 If `fields.conditional` turns out not to nest inside `fields.array` in
-            `@keystatic/core@0.5.51`, fall back to a flat `kind` select plus every mechanism
-            field side by side in one object. The admin form is uglier, zod still discriminates
-            on `kind`, and `readAksi()` in Track C absorbs the difference so nothing downstream
-            notices. **Say in the report which of the two shapes shipped.**
-      - [ ] B4.3 Delete the throwaway entries. This track ships an empty
-            `src/content/aksi/` — Track D fills it.
-- [ ] B5 Confirm `/keystatic` lists six Aksi singletons and that each one saves and reloads. A
+- [x] B4 **The spike, before Track C starts and before anything is authored by hand.** Run as a
+      round-trip against Keystatic's own `createReader()` rather than through the admin UI:
+      `storage.kind` is `'cloud'`, so saving a throwaway entry from `/keystatic` would commit it
+      to the real repository through Keystatic Cloud. Reading the serialisers in
+      `@keystatic/core@0.5.51` and then feeding hand-written files back through `parseProps`
+      tests the same code the admin uses, without writing anything to the cloud.
+
+      - [x] B4.1 **The three raw JSON bodies, verified accepted by `createReader()` and by
+            `astro:content`.**
+
+            `discriminant: 'none'` — `fields.empty()` serialises `{ value: undefined }`, so the
+            `value` key is absent from the file entirely:
+            ```json
+            { "title": "Aksi none", "showOnPintu": true,
+              "mechanism": { "discriminant": "none" } }
+            ```
+            `discriminant: 'conversation'`:
+            ```json
+            { "title": "Aksi conversation", "desc": "Punya surplus makanan layak?",
+              "showOnPintu": true,
+              "mechanism": { "discriminant": "conversation",
+                "value": { "message": "Halo, saya punya surplus makanan." } } }
+            ```
+            `discriminant: 'quantity'`:
+            ```json
+            { "title": "Aksi quantity", "program": "jumat-berkah", "showOnPintu": false,
+              "mechanism": { "discriminant": "quantity",
+                "value": { "unit": "porsi", "pricePerUnit": 25000,
+                           "presets": [10, 20, 50], "packages": [] } } }
+            ```
+
+            **The finding Track C has to be built on: an empty field is an ABSENT KEY, not a
+            null.** Every serialiser in `@keystatic/core@0.5.51` returns `{ value: undefined }`
+            for its empty state, and `undefined` disappears when the file is written as JSON:
+            `text` → `value === '' ? undefined : value`; `integer` and `relationship` →
+            `value === null ? undefined : value`; `empty()` → `undefined` always. The design and
+            B2 both said "writes `null`", which is what the *reader* hands back after filling
+            defaults, not what is on disk. Both are covered by `.nullish()`, so nothing had to
+            change twice — but a Track C reader written to test `x === null` would miss every
+            real case.
+
+            Confirmed by round-trip on the sparsest file a Keystatic save can produce
+            (`{ "discriminant": "quantity", "value": { "presets": [], "packages": [] } }`):
+            `createReader()` returns `unit: ""`, `pricePerUnit: null`, `presets: []`.
+
+      - [x] B4.2 **`fields.conditional` nests inside `fields.array` and the fallback was not
+            needed.** `parseProps` recurses through `array` → `object` → `conditional` with no
+            special case, and it enforces that a conditional object carries exactly the keys
+            `discriminant` and `value` and nothing else. The `{ discriminant, value }` wire shape
+            the design guessed is correct. **The nested shape shipped**, not the flat `kind`
+            select.
+      - [x] B4.3 Delete the throwaway entries. **Track B ships no `src/content/aksi/` at all**,
+            not an empty directory: verified that `bun run build` succeeds with the directory
+            absent, so no `.gitkeep` is needed to keep a collection-with-no-entries valid. Track D
+            creates the six files.
+- [x] B5 Confirm `/keystatic` lists six Aksi singletons and that each one saves and reloads. A
       silently empty list is the extension-mismatch failure this repo has already had once.
-- [ ] B6 Confirm `bun run build` still emits the same page count as `main` and that
+
+      Verified structurally rather than by hand in the admin, because the admin writes to
+      Keystatic Cloud: the build emits `/keystatic/singleton/aksiFood/` through `…/aksiTree/`,
+      six routes, which only exist for registered singletons; `astro check` proves the six
+      `ui.navigation` keys resolve against the singleton union; and `createReader()` read both
+      test files back through the same parser the admin uses. The extension agreement holds,
+      `format: 'json'` on the Keystatic side and `pattern: '*.json'` on the Astro side.
+- [x] B6 Confirm `bun run build` still emits the same page count as `main` and that
       `git diff --stat` against a pre-change `dist/` is empty. Adding a collection nothing reads
       must change nothing.
+
+      **Measured by checksumming every file in `dist/` outside `dist/keystatic/`, building both
+      with and without the change: 360 files, one differs.** That one is
+      `_astro/KeystaticAdmin.*.js`, the admin application's own bundle, which changes because six
+      singletons were added to it. Every page, image, feed and script a visitor can reach is
+      byte-identical. Page count goes 55 → 61, all six new pages being the
+      `/keystatic/singleton/aksi*/` admin routes.
 
 **Done when**: the gate passes, `dist/` is unchanged, and the report carries the three raw JSON
 bodies from B4.1 plus the B4.2 verdict.
@@ -297,7 +383,7 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
 
 ### C1. `src/lib/aksi.ts`
 
-- [ ] C1.1 Types:
+- [x] C1.1 Types:
       ```ts
       export type AksiMechanism =
         | { kind: 'none' }
@@ -313,16 +399,16 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
         mechanism: AksiMechanism;
       }
       ```
-- [ ] C1.2 `readAksi(raw): Aksi[]` — **pure**, the only place the `fields.conditional` wire shape
+- [x] C1.2 `readAksi(raw): Aksi[]` — **pure**, the only place the `fields.conditional` wire shape
       is visible, and the only thing in this change that flattens `{discriminant, value}` into
       `{kind, …}`. It joins `format.ts` and `impact.ts`'s `aggregateMetrics` in `bun test`.
-- [ ] C1.3 `getAksiByPintu(pintuId)` and `getAksiForProgram(slug)`, both async, both resolving
+- [x] C1.3 `getAksiByPintu(pintuId)` and `getAksiForProgram(slug)`, both async, both resolving
       `program` through `programs.ts`.
-- [ ] C1.4 **Dangling references degrade, they do not throw.** Copy `getProgramSection()` in
+- [x] C1.4 **Dangling references degrade, they do not throw.** Copy `getProgramSection()` in
       `src/lib/home.ts` line for line: drop empty slugs, drop slugs that resolve to nothing, drop
       duplicates. An aksi whose `program` no longer exists keeps its title and description and
       loses its mechanism's destination, exactly like a jejak with a dead `organisasi`.
-- [ ] C1.5 **Invalid `quantity` numbers degrade, they do not throw.** Closes gap 3, the half the
+- [x] C1.5 **Invalid `quantity` numbers degrade, they do not throw.** Closes gap 3, the half the
       schema cannot cover:
       - `pricePerUnit` null, zero or negative → `console.warn` naming the pintu and the aksi
         title, and the mechanism becomes `conversation` with a message derived from the
@@ -332,7 +418,7 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
         `[6, 12, 20]`** — a hidden default is a second source of truth, and it is the same class
         of thing as the `|| '25000'` that Track F deletes.
       - `unit` empty → `'porsi'`.
-- [ ] C1.6 `resolvePintuHref(aksi, waNumber): string | null` — pure, tested. The destination of
+- [x] C1.6 `resolvePintuHref(aksi, waNumber): string | null` — pure, tested. The destination of
       **one aksi's button on the pintu page**, which is not the same thing as the card's own CTA:
       | mechanism | returns |
       |---|---|
@@ -341,17 +427,17 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
       | `quantity` with a resolvable `program.href` | `` `${program.href}#donasi` `` |
       | `quantity` with `program === null` | `null` + `console.warn` |
       | `quantity` where the programme resolves but `href` is `undefined` | `null` + `console.warn` |
-- [ ] C1.7 That last row closes gap 5 and needs a test of its own. `programs.ts:73` sets `href`
+- [x] C1.7 That last row closes gap 5 and needs a test of its own. `programs.ts:73` sets `href`
       only when `hasPage` is true, so attaching a quantity aksi to any inactive programme — a
       thing the admin's relationship picker allows, since it lists every programme — would
       otherwise render the literal string `undefined#donasi` on a live pintu page.
-- [ ] C1.8 `unit` is carried and read by nobody. The roughly fifteen `"porsi"` literals in
+- [x] C1.8 `unit` is carried and read by nobody. The roughly fifteen `"porsi"` literals in
       `DonationCard.astro`, `donation-card.js` and `buildDonationMessage` stay exactly as they
       are. **Do not thread them in this change.** Reserve the seam, do not build the machine.
 
 ### C2. `src/lib/ajakan.ts`
 
-- [ ] C2.1 ```ts
+- [x] C2.1 ```ts
       export interface Ajakan {
         aksi: Aksi;
         program: Program;
@@ -361,43 +447,62 @@ specifically on B4.1's raw JSON. Nothing imports these when the track ends.
       }
       export async function getAjakan(programSlug: string): Promise<Ajakan | null>;
       ```
-- [ ] C2.2 **`agenda` is gated inside the reader, not at the mount.** Closes the worst gap in the
+- [x] C2.2 **`agenda` is gated inside the reader, not at the mount.** Closes the worst gap in the
       design. `program/[program].astro:83` computes
       `isRunning = (await getPrograms()).find(p => p.active)?.slug === program.slug` and passes
       `agenda={isRunning ? site.data.nextAgenda : null}`. The comment above it says what happens
       without the test: *"tanpa penjagaan ini jadwal Jumat ikut nongol di halaman Ramadhan
       Berbagi"*. Move that test into `getAjakan` verbatim, carry the comment with it, and gate
       `schedule` the same way — the mount currently gates both.
-- [ ] C2.3 **No `cover` on `Ajakan`.** The hero passes a photo and the programme page
+- [x] C2.3 **No `cover` on `Ajakan`.** The hero passes a photo and the programme page
       deliberately passes none, which is what selects the flat panel via
       `class:list={['dcard', !photo && 'is-flat', …]}` at `DonationCard.astro:104`. A
       non-optional `cover` on the reader would grow a photo header on every programme page.
       Photo choice is presentation, so it stays a prop — see F2.
-- [ ] C2.4 **No `jejakCount` on `Ajakan`.** It is slot content the hero owns, not something the
+- [x] C2.4 **No `jejakCount` on `Ajakan`.** It is slot content the hero owns, not something the
       card renders. `Hero.astro` keeps its own `getGlobalImpact()` call and its own `slot="foot"`.
       Modelling it here would be a field nothing reads, which is the exact thing C1.8 refuses.
-- [ ] C2.5 **A programme with no aksi never returns `null`.** `null` is reserved for a slug that
+- [x] C2.5 **A programme with no aksi never returns `null`.** `null` is reserved for a slug that
       does not resolve to a programme at all. A programme that resolves but has no aksi attached
       gets a synthesised `conversation` mechanism built from `settings.waNumber` and the message
       the page hardcodes today —
       `` `Halo, saya ingin mendiskusikan program ${label}.` `` — plus a build-time
       `console.warn`. A half-finished Track D therefore degrades to what already ships instead of
       deleting the site's main CTA.
-- [ ] C2.6 `getAjakan` picks **one** aksi: the first, in array order, whose `program` resolves to
+- [x] C2.6 `getAjakan` picks **one** aksi: the first, in array order, whose `program` resolves to
       that slug. Both mounts render one card with one mechanism today. Many-aksi-per-card is not
       modelled; adding it later changes `ajakan.ts` and neither caller.
 
 ### C3. Tests
 
-- [ ] C3.1 `readAksi()` against the three raw JSON bodies from B4.1, one test per mechanism kind.
-- [ ] C3.2 `readAksi()` against each degradation in C1.5, asserting the returned shape **and**
+- [x] C3.1 `readAksi()` against the three raw JSON bodies from B4.1, one test per mechanism kind.
+- [x] C3.2 `readAksi()` against each degradation in C1.5, asserting the returned shape **and**
       that nothing throws.
-- [ ] C3.3 `resolvePintuHref()` across all five rows of C1.6.
-- [ ] C3.4 Keep the tests pure. `aksi.ts` must not import `astro:content` at module scope, for
+- [x] C3.3 `resolvePintuHref()` across all five rows of C1.6.
+- [x] C3.4 Keep the tests pure. `aksi.ts` must not import `astro:content` at module scope, for
       the same reason `impact.ts` imports `jejak.ts` lazily inside its async functions.
 
 **Done when**: the gate passes, `bun test` shows the new cases, and nothing in `src/` imports
 either new file yet.
+
+**Report.** Shipped as three files: `src/lib/aksi.ts` (types, `readAksi`, `resolvePintuHref`,
+`getAksiByPintu`, `getAksiForProgram`), `src/lib/ajakan.ts` (`getAjakan`), `src/lib/aksi.test.ts`
+(17 cases, `bun test` 61 pass across 6 files, up from 44 across 5). Nothing in `src/` imports
+either reader; the only mention outside them is one comment in `content.config.ts`.
+
+Two things came out different from the spec, both deliberate:
+
+- **`readAksi` takes `(pintu, items, bySlug)`, not `(raw)`.** C1.2 asks for it to be pure and
+  C1.3 asks the pintu id to reach the warnings; passing the resolved programme map in is what
+  lets both hold at once, and it is the same shape `aggregateMetrics` already uses.
+- **The tests capture `console.warn` instead of letting it print.** Ten warning lines per run
+  would have trained the next reader to ignore them, and worse, C1.5's requirement that the
+  warning *names the pintu and the aksi title* had no test at all. `withWarnings()` fixes both:
+  the log is clean and five cases now assert on the message text.
+
+One case earns its own line because it is the only degradation that stays silent: an unknown
+`discriminant` becomes `none` with **no** warning. `none` is a legitimate state, and Keystatic's
+select cannot produce any other value, so the only way to get there is a hand edit in git.
 
 ---
 
@@ -410,12 +515,12 @@ Files: `src/lib/format.ts`, `src/lib/format.test.ts`, `src/scripts/calculator.js
 The design said `calcTotal`'s only other caller is `DonationCard.astro`. That is wrong twice over,
 and this track's scope is the correction.
 
-- [ ] E1 `calcTotal(pax: number, pricePerUnit: number)`. **A required second parameter, not a
+- [x] E1 `calcTotal(pax: number, pricePerUnit: number)`. **A required second parameter, not a
       default** — a default would keep `25000` alive as a fallback and reintroduce the second
       source of truth this whole change exists to remove.
-- [ ] E2 `src/lib/format.test.ts` gains the argument. Add a case asserting that two different
+- [x] E2 `src/lib/format.test.ts` gains the argument. Add a case asserting that two different
       prices give two different totals, so the literal cannot creep back.
-- [ ] E3 **`src/scripts/calculator.js:13` also calls `calcTotal(pax)`.** It is imported by
+- [x] E3 **`src/scripts/calculator.js:13` also calls `calcTotal(pax)`.** It is imported by
       `src/components/_parked/DonationCalculator.astro:82`, and `tsconfig.json` includes `**/*`
       with only `dist` excluded, so it is in `astro check`'s scope. Being parked means it fails
       as a silent `NaN` rather than loudly. Two acceptable answers, pick one and say which:
@@ -425,18 +530,48 @@ and this track's scope is the correction.
         nothing outside `_parked/` imports it, and `index.astro:28` only mentions it in a comment.
       **Recommendation: delete both.** A parked component that would produce `NaN` if ever
       unparked is worse than no component.
-- [ ] E4 **`DonationCard.astro` has two call sites, not one**: `:65` (`const price = calcTotal(1)`)
+- [x] E4 **`DonationCard.astro` has two call sites, not one**: `:65` (`const price = calcTotal(1)`)
       and `:234` (`{formatRupiah(calcTotal(n))}` inside the preset chip label). The chip labels
       are the numbers a visitor actually reads, so missing `:234` ships wrong prices with a green
       build. Update both to take a `PRICE_PER_UNIT` constant declared at the top of the file with
       the comment *"temporary; replaced by `ajakan.aksi.mechanism.pricePerUnit` in Track F"*.
-- [ ] E5 **Touch nothing else in `DonationCard.astro`.** Track F owns the rest of that file.
-- [ ] E6 Prove `dist/` is unchanged. Build before and after, diff `dist/**/*.html`. Any difference
+- [x] E5 **Touch nothing else in `DonationCard.astro`.** Track F owns the rest of that file.
+- [x] E6 Prove `dist/` is unchanged. Build before and after, diff `dist/**/*.html`. Any difference
       is a defect in this track, not an improvement: the arithmetic is identical, only its
       plumbing moved.
 
 **Done when**: the gate passes, E6's diff is empty, and the report says which of E3's two answers
 shipped.
+
+**Report.**
+
+**E3 shipped the deletion**, the recommended answer. Both `_parked/DonationCalculator.astro` and
+`src/scripts/calculator.js` are gone.
+
+Verifying the README's premise before acting on it found it was loose, and that is worth
+recording because it slightly weakens the case for deleting. `_parked/README.md` said the
+calculator was "dilebur ke `DonationCard.astro`", folded in. It was not folded in whole: the
+calculator had a **programme dropdown** and `DonationCard` has none. The card is always inside a
+single programme's context — the running programme in the hero, that page's programme on a
+programme page — so it never asks which programme. Reviving a cross-programme picker would be a
+new design decision rather than a restoration. That distinction is now written into
+`_parked/README.md` under "Yang sudah dihapus dari sini" so the next reader is not told a
+half-true story about where the design went.
+
+**E6 measured, not assumed: 398 files in `dist/`, checksummed with and without the track, zero
+differences.** Built the stashed tree and the working tree and diffed the manifests.
+
+**Track E crossed into Track J's territory, deliberately, for four lines.** Deleting the
+calculator made four statements in the docs false — `.claude/rules/frontend-scripts.md` listing
+"donation calculator" among the scripts, `.claude/rules/content-model.md` naming
+`DonationCalculator` as a consumer of the programmes collection, the same file's line about the
+"client-side calculator script", and `.claude/rules/layout-tiers.md` naming its panel. Leaving a
+rules file asserting a component that no longer exists is a defect this track introduced, so this
+track fixed it rather than deferring to J. Two files outside every track's territory needed the
+same treatment: `_parked/README.md` and the comment at `src/pages/index.astro:28`.
+
+`content-model.md` also gained the sentence explaining why `calcTotal`'s second parameter is
+required rather than defaulted, since that is the rule a future reader is most likely to undo.
 
 ---
 

@@ -39,8 +39,16 @@ export function jejakPhotoAlt(title: string, index: number): string {
   return `Dokumentasi ${title}, foto ${index}`;
 }
 
-export function calcTotal(pax: number): number {
-  return pax * 25000;
+/**
+ * Total donasi untuk sejumlah pax.
+ *
+ * `pricePerUnit` WAJIB, sengaja tanpa nilai bawaan. Harganya milik program,
+ * bukan milik situs, jadi sebuah default di sini akan menghidupkan kembali
+ * angka 25000 sebagai jatuhan diam-diam — sumber kebenaran kedua, yang justru
+ * jadi alasan seluruh perubahan ini ada.
+ */
+export function calcTotal(pax: number, pricePerUnit: number): number {
+  return pax * pricePerUnit;
 }
 
 export function buildWaLink(waNumber: string, text?: string): string {

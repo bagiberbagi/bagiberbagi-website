@@ -43,6 +43,30 @@ const SEO_TITLE_MAX = 60;
 const SEO_DESCRIPTION_MAX = 160;
 
 /**
+ * Batas lunak paragraf slide "Panggung Bergilir".
+ *
+ * Angkanya diukur, bukan dikarang. Tiap slide punya lantai tinggi
+ * (`min-height: 560px` di ponsel, `78vh` dari 768 ke atas, lihat
+ * `ProgramStage.astro`), dan selama teksnya masih muat di bawah lantai itu
+ * SEMUA slide bertinggi persis sama, berapa pun panjang paragrafnya. Jadi yang
+ * dijaga di sini bukan kerapian per slide, melainkan titik di mana satu slide
+ * mulai melewati lantainya: begitu itu terjadi, seluruh pita ikut meninggi dan
+ * slide yang teksnya pendek berakhir dengan ruang kosong di bawahnya.
+ *
+ * Diukur 10 Agustus 2026 dengan menumbuhkan paragrafnya 20 karakter sekali
+ * langkah sampai tingginya bergerak:
+ *
+ *   1280px lebar  -> tidak pernah tumbuh, bahkan di 400 karakter
+ *    390px lebar  -> mulai tumbuh di sekitar 340 karakter
+ *
+ * Ponsel yang jadi pengikatnya, jadi 300 dipakai sebagai batas dengan sisa
+ * ruang secukupnya untuk font fallback dan bahasa yang lebih panjang. Isi
+ * terpanjang hari ini 212 karakter (Ramadhan Berbagi), jadi batas ini tidak
+ * memotong apa pun yang sudah ditulis.
+ */
+const LEAD_SOFT_MAX = 300;
+
+/**
  * Blok SEO yang menempel di entri konten yang punya halamannya sendiri.
  * Semua opsional: dikosongkan berarti halaman memakai judul/deskripsi yang
  * diturunkan dari isinya, seperti sebelum blok ini ada. Batas panjang tidak
@@ -739,12 +763,15 @@ export default config({
           {
             kicker: fields.text({
               label: 'Baris kecil di atas judul',
-              description: 'Contoh: Musiman, perorangan dan komunitas. Kosongkan kalau tidak perlu.',
+              description:
+                'Contoh: Ketika Ramadhan tiba. Kosongkan kalau tidak perlu. Satu baris pendek, sekitar 40 karakter.',
             }),
             lead: fields.text({
               label: 'Paragraf slide',
-              description: 'Kosongkan untuk memakai Ringkasan di atas. Isi hanya kalau slide butuh kalimat sendiri.',
+              description:
+                'Kosongkan untuk memakai Ringkasan di atas. Isi hanya kalau slide butuh kalimat sendiri. Panjang aman sampai sekitar 300 karakter: di bawah itu semua slide bertinggi sama, di atasnya slide ini tumbuh sendiri di layar HP dan slide lain ikut kebagian ruang kosong. Yang terpanjang sekarang 212 karakter.',
               multiline: true,
+              validation: { length: { max: LEAD_SOFT_MAX } },
             }),
             status: fields.text({
               label: 'Status menunggu',
@@ -754,7 +781,7 @@ export default config({
             caption: fields.text({
               label: 'Sumber foto',
               description:
-                'Baris kecil di pojok kanan atas slide. Kalau fotonya bukan dokumentasi program ini, katakan apa adanya di sini.',
+                'Baris kecil di pojok kanan atas slide. Kalau fotonya bukan dokumentasi program ini, katakan apa adanya di sini. Satu baris, jadi jaga di bawah 50 karakter; yang terpanjang sekarang 45.',
             }),
             ctaLabel: fields.text({
               label: 'Teks tombol',
@@ -774,7 +801,7 @@ export default config({
           {
             label: 'Panggung Bergilir (beranda)',
             description:
-              'Teks slide program ini di pita foto besar beranda. Judul slide memakai Nama Program, dan fotonya diambil dari Foto program atau jejak terbarunya.',
+              'Teks slide program ini di pita foto besar beranda. Judul slide memakai Nama Program, dan fotonya diambil dari Foto program. Semua slide punya tinggi yang sama selama teksnya masih di dalam batas yang disebut tiap field di bawah.',
           }
         ),
         detail: fields.object(

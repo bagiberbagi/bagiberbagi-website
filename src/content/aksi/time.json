@@ -4,19 +4,34 @@
       "title": "Kirim daftar keahlianmu",
       "desc": "Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin mendaftar jadi relawan. Boleh saya kirimkan daftar keahlian dan jam luang saya?"
+        }
+      }
     },
     {
       "title": "Ikut satu penyaluran dulu",
       "desc": "Penyaluran makanan sudah berjalan dan kamu boleh ikut membantu di situ, karena melihat sendiri satu kegiatan lebih cepat menjelaskan bantuan seperti apa yang benar-benar dipakai.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin ikut membantu di satu penyaluran makanan lebih dulu. Kapan kegiatan terdekatnya?"
+        }
+      }
     },
     {
       "title": "Ajak satu orang bergantian",
       "desc": "Kalau ada dua orang yang bisa saling menggantikan, jadwal tidak langsung berantakan saat salah satu berhalangan, jadi ceritakan pintu ini ke teman yang keahliannya berbeda darimu.",
       "showOnPintu": true,
-      "mechanism": { "discriminant": "none" }
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya dan satu teman ingin mendaftar jadi relawan yang bisa saling menggantikan jadwal."
+        }
+      }
     }
   ]
 }

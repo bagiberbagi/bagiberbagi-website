@@ -723,7 +723,7 @@ on **Q3** for permission to draft.
       `consts.ts`, word for word**. Not a script, not a transform, not a rewrite. The lines are
       the owner's: food's "Donasi paket", "Salurkan surplus", "Jadi mitra dapur"; goods' "Pilah
       isi lemari", "Kabari barang yang ada", "Bantu susun standarnya", and the twelve others.
-- [ ] D3 Mechanisms for the eighteen:
+- [x] D3 Mechanisms for the eighteen:
       - food / "Donasi paket" → `quantity`, program `jumat-berkah`, price per Q1, presets
         `[6, 12, 20]` (the three currently hardcoded at `DonationCard.astro:66`).
       - food / "Salurkan surplus" and "Jadi mitra dapur" → `conversation`.
@@ -753,7 +753,7 @@ a copy review, not a dev-server review. Do not start a server for it.
 
 ---
 
-### Status 10 August 2026: D2, D4 and D6 done. D3 partly. D5 impossible. D7 does not hold.
+### Status 10 August 2026: D2, D3, D4 and D6 done. D5 impossible. D7 does not hold.
 
 **Track F turned out to depend on Track D, and the ordering diagram says it does not.** That is
 the finding, and it is worth more than the file that came out of it. `getAjakan` synthesises a
@@ -780,8 +780,13 @@ the same day.** Checking what the pintu page actually renders changed the shape 
 they went across verbatim — 36 strings compared against `consts.ts` by script, zero differences,
 and the six built pintu pages diffed against `main` with not one character of text moved.
 
-**The fifteen non-food aksi ship with `mechanism: none`, which is the honest state, not a
-placeholder.** `none` is what the schema calls an aksi whose message has not been written yet,
+**The fifteen non-food aksi shipped first with `mechanism: none`, the honest state rather than a
+placeholder, and were flipped the same day once the owner evaluated `MESSAGES.md`.** Seventeen
+aksi now carry a conversation message; zero are left at `none`. Two of the sixteen drafts were
+revised on the owner's call — the three colon endings closed into questions, and numbers 8 and 11
+turned from descriptions into requests. The register stayed as drafted.
+
+The paragraph below is kept because the *mechanism* it describes is the reusable part:** `none` is what the schema calls an aksi whose message has not been written yet,
 and it renders exactly what the page rendered before: a numbered item with no button. So D3 is
 half done by design. When the owner marks up `MESSAGES.md`, flipping fifteen entries from `none`
 to `conversation` is a **content edit** — no code, no rebuild of any track, no second review.

@@ -1,4 +1,20 @@
-# The sixteen messages, drafted for the owner to evaluate
+# The sixteen messages — evaluated, revised, and shipped
+
+**Status 10 August 2026: approved with two changes, written into
+`src/content/aksi/*.json`, and live.** All eighteen aksi now carry a mechanism; none are left at
+`none`. What the owner decided, against the three things this document asked them to look at:
+
+| what was asked | decided |
+|---|---|
+| register: "saya", plain | **keep it.** Matches the five that already shipped, so nothing sounds out of place |
+| the colon endings on 4, 7, 13 | **closed into questions.** A message that ends mid-sentence can be sent as-is and arrive looking unfinished |
+| numbers 8 and 11, which described a situation | **turned into requests.** Both end on a question now, so the team knows what is wanted |
+
+The revised text is in the tables below; the original drafts are in this file's git history.
+
+---
+
+## The sixteen messages, as drafted for the owner to evaluate
 
 Q3 asked who writes these. Answered 7 August 2026: **"kamu isi aja nanti aku evaluasi."** So they
 are drafted here rather than in the content files, because a draft in `src/content/aksi/*.json` is
@@ -67,7 +83,9 @@ yet, rather than as a destination anything is designed to land on.
 ## Waktu
 
 **4. Kirim daftar keahlianmu**
-> Halo, saya ingin mendaftar jadi relawan. Ini yang bisa saya kerjakan dan berapa jam saya luang tiap minggu:
+> Halo, saya ingin mendaftar jadi relawan. Boleh saya kirimkan daftar keahlian dan jam luang saya?
+
+*Revised: the draft ended on a colon.*
 
 **5. Ikut satu penyaluran dulu**
 > Halo, saya ingin ikut membantu di satu penyaluran makanan lebih dulu. Kapan kegiatan terdekatnya?
@@ -78,10 +96,14 @@ yet, rather than as a destination anything is designed to land on.
 ## Ruang
 
 **7. Daftarkan ruang atau kendaraanmu**
-> Halo, saya ingin mendaftarkan ruang atau kendaraan yang bisa dipakai untuk kegiatan. Ini jenis, lokasi, dan hari kosongnya:
+> Halo, saya ingin mendaftarkan ruang atau kendaraan yang bisa dipakai untuk kegiatan. Boleh saya kirimkan jenis, lokasi, dan hari kosongnya?
+
+*Revised: the draft ended on a colon.*
 
 **8. Pinjamkan langsung ke sekitarmu**
-> Halo, ruang saya sedang dipakai untuk kegiatan di sekitar saya, dan saya ingin ini tercatat sebagai bagian dari jejaring bagiberbagi.id.
+> Halo, ruang saya sedang dipakai untuk kegiatan di sekitar saya. Boleh dicatat sebagai bagian dari jejaring bagiberbagi.id?
+
+*Revised: the draft described a situation without asking for anything.*
 
 **9. Kenalkan kami ke pengelolanya**
 > Halo, saya ingin menyambungkan bagiberbagi.id dengan pengurus aula, masjid, atau gudang yang saya kenal.
@@ -95,7 +117,9 @@ yet, rather than as a destination anything is designed to land on.
 message that ignored that would put a "chat us" button under a sentence saying "go read first".*
 
 **11. Daftar minat zakat atau sedekahmu**
-> Halo, saya ingin mendaftar lebih dulu untuk zakat atau sedekah, supaya dikabari begitu jalurnya resmi dibuka.
+> Halo, boleh saya didaftarkan lebih dulu untuk zakat atau sedekah, supaya dikabari begitu jalurnya resmi dibuka?
+
+*Revised: the draft described a situation without asking for anything.*
 
 **12. Bawa anggaran CSR kantormu**
 > Halo, saya memegang anggaran CSR di kantor saya. Boleh kita bicarakan bentuk laporan dan dokumentasi yang kami butuhkan?
@@ -103,7 +127,9 @@ message that ignored that would put a "chat us" button under a sentence saying "
 ## Pohon
 
 **13. Tunjuk titik yang panas**
-> Halo, saya ingin menunjukkan jalan atau kawasan di sekitar saya yang terik dan belum punya peneduh. Ini lokasinya:
+> Halo, saya ingin menunjukkan jalan atau kawasan di sekitar saya yang terik dan belum punya peneduh. Boleh saya kirimkan lokasinya?
+
+*Revised: the draft ended on a colon.*
 
 **14. Tawarkan lahan atau bibit**
 > Halo, saya punya lahan yang bisa ditanami atau bibit yang siap dipindahkan.
@@ -134,13 +160,23 @@ one.
 
 ---
 
-## What to mark up
+## What was marked up — answered, see the top of this file
 
-Read them as a set rather than one by one. The three things worth your eye:
+All three were decided on 10 August 2026 and the text above is already revised. Kept here so the
+questions and their answers stay next to each other.
 
-1. **Register.** They use "saya" and stay plain. If the site's voice wants them warmer or more
-   formal, say so once and all sixteen move together.
-2. **The colon endings** (4, 7, 13). They hand the sentence to the sender to finish. That is either
-   a helpful nudge or an unfinished-looking message, and only you can call it.
-3. **Numbers 8 and 11**, which describe a situation rather than make a request. They are the two
-   most likely to read as odd out loud.
+## One thing this document solved in the message and not on the button
+
+Dana's first aksi asks the reader to open `/jejak/` **before** sending money, and the message was
+written to agree with that — it says the reader has already looked. But the button above the
+message reads "Hubungi lewat WhatsApp", because the label comes from the mechanism kind and every
+conversation aksi shares it.
+
+So the sentence says go read, and the control says come talk. Not a contradiction a visitor would
+trip over, but the one place on six pintu pages where the button and the text are pulling slightly
+apart. It is a **consequence of Q7's answer**, not a defect: with everything defaulting to a
+WhatsApp conversation, an aksi whose whole point is "go look first" has no other control to offer.
+
+Fixing it properly means a per-aksi CTA label in content, which is a schema field plus one more
+string per entry for the owner to write. Not worth it for one row today; worth revisiting if a
+second aksi ever lands in the same position.

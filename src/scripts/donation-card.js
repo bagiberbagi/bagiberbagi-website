@@ -52,7 +52,18 @@ function initAgenda(card) {
 }
 
 function initPicker(card) {
-  const price = parseInt(card.dataset.price || '25000', 10);
+  // Tanpa harga tak ada pemilih porsi untuk dinyalakan: kartunya bermekanisme
+  // percakapan, dan tombolnya sudah lengkap dari server. Dulu di sini ada
+  // jatuhan `|| '25000'` yang tak pernah terpakai (server selalu menulis
+  // `data-price`), dan justru karena tak pernah terpakai ia berbahaya: begitu
+  // harga jadi milik konten, jatuhan itu jadi sumber kebenaran kedua yang siap
+  // menghitung dengan angka lama tanpa satu pun tanda.
+  if (card.dataset.price === undefined) return;
+  const price = parseInt(card.dataset.price, 10);
+
+  // TODO: `|| 'Jumat Berkah'` di bawah adalah jatuhan basi sekelas yang di
+  // atas, sengaja tidak disentuh di sini supaya cakupan perubahannya tetap satu
+  // hal. Server selalu menulis `data-program`.
   const program = card.dataset.program || 'Jumat Berkah';
   const waNumber = card.dataset.wa || '';
 

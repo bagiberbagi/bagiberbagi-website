@@ -7,7 +7,8 @@ import Share from '../../components/Share.astro';
 import DonationCard from '../../components/DonationCard.astro';
 import ProgramCover from '../../components/ProgramCover.astro';
 import { buildWaLink, formatMetric } from '../../lib/format';
-import { getPrograms, getProgramPages, getProgramsByPintu } from '../../lib/programs';
+import { getProgramPages, getProgramsByPintu } from '../../lib/programs';
+import { getAjakan } from '../../lib/ajakan';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
 import { findPageSeo, ogKeyFromPath } from '../../lib/seo';
@@ -50,14 +51,7 @@ const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
 // berbasis slug program, bukan field schema — baru 2 program inquiry di rilis
 // ini (design.md keputusan #4; field eksplisit menyusul kalau jumlahnya
 // bertambah, lihat Open Questions).
-const INQUIRY_PROGRAMS = new Set(['community-giving', 'csr-food-program']);
-const RAMADHAN_PACKAGES = ['Sahur', 'Takjil', 'Buka Puasa'];
-const isInquiry = INQUIRY_PROGRAMS.has(program.slug);
-// Program self-serve berpaket lebih dari satu butuh paket dipilih dulu
-// sebelum donasi (spec program-donation-cta). null = program sepaket tunggal.
-const packages = program.slug === 'ramadhan-berbagi' ? RAMADHAN_PACKAGES : null;
-
-const inquiryWaLink = buildWaLink(site.data.waNumber, `Halo, saya ingin mendiskusikan program ${program.label}.`);
+const ajakan = await getAjakan(program.slug);
 
 // Kemitraan menempel ke program (mis. dapur mitra Jumat Berkah), jadi CTA mitra
 // hidup di halaman program. Sekunder: satu tautan halus, tak menyaingi Donasi.
@@ -78,13 +72,6 @@ const jejak = await getJejakByProgram(program.slug);
 const impact = await getProgramImpact(program.slug);
 const mainMetric = impact.metrics[0];
 const jejakDateFmt = new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-
-// Agenda mingguan di `settings` menggambarkan program yang sedang berjalan,
-// yaitu program aktif pertama — konvensi yang sama dengan kartu hero beranda.
-// Panel agenda karena itu cuma muncul di halaman program itu; tanpa penjagaan
-// ini jadwal Jumat ikut nongol di halaman Ramadhan Berbagi.
-const runningProgram = (await getPrograms()).find((p) => p.active);
-const isRunning = runningProgram?.slug === program.slug;
 
 // URL kanonik penuh untuk tombol bagikan.
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
@@ -166,34 +153,23 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
           )}
 
           <!-- Panel CTA: harga (nilai) dan tombol (aksi) menyatu; hierarki
-               dijaga lewat peran, bukan dua kotak bersaing. Bercabang self-serve
-               (harga tetap) vs inquiry (custom/negosiasi) — spec program-donation-cta. -->
-          {isInquiry ? (
-            <div class="rounded-card p-6 bg-white shadow-cardSoft border border-border">
-              <div class="eyebrow text-[var(--cat-deep)]">PAKET CUSTOM</div>
-              <p class="text-body text-muted leading-relaxed mb-5">Paket, jadwal, dan bentuk laporan disesuaikan lewat diskusi langsung dengan tim kami.</p>
-              <a href={inquiryWaLink} target="_blank" rel="noopener" data-track="inquiry_click" data-track-program={program.label} data-track-source="program_page" class="btn-primary w-full flex items-center justify-center">
-                Diskusikan Program {program.label}
-              </a>
-              <p class="text-sm text-muted text-center mt-4 pt-4 border-t border-border">
-                Mitra UMKM atau relawan?
-                <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
-              </p>
-            </div>
-          ) : (
+               dijaga lewat peran, bukan dua kotak bersaing. Percabangan
+               self-serve vs custom sudah TIDAK di sini lagi: kartunya sendiri
+               yang bercabang di mekanisme aksinya, jadi halaman ini tak perlu
+               tahu program mana yang punya harga tetap dan mana yang tidak. -->
+          {ajakan && (
             <DonationCard
               id="donasi"
-              programLabel={program.label}
-              waNumber={site.data.waNumber}
-              agenda={isRunning ? site.data.nextAgenda : null}
-              schedule={isRunning ? site.data.schedule : null}
-              packages={packages}
+              ajakan={ajakan}
               eyebrow="Hitung donasi"
               note="Sudah termasuk pengantaran dan dokumentasi foto serta video penyaluran."
               trackSource="program_page"
             >
               <p slot="foot" class="text-sm text-muted">
-                Mitra UMKM atau relawan?
+                {/* Spasi ditulis eksplisit. Astro memampatkan baris baru antara
+                    teks dan elemen, tidak seperti HTML biasa, jadi tanpa ini
+                    kalimatnya terbaca "relawan?Jadi mitra" tanpa jeda. */}
+                Mitra UMKM atau relawan?{' '}
                 <a href={mitraWa} target="_blank" rel="noopener" data-track="partner_click" data-track-program={program.label} class="font-bold text-[var(--cat-deep)] hover:underline underline-offset-2">Jadi mitra {program.label}</a>
               </p>
             </DonationCard>

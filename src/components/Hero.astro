@@ -14,20 +14,21 @@
 //
 // Foto lapangan tidak lagi jadi latar seluruh hero, melainkan kepala kartu.
 // Konsekuensinya bidang kuning bersih dan headline tidak lagi bersaing dengan foto.
-import { getEntry } from 'astro:content';
 import DonationCard from './DonationCard.astro';
 import { getPrograms, getProgramCover } from '../lib/programs';
 import { getGlobalImpact } from '../lib/impact';
+import { getAjakan } from '../lib/ajakan';
 import defaultCover from '../assets/images/program-promo.png';
-
-const site = await getEntry('settings', 'site');
-if (!site) throw new Error('settings/site entry not found');
 
 const programs = await getPrograms();
 const program = programs.find((p) => p.active);
 const impact = await getGlobalImpact();
 
-const programLabel = program?.label ?? 'Jumat Berkah';
+// Kartunya sekarang minta satu hal ke satu pembaca, bukan merakit tujuh prop
+// sendiri. Agenda dan jadwal ikut di dalamnya, sudah dijaga di sana, jadi hero
+// tak perlu tahu bahwa keduanya cuma berlaku untuk program yang sedang jalan.
+const ajakan = program ? await getAjakan(program.slug) : null;
+
 // Foto program berjalan datang dari sumber yang sama dengan halaman program dan
 // ajakan di detail jejak, jadi program yang sama tak pernah tampil dengan dua
 // foto berbeda tergantung halamannya.
@@ -52,24 +53,25 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
       </a>
     </div>
 
-    <DonationCard
-      id="donasi"
-      photo={programCover}
-      programLabel={programLabel}
-      programSummary={program?.summary}
-      programHref={program?.href}
-      agenda={site.data.nextAgenda}
-      schedule={site.data.schedule}
-      waNumber={site.data.waNumber}
-      trackSource="hero_card"
-    >
-      {impact.jejakCount > 0 && (
-        <a slot="foot" href="/jejak/" class="hero-card-foot">
-          Lihat laporan {impact.jejakCount} penyaluran sebelumnya
-          <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
-        </a>
-      )}
-    </DonationCard>
+    {/* Tanpa satu pun program aktif tak ada kartu di sini, dan itu memang
+        jawabannya. Sebelum ini label kartunya jatuh ke "Jumat Berkah" yang
+        ditulis tangan, jadi situs tanpa program aktif tetap mengiklankan satu
+        program dengan nama yang belum tentu masih benar. */}
+    {ajakan && (
+      <DonationCard
+        id="donasi"
+        ajakan={ajakan}
+        photo={programCover}
+        trackSource="hero_card"
+      >
+        {impact.jejakCount > 0 && (
+          <a slot="foot" href="/jejak/" class="hero-card-foot">
+            Lihat laporan {impact.jejakCount} penyaluran sebelumnya
+            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ARROW}></svg>
+          </a>
+        )}
+      </DonationCard>
+    )}
   </div>
 </section>
 

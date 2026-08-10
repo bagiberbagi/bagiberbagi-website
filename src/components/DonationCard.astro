@@ -14,43 +14,61 @@
 // kuning maupun di halaman program yang berwarna pintu.
 import { Image } from 'astro:assets';
 import { calcTotal, buildWaLink, formatRupiah } from '../lib/format';
+import type { Ajakan } from '../lib/ajakan';
 
-interface Agenda {
-  location: string;
-  targetPorsi: number;
-  collectedPorsi: number;
-  cutoff?: string;
-}
-
+/**
+ * ISI DATANG DARI `ajakan`, TAMPILAN TETAP PROP.
+ *
+ * Sembilan prop yang dulu dirakit tangan di dua tempat pemasangan kini jadi
+ * satu, dan sisanya sengaja TIDAK ikut dilebur. Empat yang bertahan bukan sisa
+ * yang belum sempat dibereskan, masing-masing membawa keputusan tampilan yang
+ * memang berbeda per tempat:
+ *
+ * - `photo` — hero mengoper foto sampul program, halaman program sengaja tidak,
+ *   dan justru KETIADAAN foto itu yang memilih panel rata lewat `is-flat` di
+ *   bawah. Menjadikannya bagian `ajakan` berarti setiap halaman program tumbuh
+ *   kepala foto yang tak pernah diminta.
+ * - `eyebrow` dan `note` — keduanya cuma benar di atas kartu berjumlah, lihat
+ *   catatan di cabang mekanismenya.
+ * - `trackSource` dan `id` — analitik dan anchor, keduanya milik halaman.
+ *
+ * Slot `foot` juga bertahan: hero menaruh "Lihat laporan N penyaluran
+ * sebelumnya" di sana, halaman program menaruh baris mitra. Keduanya isi
+ * halaman, bukan isi kartu.
+ */
 interface Props {
-  programLabel: string;
-  waNumber: string;
+  ajakan: Ajakan;
   photo?: ImageMetadata | null;
-  programSummary?: string;
-  programHref?: string;
-  agenda?: Agenda | null;
-  schedule?: { weekday: string; time: string } | null;
-  packages?: string[] | null;
   eyebrow?: string;
   note?: string;
   trackSource: string;
   id?: string;
 }
 
-const {
-  programLabel,
-  waNumber,
-  photo = null,
-  programSummary,
-  programHref,
-  agenda = null,
-  schedule = null,
-  packages = null,
-  eyebrow,
-  note,
-  trackSource,
-  id,
-} = Astro.props;
+const { ajakan, photo = null, eyebrow, note, trackSource, id } = Astro.props;
+
+const { aksi, program, waNumber, agenda, schedule } = ajakan;
+const mechanism = aksi.mechanism;
+
+const programLabel = program.label;
+// Keduanya cuma dirender di dalam kepala foto, jadi mereka tak pernah muncul di
+// halaman program yang memang tanpa foto.
+const programSummary = program.summary;
+const programHref = program.href;
+
+// Dipersempit sekali di sini supaya markup di bawah tak perlu menguji `kind`
+// berulang kali untuk mengambil satu angka.
+const quantity = mechanism.kind === 'quantity' ? mechanism : null;
+const presets = quantity?.presets ?? [];
+const packages = quantity?.packages ?? [];
+
+// Pesan percakapan yang kosong berarti tak ada tombol, bukan tombol yang
+// membuka WhatsApp tanpa kalimat apa pun. Sama persis dengan aturan
+// `resolvePintuHref` di lib/aksi.ts.
+const conversationHref =
+  mechanism.kind === 'conversation' && mechanism.message
+    ? buildWaLink(waNumber, mechanism.message)
+    : null;
 
 // Panel agenda hanya muncul kalau editor sudah mengisi lokasinya; bar progres
 // butuh target yang masuk akal. Tanpa ini kartunya menampilkan panel kosong
@@ -61,14 +79,11 @@ const collected = agenda ? Math.min(agenda.collectedPorsi, agenda.targetPorsi) :
 const remaining = agenda ? Math.max(agenda.targetPorsi - collected, 0) : 0;
 const progressPct = showProgress && agenda ? Math.round((collected / agenda.targetPorsi) * 100) : 0;
 
-// SEMENTARA; diganti `ajakan.aksi.mechanism.pricePerUnit` di Track F.
-// Sampai kartu ini membaca aksinya, harganya berhenti di sini sebagai satu
-// konstanta bernama, bukan sebagai angka yang tertanam di dalam `calcTotal`.
-const PRICE_PER_UNIT = 25000;
-
-// Harga per porsi diambil dari satu sumber yang sama dengan kalkulator lama.
-const price = calcTotal(1, PRICE_PER_UNIT);
-const PRESETS = [6, 12, 20];
+// Harga datang dari aksinya, bukan dari konstanta di berkas ini. Nol berarti
+// mekanismenya bukan "pilih jumlah", dan di situ tak ada satu pun harga yang
+// dirender, jadi angka itu tak pernah sampai ke layar.
+const pricePerUnit = quantity?.pricePerUnit ?? 0;
+const price = calcTotal(1, pricePerUnit);
 
 // Tidak ada porsi terpilih saat halaman dibuka. Sebelumnya 6 porsi sudah
 // tercentang, dan angka yang sudah dipilihkan itu membingkai keputusan orang
@@ -90,7 +105,7 @@ const PRESETS = [6, 12, 20];
 // orang yang langsung menekan tombol mengirim "Paket Sahur" tanpa pernah
 // memilihnya — dua kontrol di kartu yang sama memakai aturan berlawanan.
 // Sekarang keduanya kosong sampai pengunjung menyentuhnya.
-const hasPackages = !!packages && packages.length > 0;
+const hasPackages = packages.length > 0;
 
 const openMessage = (pkg?: string | null) => {
   const label = pkg ? `${programLabel} (Paket ${pkg})` : programLabel;
@@ -124,7 +139,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   data-donation-card
   data-weekday={schedule?.weekday}
   data-time={schedule?.time}
-  data-price={price}
+  data-price={quantity ? price : undefined}
   data-program={programLabel}
   data-wa={waNumber}
 >
@@ -170,7 +185,11 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   )}
 
   <div class="dc-body">
-    {eyebrow && <p class="label dc-eyebrow">{eyebrow}</p>}
+    {/* Eyebrow-nya cuma dirender di cabang berjumlah, alasan yang sama dengan
+        `note` di bawah: "Hitung donasi" adalah label untuk sebuah kalkulator,
+        dan di atas panel percakapan ia menjanjikan kontrol yang tidak ada.
+        Cabang percakapan membawa eyebrow-nya sendiri. */}
+    {quantity && eyebrow && <p class="label dc-eyebrow">{eyebrow}</p>}
 
     {showAgenda && agenda && (
       <div class="dc-agenda">
@@ -208,7 +227,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
       </div>
     )}
 
-    {packages && packages.length > 0 && (
+    {hasPackages && (
       <div class="dc-pkg" data-package-selector role="radiogroup" aria-label="Pilih paket donasi">
         <p class="dc-pkg-title">Pilih paket</p>
         <div class="dc-pkg-opts">
@@ -227,6 +246,7 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
       </div>
     )}
 
+    {quantity && (
     <div class="dc-pick">
       <div class="dc-pick-top">
         <p class="dc-pick-title">
@@ -246,10 +266,10 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
           panel, bukan menetapkan nilai), sementara radiogroup menjanjikan
           navigasi panah antar-radio yang tak dipasang di sini. */}
       <div class="dc-chips" role="group" aria-label="Pilih jumlah porsi">
-        {PRESETS.map((n) => (
+        {presets.map((n) => (
           <button type="button" class="dc-chip" data-porsi={n} aria-pressed="false">
             <span class="dc-chip-t">{n} porsi</span>
-            <span class="dc-chip-s">{formatRupiah(calcTotal(n, PRICE_PER_UNIT))}</span>
+            <span class="dc-chip-s">{formatRupiah(calcTotal(n, pricePerUnit))}</span>
           </button>
         ))}
         <button type="button" class="dc-chip" data-porsi-custom aria-pressed="false">
@@ -296,6 +316,39 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
         <span data-donasi-label>Donasi lewat WhatsApp</span>
       </a>
     </div>
+    )}
+
+    {/* Cabang percakapan: panel "PAKET CUSTOM" yang dulu berdiri sebagai kartu
+        terpisah di program/[program].astro. Ia pindah ke sini utuh, karena yang
+        membedakannya dari kartu berjumlah bukan program mana yang dibuka,
+        melainkan mekanisme apa yang dideklarasikan aksinya.
+
+        Baris mitra yang dulu duduk DI DALAM panel ini tidak ikut pindah: ia
+        naik ke slot `foot`, tempat cabang berjumlah sudah menaruhnya sejak
+        awal. Dua cabang yang menaruh baris yang sama di dua tempat berbeda
+        adalah persis jenis penyimpangan yang membuat panel ini terpisah dari
+        awal. */}
+    {mechanism.kind === 'conversation' && (
+      <div class="dc-talk">
+        <p class="label dc-eyebrow">Paket custom</p>
+        <p class="dc-talk-lead">
+          Paket, jadwal, dan bentuk laporan disesuaikan lewat diskusi langsung dengan tim kami.
+        </p>
+        {conversationHref && (
+          <a
+            href={conversationHref}
+            target="_blank"
+            rel="noopener"
+            data-track="inquiry_click"
+            data-track-source={trackSource}
+            data-track-program={programLabel}
+            class="dc-cta"
+          >
+            Diskusikan Program {programLabel}
+          </a>
+        )}
+      </div>
+    )}
 
     {Astro.slots.has('foot') && (
       <div class="dc-foot">
@@ -520,6 +573,12 @@ const ARROW = '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>';
   .dc-step-input::-webkit-inner-spin-button { appearance: none; margin: 0; }
   .dc-step-input { appearance: textfield; -moz-appearance: textfield; }
   .dc-step-unit { font-size: 12px; font-weight: 600; color: #8a8279; white-space: nowrap; }
+
+  /* Cabang percakapan. Bentuknya sengaja meniru `.dc-pick`: kolom flex dengan
+     jarak yang sama, jadi kedua mekanisme menghasilkan kartu dengan ritme
+     vertikal yang sama dan tombolnya mendarat di tempat yang sama. */
+  .dc-talk { display: flex; flex-direction: column; gap: 12px; }
+  .dc-talk-lead { margin: 0; font-size: 15px; line-height: 1.6; color: #78716c; }
 
   .dc-cta {
     margin-top: 4px;

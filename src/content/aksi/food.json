@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "title": "Jumat Berkah",
+      "desc": "",
+      "program": "jumat-berkah",
+      "showOnPintu": false,
+      "mechanism": {
+        "discriminant": "quantity",
+        "value": {
+          "unit": "porsi",
+          "pricePerUnit": 25000,
+          "presets": [6, 12, 20],
+          "packages": []
+        }
+      }
+    },
+    {
+      "title": "Ramadhan Berbagi",
+      "desc": "",
+      "program": "ramadhan-berbagi",
+      "showOnPintu": false,
+      "mechanism": {
+        "discriminant": "quantity",
+        "value": {
+          "unit": "porsi",
+          "pricePerUnit": 25000,
+          "presets": [6, 12, 20],
+          "packages": ["Sahur", "Takjil", "Buka Puasa"]
+        }
+      }
+    },
+    {
+      "title": "Community Giving",
+      "desc": "",
+      "program": "community-giving",
+      "showOnPintu": false,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin mendiskusikan program Community Giving."
+        }
+      }
+    },
+    {
+      "title": "CSR Food Program",
+      "desc": "",
+      "program": "csr-food-program",
+      "showOnPintu": false,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin mendiskusikan program CSR Food Program."
+        }
+      }
+    }
+  ]
+}

@@ -13,8 +13,25 @@
 // pesan WhatsApp yang benar-benar terkirim, jadi tidak ada formulir yang perlu
 // diisi dan tidak ada langkah yang terbuang.
 import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import logoMark from '../assets/images/logo/logo-mark.png';
 import Container from './Container.astro';
 import { buildWaLink } from '../lib/format';
+
+// Seksi ini lahir sebagai penutup beranda dan sekarang dipasang juga di
+// `/tentang/` dan `/jejak/`, jadi dua hal yang memang berbeda per halaman
+// diangkat jadi prop. Sisanya sengaja tidak: pilihan perannya, kalimat
+// penolongnya, dan bentuk kartunya sama di mana pun, dan menjadikannya prop
+// cuma membuka jalan bagi tiga versi yang perlahan menyimpang.
+interface Props {
+  /** Eyebrow di atas kalimat. Beda per halaman karena ia menyambung dari apa
+   *  yang baru saja dibaca pengunjung, bukan dari isi seksi ini. */
+  kick?: string;
+  /** Membedakan penutup tiap halaman di analitik. */
+  source?: string;
+}
+
+const { kick = 'Sebelum kamu pergi', source = 'closing_home' } = Astro.props;
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -43,7 +60,7 @@ const WA_GLYPH =
   <Container width="wide">
     <div class="cl-grid">
       <div class="cl-left">
-        <p class="eyebrow" data-fade>Sebelum kamu pergi</p>
+        <p class="eyebrow" data-fade>{kick}</p>
 
         {/* Kalimatnya sendiri yang jadi judul seksi: berubah begitu pilihan
             ditekan, jadi pengunjung melihat maksudnya terbentuk.
@@ -95,7 +112,15 @@ const WA_GLYPH =
       <div class="cl-right" data-fade>
         <div class="cl-chat">
           <div class="cl-chat-head">
-            <span class="cl-avatar" aria-hidden="true">bb</span>
+            {/* Logo sungguhan, bukan inisial "bb". Kartu ini meniru tampilan
+                profil bisnis di WhatsApp, dan di sana yang muncul adalah gambar
+                profilnya; inisial itu penampung sementara yang tak pernah
+                diganti. Marknya lewat `astro:assets` (bukan dibaca langsung dari
+                public/) supaya 92 KB PNG 512px tidak disajikan mentah ke kotak
+                38px, persis kesalahan yang pernah terjadi pada logo organisasi. */}
+            <span class="cl-avatar" aria-hidden="true">
+              <Image src={logoMark} alt="" width={38} height={38} widths={[38, 76]} sizes="38px" />
+            </span>
             <span class="cl-chat-name">
               Tim bagiberbagi
               <em>biasanya membalas di jam kerja</em>
@@ -115,7 +140,7 @@ const WA_GLYPH =
               rel="noopener"
               data-send
               data-track="join_click"
-              data-track-source="closing_picker"
+              data-track-source={source}
               data-track-pick={PICKS[0]!.id}
               class="cl-send"
             >
@@ -252,16 +277,19 @@ const WA_GLYPH =
     background: #fff;
     border-bottom: 1px solid #eef0f3;
   }
+  /* Lingkarannya jadi terang, bukan oranye pekat. Marknya sendiri oranye di
+     latar transparan, jadi di atas lingkaran oranye ia lenyap. Krem tipis
+     senada dengan tint merek menjaga logonya terbaca sekaligus lingkarannya
+     tidak terlihat seperti lubang putih di kartu. */
   .cl-avatar {
     width: 38px; height: 38px; flex: none;
     border-radius: 50%;
     display: grid; place-items: center;
-    background: #f4791d;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    overflow: hidden;
+    background: #fff7ed;
+    border: 1px solid #f6e3cf;
   }
+  .cl-avatar img { width: 30px; height: 30px; object-fit: contain; }
   .cl-chat-name { display: flex; flex-direction: column; font-size: 14.5px; font-weight: 700; color: #0f172a; }
   .cl-chat-name em { font-style: normal; font-size: 12.5px; font-weight: 500; color: #505d6f; }
   .cl-chat-wa { width: 20px; height: 20px; margin-left: auto; flex: none; fill: #25d366; }

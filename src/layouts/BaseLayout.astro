@@ -127,10 +127,14 @@ const organization = site
       // tautan `wa.me`. Bentuk E.164 dipakai apa adanya dari settings.
       //
       // `address` diisi pemilik (Bogor, Jawa Barat) pada 5 Agustus 2026.
-      // `foundingDate` masih kosong dan sengaja dibiarkan begitu: ia pernyataan
-      // fakta tentang lembaga, dan menebaknya berarti menerbitkan data palsu
-      // yang dibaca mesin pencari sebagai kebenaran. Field-nya sudah ada di
-      // Keystatic, tinggal diisi begitu tanggalnya pasti.
+      // `foundingDate` diisi 11 Agustus 2026 dengan 2026-07-15, tanggal situs
+      // ini pertama kali tayang. Pemiliknya yang memilih penanda itu: badan
+      // hukumnya masih dalam proses, jadi tidak ada tanggal pendirian formal
+      // untuk dipakai, dan hari situs ini bisa dibuka orang adalah hari
+      // gerakannya mulai berjalan di depan publik. Bukan tebakan: commit
+      // pertama repo dan deploy sukses pertama ke VPS jatuh di tanggal yang
+      // sama. Kalau nanti badan hukumnya terbit dengan tanggal resmi sendiri,
+      // tanggal itu yang menggantikan nilai ini.
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',

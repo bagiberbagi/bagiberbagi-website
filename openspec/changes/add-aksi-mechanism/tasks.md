@@ -86,10 +86,17 @@ a single file without 3. None of them block Track A, C or E.
       **Answered 10 August 2026: "25000 milik program."** So `pricePerUnit` stays on the
       mechanism and `calcTotal(pax, pricePerUnit)` takes it as a required second parameter, with
       no default, so the literal cannot survive as a silent fallback.
-- [ ] **Q2. Do Ramadhan's three packages share one price?** `packages: string[]` assumes yes and
+- [x] **Q2. Do Ramadhan's three packages share one price?** `packages: string[]` assumes yes and
       today that is true, because `calcTotal` knows nothing about the selected package. If Sahur
       and Buka Puasa should cost differently the field has to be `{ name, pricePerUnit }[]` —
       free to decide now, a content migration later.
+
+      **Closed unanswered on 10 August 2026, deliberately.** `packages: string[]` shipped, and it
+      is true today: one price covers all three. Nothing in the change waits on this, and holding
+      an otherwise finished change open for a question the product has not asked yet is worse than
+      recording where the answer would go. Carried to the work-board memory so it resurfaces if
+      Ramadhan ever prices its packages apart; the migration is one field shape and one content
+      edit.
 
       **Q2b, found on 7 August 2026 while reconciling the old spec against the live page.** The
       two controls in the same card now follow opposite rules. Quantity has no default, on your
@@ -740,13 +747,18 @@ on **Q3** for permission to draft.
         `:60` exactly.
       - **CSR Food Program** → `conversation`, same construction.
       Per Q4, Community Giving becomes `quantity` by editing this file, not by editing code.
-- [ ] D5 **Author through `/keystatic`, not by hand in an editor**, at least for the first file.
+- [x] D5 **Author through `/keystatic`, not by hand in an editor**, at least for the first file.
       It is the only way to confirm the round trip — that what Track B's schema accepts is what
       the admin actually writes, and that reopening an entry shows the same values back.
 - [x] D6 `git diff` every `title` and `desc` against `consts.ts` before handing over. Zero
       character-level differences. A stray trailing space is fine; a reworded clause is not.
-- [ ] D7 The site is still unchanged after this track. Nothing reads the collection until F and G.
+- [x] D7 The site is still unchanged after this track. Nothing reads the collection until F and G.
       Confirm `dist/` is byte-identical.
+
+      **Discharged as void, not as done.** The premise stopped holding the moment Track D and
+      Track F had to ship together, which they did for the reason written above. `dist/` was
+      measured against `main` at every step instead, and each track's report carries its own
+      number — Track F's five differing files, Track G's two.
 
 **Hand over**: the six JSON files and the fifteen messages, as text, for the owner to read. This is
 a copy review, not a dev-server review. Do not start a server for it.

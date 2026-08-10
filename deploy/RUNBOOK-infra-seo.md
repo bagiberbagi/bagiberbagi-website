@@ -1,8 +1,8 @@
 # Runbook — perbaikan infrastruktur dari audit teknis SEO
 
-Disusun 4 Agustus 2026 dari audit teknis situs live (skor 83/100). Semua yang di
-sini **belum dikerjakan** dan butuh akses yang tidak dimiliki proses build:
-dashboard Cloudflare dan shell VPS.
+Disusun 4 Agustus 2026 dari audit teknis situs live (skor 83/100), waktu ketiga
+langkah di bawah masih berupa rencana. Semuanya butuh akses yang tidak dimiliki
+proses build: dashboard Cloudflare dan shell VPS.
 
 Urutannya penting. Langkah 1 harus selesai dan terbukti sebelum langkah 2, sebab
 mengaktifkan HSTS saat situs masih melayani HTTP polos akan mengunci pengunjung
@@ -10,6 +10,24 @@ pada keadaan yang salah.
 
 Temuan kode yang bisa diperbaiki tanpa akses ini sudah dikerjakan di branch
 `fix/seo-audit-findings`.
+
+---
+
+## Status: ketiganya sudah dikerjakan
+
+Diukur langsung ke situs live pada **11 Agustus 2026**. Sampai tanggal itu
+dokumen ini masih membuka dengan kalimat "semua yang di sini belum dikerjakan",
+padahal ketiganya sudah berjalan berhari-hari. Yang di bawah karena itu dibaca
+sebagai catatan cara mengerjakannya, bukan sebagai daftar tugas.
+
+| langkah | yang diukur | hasil |
+|---|---|---|
+| 1. Tutup HTTP polos di www | `curl -sI http://www.bagiberbagi.id/` | `301` → `https://www.bagiberbagi.id/` |
+| 2. HSTS | header `strict-transport-security` | `max-age=15552000; includeSubDomains; preload` |
+| 3. Config nginx | header keamanan + cache aset | `nosniff`, `strict-origin-when-cross-origin`, `upgrade-insecure-requests`, dan `public, max-age=31536000, immutable` di `/_astro/` |
+
+CSP yang tayang sama persis dengan `deploy/nginx/bagiberbagi.id.conf`, jadi tidak
+ada drift antara config di repo dan yang benar-benar disajikan.
 
 ---
 
@@ -105,6 +123,51 @@ ada jalur HTTP yang sah berarti menyimpan bom waktu.
 ```bash
 curl -sSI https://www.bagiberbagi.id/ | grep -i strict-transport-security
 # harapan: strict-transport-security: max-age=15552000
+```
+
+### Yang benar-benar tayang berbeda dari resep di atas, dan itu keputusan sadar
+
+Diperiksa 11 Agustus 2026:
+
+```
+strict-transport-security: max-age=15552000; includeSubDomains; preload
+```
+
+`max-age` cocok. Dua sisanya menyala padahal resep di atas menulis OFF, dan
+**keduanya dibiarkan menyala dengan sengaja** setelah ditimbang. Resep di atas
+tidak diubah karena ia benar sebagai urutan menyalakan dari nol; yang berubah
+cuma keadaan hari ini.
+
+**`includeSubDomains` menyala, dan hari ini tidak melukai apa pun.** Satu-satunya
+subdomain yang ada adalah `www`, yaitu situs ini sendiri, dan ia sudah HTTPS.
+Konsekuensinya ke depan: **setiap subdomain baru wajib HTTPS sejak hari
+pertama.** Subdomain yang lahir HTTP-only akan langsung ditolak peramban siapa
+pun yang pernah membuka situs ini, dan penolakan itu bertahan sampai
+`max-age` habis.
+
+**`preload` menyala, tapi domainnya BELUM terdaftar**, dan token itu sendiri
+tidak mendaftarkan apa pun. Jadi tokennya sekarang berupa janji yang belum
+ditepati, dan tidak berbahaya justru karena tidak melakukan apa-apa.
+
+**Kalau nanti benar-benar mau didaftarkan, dua hal ini wajib dibereskan dulu.**
+Keduanya dilaporkan langsung oleh `hstspreload.org` waktu ditanya apakah domain
+ini memenuhi syarat:
+
+```bash
+curl -s "https://hstspreload.org/api/v2/preloadable?domain=bagiberbagi.id"
+```
+
+1. `max-age` harus minimal `31536000` (satu tahun). Sekarang `15552000`.
+2. `http://bagiberbagi.id` harus mampir ke `https://bagiberbagi.id` LEBIH DULU
+   sebelum menambahkan `www`. Sekarang ia langsung ke
+   `https://www.bagiberbagi.id/`, dan akibatnya peramban mencatat aturan HSTS
+   untuk subdomain `www` saja, bukan untuk domain induknya.
+
+Status pendaftarannya bisa dicek kapan saja:
+
+```bash
+curl -s "https://hstspreload.org/api/v2/status?domain=bagiberbagi.id"
+# "status": "unknown"  = belum terdaftar
 ```
 
 **Catatan jujur soal nilainya.** HSTS bukan faktor peringkat. Ia tidak akan

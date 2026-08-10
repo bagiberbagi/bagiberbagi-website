@@ -13,6 +13,15 @@
  *
  * Butir milik program tampil terbuka, butir bersama tertutup: yang khas program
  * ini adalah yang tak boleh terlewat, yang bersama sifatnya rujukan.
+ *
+ * Lapisan bersama sekarang kosong, atas keputusan pemilik: apa pun yang berlaku
+ * untuk semua program adalah kewajiban layanan, dan tempatnya /syarat. Awalnya
+ * lapisan itu sengaja menyatakan ulang tujuh klausa /syarat dengan kata ganti
+ * "kamu"; yang dibaca pemilik dari hasilnya bukan terjemahan register melainkan
+ * satu kalimat yang sama ditulis di dua tempat. Mekanismenya ditahan, bukan
+ * dihapus, karena aturan operasional lintas program memang mungkin muncul (mis.
+ * seluruh program berhenti selama libur panjang) dan hal seperti itu bukan
+ * urusan /syarat. Selama kosong ia tak menambah apa pun ke halaman.
  */
 import Container from './Container.astro';
 import type { Pintu } from '../consts';
@@ -26,10 +35,12 @@ interface Props {
 const { items, pintu } = Astro.props;
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 
-// Kalimat pembuka menyesuaikan isi yang benar-benar ada: program yang belum
-// punya ketentuan sendiri tak boleh disuruh mencari blok terbuka yang tidak
-// dirender.
+// Kalimat pembuka menyesuaikan isi yang benar-benar ada, dan sejak lapisan
+// bersama dikosongkan, cabang yang biasa jalan adalah "cuma butir program".
+// Dua penanda dipakai, bukan satu, supaya kalimatnya tak pernah menyuruh
+// pembaca mencari blok yang tidak dirender.
 const hasOwn = items.some((item) => item.scope === 'program');
+const hasShared = items.some((item) => item.scope === 'shared');
 ---
 
 {items.length > 0 && (
@@ -55,9 +66,11 @@ const hasOwn = items.some((item) => item.scope === 'program');
           Yang perlu kamu tahu sebelum ikut
         </h2>
         <p class="text-body text-muted leading-relaxed max-w-text">
-          {hasOwn
+          {hasOwn && hasShared
             ? 'Ketentuan yang khas program ini terbuka di atas. Sisanya berlaku untuk semua program dan bisa kamu buka satu per satu.'
-            : 'Ketentuan berikut berlaku untuk semua program di bagiberbagi.id. Buka satu per satu untuk membacanya.'}
+            : hasOwn
+              ? 'Ketentuan berikut khusus untuk program ini. Aturan yang berlaku untuk seluruh layanan ada di Syarat dan Ketentuan, tertaut di bawah.'
+              : 'Ketentuan berikut berlaku untuk semua program di bagiberbagi.id. Buka satu per satu untuk membacanya.'}
         </p>
       </div>
 

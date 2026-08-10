@@ -377,9 +377,11 @@ export default config({
       },
     }),
 
-    // Ketentuan yang berlaku untuk SEMUA program. Yang khas satu program
-    // ditulis di entri program itu (Program → Detail halaman → Ketentuan
-    // program), dan menimpa butir di sini kalau judulnya sama.
+    // Aturan operasional yang berlaku untuk SEMUA program, dan sengaja kosong
+    // hari ini. Kewajiban layanan ditulis sekali di Legal → Syarat dan
+    // Ketentuan, tidak disalin ke sini; yang khas satu program ditulis di entri
+    // program itu (Program → Detail halaman → Ketentuan program), dan menimpa
+    // butir di sini kalau judulnya sama.
     ketentuan: singleton({
       label: 'Ketentuan Program',
       path: 'src/content/ketentuan/ketentuan',
@@ -397,7 +399,7 @@ export default config({
           {
             label: 'Butir ketentuan',
             description:
-              'Tampil di semua halaman program, dalam keadaan tertutup, di bawah ketentuan khas program itu. Seret untuk mengurutkan. Isinya sebaiknya cuma menyatakan ulang apa yang sudah ada di halaman Syarat dan Ketentuan — kalau ada yang baru, tambahkan di sana juga supaya kedua halaman tidak berbeda isi.',
+              'Kosong, dan sebaiknya tetap begitu. Kewajiban yang berlaku untuk seluruh layanan ditulis sekali saja di Legal → Syarat dan Ketentuan, tidak disalin ke sini. Tempat ini hanya untuk aturan operasional yang berlaku lintas program tapi bukan urusan Syarat dan Ketentuan, misalnya semua program berhenti selama libur panjang. Kalau yang mau ditulis cuma berlaku untuk satu program, tempatnya Program → program itu → Detail halaman → Ketentuan program. Butir di sini tampil tertutup, di bawah ketentuan khas program.',
             itemLabel: (props) => props.fields.title.value || 'Butir ketentuan',
           }
         ),

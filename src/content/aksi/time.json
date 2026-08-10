@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "title": "Kirim daftar keahlianmu",
+      "desc": "Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Ikut satu penyaluran dulu",
+      "desc": "Penyaluran makanan sudah berjalan dan kamu boleh ikut membantu di situ, karena melihat sendiri satu kegiatan lebih cepat menjelaskan bantuan seperti apa yang benar-benar dipakai.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Ajak satu orang bergantian",
+      "desc": "Kalau ada dua orang yang bisa saling menggantikan, jadwal tidak langsung berantakan saat salah satu berhalangan, jadi ceritakan pintu ini ke teman yang keahliannya berbeda darimu.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    }
+  ]
+}

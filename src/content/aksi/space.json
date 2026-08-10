@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "title": "Daftarkan ruang atau kendaraanmu",
+      "desc": "Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang pertama kami hubungi nanti.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Pinjamkan langsung ke sekitarmu",
+      "desc": "Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga, dan kabari kami juga supaya tercatat sebagai bagian dari jejaring ini.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    },
+    {
+      "title": "Kenalkan kami ke pengelolanya",
+      "desc": "Sambungkan kami ke pengurus aula, masjid, atau gudang yang kamu kenal, lalu kami yang menjelaskan bagaimana peminjamannya nanti diatur.",
+      "showOnPintu": true,
+      "mechanism": { "discriminant": "none" }
+    }
+  ]
+}

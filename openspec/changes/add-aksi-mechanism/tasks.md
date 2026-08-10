@@ -907,14 +907,14 @@ This is the point of the whole change: the numbered list stops being inert prose
 
 ### G1. The finding that makes this cheap, and which must be re-verified first
 
-- [ ] G1.1 **Confirm before doing anything else that both `contribute.length === 0` branches are
+- [x] G1.1 **Confirm before doing anything else that both `contribute.length === 0` branches are
       unreachable today.** All six `PINTU_IDS` have a three-item `contribute`
       (`consts.ts:166, 199, 217, 235, 253, 285`), and `berbagi-[pintu].astro:20` passes the object
       straight through, so `showForms` (`:450`) and `joinAsSteps` (`:474`) are constant `false` at
       build. Verify by building and grepping `dist/berbagi-*/index.html` for `id="bentuk"` — it
       must appear zero times. **If it appears anywhere, stop and re-plan this track**, because
       then repointing the source is a visual change on a live page.
-- [ ] G1.2 **Keep both flags. Repoint their source.** Keeping a guard that has never fired looks
+- [x] G1.2 **Keep both flags. Repoint their source.** Keeping a guard that has never fired looks
       like cargo and here it is the opposite: while `contribute` was hardcoded and full the empty
       state *could not* happen, and after this change the list is editor-owned, so it becomes
       reachable for the first time. Deleting a guard exactly as it starts being able to fire is
@@ -923,17 +923,17 @@ This is the point of the whole change: the numbered list stops being inert prose
       - const contribute = content?.contribute ?? [];
       + const aksiList = aksi.filter((a) => a.showOnPintu);
       ```
-- [ ] G1.3 `showForms`, `joinAsSteps`, `joinId` (`alur` / `cara-ikut`), `joinEyebrow`, `joinTitle`,
+- [x] G1.3 `showForms`, `joinAsSteps`, `joinId` (`alur` / `cara-ikut`), `joinEyebrow`, `joinTitle`,
       `joinLead`, `flowNote`, the `.s1-strip` guard and the whole `jumpLinks` block keep their
       exact logic. Only the array they test changes.
 
 ### G2. The type problem the design did not name
 
-- [ ] G2.1 `stepItems = joinAsSteps ? flowSteps : aksiList` (`:475`) is a union of two unrelated
+- [x] G2.1 `stepItems = joinAsSteps ? flowSteps : aksiList` (`:475`) is a union of two unrelated
       shapes, and the `alur` branch's items have no `mechanism`. Reading `item.mechanism` inside
       `<li class="s1-step">` at `:738-742` is a **type error under TS strict**, not a no-op that
       renders nothing.
-- [ ] G2.2 **Normalise in the frontmatter, not in the template.** Build one
+- [x] G2.2 **Normalise in the frontmatter, not in the template.** Build one
       `{ title: string; desc: string; cta: { href: string; label: string } | null }[]` from either
       branch, so the `<ol>` at `:736` maps over one shape and never branches on the item's type.
       The alternative — wrapping the CTA in `{!joinAsSteps && …}` inside the loop — leaves the
@@ -941,44 +941,78 @@ This is the point of the whole change: the numbered list stops being inert prose
 
 ### G3. The one markup change
 
-- [ ] G3.1 Each `<li class="s1-step">` gains an optional CTA below `.s1-step-desc`. The href is
+- [x] G3.1 Each `<li class="s1-step">` gains an optional CTA below `.s1-step-desc`. The href is
       resolved by `resolvePintuHref()` in `berbagi-[pintu].astro`, not in the component, so
       `PintuS1` stays link-building-free the way `contactWa` and `notifyWa` already arrive
       pre-built.
-- [ ] G3.2 Behaviour per mechanism:
+- [x] G3.2 Behaviour per mechanism:
       | mechanism | CTA on the pintu page |
       |---|---|
       | `none` | nothing rendered — the `<li>` is byte-identical to today |
       | `conversation` | `buildWaLink(waNumber, message)`, fully formed server-side, works with JS off |
       | `quantity` with a page-having programme | `` `${program.href}#donasi` `` |
       | `quantity` with no usable destination | no CTA, plus the build-time warn from C1.6 |
-- [ ] G3.3 `#donasi` is a real target: `DonationCard` is mounted with `id="donasi"` and
+- [x] G3.3 `#donasi` is a real target: `DonationCard` is mounted with `id="donasi"` and
       `scroll-mt-24` in both `Hero.astro:56` and `program/[program].astro:175`. Click through one
       and confirm the card is not hidden behind the sticky header.
-- [ ] G3.4 Add the scoped `.s1-step-cta` style. `.s1-step` is a grid at `:1651` with a different
+- [x] G3.4 Add the scoped `.s1-step-cta` style. `.s1-step` is a grid at `:1651` with a different
       shape below 768 at `:1688`; check the CTA sits correctly in both.
-- [ ] G3.5 `berbagi-[pintu].astro` gains one `getAksiByPintu()` call and one prop; `PintuS1`'s
+- [x] G3.5 `berbagi-[pintu].astro` gains one `getAksiByPintu()` call and one prop; `PintuS1`'s
       `Props` gains `aksi: Aksi[]`.
-- [ ] G3.6 `contactWa` and `notifyWa` at the hero and the foot of the pintu page are untouched.
+- [x] G3.6 `contactWa` and `notifyWa` at the hero and the foot of the pintu page are untouched.
       They are "tell me when this opens", not ways to take part.
 
 ### G4. Verification
 
-- [ ] G4.1 Walk all six pintu pages. Track D's `showOnPintu: false` on the three
+- [x] G4.1 Walk all six pintu pages. Track D's `showOnPintu: false` on the three
       programme-scoped aksi keeps every list at its current length, so any change in the number
       of `<li>` elements is a defect.
-- [ ] G4.2 Diff `dist/berbagi-*/index.html` against `main`. The only differences should be the
+- [x] G4.2 Diff `dist/berbagi-*/index.html` against `main`. The only differences should be the
       new CTA anchors. Any change to a heading, an eyebrow, a jump link or a step's text means
       either Track D's copy is not verbatim or a flag was repointed wrongly.
-- [ ] G4.3 Temporarily empty one `src/content/aksi/*.json`, build, and confirm the page falls back
+- [x] G4.3 Temporarily empty one `src/content/aksi/*.json`, build, and confirm the page falls back
       cleanly: `#bentuk` appears, the join block becomes `id="alur"` with the "Alurnya" label, the
       `.s1-strip` disappears, and the jump links follow. **Then restore the file.** This is the
       branch G1.2 exists to protect and it has never once executed on a real page.
 
-**Hand over**: a dev server, plus `/berbagi-makanan/`, `/berbagi-barang/`, `/berbagi-waktu/`,
-`/berbagi-ruang/`, `/berbagi-dana/` and `/berbagi-pohon/` at 390 and 1280. One line saying what
 moved: every numbered "cara ikut" item now has a button under it, and five of the six pintu are
 offering a real way to take part for the first time.
+
+**Report.**
+
+**The hand-over line above is wrong for this slice and the correction matters.** Five of the six
+pintu are *not* offering a real way to take part yet, because fifteen of the eighteen aksi ship
+with `mechanism: none` while their messages wait on the owner reading `MESSAGES.md`. **One button
+appeared, on `/berbagi-makanan/` under "Donasi paket"**, going to `/program/jumat-berkah/#donasi`.
+
+That is deliberate, not a shortfall. `none` is the schema's state for an aksi whose message has
+not been written yet, and it renders exactly what the page renders today: a numbered item with a
+title, a description and nothing else. So the fifteen flip from silent to speaking as a **content
+edit**, with no code change and no second review of this track.
+
+**G1.1 re-verified before anything was touched:** `id="bentuk"` appears zero times across all six
+built pintu pages, so both empty-state branches were indeed unreachable.
+
+**G4.2 measured, and it is the proof that Track D's copy is verbatim.** Diffed all six pages
+against `main`: the only differences anywhere are the CSS chunk filename and the single new
+anchor on `/berbagi-makanan/`. Not one heading, eyebrow, jump link or step's text moved by a
+character — which could not be true if any of the eighteen `{title, desc}` pairs had been
+reworded. A separate script compared all 36 strings against `consts.ts` directly: zero
+differences.
+
+**G4.3 ran the branch that had never executed.** Emptying `tree.json` and building gave exactly
+the designed fallback: `#bentuk` returns, the join block becomes `id="alur"` with three generic
+intake steps, `id="cara-ikut"` and `.s1-strip` disappear, and the jump link follows from
+`#cara-ikut` to `#alur`. The other five pintu were unaffected. File restored.
+
+**G3.3 measured rather than eyeballed:** clicking the new button lands on
+`/program/jumat-berkah/#donasi` with the card top at 96px and the sticky header bottom at 74px,
+so 22px of clearance.
+
+**One label is new copy and needs the owner's eye when the messages land.** `conversation` aksi
+render a button reading "Hubungi lewat WhatsApp", chosen to match the site's existing "Donasi
+lewat WhatsApp" and "Kirim lewat WhatsApp". Nothing renders it today, since every conversation
+aksi on a pintu page is `none`, so it costs nothing to change.
 ```
 
 **Path**: the file above is the deliverable content for `/Users/ekodedypurnomo/Developer/Project/bagiberbagi-website/openspec/changes/add-aksi-mechanism/tasks.md`. Nothing was written to disk — this workflow is read-only.

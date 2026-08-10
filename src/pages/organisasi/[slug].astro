@@ -1,5 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
+import { findPageSeo, ogKeyFromPath } from '../../lib/seo';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/Container.astro';
@@ -134,6 +135,17 @@ const joinWa = buildWaLink(
 
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 
+// Share image sendiri, alasannya sama persis dengan di `jejak/[slug].astro`:
+// `open-graph/[...route].ts` sudah membangunkan satu untuk tiap organisasi,
+// tapi BaseLayout cuma tahu prop eksplisit lalu `seo.pages[]` lalu default
+// situs, jadi tanpa baris ini gambar itu dibuat lalu tak dipakai siapa pun.
+// Entri kurasi tetap menang kalau suatu saat ada.
+const seoEntry = await getEntry('seo', 'seo');
+const curated = seoEntry ? findPageSeo(seoEntry.data, Astro.url.pathname) : undefined;
+const ownShareImage = curated?.image
+  ? undefined
+  : `/open-graph/${ogKeyFromPath(Astro.url.pathname)}.png`;
+
 // Nama organisasi saja terlalu pendek untuk judul hasil pencarian ("46Cyclist |
 // bagiberbagi.id" cuma 26 karakter) dan tak memberi tahu pencari apa isi
 // halamannya. Deskriptornya ditambahkan di judul saja, bukan pada `label`,
@@ -150,6 +162,7 @@ const seoTitle =
 <BaseLayout
   title={seoTitle}
   description={org.summary}
+  image={ownShareImage}
   breadcrumbName={org.label}
 >
   <!-- PROFIL: dua kolom, kiri identitas + cerita, kanan kartu putih melayang

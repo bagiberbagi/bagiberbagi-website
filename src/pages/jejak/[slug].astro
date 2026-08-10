@@ -19,7 +19,7 @@ import {
 import { getJejakPages, getJejakMedia } from '../../lib/jejak';
 import { getPrograms, getProgramCover } from '../../lib/programs';
 import { getOrganisasiRefs } from '../../lib/organisasi';
-import { ORG_SLUG } from '../../lib/seo';
+import { ORG_SLUG, findPageSeo, ogKeyFromPath } from '../../lib/seo';
 import { PINTU } from '../../consts';
 
 // Satu route untuk setiap jejak terbit. Begitu editor menambah jejak di
@@ -132,6 +132,23 @@ const seoTitle =
 
 const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
 
+// Share image halaman ini sudah dibangun `open-graph/[...route].ts` dengan
+// namespace yang persis sama dengan `ogKeyFromPath`, tapi BaseLayout tak bisa
+// menebaknya: urutannya prop eksplisit → entri `seo.pages[]` → default situs,
+// dan tak satu pun menyebut route yang di-generate. Tanpa baris ini gambar yang
+// sudah jadi itu menganggur dan tiap jejak dibagikan memakai gambar generik
+// yang sama. Terukur 10 Agustus 2026: dua belas halaman punya share image
+// sendiri, delapan di antaranya memakai `/og-image.png`.
+//
+// Entri kurasi tetap menang, pola yang sama dengan `hasCuratedSeo` di halaman
+// program: kalau suatu hari ada yang menulis gambar khusus di Keystatic untuk
+// jejak tertentu, baris ini mundur.
+const seoEntry = await getEntry('seo', 'seo');
+const curated = seoEntry ? findPageSeo(seoEntry.data, Astro.url.pathname) : undefined;
+const ownShareImage = curated?.image
+  ? undefined
+  : `/open-graph/${ogKeyFromPath(Astro.url.pathname)}.png`;
+
 // Foto yang bisa diperbesar saja yang masuk graph, dan URL-nya diambil dari
 // peta lightbox yang sudah dibangun di atas. Jadi yang dideklarasikan ke mesin
 // pencari benar-benar berkas yang ada di halaman, bukan varian lain yang cuma
@@ -198,6 +215,7 @@ const extraSchema = [
 <BaseLayout
   title={seoTitle}
   description={jejak.summary}
+  image={ownShareImage}
   breadcrumbName={jejak.title}
   extraSchema={extraSchema}
 >

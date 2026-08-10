@@ -10,7 +10,7 @@ import { buildWaLink, formatMetric } from '../../lib/format';
 import { getPrograms, getProgramPages, getProgramsByPintu } from '../../lib/programs';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
-import { findPageSeo } from '../../lib/seo';
+import { findPageSeo, ogKeyFromPath } from '../../lib/seo';
 import { PINTU, CATEGORY_CONTENT } from '../../consts';
 
 // Satu route untuk semua program aktif ber-halaman, di bawah /program/[slug]/.
@@ -93,6 +93,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 <BaseLayout
   title={hasCuratedSeo ? undefined : `${program.label} | bagiberbagi.id`}
   description={hasCuratedSeo ? undefined : program.summary}
+  image={hasCuratedSeo ? undefined : `/open-graph/${ogKeyFromPath(Astro.url.pathname)}.png`}
   breadcrumbName={program.label}
   breadcrumbTrail={[{ name: pintu.label, url: pintuHref }]}
 >

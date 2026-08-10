@@ -48,6 +48,23 @@ export default defineConfig({
   // persis saja, tidak mengganggu route dinamis `/program/[program]/`.
   redirects: {
     '/program': '/#pintu',
+
+    // Slug jejak yang pernah terbit lalu diganti. Dipertahankan supaya tautan
+    // yang sudah tersebar (WhatsApp, Instagram, hasil pencarian) tidak mati.
+    //
+    // Ketiganya lahir dari sebab yang sama: tombol regenerate di Keystatic
+    // menyusun slug dari judul, sementara konvensinya program-YYYY-MM-DD-area.
+    // Sejak keystatic.config.ts memvalidasi bentuknya, ini tak bisa terulang,
+    // jadi daftar ini seharusnya berhenti bertambah.
+    //
+    // Pada build statis ini terbit sebagai stub meta-refresh ber-noindex, bukan
+    // HTTP 30x. Cukup untuk pembaca manusia, dan noindex-nya menjaga stub itu
+    // tidak ikut terindeks menggantikan halaman aslinya.
+    '/jejak/jumat-berkah-2026-07-17': '/jejak/jumat-berkah-2026-07-17-nurul-hikmah-tegallega/',
+    '/jejak/jumat-berkah-2026-07-17-jumat-berkah-masjid-nurul-hikmah-bogor':
+      '/jejak/jumat-berkah-2026-07-17-nurul-hikmah-tegallega/',
+    '/jejak/jumat-berkah-asuhan-pyi-yatim-and-zakat-cab-taheul-jl-heulang':
+      '/jejak/jumat-berkah-2026-08-07-pyi-taheul-bogor-tengah/',
   },
 
   // Keystatic Cloud's local-dev auth flow redirects to 127.0.0.1 specifically

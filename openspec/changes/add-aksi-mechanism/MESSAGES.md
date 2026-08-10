@@ -1,4 +1,4 @@
-# The fifteen messages, drafted for the owner to evaluate
+# The sixteen messages, drafted for the owner to evaluate
 
 Q3 asked who writes these. Answered 7 August 2026: **"kamu isi aja nanti aku evaluasi."** So they
 are drafted here rather than in the content files, because a draft in `src/content/aksi/*.json` is
@@ -21,34 +21,35 @@ photos, the message ends on a colon so the sender's own thumb finishes it.
 
 ---
 
-## The finding: two of the fifteen are not messages
+## The finding: two of them resisted being messages, and what was decided
 
-Writing them surfaced something the design did not anticipate. Thirteen are conversations. Two are
-not, and forcing them into `conversation` would produce a message nobody would ever send.
+Writing them surfaced something the design did not anticipate. Thirteen read as conversations.
+Two did not:
 
-| aksi | what it actually asks | honest kind |
+| aksi | what it asks | why it resisted a message |
 |---|---|---|
-| **Dana, "Periksa dulu catatan penyalurannya"** | open `/jejak/` and read | not a conversation. Its whole point is *don't message us yet, go look* |
+| **Dana, "Periksa dulu catatan penyalurannya"** | open `/jejak/` and read | its whole point is *don't message us yet, go look* |
 | **Pohon, "Rawat pohon yang sudah ada"** | water a tree near you | asks nothing of bagiberbagi at all |
 
-`design.md` states there is **no `link` kind**, on the grounds that nothing needs an editor-authored
-URL and the one destination outside the card is derived from the programme relationship. The first
-row above is a counter-example: its destination is `/jejak/`, a real page, and no relationship
-derives it.
+Three options were put up: `none` for both, a new `link` kind, or one of each. The recommendation
+was the third.
 
-Three ways to close it, and the owner picks:
+**Decided 10 August 2026, and the recommendation was not taken:** *"bagus kalo semua action by
+default ngobrol via whatsapp aja."* Every aksi defaults to `conversation`.
 
-- **(a) `none` for both.** Cheapest, honest, and costs the Dana one its most useful property. It
-  is the aksi that builds trust before money is asked for, and it currently names a page the
-  visitor cannot reach from there.
-- **(b) Add a `link` kind** carrying an editor-authored href. Answers the Dana row properly. Costs
-  a fourth branch in a union whose three members were each justified by something the site already
-  does, and opens the door to editors pasting arbitrary URLs.
-- **(c) `none` for Pohon, and a `link` kind used only for internal routes** for Dana. Keeps the
-  guard rail by validating the href starts with `/`.
+That is the better call on the structure, and it is worth saying why rather than just recording it.
+A `link` kind would have been a fourth branch in a union whose three members were each justified by
+something the site already does, added for exactly one entry. The rule the design set for itself
+was to model what exists, and one row is not enough evidence to widen a union.
 
-**Recommendation: (c).** The Pohon one genuinely asks nothing, so `none` is not a compromise there,
-it is correct. The Dana one names a real internal page and deserves to be clickable.
+What it leaves is a copy problem, not a schema problem, and copy is the cheaper place to solve it.
+Dana's aksi tells the reader to check the record **before** sending money, so a button under it
+saying "chat us" would argue with the sentence above it. So the message is written to agree with
+that sentence instead: it says the reader has already looked. Pohon's is written as "here is what I
+am already doing, what else helps" rather than as a request for help.
+
+`none` stays in the schema, but as the honest state for an aksi whose message has not been written
+yet, rather than as a destination anything is designed to land on.
 
 ---
 
@@ -87,8 +88,11 @@ it is correct. The Dana one names a real internal page and deserves to be clicka
 
 ## Dana
 
-**10. Periksa dulu catatan penyalurannya** *(not a message, see the finding above)*
-> Proposed instead: a link to `/jejak/`.
+**10. Periksa dulu catatan penyalurannya**
+> Halo, saya sudah melihat catatan penyalurannya di halaman Jejak & Dampak. Ada beberapa hal yang ingin saya tanyakan sebelum berdonasi.
+
+*Written to agree with the aksi above it, which asks the reader to look before sending money. A
+message that ignored that would put a "chat us" button under a sentence saying "go read first".*
 
 **11. Daftar minat zakat atau sedekahmu**
 > Halo, saya ingin mendaftar lebih dulu untuk zakat atau sedekah, supaya dikabari begitu jalurnya resmi dibuka.
@@ -104,14 +108,17 @@ it is correct. The Dana one names a real internal page and deserves to be clicka
 **14. Tawarkan lahan atau bibit**
 > Halo, saya punya lahan yang bisa ditanami atau bibit yang siap dipindahkan.
 
-**15. Rawat pohon yang sudah ada** *(not a message, see the finding above)*
-> Proposed instead: no control at all. It asks the reader to do something today, on their own.
+**15. Rawat pohon yang sudah ada**
+> Halo, saya ikut merawat pohon yang sudah tumbuh di sekitar saya. Apa lagi yang bisa saya lakukan?
+
+*This aksi asks nothing of bagiberbagi, so the message is not a request for help. It reports what
+the reader is already doing and asks what comes next.*
 
 ---
 
 ## Makanan, for completeness
 
-Food's three are not in the fifteen because two already exist in the code and one is not a message:
+Food's three sit outside the non-food count, and one of them was missed by the original brief:
 
 | aksi | mechanism | message |
 |---|---|---|
@@ -119,8 +126,11 @@ Food's three are not in the fifteen because two already exist in the code and on
 | Salurkan surplus | `conversation` | *needs one; not in the original count* → "Halo, saya punya surplus makanan yang masih layak dan ingin disalurkan. Boleh dijemput?" |
 | Jadi mitra dapur | `conversation` | already exists: "Halo, saya punya usaha kuliner dan ingin jadi Mitra Dapur UMKM." |
 
-So the true count of messages to write was **fourteen**, not fifteen: thirteen non-food plus food's
-"Salurkan surplus", with two of the nominal fifteen turning out not to be messages at all.
+So the count landed at **sixteen**: fifteen non-food plus food's "Salurkan surplus". The original
+brief said fifteen, and it was wrong twice in opposite directions. Two of the nominal fifteen
+looked like they were not messages, and the decision above turned them back into messages. Food's
+"Salurkan surplus" was missed entirely, because it sat between two neighbours that already had
+one.
 
 ---
 
@@ -129,7 +139,7 @@ So the true count of messages to write was **fourteen**, not fifteen: thirteen n
 Read them as a set rather than one by one. The three things worth your eye:
 
 1. **Register.** They use "saya" and stay plain. If the site's voice wants them warmer or more
-   formal, say so once and all fourteen move together.
+   formal, say so once and all sixteen move together.
 2. **The colon endings** (4, 7, 13). They hand the sentence to the sender to finish. That is either
    a helpful nudge or an unfinished-looking message, and only you can call it.
 3. **Numbers 8 and 11**, which describe a situation rather than make a request. They are the two

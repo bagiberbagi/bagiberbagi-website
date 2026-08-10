@@ -71,7 +71,7 @@ rendering exactly what it renders today.
 bunx astro check                                       # 0 errors
 bun test                                               # all pass
 bun run build                                          # succeeds
-find dist/_astro dist/uploads -iname '*.png' | wc -l   # prints 0
+bun run check:assets                                   # no unreferenced images in dist
 ```
 
 ## Decisions the owner owes before Track B and Track D start
@@ -79,9 +79,13 @@ find dist/_astro dist/uploads -iname '*.png' | wc -l   # prints 0
 Track B can write the schema for questions 1 and 2 either way in an hour; Track D cannot write
 a single file without 3. None of them block Track A, C or E.
 
-- [ ] **Q1. Is Rp 25.000 a property of the ask, or of the site?** The design puts `pricePerUnit`
+- [x] **Q1. Is Rp 25.000 a property of the ask, or of the site?** The design puts `pricePerUnit`
       on the `quantity` mechanism so Jumat Berkah and Ramadhan can differ. One number forever
       means one field in `settings` instead. **Recommendation: keep it on the mechanism.**
+
+      **Answered 10 August 2026: "25000 milik program."** So `pricePerUnit` stays on the
+      mechanism and `calcTotal(pax, pricePerUnit)` takes it as a required second parameter, with
+      no default, so the literal cannot survive as a silent fallback.
 - [ ] **Q2. Do Ramadhan's three packages share one price?** `packages: string[]` assumes yes and
       today that is true, because `calcTotal` knows nothing about the selected package. If Sahur
       and Buka Puasa should cost differently the field has to be `{ name, pricePerUnit }[]` —
@@ -125,23 +129,44 @@ a single file without 3. None of them block Track A, C or E.
 
       Writing them found something the design missed, and it is now **Q7** below: two of the
       fifteen are not messages at all.
-- [ ] **Q4. Should Community Giving gain a quantity picker?** The only question here that is
+- [x] **Q4. Should Community Giving gain a quantity picker?** The only question here that is
       about the product rather than the structure. Under this model the answer is a field change
       in `src/content/aksi/food.json`, not a code change.
+
+      **Answered 10 August 2026: "biarin diskusikan aja."** No picker. Community Giving keeps a
+      `conversation` mechanism, which is what it renders today, so nothing about that page moves.
+      What changes is why: it stops being a slug in `INQUIRY_PROGRAMS` and becomes a programme
+      whose aksi declares a conversation.
 - [ ] **Q5. Should the CSR and community ways-in appear on `/berbagi-makanan/`?** Track D sets
       `showOnPintu: false` on all three programme-scoped aksi so the numbered list stays at its
       current three items. Flipping them on lengthens it to six and surfaces two real ways to
       take part that the pintu page hides today.
-- [ ] **Q6. Does `inquiry_click` survive?** See F5. **Recommendation: keep both event names**,
+- [x] **Q6. Does `inquiry_click` survive?** See F5. **Recommendation: keep both event names**,
       `donate_click` for `quantity` and `inquiry_click` for `conversation`, so the historical
       conversion series stays comparable across the change.
-- [ ] **Q7. Two of the fifteen aksi are not messages, so what are they?** Found while drafting
+
+      **Answered 10 August 2026: keep both.** No analytics delta is needed, so Track A3's
+      conditional `analytics-tracking` spec is not written.
+- [x] **Q7. Two of the fifteen aksi are not messages, so what are they?** Found while drafting
       `MESSAGES.md`. Dana's "Periksa dulu catatan penyalurannya" asks the visitor to open
       `/jejak/` and read; Pohon's "Rawat pohon yang sudah ada" asks nothing of bagiberbagi at all.
       `design.md` states there is no `link` kind, and the Dana row is a counter-example: a real
-      internal page that no relationship derives. **Recommendation: `none` for Pohon, which is
-      correct rather than a compromise, and a `link` kind restricted to internal routes for Dana.**
-      Full reasoning and the two rejected alternatives are in `MESSAGES.md`.
+      internal page that no relationship derives. ~~**Recommendation: `none` for Pohon, which is
+      correct rather than a compromise, and a `link` kind restricted to internal routes for
+      Dana.**~~
+
+      **Answered 10 August 2026, and the recommendation was not taken: "bagus kalo semua action by
+      default ngobrol via whatsapp aja."** Every aksi defaults to `conversation`. So **no `link`
+      kind is added**, which keeps the union at the three members each justified by something the
+      site already does, and `none` stays in the schema as the state for an aksi whose message has
+      not been written yet rather than as a designed destination.
+
+      That resolves the structural question and leaves one copy problem, which is cheaper to fix
+      in words than in schema. Dana's aksi tells the reader to check the record **before** sending
+      money, so a button under it saying "chat us" would argue with the sentence above it. The
+      message is written to agree with it instead: it says the reader has already looked. Same for
+      Pohon, where the message is about what to do next rather than a request for help. Both are
+      in `MESSAGES.md`.
 
 ---
 

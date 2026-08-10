@@ -72,9 +72,29 @@ export interface Jejak {
  *
  * Kunci glob ini persis sama dengan `publicPath: '/src/assets/jejak/'` di
  * keystatic.config.ts. Kalau salah satu sisi diubah, ubah keduanya bersamaan.
+ *
+ * **Polanya rekursif (`**` sebelum `*`), dan itu wajib.** Keystatic tidak selalu
+ * menaruh berkas datar di bawah `directory`: begitu `fields.image` berada di
+ * dalam `fields.object` atau `fields.array`, ia menamai berkasnya menurut slug
+ * entri plus jalur field, sehingga path yang ditulis ke frontmatter berbunyi
+ * `/src/assets/jejak/<slug>/cover/image.jpeg` dan `.../gallery/0/image.jpeg`.
+ *
+ * Bentuk itu belum pernah muncul sampai 7 Agustus 2026, karena `cover` dan
+ * `gallery` baru jadi objek di commit ffe6a6b (demi alt dan caption) dan seluruh
+ * foto yang ada diunggah sebelum itu, semuanya datar. Unggahan pertama sesudah
+ * perubahan skema itulah yang membongkarnya: dua foto entri
+ * `jumat-berkah-asuhan-pyi-...` tidak terbaca sama sekali, sementara berkasnya
+ * jelas ada di repo, dan halamannya sudah `published: true` di produksi.
+ *
+ * Pola rekursif cocok untuk keduanya, nol direktori maupun lebih, jadi berkas
+ * datar yang lama tetap terbaca dan tak ada satu pun yang perlu dipindahkan.
+ *
+ * `programs` dan `organisasi` belum kena karena field gambarnya masih di level
+ * atas entri, bukan di dalam objek. Begitu salah satunya dibungkus objek, bug
+ * yang sama muncul di sana, diam-diam, dengan gejala yang sama persis.
  */
 const JEJAK_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/jejak/*.{png,jpg,jpeg,webp,avif,gif}',
+  '/src/assets/jejak/**/*.{png,jpg,jpeg,webp,avif,gif}',
   { eager: true }
 );
 

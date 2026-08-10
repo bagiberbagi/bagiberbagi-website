@@ -651,7 +651,7 @@ Files: `.claude/rules/content-model.md`, `.claude/rules/routing-taxonomy.md`,
 This change makes two of these files wrong as written. That is not a footnote: they are the files
 the next session loads instead of reading the code.
 
-- [ ] J1 `content-model.md` — add an `aksi` bullet next to `programs` and `organisasi`. It must
+- [x] J1 `content-model.md` — add an `aksi` bullet next to `programs` and `organisasi`. It must
       carry: six `*.json` files, one per `PintuId`; **written by Keystatic as six singletons and
       read by Astro as one collection**, the same split `legal` already uses and for the same
       reason (a fixed set whose ids are hardcoded in `consts.ts` must not get add/delete/rename
@@ -659,29 +659,43 @@ the next session loads instead of reading the code.
       why `Object.fromEntries` does not work; the three mechanism kinds; the `program`
       relationship being optional and defensively resolved; and the rule that the schema is
       permissive while the reader warns and degrades.
-- [ ] J2 `content-model.md` — the `format.ts` bullet at the end says it holds the pure functions
+- [x] J2 `content-model.md` — the `format.ts` bullet at the end says it holds the pure functions
       used by both server markup and the client calculator. `calcTotal` now takes a price. Correct
       the sentence, and record that `readAksi()`/`resolvePintuHref()` joined `format.ts` and
       `aggregateMetrics` as the unit-tested pure surface.
-- [ ] J3 `routing-taxonomy.md` — the `CATEGORY_CONTENT` sentence currently lists `contribute` as
+- [x] J3 `routing-taxonomy.md` — the `CATEGORY_CONTENT` sentence currently lists `contribute` as
       one of its blocks and calls the whole thing "still hardcoded and a candidate to move into
       Keystatic". After Track H that is false for exactly one block. Rewrite it to say
       `contribute` left for the `aksi` collection, that the remaining blocks (`story`, `stats`,
       `howItWorks`, `forWhom`, `env`, `faq`, `ctaTitle`/`ctaText`) are still hardcoded, and why
       only `contribute` moved: it was the one claiming a mechanism it did not have.
-- [ ] J4 `routing-taxonomy.md` — add the pintu page's new empty state. `showForms` and
+- [x] J4 `routing-taxonomy.md` — add the pintu page's new empty state. `showForms` and
       `joinAsSteps` were unreachable while `contribute` was hardcoded and full; now that the list
       is editor-owned they are reachable, and `#bentuk` fed by `concept.examples` is what a pintu
       with no aksi falls back to.
-- [ ] J5 `analytics.md` — **only if Q6 changed an event name.** If both `donate_click` and
+- [x] J5 `analytics.md` — **only if Q6 changed an event name.** If both `donate_click` and
       `inquiry_click` survive as recommended, record instead that the two events are now selected
       by `mechanism.kind` rather than by a slug list, since that file treats these values as the
       conversion definitions.
-- [ ] J6 Do not restructure these files. Add and correct in place; they are read by every future
+- [x] J6 Do not restructure these files. Add and correct in place; they are read by every future
       session and their existing shape is load-bearing.
 
 **Done when**: the gate passes and every sentence in the three files that this change falsified
 has been corrected or deleted. Read them end to end, not just the paragraphs named above.
+
+**Report. Reading end to end found two more files than the three the track names.** `layout-tiers.md`,
+`frontend-scripts.md` and `section-ids.md` each named `DonationCard` or the calculator script, so
+the sweep covered five files, not three.
+
+- J1, J2, J3, J4 done as specified.
+- **J5 applies in its second form.** Q6 kept both event names, so `analytics.md` now records that
+  `donate_click` and `inquiry_click` are selected by `aksi.mechanism.kind` rather than by a
+  hardcoded slug list, plus the third event this change introduced, `aksi_click` on the pintu
+  pages.
+- **`section-ids.md` carried a claim this change turned from false into true**, which is the most
+  useful correction of the five. It said `#donasi` is "mirrored on every program page". It was
+  not: `/program/community-giving/` and `/program/csr-food-program/` rendered a separate card and
+  carried no `#donasi` at all. The sentence now says so, and says when it started being true.
 
 ---
 

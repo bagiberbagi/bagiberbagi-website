@@ -138,7 +138,6 @@ export interface CategoryContent {
   // karena kalimat penutupnya dipakai sebagai kutipan, bukan paragraf biasa.
   story?: CategoryStory;
   stats?: CategoryStat[];
-  contribute?: CategoryStep[];
   howItWorks?: CategoryStep[];
   forWhom?: string[];
   env?: { headline: string; stats: CategoryStat[] };
@@ -163,11 +162,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       { value: '1.900', label: 'penerima manfaat' },
       { value: '52', label: 'pekan berjalan' },
     ],
-    contribute: [
-      { title: 'Donasi paket', desc: 'Donasi ke program aktif, lalu kami salurkan dan kirim laporannya.' },
-      { title: 'Salurkan surplus', desc: 'Punya surplus makanan layak? Kami jemput dan salurkan tepat sasaran.' },
-      { title: 'Jadi mitra dapur', desc: 'UMKM kuliner bergabung memasak untuk penyaluran mingguan.' },
-    ],
     howItWorks: [
       { title: 'Order / Jemput', desc: 'Donasi masuk atau surplus dijemput.' },
       { title: 'Kurasi Higiene', desc: 'Mitra dapur menyiapkan standar laik.' },
@@ -185,8 +179,11 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   },
   // Empat pintu di bawah ini belum punya program. Ceritanya ditulis supaya tetap
   // benar selama pintunya masih disiapkan, jadi tidak ada kalimat yang berbunyi
-  // seolah penyalurannya sudah jalan, dan `contribute`-nya berisi hal yang bisa
-  // dikerjakan pembaca minggu ini juga tanpa menunggu kami.
+  // seolah penyalurannya sudah jalan.
+  //
+  // Daftar "cara ikut"-nya dulu di sini juga, sebagai field `contribute`.
+  // Sekarang di koleksi `aksi` (src/content/aksi/*.json) supaya editor bisa
+  // menyentuhnya tanpa developer.
   goods: {
     story: {
       headline: 'Barang yang sudah tidak digunakan bukan barang yang sudah tidak berguna, melainkan barang yang sedang menunggu pemilik berikutnya untuk melanjutkan usianya.',
@@ -196,11 +193,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Umur sebuah barang semestinya diukur dari seberapa lama ia tetap berguna bagi orang lain, bukan dari seberapa lama ia tersimpan sendirian di rumah yang sudah tidak memerlukannya lagi.',
     },
-    contribute: [
-      { title: 'Pilah isi lemari', desc: 'Sisihkan yang masih layak tapi sudah lama tidak kamu pakai, lalu simpan terpisah supaya tidak tercampur lagi saat pintu ini dibuka.' },
-      { title: 'Kabari barang yang ada', desc: 'Kirim foto dan daftar barangnya lewat WhatsApp, supaya kami tahu barang jenis apa yang paling banyak tersedia sebelum alur penyalurannya kami rancang.' },
-      { title: 'Bantu susun standarnya', desc: 'Kalau kamu terbiasa mengurus gudang atau pengiriman barang, ceritakan pengalamanmu, supaya cara memilah dan mengantarnya tidak kami tentukan sendiri.' },
-    ],
     forWhom: ['Anak-anak panti asuhan', 'Siswa yang belum punya seragam', 'Anak yang kekurangan buku bacaan', 'Keluarga prasejahtera', 'Warga yang perabot rumahnya seadanya', 'Petugas kebersihan kota'],
     ctaTitle: 'Ada barang bagus yang cuma tersimpan di rumahmu?',
     ctaText: 'Kirim fotonya ke kami lewat WhatsApp, nanti kami kabari kalau penyalurannya sudah bisa jalan.',
@@ -214,11 +206,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Sebab kesediaan untuk terus hadir bagi orang lain tidak boleh bertumpu pada satu dua orang yang sama, melainkan menjadi giliran yang dapat dijalankan oleh setiap orang yang mau meluangkan waktunya.',
     },
-    contribute: [
-      { title: 'Kirim daftar keahlianmu', desc: 'Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.' },
-      { title: 'Ikut satu penyaluran dulu', desc: 'Penyaluran makanan sudah berjalan dan kamu boleh ikut membantu di situ, karena melihat sendiri satu kegiatan lebih cepat menjelaskan bantuan seperti apa yang benar-benar dipakai.' },
-      { title: 'Ajak satu orang bergantian', desc: 'Kalau ada dua orang yang bisa saling menggantikan, jadwal tidak langsung berantakan saat salah satu berhalangan, jadi ceritakan pintu ini ke teman yang keahliannya berbeda darimu.' },
-    ],
     forWhom: ['Siswa yang tertinggal pelajaran', 'Anak panti yang butuh teman belajar', 'Dapur kecil yang pembukuannya belum rapi', 'Kegiatan warga yang perlu didokumentasikan', 'Tim penyaluran di lapangan', 'Relawan baru yang perlu didampingi'],
     ctaTitle: 'Keahlian apa yang bisa kamu bagikan?',
     ctaText: 'Tulis saja ke WhatsApp kami, apa yang kamu bisa dan kapan biasanya kamu luang, biar kami catat lebih dulu dan kami hubungi saat kebutuhannya sudah jelas.',
@@ -232,11 +219,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Kota yang terbuka tumbuh dari ruang-ruang yang bersedia dipinjamkan, sekecil apa pun bentuknya, kepada siapa saja yang sedang memerlukannya.',
     },
-    contribute: [
-      { title: 'Daftarkan ruang atau kendaraanmu', desc: 'Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang pertama kami hubungi nanti.' },
-      { title: 'Pinjamkan langsung ke sekitarmu', desc: 'Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga, dan kabari kami juga supaya tercatat sebagai bagian dari jejaring ini.' },
-      { title: 'Kenalkan kami ke pengelolanya', desc: 'Sambungkan kami ke pengurus aula, masjid, atau gudang yang kamu kenal, lalu kami yang menjelaskan bagaimana peminjamannya nanti diatur.' },
-    ],
     forWhom: ['Komunitas relawan yang belum punya markas', 'Kelas belajar anak-anak di kampung', 'Dapur umum warga', 'Karang taruna dan kelompok pemuda', 'Kelompok yang perlu kendaraan angkut'],
     ctaTitle: 'Punya ruang yang menganggur di hari tertentu?',
     ctaText: 'Ceritakan ruang atau kendaraan yang kamu punya lewat WhatsApp, supaya nanti ada tempat yang bisa dituju kelompok yang sedang mencarinya.',
@@ -250,11 +232,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Kepercayaan yang dititipkan melalui sebuah donasi hanya akan terjaga selama jalannya tetap terbuka untuk ditelusuri siapa pun.',
     },
-    contribute: [
-      { title: 'Periksa dulu catatan penyalurannya', desc: 'Sebelum mengirim uang, kamu bisa membuka halaman Jejak & Dampak dan melihat sendiri kegiatan apa saja yang sudah kami catat di sana.' },
-      { title: 'Daftar minat zakat atau sedekahmu', desc: 'Selama pintu ini masih kami siapkan, kabari lebih dulu lewat WhatsApp, supaya begitu jalurnya resmi dibuka, kamu jadi yang pertama kami hubungi.' },
-      { title: 'Bawa anggaran CSR kantormu', desc: 'Kalau kamu yang memegang anggaran CSR, ajak kami bicara lewat WhatsApp soal bentuk laporan dan dokumentasi yang perusahaanmu butuhkan.' },
-    ],
     forWhom: ['Mustahik penerima zakat', 'Keluarga prasejahtera', 'Warga yang sedang kesulitan mendadak', 'Penerima manfaat program makanan', 'Dapur UMKM yang memasak pesanannya'],
     ctaTitle: 'Mau tahu dulu uangmu akan dipakai untuk apa?',
     ctaText: 'Tanyakan lewat WhatsApp sedetail yang kamu mau, termasuk bentuk laporan yang kamu harapkan, dan kami jawab satu per satu.',
@@ -282,11 +259,6 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       ],
       closing: 'Karena membangun kota yang lebih hijau bukan hanya tugas pemerintah, tetapi gerakan kita bersama.',
     },
-    contribute: [
-      { title: 'Tunjuk titik yang panas', desc: 'Ceritakan lewat WhatsApp jalan atau kawasan di sekitarmu yang terik dan tidak punya peneduh, supaya daftar lokasi tanamnya tidak kami susun dari peta saja.' },
-      { title: 'Tawarkan lahan atau bibit', desc: 'Kalau kamu punya lahan yang bisa ditanami atau bibit yang siap dipindahkan, kabari kami, karena dua hal itu yang paling sering menahan penanaman.' },
-      { title: 'Rawat pohon yang sudah ada', desc: 'Pohon muda lebih sering mati karena tidak terawat daripada karena kurang bibit, jadi menyiram dan menjaga yang sudah tumbuh di sekitarmu sudah menolong hari ini juga.' },
-    ],
     forWhom: ['Warga di sekitar titik tanam', 'Sekolah & ruang publik', 'Pejalan kaki dan pengguna jalan', 'Kawasan rawan panas & banjir', 'Generasi mendatang'],
     ctaTitle: 'Ingin menanam lebih banyak pohon di kotamu?',
     ctaText: 'Punya lahan, bibit, atau ingin berdonasi pohon? Ceritakan ke kami lewat WhatsApp.',

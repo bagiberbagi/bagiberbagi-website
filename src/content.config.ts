@@ -381,9 +381,9 @@ const analytics = defineCollection({
 
 // ===== aksi =====
 //
-// Satu berkas per pintu, isinya daftar "cara ikut" pintu itu. Menggantikan
-// `CATEGORY_CONTENT.contribute` di consts.ts, yang selama ini tidak bisa
-// disentuh editor sama sekali.
+// Satu berkas per pintu, isinya daftar "cara ikut" pintu itu. Dulu hidup
+// sebagai field `contribute` di `CATEGORY_CONTENT` (consts.ts), tempat editor
+// tidak bisa menyentuhnya sama sekali; field itu sudah dihapus.
 //
 // SCHEMA DI SINI PERMISIF, PEMBACANYA YANG KETAT. Ini aturannya, bukan
 // kelalaian. Admin Keystatic bisa menulis nilai yang tidak masuk akal tanpa

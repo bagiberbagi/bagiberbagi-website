@@ -579,21 +579,34 @@ required rather than defaulted, since that is the rule a future reader is most l
 
 File: `src/consts.ts`. Depends on **G** having merged.
 
-- [ ] H1 Remove `contribute` from the `CategoryContent` interface (`consts.ts:141`) and from all
+- [x] H1 Remove `contribute` from the `CategoryContent` interface (`consts.ts:141`) and from all
       six entries (`:166, 199, 217, 235, 253, 285`). The eighteen `{title, desc}` pairs now live
       in `src/content/aksi/*.json`, put there by Track D as a verbatim diff.
-- [ ] H2 `grep -rn "contribute" src` must come back empty except for prose in comments, which
+- [x] H2 `grep -rn "contribute" src` must come back empty except for prose in comments, which
       should be corrected rather than left describing a field that no longer exists.
-- [ ] H3 `PINTU_CONCEPT[*].examples` in `PintuS1.astro:311-362` — twenty-four strings feeding the
+- [x] H3 `PINTU_CONCEPT[*].examples` in `PintuS1.astro:311-362` — twenty-four strings feeding the
       `#bentuk` section. **Keep them.** They are the empty-pintu fallback, which Track G's
       decision makes reachable for the first time (see G1). Only remove them if Track G came back
       having deleted the `showForms` branch, and if so this checkbox moves into that track.
-- [ ] H4 `concept.what` stays. It feeds every pintu's opening paragraph and has nothing to do
+- [x] H4 `concept.what` stays. It feeds every pintu's opening paragraph and has nothing to do
       with this change.
-- [ ] H5 Prove `dist/` is unchanged against post-G `main`. If a single pintu page moves, either G
+- [x] H5 Prove `dist/` is unchanged against post-G `main`. If a single pintu page moves, either G
       did not fully repoint or Track D's copy is not verbatim. Both are bugs, not surprises.
 
 **Done when**: the gate passes, H2's grep is clean, and H5's diff is empty.
+
+**Report.** `dist/` is byte-identical, `diff -r` across the whole tree, zero differences.
+
+H2's grep leaves exactly three mentions and all three are deliberate: one line each in
+`consts.ts`, `content.config.ts` and `PintuS1.astro` saying, in the past tense, that the list used
+to live in `contribute` and where it went. That is what the checkbox asks for — a comment that
+still *describes* a live field would be the defect, a comment that records where the data moved
+from is the thing a future reader needs. Two unrelated hits stay untouched: the analytics event
+name `pintu_contribute` in `VisionSection.astro`, and the English word "contributed" in a
+`BaseLayout.astro` doc-comment about JSON-LD.
+
+The local in `PintuS1` was renamed `contribute` → `aksiList` at the same time, since a variable
+named after a deleted field is the same defect as a comment naming one.
 
 ---
 

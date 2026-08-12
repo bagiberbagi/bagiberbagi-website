@@ -37,6 +37,8 @@ bunx astro dev stop
 
 **Design system** — warna, skala teks, radius, shadow, breakpoint, dan class komponen bersama didefinisikan di `tailwind.config.mjs` + `src/styles/global.css`, didokumentasikan di [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) (termasuk warna identitas 5 "Pintu Berbagi"). Baca itu sebelum menambah nilai visual baru — jangan pakai bracket arbitrary (`text-[17px]`, `bg-[#hex]`) untuk permukaan bersama.
 
+**Roadmap** — status proyek, apa yang sudah selesai, dan apa yang masih menunggu keputusan ada di [`ROADMAP.md`](ROADMAP.md). Alasan di balik tiap perubahan ada di `openspec/changes/`, perilaku yang dihasilkannya di `openspec/specs/`.
+
 ## Alur kerja konten
 
 ### Siapa mengedit apa

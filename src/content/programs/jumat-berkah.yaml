@@ -1,5 +1,8 @@
 label: Jumat Berkah
-pintu: food
+pintu:
+  - food
+  - time
+pintuUtama: food
 order: 1
 active: true
 image: /src/assets/programs/jumat-berkah.png

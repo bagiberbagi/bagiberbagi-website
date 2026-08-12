@@ -89,11 +89,22 @@ First milestone a visitor can see, and the first that is worth shipping on its o
   claim the taxonomy exists to make
 
 Content — the visible part:
-- `jumat-berkah` declares `[food, money, time, space]`, `pintuUtama: food`
+- `jumat-berkah` declares `[food, time]`, `pintuUtama: food`
 
-It genuinely accepts all four: portions, cash, volunteers on distribution day, and lent kitchens
-and vehicles. Three doors that are empty today therefore fill, with **no URL change and no copy
-rewritten**.
+**This was drafted as `[food, money, time, space]` and cut down after checking the site's own
+copy, which contradicts two of them:**
+
+| pintu | the site's existing words | verdict |
+|---|---|---|
+| `time` | *"Penyaluran makanan **sudah berjalan** dan kamu boleh ikut membantu di situ"* | names this programme — claim it |
+| `money` | *"Selama pintu ini **masih kami siapkan**"* | the door says it is not open; an active programme there would contradict the page |
+| `space` | *"kami simpan sebagai **calon** titik kegiatan"* | prospective, not in use |
+
+So one door fills, not three. The rule this follows is the one written into `COPY.md` for the
+empty pintu: a page may not claim a capability the operation does not have. Declaring `money`
+would have looked better on the milestone and made the money page argue with itself.
+
+Adding `money` later is a content edit once zakat routing actually opens — no code changes.
 
 **Gate:** three green. `dist/` now differs on purpose — the diff must touch only the pintu pages
 that gained programmes, the mega-menu, and the homepage map.

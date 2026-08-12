@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import type { ImageMetadata } from 'astro';
-import type { PintuId } from '../consts';
+import { PINTU_IDS, type PintuId } from '../consts';
 import type { KetentuanItem } from './ketentuan';
 import { createImageResolver } from './assets';
 import defaultProgramCover from '../assets/images/program-promo.png';
@@ -79,6 +79,48 @@ const PROGRAM_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
 export const resolveProgramImage = createImageResolver('program', PROGRAM_IMAGES);
 
 /**
+ * Satu-satunya tempat bentuk `pintu` di disk diselesaikan jadi bentuk yang
+ * dilihat seluruh situs. Skema sengaja permisif (lihat content.config.ts) dan
+ * di sinilah ketatnya, sama seperti `readAksi` terhadap isian Keystatic.
+ *
+ * Tiga hal yang ditangani, semuanya bisa benar-benar terjadi lewat CMS:
+ *
+ * 1. Bentuk lama satu nilai — dinaikkan jadi daftar satu elemen.
+ * 2. Daftar kosong. `fields.multiselect` menulis `[]` begitu editor mencabut
+ *    pilihan terakhir. Program tanpa pintu tak punya tempat tampil sama sekali,
+ *    jadi dijatuhkan ke `food` sambil memperingatkan — bukan dibiarkan
+ *    `undefined` menyebar ke pencarian warna dan agregasi dampak.
+ * 3. `pintuUtama` menunjuk pintu yang tak ada di daftarnya. Keystatic tak bisa
+ *    menyempitkan opsi satu field berdasarkan field lain, jadi ini bukan
+ *    kelalaian editor melainkan celah yang memang terbuka. Angkanya jatuh ke
+ *    entri pertama, karena metrik yang bersandar pada pintu yang tak dilayani
+ *    program ini akan muncul di halaman yang tak pernah menyebut programnya.
+ */
+function resolvePintu(
+  slug: string,
+  raw: PintuId | PintuId[],
+  utama: PintuId | null | undefined
+): { pintu: PintuId[]; pintuUtama: PintuId } {
+  const listed = Array.isArray(raw) ? raw : [raw];
+  const pintu = listed.length > 0 ? listed : ([PINTU_IDS[0]] as PintuId[]);
+
+  if (listed.length === 0) {
+    console.warn(
+      `[programs] ${slug}: tak ada pintu yang dipilih, jatuh ke "${pintu[0]}". Pilih minimal satu di Keystatic.`
+    );
+  }
+
+  if (utama && !pintu.includes(utama)) {
+    console.warn(
+      `[programs] ${slug}: pintu utama "${utama}" tidak ada di daftar pintunya (${pintu.join(', ')}), jatuh ke "${pintu[0]}". Angka dampaknya akan dihitung di sana.`
+    );
+    return { pintu, pintuUtama: pintu[0] };
+  }
+
+  return { pintu, pintuUtama: utama ?? pintu[0] };
+}
+
+/**
  * Satu sumber kebenaran untuk semua program: kalkulator, kartu beranda,
  * mega-menu, halaman detail, dan OG image semuanya membaca dari sini —
  * bukan lagi dari array terpisah di `consts.ts`.
@@ -88,18 +130,12 @@ export async function getPrograms(): Promise<Program[]> {
   return entries
     .map((e) => {
       const hasPage = e.data.active && e.data.detail.description.trim() !== '';
-      // Satu-satunya tempat bentuk skalar vs daftar diselesaikan. Skema sengaja
-      // menerima keduanya (lihat content.config.ts); mulai dari sini ke atas
-      // seluruh situs cuma melihat daftar.
-      const pintu = Array.isArray(e.data.pintu) ? e.data.pintu : [e.data.pintu];
+      const { pintu, pintuUtama } = resolvePintu(e.id, e.data.pintu, e.data.pintuUtama);
       return {
         slug: e.id,
         ...e.data,
         pintu,
-        // Kosong = entri pertama. Bukan tebakan: untuk program berpintu tunggal
-        // itu satu-satunya jawaban yang mungkin, dan program berpintu banyak
-        // wajib menyebutkannya sendiri lewat Keystatic.
-        pintuUtama: e.data.pintuUtama ?? pintu[0],
+        pintuUtama,
         // Path string diselesaikan di sini sekali saja, jadi seluruh konsumen
         // menerima modul gambar yang siap dioptimasi dan tak ada satu pun yang
         // perlu tahu di folder mana fotonya disimpan.

@@ -724,11 +724,27 @@ export default config({
       format: { data: 'yaml' },
       schema: {
         label: fields.slug({ name: { label: 'Nama Program' } }),
-        pintu: fields.select({
+        pintu: fields.multiselect({
           label: 'Pintu',
-          description: 'Pintu berbagi tempat program ini bernaung.',
+          description:
+            'Semua pintu yang dilayani program ini. Boleh lebih dari satu: Jumat Berkah menerima makanan, dana, waktu relawan, dan pinjaman ruang sekaligus.',
           // Opsi diturunkan dari PINTU (consts.ts) — satu sumber daftar pintu.
           // Label mempertahankan format lama "Berbagi X (Id)".
+          options: PINTU.map((p) => ({
+            label: `${p.label} (${p.id[0].toUpperCase()}${p.id.slice(1)})`,
+            value: p.id,
+          })),
+          defaultValue: ['food'],
+        }),
+        // Sengaja select bebas, bukan turunan dari `pintu` di atas: Keystatic
+        // tidak bisa menyempitkan opsi satu field berdasarkan isi field lain.
+        // Jadi editor bisa memilih pintu utama yang tidak ada di daftarnya, dan
+        // `lib/programs.ts` yang memperingatkan lalu jatuh ke entri pertama —
+        // pola "skema permisif, pembacanya yang ketat" yang sama dengan `aksi`.
+        pintuUtama: fields.select({
+          label: 'Pintu utama',
+          description:
+            'Pintu yang memikul kartu, remah roti, dan SELURUH angka dampak program ini. Harus salah satu yang dipilih di atas. Metrik cuma dihitung di sini, supaya satu penyaluran tidak terhitung dua kali di dua pintu.',
           options: PINTU.map((p) => ({
             label: `${p.label} (${p.id[0].toUpperCase()}${p.id.slice(1)})`,
             value: p.id,

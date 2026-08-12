@@ -44,11 +44,17 @@ memulihkan desain lama, itu keputusan desain baru.
 
 ## Catatan penting soal `ProgramHighlights`
 
-Komponen ini **satu-satunya pembaca koleksi `home`** (panel "Beranda" di Keystatic,
-lewat `src/lib/home.ts`). Selama ia diparkir, panel itu ada di admin tapi tidak
-menyetir apa pun di situs. Kalau nanti diputuskan komponen ini benar-benar tidak
-dipakai lagi, koleksi `home`, `src/lib/home.ts`, dan entri Keystatic-nya perlu
-ikut dibereskan supaya editor tidak mengisi field yang tidak berefek.
+Komponen ini pembaca **`getProgramSection()`** di `src/lib/home.ts`, yaitu bagian
+"program yang disorot" berikut eyebrow dan judulnya pada panel "Beranda" di
+Keystatic. Selama ia diparkir, field-field itu ada di admin tapi tidak menyetir
+apa pun di situs.
+
+Dulu di sini tertulis komponen ini satu-satunya pembaca koleksi `home`, dan itu
+berhenti benar begitu `ProgramStage.astro` lahir: `programStage` dibaca lewat
+`getProgramStageIntro()` dan tayang di beranda. Jadi koleksi `home` hidup
+separuh, bukan mati. Kalau nanti diputuskan komponen ini benar-benar tidak
+dipakai lagi, yang perlu dibereskan cuma bagian `programs`/`eyebrow`/`title`
+berikut `getProgramSection()`, bukan seluruh koleksinya.
 
 ## Kalau mau dipakai lagi
 

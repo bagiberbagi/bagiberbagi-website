@@ -41,7 +41,20 @@ jobs:
 
       - run: bun test
       - run: bunx --bun astro check
+
+      # Berjalan sebelum build supaya berkas yang tak pernah masuk pipeline
+      # (audio, video) ketahuan di sini, bukan lewat begitu saja seperti tiga
+      # MP3 yang duduk di slot foto galeri sejak 11 Agustus 2026.
+      - run: bun run check:media
+
       - run: bun run build
+
+      # Dan ini sesudah build, karena pertanyaannya soal isi `dist`. Dulu tidak
+      # dipasang di CI sama sekali: waktu satu penyimpanan Keystatic menjatuhkan
+      # delapan baris `image:` dari satu entri, halamannya kehilangan seluruh
+      # galeri dan 11,73 MB berkas asli ikut terkirim, deploy tetap hijau.
+      # Gagal di sini berarti build lama yang sudah baik tetap tayang.
+      - run: bun run check:assets
 
       # Host key VPS diambil dari secret, bukan `ssh-keyscan` waktu run:
       # keyscan mempercayai kunci apa pun yang dijawab host saat itu

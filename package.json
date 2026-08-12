@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check:assets": "node scripts/check-dist-assets.mjs"
+    "check:assets": "node scripts/check-dist-assets.mjs",
+    "check:media": "node scripts/check-source-media.mjs"
   },
   "dependencies": {
     "@astrojs/markdoc": "^2.0.3",

@@ -6,6 +6,31 @@ export interface Props {
 }
 
 const { name, color = 'currentColor', size = 20 } = Astro.props;
+
+/*
+ * SATU ATURAN YANG MENGIKAT SEMUA IKON DI SINI: tintanya harus berada di dalam
+ * kira-kira x 3,5-20,5 dan y 3-21 pada viewBox 24x24 — berpusat, dengan sisa
+ * ruang yang seragam di keempat sisi.
+ *
+ * Alasannya bukan kerapian, melainkan bahwa enam di antaranya dipakai sebagai
+ * WATERMARK 150px di sudut kanan bawah kartu pintu (VisionSection, PintuSection,
+ * /peduli/), dan di sana kotak SVG-nya yang diposisikan, bukan gambarnya. Ikon
+ * yang tintanya lebih kecil atau tergeser akan tampak melayang jauh dari sudut
+ * sementara tetangganya menempel, dan itu terbaca sebagai tata letak yang salah
+ * padahal offset-nya sama persis.
+ *
+ * Tiga yang pernah melanggarnya, dan gejalanya:
+ *   - `heart`  tintanya x 0,9-19,1: berpusat di x=10, jadi hatinya terbaca
+ *              miring ke kiri sekaligus asimetris kiri-kanan.
+ *   - `money`  tingginya cuma 12 unit (y 6-18) melawan `tree` yang 20 unit,
+ *              jadi di 150px selisih massanya ~50px antar kartu bersebelahan.
+ *   - `tree`   batangnya turun sampai y=22, satu-satunya yang menyentuh tepi.
+ *
+ * Offset watermark-nya sendiri sekarang simetris (-right-7 -bottom-7). Kalau
+ * menambah ikon pintu baru, cocokkan rentang tintanya lebih dulu — jangan
+ * menambal dengan offset khusus per ikon, karena itu memindahkan masalahnya ke
+ * tempat yang tak kelihatan.
+ */
 ---
 
 {name === 'food' && (
@@ -21,7 +46,7 @@ const { name, color = 'currentColor', size = 20 } = Astro.props;
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14.3-4.9M20 12a8 8 0 0 1-14.3 4.9"></path><path d="M18 3v5h-5M6 21v-5h5"></path></svg>
 )}
 {name === 'heart' && (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-9.5-8.5C.9 8.2 2.4 5 6 5c2 0 3.2 1.1 4 2.2C10.8 6.1 12 5 14 5c3.6 0 5.1 3.2 3.5 6.5C19 15.65 12 20 12 20Z"></path></svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5C12 20.5 3.5 15.4 3.5 9.8 3.5 6.6 5.9 4.5 8.5 4.5c1.9 0 3 1 3.5 1.9.5-.9 1.6-1.9 3.5-1.9 2.6 0 5 2.1 5 5.3 0 5.6-8.5 10.7-8.5 10.7Z"></path></svg>
 )}
 {name === 'chef' && (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M9 21v-6M15 21v-6M6 10a4 4 0 0 1 3-6.8A4 4 0 0 1 12 2a4 4 0 0 1 3 1.2A4 4 0 0 1 18 10c0 2-1 3-2 4H8c-1-1-2-2-2-4Z"></path></svg>
@@ -39,17 +64,17 @@ const { name, color = 'currentColor', size = 20 } = Astro.props;
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V6a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M14 21V10h4a1 1 0 0 1 1 1v10"></path><path d="M8 9h2M8 13h2"></path></svg>
 )}
 {name === 'money' && (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="6"></circle><path d="M14.5 6.4a6 6 0 0 1 0 11.2"></path><path d="M9 9.5v5M7.5 11h3M7.5 13h3"></path></svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7v10M9 10h6M9 14h6"></path></svg>
 )}
 {name === 'tree' && (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18a4 4 0 0 1-2.2-7.3A3.5 3.5 0 0 1 9 5.1V5a3 3 0 1 1 6 0v.1a3.5 3.5 0 0 1 3.2 5.6A4 4 0 0 1 16 18Z"></path><path d="M12 18v4"></path></svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18a4 4 0 0 1-2.2-7.3A3.5 3.5 0 0 1 9 5.1V5a3 3 0 1 1 6 0v.1a3.5 3.5 0 0 1 3.2 5.6A4 4 0 0 1 16 18Z"></path><path d="M12 18v3"></path></svg>
 )}
 {name === 'impact' && (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"></path><path d="M8 15l3-4 3 2 4-6"></path></svg>
 )}
 {name === 'book' && (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5Z"></path><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5A2.5 2.5 0 0 1 4 20.5Z"></path></svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"></path><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5Z"></path></svg>
 )}
 {name === 'shield' && (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.3-2.9 8.2-7 9.5-4.1-1.3-7-5.2-7-9.5V6Z"></path><path d="M12 8.5v4M12 15.5h.01"></path></svg>
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l8 3.4v5c0 4.3-3.2 8.2-8 9.6-4.8-1.4-8-5.3-8-9.6v-5Z"></path><path d="M12 9.5v3.5M12 16.5h.01"></path></svg>
 )}

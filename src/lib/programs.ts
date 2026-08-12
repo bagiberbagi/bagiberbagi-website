@@ -9,12 +9,8 @@ export interface Program {
   slug: string;
   label: string;
   /**
-   * Semua pintu yang dilayani program ini, selalu sudah berupa daftar — entri
-   * YAML lama yang menulis satu nilai dinormalkan di `getPrograms`, jadi tak
-   * ada konsumen yang perlu tahu bentuk mana yang ada di disk.
-   *
-   * Untuk "pintu-nya apa" (kartu, remah roti, warna, angka) pakai
-   * `pintuUtama`, bukan elemen pertama daftar ini.
+   * Semua pintu yang dilayani program ini. Untuk "pintu-nya apa" (kartu, remah
+   * roti, warna, angka) pakai `pintuUtama`, bukan elemen pertama daftar ini.
    */
   pintu: PintuId[];
   /**
@@ -83,14 +79,13 @@ export const resolveProgramImage = createImageResolver('program', PROGRAM_IMAGES
  * dilihat seluruh situs. Skema sengaja permisif (lihat content.config.ts) dan
  * di sinilah ketatnya, sama seperti `readAksi` terhadap isian Keystatic.
  *
- * Tiga hal yang ditangani, semuanya bisa benar-benar terjadi lewat CMS:
+ * Dua hal yang ditangani, keduanya bisa benar-benar terjadi lewat CMS:
  *
- * 1. Bentuk lama satu nilai — dinaikkan jadi daftar satu elemen.
- * 2. Daftar kosong. `fields.multiselect` menulis `[]` begitu editor mencabut
+ * 1. Daftar kosong. `fields.multiselect` menulis `[]` begitu editor mencabut
  *    pilihan terakhir. Program tanpa pintu tak punya tempat tampil sama sekali,
  *    jadi dijatuhkan ke `food` sambil memperingatkan — bukan dibiarkan
  *    `undefined` menyebar ke pencarian warna dan agregasi dampak.
- * 3. `pintuUtama` menunjuk pintu yang tak ada di daftarnya. Keystatic tak bisa
+ * 2. `pintuUtama` menunjuk pintu yang tak ada di daftarnya. Keystatic tak bisa
  *    menyempitkan opsi satu field berdasarkan field lain, jadi ini bukan
  *    kelalaian editor melainkan celah yang memang terbuka. Angkanya jatuh ke
  *    entri pertama, karena metrik yang bersandar pada pintu yang tak dilayani
@@ -98,10 +93,9 @@ export const resolveProgramImage = createImageResolver('program', PROGRAM_IMAGES
  */
 function resolvePintu(
   slug: string,
-  raw: PintuId | PintuId[],
+  listed: PintuId[],
   utama: PintuId | null | undefined
 ): { pintu: PintuId[]; pintuUtama: PintuId } {
-  const listed = Array.isArray(raw) ? raw : [raw];
   const pintu = listed.length > 0 ? listed : ([PINTU_IDS[0]] as PintuId[]);
 
   if (listed.length === 0) {

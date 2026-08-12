@@ -1,0 +1,78 @@
+---
+// Logistik — permukaan tingkat-situs, bukan pintu.
+//
+// Meminjamkan aula atau kendaraan bukan sebuah peruntukan: gudang yang sama
+// bisa menampung paket pangan hari ini dan bantuan bencana pekan depan. Jadi
+// sejak pintu berpindah ke sumbu peruntukan, "ruang" berhenti jadi kategori —
+// tapi tiga aksinya nyata dan prosanya sudah ditulis, jadi keduanya pindah ke
+// sini alih-alih dibuang.
+//
+// Sama seperti /relawan/, sengaja tidak masuk NAV_LINKS. Lihat catatan di sana.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/Container.astro';
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const wa = (msg: string) => buildWaLink(site.data.waNumber, msg);
+
+const CARA = [
+  {
+    title: 'Daftarkan ruang atau kendaraanmu',
+    desc: 'Ceritakan lewat WhatsApp jenis ruangnya, lokasinya, dan hari yang biasanya kosong, lalu kami simpan sebagai calon titik kegiatan yang bisa dituju saat dibutuhkan.',
+    href: wa('Halo, saya ingin mendaftarkan ruang/kendaraan yang bisa dipinjamkan.'),
+  },
+  {
+    title: 'Pinjamkan langsung ke sekitarmu',
+    desc: 'Kalau di sekitarmu ada kelompok yang sedang mencari tempat berkumpul, kamu bisa menawarkan ruangmu ke mereka sekarang juga, tanpa harus lewat kami.',
+    href: wa('Halo, saya ingin bertanya soal meminjamkan ruang langsung ke kelompok di sekitar saya.'),
+  },
+  {
+    title: 'Kenalkan kami ke pengelolanya',
+    desc: 'Sambungkan kami ke pengurus aula, masjid, atau gudang yang kamu kenal, lalu kami yang menjelaskan bagaimana peminjamannya nanti dijalankan.',
+    href: wa('Halo, saya ingin mengenalkan pengelola aula/masjid/gudang kepada bagiberbagi.'),
+  },
+];
+---
+
+<BaseLayout
+  title="Dukungan Logistik | bagiberbagi.id"
+  description="Pinjamkan aula, gudang, dapur, atau kendaraan untuk kegiatan sosial dan penyaluran bantuan bagiberbagi.id. Ruang yang kosong sehari bisa jadi titik penyaluran."
+  breadcrumbName="Logistik"
+>
+  <section class="py-20 md:py-28">
+    <Container width="wide">
+      <header class="max-w-text">
+        <p class="eyebrow">Dukungan Logistik</p>
+        <h1 class="text-title-lg font-semibold text-ink mt-2">
+          Sebuah ruang tidak kehilangan nilainya ketika kosong.
+        </h1>
+        <p class="text-body text-muted mt-4">
+          Banyak kegiatan baik tertahan bukan karena kekurangan niat, melainkan karena tidak ada
+          aula untuk berkumpul dan tidak ada kendaraan untuk mengangkut bantuan. Ruang atau
+          kendaraan yang menganggur pada hari tertentu bisa ikut membuka jalan.
+        </p>
+        <p class="text-body text-muted mt-4">
+          Aula, gudang, dapur, dan kendaraan yang kosong pada hari tertentu dapat dipinjamkan untuk
+          kegiatan sosial dan penyaluran bantuan, supaya sebuah niat baik tidak berhenti hanya
+          karena tidak ada tempat berkumpul.
+        </p>
+      </header>
+
+      <h2 class="text-title-sm font-semibold text-ink mt-14">Cara ikut</h2>
+      <ol class="grid gap-4 sm:grid-cols-3 mt-6">
+        {CARA.map((c, i) => (
+          <li class="rounded-card border border-border bg-white p-6 flex flex-col">
+            <span class="text-micro font-bold text-muted">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="text-body font-semibold text-ink mt-2">{c.title}</h3>
+            <p class="text-body-sm text-muted leading-snug mt-2 flex-1">{c.desc}</p>
+            <a href={c.href} target="_blank" rel="noopener" class="link text-body-sm font-semibold text-brand-blue mt-4 self-start">
+              Hubungi lewat WhatsApp
+            </a>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </section>
+</BaseLayout>

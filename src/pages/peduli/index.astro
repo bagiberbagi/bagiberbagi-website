@@ -75,6 +75,26 @@ const doors = await Promise.all(
           </a>
         ))}
       </div>
+
+      {/* Dua jalan yang bukan pintu, dan sengaja begitu: menyumbang tenaga atau
+          meminjamkan gudang tidak menentukan peruntukannya — gudang yang sama
+          menampung paket pangan hari ini dan bantuan bencana pekan depan. Blok
+          ini juga yang memberi tujuan nyata bagi empat URL pintu lama yang
+          dialihkan ke halaman ini. */}
+      <div class="mt-14 rounded-card border border-border bg-gray-50 p-6 sm:p-8">
+        <h2 class="text-title-sm font-semibold text-ink">Belum bisa menyumbang dana?</h2>
+        <p class="text-body-sm text-muted mt-2 max-w-text">
+          Ada dua jalan lain yang tidak menuntut apa pun selain yang sudah kamu punya.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-5">
+          <a href="/relawan/" class="link text-body-sm font-semibold text-brand-blue">
+            Jadi relawan &rarr;
+          </a>
+          <a href="/logistik/" class="link text-body-sm font-semibold text-brand-blue">
+            Pinjamkan ruang atau kendaraan &rarr;
+          </a>
+        </div>
+      </div>
     </Container>
   </section>
 </BaseLayout>

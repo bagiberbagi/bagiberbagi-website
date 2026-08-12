@@ -1,0 +1,81 @@
+---
+// Relawan — permukaan tingkat-situs, bukan pintu.
+//
+// Menyumbang tenaga bukan sebuah peruntukan: relawan yang ikut penyaluran
+// melayani Pangan, yang mengajar melayani Pendidikan. Jadi sejak pintu
+// berpindah ke sumbu peruntukan, "waktu" berhenti jadi kategori — tapi tiga
+// aksinya nyata dan prosanya sudah ditulis, jadi keduanya pindah ke sini
+// alih-alih dibuang.
+//
+// SENGAJA TIDAK di NAV_LINKS. Navigasi utama empat item dan urutannya mengikuti
+// alur kepercayaan donatur; menambah item kelima untuk halaman yang belum punya
+// program merusak urutan itu. Jalan masuknya dari halaman pintu dan hub, yaitu
+// tempat niat ini benar-benar muncul.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/Container.astro';
+import { getEntry } from 'astro:content';
+import { buildWaLink } from '../lib/format';
+
+const site = await getEntry('settings', 'site');
+if (!site) throw new Error('settings/site entry not found');
+const wa = (msg: string) => buildWaLink(site.data.waNumber, msg);
+
+const CARA = [
+  {
+    title: 'Kirim daftar keahlianmu',
+    desc: 'Lewat WhatsApp, sebutkan apa yang kamu bisa kerjakan dan berapa jam dalam seminggu kamu benar-benar luang, lalu kami simpan supaya bisa dicocokkan begitu kebutuhannya muncul.',
+    href: wa('Halo, saya ingin mendaftar jadi relawan. Boleh saya kirimkan daftar keahlian dan jam luang saya?'),
+  },
+  {
+    title: 'Ikut satu penyaluran dulu',
+    desc: 'Penyaluran makanan sudah berjalan dan kamu boleh ikut membantu di situ, karena melihat sendiri satu kegiatan lebih cepat menjelaskan bantuan seperti apa yang benar-benar dipakai.',
+    href: wa('Halo, saya ingin ikut membantu di satu penyaluran lebih dulu.'),
+  },
+  {
+    title: 'Ajak satu orang bergantian',
+    desc: 'Kalau ada dua orang yang bisa saling menggantikan, jadwal tidak langsung berantakan saat salah satu berhalangan, jadi ceritakan siapa yang bisa kamu ajak.',
+    href: wa('Halo, saya ingin mendaftar jadi relawan bersama satu orang lain supaya bisa bergantian.'),
+  },
+];
+---
+
+<BaseLayout
+  title="Jadi Relawan | bagiberbagi.id"
+  description="Jadi relawan bagiberbagi.id: bagikan keahlian dan jam luangmu untuk penyaluran, pendampingan belajar, pembukuan dapur warga, dan dokumentasi kegiatan."
+  breadcrumbName="Relawan"
+>
+  <section class="py-20 md:py-28">
+    <Container width="wide">
+      <header class="max-w-text">
+        <p class="eyebrow">Relawan</p>
+        <h1 class="text-title-lg font-semibold text-ink mt-2">
+          Keahlian yang kamu pakai sehari-hari sering justru yang paling langka di kegiatan sosial.
+        </h1>
+        <p class="text-body text-muted mt-4">
+          Waktu adalah satu-satunya milik yang tidak pernah bisa dikembalikan setelah diberikan, dan
+          justru itulah yang membuat kesediaan setiap orang begitu berharga — sebab yang menolong
+          bukan kehadiran sekali yang mengesankan, melainkan keinginan untuk datang lagi.
+        </p>
+        <p class="text-body text-muted mt-4">
+          Jam dan keahlian yang diberikan akan disusun menjadi giliran mengajar, mendampingi belajar,
+          merapikan pembukuan dapur kecil, dan memotret kegiatan, sehingga pertolongan itu dapat
+          diandalkan bukan sekali, melainkan dari pekan ke pekan berikutnya.
+        </p>
+      </header>
+
+      <h2 class="text-title-sm font-semibold text-ink mt-14">Cara ikut</h2>
+      <ol class="grid gap-4 sm:grid-cols-3 mt-6">
+        {CARA.map((c, i) => (
+          <li class="rounded-card border border-border bg-white p-6 flex flex-col">
+            <span class="text-micro font-bold text-muted">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="text-body font-semibold text-ink mt-2">{c.title}</h3>
+            <p class="text-body-sm text-muted leading-snug mt-2 flex-1">{c.desc}</p>
+            <a href={c.href} target="_blank" rel="noopener" class="link text-body-sm font-semibold text-brand-blue mt-4 self-start">
+              Hubungi lewat WhatsApp
+            </a>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </section>
+</BaseLayout>

@@ -172,17 +172,11 @@ const programs = defineCollection({
     // Pintu yang dilayani program ini. Daftar id-nya tunggal di PINTU_IDS
     // (consts.ts).
     //
-    // MENERIMA DUA BENTUK, SENGAJA. Satu nilai (bentuk lama, sebelum
-    // many-to-many) maupun daftar sama-sama lolos, karena Keystatic menulis
-    // berkas YAML yang sudah ada dalam bentuk skalar dan memaksa semuanya
-    // berpindah sekaligus berarti satu commit CMS di tengah migrasi bisa
-    // menjatuhkan build. `lib/programs.ts` yang menormalkan keduanya jadi
-    // daftar, mengikuti pola "skema permisif, pembacanya yang ketat" yang
-    // dipakai blok `aksi` di bawah. Sisi skalar dicabut di M4, setelah seluruh
-    // konten berpindah.
-    pintu: z
-      .union([z.enum(PINTU_IDS), z.array(z.enum(PINTU_IDS))])
-      .default('food'),
+    // Selalu daftar. Sempat menerima satu nilai juga, sebagai jembatan supaya
+    // berkas YAML lama tetap lolos selama migrasi berjalan; sisi itu dicabut
+    // begitu seluruh konten berpindah. Membiarkannya justru mengundang konten
+    // baru ditulis dalam bentuk yang sudah dipensiunkan.
+    pintu: z.array(z.enum(PINTU_IDS)).default(['food']),
     // Pintu yang memikul kartu, remah roti, DAN angka. Sebuah program boleh
     // tampil di beberapa pintu, tapi metriknya cuma boleh dihitung sekali —
     // kalau tidak, satu jejak 500 porsi terhitung di tiap pintu yang diklaim

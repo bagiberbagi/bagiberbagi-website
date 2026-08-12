@@ -44,7 +44,7 @@ const hasCuratedSeo = seoEntry ? Boolean(findPageSeo(seoEntry.data, Astro.url.pa
 
 // Identitas pintu induk: warna aksen (CSS var --cat) + tautan hub pintu, supaya
 // halaman jelas "dari pintu apa". Fallback ke pintu pertama bila tak ketemu.
-const pintu = PINTU.find((p) => p.id === program.pintu) ?? PINTU[0];
+const pintu = PINTU.find((p) => p.id === program.pintuUtama) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 const pintuHref = `/berbagi-${pintu.slug}/`;
 const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
@@ -61,7 +61,7 @@ const mitraWa = buildWaLink(site.data.waNumber, `Halo, saya ingin menjadi mitra 
 
 // Langkah "cara kerja" spesifik pintu (mis. Makanan: Order, Kurasi, Penyaluran,
 // Laporan). Kosong untuk pintu yang belum diisi, blok-nya lalu disembunyikan.
-const steps = CATEGORY_CONTENT[program.pintu]?.howItWorks ?? [];
+const steps = CATEGORY_CONTENT[program.pintuUtama]?.howItWorks ?? [];
 
 // Ketentuan program: butir khas program ini digabung dengan butir yang berlaku
 // untuk semua program. Kosong dua-duanya = seksinya tak dirender, dan tautan di
@@ -71,7 +71,7 @@ const ketentuan = await getKetentuan(program.detail.ketentuan);
 // Program lain di pintu yang sama, untuk memperlihatkan keterkaitan. Ditampilkan
 // maksimal 3 (yang aktif/ber-halaman didahulukan); selebihnya lewat tautan
 // "lihat semua" ke halaman pintu yang mendaftar seluruh programnya.
-const siblings = (await getProgramsByPintu(program.pintu)).filter((p) => p.slug !== program.slug);
+const siblings = (await getProgramsByPintu(program.pintuUtama)).filter((p) => p.slug !== program.slug);
 const siblingsShown = [...siblings].sort((a, b) => Number(!!b.href) - Number(!!a.href)).slice(0, 3);
 
 // Rekam jejak pelaksanaan program ini (terbaru dulu) + agregat dampaknya.

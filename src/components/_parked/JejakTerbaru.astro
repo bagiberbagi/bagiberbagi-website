@@ -14,7 +14,7 @@ import { PINTU } from '../../consts';
 const jejak = (await getJejak()).slice(0, 3);
 
 const programs = await getPrograms();
-const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintuUtama]));
 const pintuById = new Map(PINTU.map((p) => [p.id, p]));
 const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
 

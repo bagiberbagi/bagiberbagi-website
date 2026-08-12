@@ -169,9 +169,39 @@ const programs = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/programs' }),
   schema: z.object({
     label: z.string(),
-    // Pintu tempat program bernaung. Impact bukan pintu (lapisan hasil) — tak
-    // ada di enum ini. Daftar id-nya tunggal di PINTU_IDS (consts.ts).
-    pintu: z.enum(PINTU_IDS).default('food'),
+    // Pintu yang dilayani program ini. Daftar id-nya tunggal di PINTU_IDS
+    // (consts.ts).
+    //
+    // MENERIMA DUA BENTUK, SENGAJA. Satu nilai (bentuk lama, sebelum
+    // many-to-many) maupun daftar sama-sama lolos, karena Keystatic menulis
+    // berkas YAML yang sudah ada dalam bentuk skalar dan memaksa semuanya
+    // berpindah sekaligus berarti satu commit CMS di tengah migrasi bisa
+    // menjatuhkan build. `lib/programs.ts` yang menormalkan keduanya jadi
+    // daftar, mengikuti pola "skema permisif, pembacanya yang ketat" yang
+    // dipakai blok `aksi` di bawah. Sisi skalar dicabut di M4, setelah seluruh
+    // konten berpindah.
+    pintu: z
+      .union([z.enum(PINTU_IDS), z.array(z.enum(PINTU_IDS))])
+      .default('food'),
+    // Pintu yang memikul kartu, remah roti, DAN angka. Sebuah program boleh
+    // tampil di beberapa pintu, tapi metriknya cuma boleh dihitung sekali —
+    // kalau tidak, satu jejak 500 porsi terhitung di tiap pintu yang diklaim
+    // dan total "dampak di 6 area" jadi lebih besar dari kenyataan. Kosong =
+    // pakai entri pertama `pintu`, jadi program lama tetap sah tanpa disentuh.
+    pintuUtama: z.enum(PINTU_IDS).nullish(),
+    // Kondisi jalannya program. `darurat` menyalakan permukaan siaga dan padam
+    // sendiri setelah masa tanggap; ia keadaan sementara, BUKAN klasifikasi.
+    // Pintu `humanitarian` yang mengklasifikasi, dan keduanya tidak boleh
+    // dilebur — lihat design.md pada change shift-pintu-to-peruntukan.
+    mode: z.enum(['routine', 'emergency']).default('routine'),
+    // Musim yang mengikat program (ramadhan, iduladha, tahun ajaran baru).
+    // Kosong = berjalan sepanjang tahun.
+    season: z.string().nullish(),
+    // Sumber dananya. Menentukan alur (formulir, percakapan, proposal), bukan
+    // peruntukan, jadi ia field dan bukan pintu.
+    channel: z
+      .enum(['individual', 'community', 'csr', 'zakat'])
+      .default('individual'),
     order: z.number().default(0),
     active: z.boolean().default(false),
     // Foto kartu sorotan (unggahan Keystatic ke src/assets/programs). Isinya

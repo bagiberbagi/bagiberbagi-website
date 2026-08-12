@@ -61,7 +61,7 @@ const singleJejak = jejak.length === 1;
 // utuh (warna + ikon), bukan cuma id-nya. Resolusinya sama persis dengan feed
 // /jejak supaya kartu yang sama tak pernah beda warna di dua halaman.
 const pintuById = new Map(PINTU.map((p) => [p.id, p]));
-const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintuUtama]));
 const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
 
 // Foto kartu hero: cover jejak terbaru yang benar-benar punya foto. Cuma satu

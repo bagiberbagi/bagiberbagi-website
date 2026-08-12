@@ -47,7 +47,7 @@ export async function getGlobalImpact(): Promise<GlobalImpact> {
   const { getJejak } = await import('./jejak');
   const { getPrograms } = await import('./programs');
   const [jejakList, programs] = await Promise.all([getJejak(), getPrograms()]);
-  const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+  const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintuUtama]));
   const pintuSet = new Set(
     jejakList.map((j) => pintuBySlug.get(j.program)).filter((p): p is PintuId => Boolean(p))
   );

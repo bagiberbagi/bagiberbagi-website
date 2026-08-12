@@ -8,7 +8,22 @@ import defaultProgramCover from '../assets/images/program-promo.png';
 export interface Program {
   slug: string;
   label: string;
-  pintu: PintuId;
+  /**
+   * Semua pintu yang dilayani program ini, selalu sudah berupa daftar — entri
+   * YAML lama yang menulis satu nilai dinormalkan di `getPrograms`, jadi tak
+   * ada konsumen yang perlu tahu bentuk mana yang ada di disk.
+   *
+   * Untuk "pintu-nya apa" (kartu, remah roti, warna, angka) pakai
+   * `pintuUtama`, bukan elemen pertama daftar ini.
+   */
+  pintu: PintuId[];
+  /**
+   * Pintu yang memikul kartu, remah roti, dan SELURUH metrik program ini.
+   * Agregasi dampak menyaring lewat field ini, tak pernah lewat keanggotaan
+   * `pintu`: program yang melayani dua pintu kalau tidak begitu akan
+   * menyumbangkan porsi yang sama ke dua total sekaligus.
+   */
+  pintuUtama: PintuId;
   order: number;
   active: boolean;
   /**
@@ -73,9 +88,18 @@ export async function getPrograms(): Promise<Program[]> {
   return entries
     .map((e) => {
       const hasPage = e.data.active && e.data.detail.description.trim() !== '';
+      // Satu-satunya tempat bentuk skalar vs daftar diselesaikan. Skema sengaja
+      // menerima keduanya (lihat content.config.ts); mulai dari sini ke atas
+      // seluruh situs cuma melihat daftar.
+      const pintu = Array.isArray(e.data.pintu) ? e.data.pintu : [e.data.pintu];
       return {
         slug: e.id,
         ...e.data,
+        pintu,
+        // Kosong = entri pertama. Bukan tebakan: untuk program berpintu tunggal
+        // itu satu-satunya jawaban yang mungkin, dan program berpintu banyak
+        // wajib menyebutkannya sendiri lewat Keystatic.
+        pintuUtama: e.data.pintuUtama ?? pintu[0],
         // Path string diselesaikan di sini sekali saja, jadi seluruh konsumen
         // menerima modul gambar yang siap dioptimasi dan tak ada satu pun yang
         // perlu tahu di folder mana fotonya disimpan.
@@ -102,8 +126,13 @@ export function getProgramCover(program: Pick<Program, 'image'>): ImageMetadata 
   return program.image ?? defaultProgramCover;
 }
 
+/**
+ * Semua program yang melayani pintu ini — termasuk yang pintu utamanya lain.
+ * Keanggotaan, bukan kesamaan: itulah yang membuat satu program bisa muncul di
+ * beberapa pintu tanpa dipindahkan ke mana pun.
+ */
 export async function getProgramsByPintu(pintu: PintuId): Promise<Program[]> {
-  return (await getPrograms()).filter((p) => p.pintu === pintu);
+  return (await getPrograms()).filter((p) => p.pintu.includes(pintu));
 }
 
 /** Program yang punya halaman detail sendiri — dasar route dinamis & OG image. */

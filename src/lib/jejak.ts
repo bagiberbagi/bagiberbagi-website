@@ -304,7 +304,7 @@ export async function getJejakByProgram(programSlug: string): Promise<Jejak[]> {
  */
 export async function getJejakByPintu(pintuId: PintuId): Promise<Jejak[]> {
   const programs = await getPrograms();
-  const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+  const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintuUtama]));
   return (await getJejak()).filter((j) => pintuBySlug.get(j.program) === pintuId);
 }
 

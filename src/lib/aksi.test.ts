@@ -32,7 +32,8 @@ function program(over: Partial<Program> = {}): Program {
   return {
     slug: 'jumat-berkah',
     label: 'Jumat Berkah',
-    pintu: 'food',
+    pintu: ['food'],
+    pintuUtama: 'food',
     order: 1,
     active: true,
     image: null,

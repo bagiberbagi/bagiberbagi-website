@@ -40,7 +40,7 @@ const [jejak, programs, impact, organisasiRefs] = await Promise.all([
 // organisasi nonaktif/terhapus otomatis tak menampilkan atribusi apa pun.
 const organisasiOf = (slug: string | null) => (slug ? organisasiRefs.get(slug) : undefined);
 
-const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintu]));
+const pintuBySlug = new Map(programs.map((p) => [p.slug, p.pintuUtama]));
 const pintuById = new Map(PINTU.map((p) => [p.id, p]));
 const pintuOf = (programSlug: string) => pintuById.get(pintuBySlug.get(programSlug)!);
 const labelBySlug = new Map(programs.map((p) => [p.slug, p.label]));

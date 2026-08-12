@@ -38,7 +38,7 @@ const { jejak } = Astro.props;
 // jejak yatim, jadi program pasti ada; PINTU dijaga fallback ke pintu pertama.
 const programs = await getPrograms();
 const program = programs.find((p) => p.slug === jejak.program);
-const pintu = PINTU.find((p) => p.id === program?.pintu) ?? PINTU[0];
+const pintu = PINTU.find((p) => p.id === program?.pintuUtama) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 
 const programLabel = program?.label ?? jejak.program;

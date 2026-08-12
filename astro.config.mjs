@@ -52,10 +52,18 @@ export default defineConfig({
     // Slug jejak yang pernah terbit lalu diganti. Dipertahankan supaya tautan
     // yang sudah tersebar (WhatsApp, Instagram, hasil pencarian) tidak mati.
     //
-    // Ketiganya lahir dari sebab yang sama: tombol regenerate di Keystatic
-    // menyusun slug dari judul, sementara konvensinya program-YYYY-MM-DD-area.
-    // Sejak keystatic.config.ts memvalidasi bentuknya, ini tak bisa terulang,
-    // jadi daftar ini seharusnya berhenti bertambah.
+    // Tiga yang pertama lahir dari sebab yang sama: tombol regenerate di
+    // Keystatic menyusun slug dari judul, sementara konvensinya
+    // program-YYYY-MM-DD-area.
+    //
+    // Dulu di sini tertulis validasi di keystatic.config.ts membuat ini tak
+    // bisa terulang, jadi daftarnya berhenti bertambah. Baris terakhir adalah
+    // buktinya salah, 11 Agustus 2026. Yang divalidasi `pattern` cuma BENTUK
+    // slug, dan `pyi-taheul` lolos semua syarat bentuk. Yang dilanggar aturan
+    // isinya: jejak itu menyentuh empat titik, satu di Tanah Sareal dan tiga di
+    // Bogor Tengah, jadi area harus menyebut keduanya. Tidak ada regex yang
+    // bisa tahu berapa titik yang dikunjungi, jadi daftar ini masih bisa
+    // panjang dan yang menjaganya cuma orang yang mengetik slug.
     //
     // Pada build statis ini terbit sebagai stub meta-refresh ber-noindex, bukan
     // HTTP 30x. Cukup untuk pembaca manusia, dan noindex-nya menjaga stub itu
@@ -64,6 +72,8 @@ export default defineConfig({
     '/jejak/jumat-berkah-2026-07-17-jumat-berkah-masjid-nurul-hikmah-bogor':
       '/jejak/jumat-berkah-2026-07-17-nurul-hikmah-tegallega/',
     '/jejak/jumat-berkah-asuhan-pyi-yatim-and-zakat-cab-taheul-jl-heulang':
+      '/jejak/jumat-berkah-2026-08-07-pyi-taheul-bogor-tengah/',
+    '/jejak/jumat-berkah-2026-08-07-pyi-taheul':
       '/jejak/jumat-berkah-2026-08-07-pyi-taheul-bogor-tengah/',
   },
 

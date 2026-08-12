@@ -20,7 +20,7 @@ import { getJejakPages, getJejakMedia } from '../../lib/jejak';
 import { getPrograms, getProgramCover } from '../../lib/programs';
 import { getOrganisasiRefs } from '../../lib/organisasi';
 import { ORG_SLUG, findPageSeo, ogKeyFromPath } from '../../lib/seo';
-import { PINTU } from '../../consts';
+import { PINTU, pintuPath } from '../../consts';
 
 // Satu route untuk setiap jejak terbit. Begitu editor menambah jejak di
 // Keystatic & mencentang terbit, halamannya ikut ter-generate tanpa file baru.
@@ -42,7 +42,7 @@ const pintu = PINTU.find((p) => p.id === program?.pintuUtama) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
 
 const programLabel = program?.label ?? jejak.program;
-const ctaHref = program?.href ?? `/berbagi-${pintu.slug}/`;
+const ctaHref = program?.href ?? pintuPath(pintu.slug);
 // Foto program yang sama dengan yang dipakai kartu hero beranda dan hero
 // halaman program, supaya ajakan di bawah memperlihatkan wajah programnya,
 // bukan bidang warna tanpa gambar.
@@ -242,7 +242,7 @@ const extraSchema = [
       <!-- konteks: pintu (induk) + program (spesifik) -->
       <div class="flex flex-wrap items-center gap-2 mb-4">
         <a
-          href={`/berbagi-${pintu.slug}/`}
+          href={pintuPath(pintu.slug)}
           class="inline-flex items-center gap-1.5 rounded-full bg-[var(--cat)] text-white font-bold text-eyebrow tracking-wide px-3.5 py-1.5"
         >
           <Icon name={pintu.icon} size={14} />

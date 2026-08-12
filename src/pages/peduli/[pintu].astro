@@ -1,18 +1,23 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PintuS1 from '../components/_variants/PintuS1.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PintuS1 from '../../components/_variants/PintuS1.astro';
 import { getEntry } from 'astro:content';
-import { buildWaLink } from '../lib/format';
-import { getProgramsByPintu } from '../lib/programs';
-import { getPintuImpact } from '../lib/impact';
-import { getAksiByPintu, resolvePintuHref } from '../lib/aksi';
-import { PINTU, CATEGORY_CONTENT } from '../consts';
+import { buildWaLink } from '../../lib/format';
+import { getProgramsByPintu } from '../../lib/programs';
+import { getPintuImpact } from '../../lib/impact';
+import { getAksiByPintu, resolvePintuHref } from '../../lib/aksi';
+import { PINTU, CATEGORY_CONTENT } from '../../consts';
 
-// Landing pintu (flat /berbagi-[pintu]). Pintu = kategori: halaman ini memikul
+// Landing pintu (/peduli/[pintu]). Pintu = peruntukan: halaman ini memikul
 // KONSEP/cerita channel + SEO + daftar program + status roadmap. Cara kerja TIDAK
 // di sini (itu milik program, karena bisa beda antar program sepintu). Angka
-// dampak cuma teaser yang melempar ke showcase /jejak. Tidak ada /berbagi/ hub;
-// index pintu = PintuSection di beranda.
+// dampak cuma teaser yang melempar ke showcase /jejak.
+//
+// Sekarang ADA hub-nya di /peduli/ (index.astro sebelah). Dulu sengaja tidak
+// ada, dengan alasan pintu cuma kategori/filter dan bukan entitas pemilik
+// halaman — itu benar selama pintu berdampingan dengan program sebagai
+// penyaring. Begitu pintu memikul navigasi utama, premisnya gugur, dan hub-nya
+// sekaligus membuat remah roti halaman ini bisa diturunkan dari URL.
 export async function getStaticPaths() {
   return PINTU.map((pintu) => ({ params: { pintu: pintu.slug }, props: { pintu } }));
 }
@@ -32,7 +37,7 @@ if (!site) throw new Error('settings/site entry not found');
 const contactWa = buildWaLink(site.data.waNumber, `Halo, saya ingin berkontribusi di pintu ${pintu.label}.`);
 const notifyWa = buildWaLink(site.data.waNumber, `Halo, beri tahu saya saat program ${pintu.label} dibuka.`);
 
-const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
+const jejakHref = `/jejak/?peduli=${pintu.slug}`;
 
 // Daftar "cara ikut" pintu ini, plus tujuan tombolnya. Tautan dirakit DI SINI,
 // bukan di dalam PintuS1: komponen itu sudah menerima `contactWa` dan

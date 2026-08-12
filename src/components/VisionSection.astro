@@ -13,7 +13,7 @@
 import { getEntry } from 'astro:content';
 import Container from './Container.astro';
 import Icon from './Icon.astro';
-import { PINTU, type Pintu, type PintuId } from '../consts';
+import { PINTU, type Pintu, type PintuId, pintuPath } from '../consts';
 import { getProgramsByPintu } from '../lib/programs';
 import { buildWaLink } from '../lib/format';
 
@@ -27,17 +27,17 @@ const waResourceLink = buildWaLink(
 // Nama pendek + kalimat perjalanan tiap pintu. Sengaja dipisah dari `blurb` di
 // consts karena di sini kalimatnya bercerita soal tahap, bukan soal isi pintunya.
 const META: Record<PintuId, { name: string; desc: string }> = {
-  food: { name: 'Makanan', desc: 'Program yang aktif hari ini, menyalurkan makanan bergizi bersama komunitas lokal.' },
-  goods: { name: 'Barang', desc: 'Membuka akses berbagi barang yang masih layak pakai kepada mereka yang membutuhkan.' },
-  money: { name: 'Dana', desc: 'Mendukung kebutuhan pendidikan, kesehatan, dan kondisi darurat melalui program yang terverifikasi.' },
-  time: { name: 'Waktu', desc: 'Menghubungkan relawan dengan komunitas yang membutuhkan tenaga, pengalaman, dan kepeduliannya.' },
-  space: { name: 'Ruang', desc: 'Membuka kesempatan berbagi ruang yang dapat dimanfaatkan bagi kegiatan sosial dan komunitas.' },
-  tree: { name: 'Pohon', desc: 'Menumbuhkan pohon yang memberi keteduhan, udara lebih baik, dan kota yang lebih tahan bagi generasi mendatang.' },
+  food: { name: 'Pangan', desc: 'Berjalan hari ini, menyalurkan makanan bergizi bersama dapur-dapur warga.' },
+  empowerment: { name: 'Pemberdayaan', desc: 'Tumbuh dari dapur yang sudah memasak bersama kami: order yang pasti, lalu alat dan modal usahanya.' },
+  education: { name: 'Pendidikan', desc: 'Menyiapkan beasiswa dan perlengkapan sekolah bagi anak yang terancam berhenti belajar karena biaya.' },
+  humanitarian: { name: 'Kemanusiaan', desc: 'Menyiapkan respons agar bantuan sampai di hari-hari pertama, saat paling menentukan.' },
+  health: { name: 'Kesehatan', desc: 'Membuka akses pemeriksaan dan pengobatan bagi warga yang selama ini menundanya.' },
+  environment: { name: 'Lingkungan', desc: 'Menumbuhkan pohon dan menjaga kebersihan agar kota lebih teduh bagi generasi berikutnya.' },
 };
 
 // Urutan tampil sengaja beda dari urutan PINTU di consts: yang aktif lebih dulu,
 // lalu tahap berikutnya sesuai rencana pembukaan.
-const ORDER = ['food', 'goods', 'money', 'tree', 'time', 'space'] as const;
+const ORDER = ['food', 'empowerment', 'education', 'humanitarian', 'health', 'environment'] as const;
 
 // Status "sudah jalan" diturunkan dari data program, tidak pernah ditulis tangan,
 // supaya klaim di halaman tidak bisa lebih maju dari kenyataan.
@@ -92,7 +92,7 @@ const STAGES = await Promise.all(
     <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {STAGES.map((pintu) => (
         <a
-          href={`/berbagi-${pintu.slug}/`}
+          href={pintuPath(pintu.slug)}
           data-track="pintu_click"
           data-track-pintu={pintu.slug}
           data-fade

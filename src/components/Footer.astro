@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { PINTU } from '../consts';
+import { PINTU, pintuPath } from '../consts';
 import Container from './Container.astro';
 import { buildWaLink } from '../lib/format';
 import logoHorizontal from '../assets/images/logo/logo-horizontal-color.png';
@@ -98,7 +98,7 @@ const socialBtn = 'w-11 h-11 rounded-full bg-black/5 flex items-center justify-c
         <div class="font-bold text-body mb-3.5">Pintu Berbagi</div>
         <div class="flex flex-col -my-0.5">
           {PINTU.map((p) => (
-            <a href={`/berbagi-${p.slug}/`} class="link self-start text-body-sm text-muted py-1.5 hover:text-brand-blue">{p.label}</a>
+            <a href={pintuPath(p.slug)} class="link self-start text-body-sm text-muted py-1.5 hover:text-brand-blue">{p.label}</a>
           ))}
         </div>
       </div>

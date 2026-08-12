@@ -28,6 +28,7 @@ import { getEntry } from 'astro:content';
 import { getPrograms, getProgramCover } from '../lib/programs';
 import { getProgramStageIntro } from '../lib/home';
 import { buildWaLink } from '../lib/format';
+import { pintuPath } from '../consts';
 
 const site = await getEntry('settings', 'site');
 if (!site) throw new Error('settings/site entry not found');
@@ -84,7 +85,7 @@ const slides = programs
       whatsapp: stage.ctaWhatsapp,
       href: stage.ctaWhatsapp
         ? buildWaLink(waNumber, stage.ctaMessage.trim())
-        : (program.href ?? '/berbagi-makanan/'),
+        : (program.href ?? pintuPath('pangan')),
     };
   })
   .sort((a, b) => Number(a.dormant) - Number(b.dormant))

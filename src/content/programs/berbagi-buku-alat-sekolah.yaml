@@ -1,5 +1,7 @@
 label: Berbagi Buku
-pintu: goods
+pintu:
+  - education
+pintuUtama: education
 order: 2
 active: false
 summary: Buku dan perlengkapan belajar untuk pelajar.

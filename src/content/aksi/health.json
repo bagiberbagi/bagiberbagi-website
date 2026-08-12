@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "title": "Kabari kebutuhan berobat di sekitarmu",
+      "desc": "Tetangga atau kerabat yang menunda berobat karena biaya bisa kamu daftarkan sekarang, sebelum layanannya kami buka.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin mengabari kebutuhan berobat seseorang di sekitar saya."
+        }
+      }
+    },
+    {
+      "title": "Tawarkan waktumu sebagai tenaga kesehatan",
+      "desc": "Dokter, perawat, bidan, atau ahli gizi yang bersedia membantu pemeriksaan warga, kami catat lebih dulu.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya tenaga kesehatan dan ingin membantu pemeriksaan warga."
+        }
+      }
+    }
+  ]
+}

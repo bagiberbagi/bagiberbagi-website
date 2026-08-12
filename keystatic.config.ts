@@ -201,11 +201,11 @@ function aksiPintu(id: PintuId) {
 // sampai halaman pintunya kosong tanpa ada yang tahu kenapa.
 const AKSI_KEYS = {
   food: 'aksiFood',
-  goods: 'aksiGoods',
-  time: 'aksiTime',
-  space: 'aksiSpace',
-  money: 'aksiMoney',
-  tree: 'aksiTree',
+  education: 'aksiEducation',
+  health: 'aksiHealth',
+  empowerment: 'aksiEmpowerment',
+  humanitarian: 'aksiHumanitarian',
+  environment: 'aksiEnvironment',
 } as const satisfies Record<PintuId, string>;
 
 export default config({
@@ -241,11 +241,11 @@ export default config({
       // beranda menyebut hal yang sama dalam urutan yang sama.
       Aksi: [
         AKSI_KEYS.food,
-        AKSI_KEYS.goods,
-        AKSI_KEYS.time,
-        AKSI_KEYS.space,
-        AKSI_KEYS.money,
-        AKSI_KEYS.tree,
+        AKSI_KEYS.education,
+        AKSI_KEYS.health,
+        AKSI_KEYS.empowerment,
+        AKSI_KEYS.humanitarian,
+        AKSI_KEYS.environment,
       ],
       'Pengaturan Situs': ['settings', 'seo', 'analytics'],
     },
@@ -265,11 +265,11 @@ export default config({
     // Enam daftar "cara ikut", satu per pintu. Kuncinya harus literal (lihat
     // aksiPintu di atas), jadi AKSI_KEYS cuma penjaga drift, bukan sumber kunci.
     aksiFood: aksiPintu('food'),
-    aksiGoods: aksiPintu('goods'),
-    aksiTime: aksiPintu('time'),
-    aksiSpace: aksiPintu('space'),
-    aksiMoney: aksiPintu('money'),
-    aksiTree: aksiPintu('tree'),
+    aksiEducation: aksiPintu('education'),
+    aksiHealth: aksiPintu('health'),
+    aksiEmpowerment: aksiPintu('empowerment'),
+    aksiHumanitarian: aksiPintu('humanitarian'),
+    aksiEnvironment: aksiPintu('environment'),
 
     // SEO dipisah dari Site Settings: yang satu identitas & kontak, yang satu
     // teks yang muncul di hasil pencarian dan share preview. Dibaca dua tempat

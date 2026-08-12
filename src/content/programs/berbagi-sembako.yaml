@@ -1,5 +1,7 @@
 label: Berbagi Sembako
-pintu: food
+pintu:
+  - food
+pintuUtama: food
 order: 1
 active: false
 summary: Paket sembako untuk keluarga yang membutuhkan.

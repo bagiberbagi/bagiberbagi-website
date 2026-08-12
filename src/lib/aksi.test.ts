@@ -112,7 +112,7 @@ test('readAksi memipihkan discriminant "quantity" dan menyelesaikan programnya j
 });
 
 test('showOnPintu yang tidak ditulis dianggap true', () => {
-  const [aksi] = readAksi('goods', [{ title: 'X', mechanism: { discriminant: 'none' } }], bySlug);
+  const [aksi] = readAksi('education', [{ title: 'X', mechanism: { discriminant: 'none' } }], bySlug);
   expect(aksi!.showOnPintu).toBe(true);
 });
 

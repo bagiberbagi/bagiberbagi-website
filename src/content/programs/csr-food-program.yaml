@@ -1,5 +1,7 @@
 label: CSR Food Program
-pintu: food
+pintu:
+  - food
+pintuUtama: food
 order: 4
 active: true
 summary: >-

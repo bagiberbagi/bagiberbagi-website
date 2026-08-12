@@ -1,5 +1,7 @@
 label: Ramadhan Berbagi
-pintu: food
+pintu:
+  - food
+pintuUtama: food
 order: 2
 active: true
 summary: >-

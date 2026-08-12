@@ -2,7 +2,7 @@
 import { getEntry } from 'astro:content';
 import Icon from '../Icon.astro';
 import Container from '../Container.astro';
-import { PINTU } from '../../consts';
+import { PINTU, pintuPath } from '../../consts';
 import { getProgramsByPintu } from '../../lib/programs';
 import { buildWaLink } from '../../lib/format';
 
@@ -35,7 +35,7 @@ const pintuStatus = await Promise.all(
     <div class="grid gap-5 grid-cols-2 sm:grid-cols-3">
       {pintuStatus.map((pintu) => (
         <a
-          href={`/berbagi-${pintu.slug}/`}
+          href={pintuPath(pintu.slug)}
           data-track="pintu_click"
           data-track-pintu={pintu.slug}
           style={`--cat:${pintu.color}`}

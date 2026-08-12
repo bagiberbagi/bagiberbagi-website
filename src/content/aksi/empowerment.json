@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "title": "Jadi mitra dapur",
+      "desc": "UMKM kuliner bergabung memasak untuk penyaluran mingguan.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya usaha kuliner dan ingin jadi Mitra Dapur UMKM."
+        }
+      }
+    }
+  ]
+}

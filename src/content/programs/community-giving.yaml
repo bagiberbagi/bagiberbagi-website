@@ -1,5 +1,7 @@
 label: Community Giving
-pintu: food
+pintu:
+  - food
+pintuUtama: food
 order: 3
 active: true
 summary: >-

@@ -1,5 +1,8 @@
 label: Berbagi Bantuan Bencana
-pintu: goods
+pintu:
+  - humanitarian
+  - food
+pintuUtama: humanitarian
 order: 2
 active: false
 summary: Bantuan darurat untuk korban bencana.

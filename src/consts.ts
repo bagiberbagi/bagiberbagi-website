@@ -74,60 +74,102 @@ export const NAV_LINKS = [
 // ikon, & warna tiap pintu, yang tidak dikelola editor.
 export type IconName =
   | 'food' | 'map' | 'camera' | 'repeat' | 'heart' | 'chef' | 'walk' | 'box'
-  | 'time' | 'space' | 'money' | 'tree' | 'impact';
+  | 'time' | 'space' | 'money' | 'tree' | 'impact' | 'book' | 'shield';
 
-// "Pintu Berbagi" — jalan masuk berkontribusi sumber daya. Sebuah program
-// menempel pada satu pintu lewat field `pintu`-nya (lihat programs.ts).
-// (Dampak/impact BUKAN pintu — ia lapisan hasil, tampil lewat ImpactSection.)
+// "Pintu Berbagi" — sumbunya PERUNTUKAN: apa yang berubah bagi penerima, bukan
+// apa yang diserahkan pemberi. Bentuk sumbangan (makanan, barang, waktu, ruang,
+// dana) hidup di koleksi `aksi` beserta mekanismenya, bukan di sini.
+//
+// Sebuah program boleh menempel pada BEBERAPA pintu (`pintu`), dengan satu
+// `pintuUtama` yang memikul kartu, remah roti, dan seluruh angkanya — lihat
+// programs.ts. Metrik disaring lewat pintuUtama saja; kalau lewat keanggotaan,
+// satu jejak 500 porsi terhitung sekali di tiap pintu yang diklaim programnya.
+//
+// Id INGGRIS, slug Indonesia (aturan di interface Pintu di bawah). `food`
+// sengaja dipertahankan dari taksonomi lama: dalam Inggris ia mencakup
+// ketahanan pangan, dan mempertahankannya membuat pintu tersibuk berpindah
+// tanpa menyentuh satu berkas konten pun.
 //
 // Satu-satunya sumber daftar pintu. Semua tempat lain menurunkan darinya:
 // `PintuId` (tipe), enum zod di content.config.ts, dan opsi select Keystatic.
 // Tambah/hapus pintu cukup di sini + entri PINTU di bawah — jangan tulis ulang
 // daftar id di tempat lain.
-export const PINTU_IDS = ['food', 'goods', 'time', 'space', 'money', 'tree'] as const;
+export const PINTU_IDS = [
+  'food',
+  'education',
+  'health',
+  'empowerment',
+  'humanitarian',
+  'environment',
+] as const;
 export type PintuId = (typeof PINTU_IDS)[number];
 
 export interface Pintu {
   id: PintuId;
-  // Slug URL berbahasa Indonesia untuk rute /berbagi/[slug] (id internal tetap
+  // Slug URL berbahasa Indonesia untuk rute /peduli/[slug] (id internal tetap
   // Inggris karena dipakai taksonomi program). Jaga URL konsisten satu bahasa.
   slug: string;
   label: string;
   english: string;
   icon: IconName;
-  // tagline = kalimat hero /berbagi/[slug] + teks mega-menu (ringkas, enak dibaca).
+  // tagline = kalimat hero /peduli/[slug] + teks mega-menu (ringkas, enak dibaca).
   // blurb = versi ketat khusus kartu homepage "Arah Kami" (padat, sejajar).
-  // seoDescription = meta description /berbagi/[slug] (70-160 char, padat kata
+  // seoDescription = meta description /peduli/[slug] (70-160 char, padat kata
   // kunci). Batas atas 160 mengikuti titik potong Google; lebih dari itu ekor
   // kalimatnya tak pernah tampil. Sama dengan batas field SEO di Keystatic.
   tagline: string;
   blurb: string;
   seoDescription: string;
-  // Warna identitas pintu (aksen, bukan full-page). Dipakai halaman /berbagi/[slug]
+  // Warna identitas pintu (aksen, bukan full-page). Dipakai halaman /peduli/[slug]
   // via CSS var --cat. color=aksen, tint=latar lembut, deep=hover/tekan.
   color: string;
   colorTint: string;
   colorDeep: string;
 }
 
+// Label = kata benda telanjang. Payungnya (PINTU_LABEL) yang memikul kata
+// "berbagi", jadi remah rotinya berbunyi "Pintu Berbagi › Pangan › Jumat
+// Berkah" tanpa mengulang kata yang sama tiga tingkat.
+//
+// Warna: keenam trio diwarisi utuh dari taksonomi lama, tak ada yang baru
+// dibuat. Pemasangannya mengikuti makna yang sudah melekat — biru untuk
+// pendidikan, teal untuk kesehatan, ungu untuk usaha.
 export const PINTU: Pintu[] = [
-  { id: 'food', slug: 'makanan', label: 'Berbagi Makanan', english: 'Food Sharing', icon: 'food', tagline: 'Makanan bergizi dari mitra kami sampai ke tangan yang membutuhkan.', blurb: 'Makanan bergizi ke yang membutuhkan.', seoDescription: 'Donasi makanan bergizi lewat bagiberbagi.id: dari dapur UMKM lokal ke keluarga prasejahtera dan warga yang membutuhkan, dengan bukti foto & video maksimal H+1.', color: '#C4701C', colorTint: '#FDEEE1', colorDeep: '#A05C17' },
-  { id: 'goods', slug: 'barang', label: 'Berbagi Barang', english: 'Goods Sharing', icon: 'box', tagline: 'Pakaian, buku, dan perlengkapan layak pakai berpindah ke yang memerlukan.', blurb: 'Barang layak pakai berpindah tangan.', seoDescription: 'Berbagi barang lewat bagiberbagi.id: pakaian, buku, dan perlengkapan layak pakai disalurkan ke warga dan komunitas yang membutuhkan, terdokumentasi.', color: '#7C4DDA', colorTint: '#ECE6FB', colorDeep: '#5E33B0' },
-  { id: 'time', slug: 'waktu', label: 'Berbagi Waktu', english: 'Time Sharing', icon: 'time', tagline: 'Relawan membagikan keahlian, dari mengajar sampai konsultasi.', blurb: 'Relawan berbagi keahlian & tenaga.', seoDescription: 'Berbagi waktu bersama bagiberbagi.id: relawan membagikan keahlian dan tenaga, dari mengajar sampai pendampingan, untuk kegiatan sosial di berbagai kota.', color: '#DF2AA3', colorTint: '#FBE4EE', colorDeep: '#C11D8A' },
-  { id: 'space', slug: 'ruang', label: 'Berbagi Ruang', english: 'Space Sharing', icon: 'space', tagline: 'Ruang pertemuan, aula, gudang, dan kendaraan untuk kegiatan sosial.', blurb: 'Ruang & kendaraan untuk kegiatan sosial.', seoDescription: 'Berbagi ruang lewat bagiberbagi.id: aula, gudang, ruang pertemuan, dan kendaraan tersedia untuk mendukung kegiatan sosial serta penyaluran bantuan di komunitas.', color: '#1478D0', colorTint: '#DBF2F8', colorDeep: '#126DBD' },
-  { id: 'money', slug: 'dana', label: 'Berbagi Dana', english: 'Money Sharing', icon: 'money', tagline: 'Zakat, CSR, dan donasi kami salurkan tepat sasaran.', blurb: 'Zakat, CSR, donasi tepat sasaran.', seoDescription: 'Berbagi dana bersama bagiberbagi.id: zakat, sedekah, CSR, dan donasi disalurkan tepat sasaran dan transparan untuk program bantuan makanan dan sosial.', color: '#12A472', colorTint: '#DCF3E4', colorDeep: '#0D7B55' },
-  // Hijau daun, bukan hijau emerald: Dana memakai #12A472 (condong teal), dan dua
-  // hijau dengan rona berdekatan terbaca sebagai satu pintu yang sama di peta beranda.
-  { id: 'tree', slug: 'pohon', label: 'Berbagi Pohon', english: 'Tree Sharing', icon: 'tree', tagline: 'Setiap donasi tumbuh jadi pohon yang meneduhkan kota dan menyerap karbon.', blurb: 'Pohon yang meneduhkan & menyerap karbon.', seoDescription: 'Berbagi pohon lewat bagiberbagi.id: donasi ditanam jadi pohon yang memberi keteduhan, menyerap karbon, dan memperkuat ketahanan kota bagi generasi mendatang.', color: '#4C9C2E', colorTint: '#EDF4DB', colorDeep: '#3D7C25' },
+  { id: 'food', slug: 'pangan', label: 'Pangan', english: 'Food Security', icon: 'food', tagline: 'Makanan bergizi dari dapur warga sampai ke meja yang menantinya, setiap pekan.', blurb: 'Makanan bergizi, rutin dan terdokumentasi.', seoDescription: 'Bantuan pangan lewat bagiberbagi.id: paket makanan bergizi dan sembako dari dapur UMKM lokal untuk keluarga prasejahtera, dengan bukti penyaluran H+1.', color: '#C4701C', colorTint: '#FDEEE1', colorDeep: '#A05C17' },
+  { id: 'education', slug: 'pendidikan', label: 'Pendidikan', english: 'Education', icon: 'book', tagline: 'Biaya, buku, dan perlengkapan supaya tidak ada anak yang berhenti belajar.', blurb: 'Biaya dan perlengkapan agar belajar tak putus.', seoDescription: 'Donasi pendidikan lewat bagiberbagi.id: beasiswa, buku, dan perlengkapan sekolah untuk pelajar yang terancam berhenti karena biaya.', color: '#1478D0', colorTint: '#DBF2F8', colorDeep: '#126DBD' },
+  { id: 'health', slug: 'kesehatan', label: 'Kesehatan', english: 'Health', icon: 'heart', tagline: 'Pemeriksaan, pengobatan, dan alat kesehatan bagi yang selama ini menundanya.', blurb: 'Layanan dan alat kesehatan yang terjangkau.', seoDescription: 'Donasi kesehatan lewat bagiberbagi.id: pemeriksaan, biaya pengobatan, dan alat kesehatan untuk warga yang menunda berobat karena keterbatasan biaya.', color: '#12A472', colorTint: '#DCF3E4', colorDeep: '#0D7B55' },
+  { id: 'empowerment', slug: 'pemberdayaan', label: 'Pemberdayaan', english: 'Economic Empowerment', icon: 'money', tagline: 'Dapur dan usaha kecil warga tumbuh lewat order yang pasti dan alat yang memadai.', blurb: 'Usaha kecil warga tumbuh dan mandiri.', seoDescription: 'Pemberdayaan ekonomi & UMKM bersama bagiberbagi.id: order rutin untuk dapur warga, modal dan peralatan usaha, serta pelatihan agar penghasilan berlanjut.', color: '#7C4DDA', colorTint: '#ECE6FB', colorDeep: '#5E33B0' },
+  { id: 'humanitarian', slug: 'kemanusiaan', label: 'Kemanusiaan', english: 'Humanitarian & Disaster', icon: 'shield', tagline: 'Bantuan yang datang cepat saat bencana, dan tetap tinggal saat pemulihan.', blurb: 'Respons cepat saat darurat dan pemulihan.', seoDescription: 'Bantuan kemanusiaan & bencana lewat bagiberbagi.id: respons cepat kebutuhan dasar saat gempa, banjir, dan kebakaran, hingga pemulihan keluarga terdampak.', color: '#DF2AA3', colorTint: '#FBE4EE', colorDeep: '#C11D8A' },
+  // Hijau daun, bukan hijau emerald: Kesehatan memakai #12A472 (condong teal), dan
+  // dua hijau dengan rona berdekatan terbaca sebagai satu pintu yang sama di peta
+  // beranda. Pasangan ini diwarisi apa adanya dari Dana/Pohon, yang sudah disetel
+  // untuk persoalan yang sama persis.
+  { id: 'environment', slug: 'lingkungan', label: 'Lingkungan', english: 'Environment', icon: 'tree', tagline: 'Pohon yang meneduhkan, sungai yang bersih, dan sampah yang kembali berguna.', blurb: 'Lingkungan yang lebih sehat dan tahan lama.', seoDescription: 'Peduli lingkungan bersama bagiberbagi.id: penghijauan, bersih sungai, dan pengelolaan sampah komunitas untuk kota yang lebih teduh dan berkelanjutan.', color: '#4C9C2E', colorTint: '#EDF4DB', colorDeep: '#3D7C25' },
 ];
 
 // Label yang ditampilkan ke pengunjung untuk keseluruhan pintu.
 export const PINTU_LABEL = 'Pintu Berbagi';
 
-// Konten konseptual halaman /berbagi/[slug] — untuk sekarang statis di sini
+/**
+ * Satu-satunya tempat bentuk URL halaman pintu ditulis.
+ *
+ * Sebelum ini sembilan berkas masing-masing merakit `/berbagi-${slug}/`
+ * sendiri, jadi memindahkan rutenya berarti menyunting sembilan tempat dan
+ * berharap tak ada yang terlewat. Sekarang pemindahan berikutnya cukup di sini.
+ *
+ * Kata "peduli" di jalur sengaja TIDAK sama dengan label di antarmuka, yang
+ * berbunyi "Pintu Berbagi". Itu keputusan sadar, bukan kelalaian: tak ada satu
+ * awalan Indonesia pun yang enak dibaca untuk keenam peruntukan sekaligus
+ * ("donasi lingkungan" janggal, "peduli pangan" kaku), jadi frasa yang paling
+ * dicari dipindahkan ke title/h1 tiap halaman dan jalurnya dibiarkan netral.
+ * Jangan "rapikan" ini jadi seragam tanpa membaca routing-taxonomy.md dulu.
+ */
+export const pintuPath = (slug: string) => `/peduli/${slug}/`;
+
+// Konten konseptual halaman /peduli/[slug] — untuk sekarang statis di sini
 // (kandidat pindah ke Keystatic nanti). Tiap blok opsional: yang kosong tidak
-// dirender, jadi pintu tanpa konten tampil lean tapi tetap rapi. v1 baru
-// Makanan yang diisi penuh.
+// dirender, jadi pintu tanpa konten tampil lean tapi tetap rapi. Yang terisi
+// penuh baru Pangan; Lingkungan mewarisi cerita dari bekas pintu Pohon.
 export interface CategoryStat { value: string; label: string }
 export interface CategoryStep { title: string; desc: string }
 export interface CategoryFaqItem { q: string; a: string }
@@ -184,64 +226,16 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
   // Daftar "cara ikut"-nya dulu di sini juga, sebagai field `contribute`.
   // Sekarang di koleksi `aksi` (src/content/aksi/*.json) supaya editor bisa
   // menyentuhnya tanpa developer.
-  goods: {
-    story: {
-      headline: 'Barang yang sudah tidak digunakan bukan barang yang sudah tidak berguna, melainkan barang yang sedang menunggu pemilik berikutnya untuk melanjutkan usianya.',
-      paragraphs: [
-        'Setiap rumah menyimpan pakaian yang sudah tidak dipakai, buku yang sudah selesai dibaca, perlengkapan sekolah yang sudah tidak muat, dan peralatan rumah tangga yang tergeletak di sudut lemari, dan kini semua orang dapat membuat simpanan itu berguna kembali bagi orang lain.',
-        'Pintu Berbagi Barang sedang kami siapkan untuk menjadi jalannya, lengkap dengan pemeriksaan kelayakan sebelum sebuah barang berpindah tangan, sebab yang diterima seseorang semestinya terasa sebagai pemberian yang pantas, bukan sebagai sisa yang sudah tidak diinginkan.',
-      ],
-      closing: 'Umur sebuah barang semestinya diukur dari seberapa lama ia tetap berguna bagi orang lain, bukan dari seberapa lama ia tersimpan sendirian di rumah yang sudah tidak memerlukannya lagi.',
-    },
-    forWhom: ['Anak-anak panti asuhan', 'Siswa yang belum punya seragam', 'Anak yang kekurangan buku bacaan', 'Keluarga prasejahtera', 'Warga yang perabot rumahnya seadanya', 'Petugas kebersihan kota'],
-    ctaTitle: 'Ada barang bagus yang cuma tersimpan di rumahmu?',
-    ctaText: 'Kirim fotonya ke kami lewat WhatsApp, nanti kami kabari kalau penyalurannya sudah bisa jalan.',
-  },
-  time: {
-    story: {
-      headline: 'Keahlian yang setiap hari dipakai untuk mencari nafkah sering terasa biasa saja bagi pemiliknya, padahal justru itulah yang paling langka tersedia ketika sebuah kegiatan sosial membutuhkannya.',
-      paragraphs: [
-        'Waktu adalah satu-satunya milik yang tidak pernah bisa dikembalikan setelah diberikan, dan justru itulah yang membuat kesediaan setiap orang begitu berharga, sebab yang menolong bukan kehadiran sekali yang mengesankan, melainkan keinginan untuk datang lagi.',
-        'Di Pintu Berbagi Waktu, jam dan keahlian yang diberikan akan disusun menjadi giliran mengajar, mendampingi belajar, merapikan pembukuan dapur kecil, dan memotret kegiatan, sehingga pertolongan itu dapat diandalkan bukan sekali, melainkan dari pekan ke pekan berikutnya.',
-      ],
-      closing: 'Sebab kesediaan untuk terus hadir bagi orang lain tidak boleh bertumpu pada satu dua orang yang sama, melainkan menjadi giliran yang dapat dijalankan oleh setiap orang yang mau meluangkan waktunya.',
-    },
-    forWhom: ['Siswa yang tertinggal pelajaran', 'Anak panti yang butuh teman belajar', 'Dapur kecil yang pembukuannya belum rapi', 'Kegiatan warga yang perlu didokumentasikan', 'Tim penyaluran di lapangan', 'Relawan baru yang perlu didampingi'],
-    ctaTitle: 'Keahlian apa yang bisa kamu bagikan?',
-    ctaText: 'Tulis saja ke WhatsApp kami, apa yang kamu bisa dan kapan biasanya kamu luang, biar kami catat lebih dulu dan kami hubungi saat kebutuhannya sudah jelas.',
-  },
-  space: {
-    story: {
-      headline: 'Sebuah ruang tidak kehilangan nilainya ketika kosong, sebab nilai yang sesungguhnya justru muncul begitu ada orang lain yang boleh memakainya.',
-      paragraphs: [
-        'Banyak kegiatan baik tertahan bukan karena kekurangan niat, melainkan karena tidak ada aula untuk berkumpul dan tidak ada kendaraan untuk mengangkut bantuan, dan kini setiap orang dengan ruang atau kendaraan yang menganggur pada hari tertentu dapat ikut membuka jalan.',
-        'Pintu Berbagi Ruang nantinya mempertemukan pemilik ruang dengan kegiatan yang sedang mencarinya, supaya aula, gudang, dan kendaraan yang kosong pada hari tertentu dapat dipinjamkan untuk kegiatan sosial dan penyaluran bantuan, dan sebuah niat baik tidak lagi berhenti hanya karena tidak ada tempat berkumpul.',
-      ],
-      closing: 'Kota yang terbuka tumbuh dari ruang-ruang yang bersedia dipinjamkan, sekecil apa pun bentuknya, kepada siapa saja yang sedang memerlukannya.',
-    },
-    forWhom: ['Komunitas relawan yang belum punya markas', 'Kelas belajar anak-anak di kampung', 'Dapur umum warga', 'Karang taruna dan kelompok pemuda', 'Kelompok yang perlu kendaraan angkut'],
-    ctaTitle: 'Punya ruang yang menganggur di hari tertentu?',
-    ctaText: 'Ceritakan ruang atau kendaraan yang kamu punya lewat WhatsApp, supaya nanti ada tempat yang bisa dituju kelompok yang sedang mencarinya.',
-  },
-  money: {
-    story: {
-      headline: 'Dana adalah bantuan yang paling lentur, sebab ia dapat berubah menjadi apa pun yang paling dibutuhkan pada hari itu, asalkan perjalanannya tetap bisa ditelusuri dari awal hingga akhir.',
-      paragraphs: [
-        'Kebutuhan mendesak jarang datang dengan pemberitahuan, ada yang harus melunasi biaya pengobatan dalam hitungan jam, ada yang kehilangan modal usaha dalam semalam, dan pintu untuk ikut meringankannya kini terbuka bagi setiap orang.',
-        'Pintu Berbagi Dana sedang disiapkan untuk menampung zakat, sedekah, donasi perorangan, dan anggaran tanggung jawab sosial perusahaan, agar tersalur ke kebutuhan yang sudah diperiksa, dicatat secara terbuka, dan dapat ditelusuri oleh siapa pun yang menitipkannya.',
-      ],
-      closing: 'Kepercayaan yang dititipkan melalui sebuah donasi hanya akan terjaga selama jalannya tetap terbuka untuk ditelusuri siapa pun.',
-    },
-    forWhom: ['Mustahik penerima zakat', 'Keluarga prasejahtera', 'Warga yang sedang kesulitan mendadak', 'Penerima manfaat program makanan', 'Dapur UMKM yang memasak pesanannya'],
-    ctaTitle: 'Mau tahu dulu uangmu akan dipakai untuk apa?',
-    ctaText: 'Tanyakan lewat WhatsApp sedetail yang kamu mau, termasuk bentuk laporan yang kamu harapkan, dan kami jawab satu per satu.',
-  },
   // Pintu ini belum punya program, jadi halamannya bersandar pada cerita. Tidak
   // ada angka di sini dengan sengaja: satu pohon pun belum ditanam, dan angka
   // dampak baru boleh muncul lewat jejak, bukan diketik tangan.
-  tree: {
+  environment: {
     story: {
       // Tulisan pemilik situs, kata demi kata, urutannya juga tidak diubah.
+      // SATU frasa berubah saat pintu berpindah sumbu: "Pintu Berbagi Pohon"
+      // jadi "Pintu Berbagi Lingkungan", karena pintu bernama Pohon sudah tak
+      // ada dan menyebut pintu yang tak ada bukan soal gaya bahasa. Selain itu
+      // tak ada satu kata pun yang disentuh.
       // Empat kalimatnya dipetakan langsung ke bentuk yang dirender halaman:
       // kalimat pertama jadi judul, dua berikutnya jadi paragraf, yang terakhir
       // jadi kutipan penutup. Jadi tidak ada satu kata pun yang ditambahkan,
@@ -255,7 +249,7 @@ export const CATEGORY_CONTENT: Partial<Record<PintuId, CategoryContent>> = {
       headline: 'Kota yang baik bukan hanya dibangun dengan beton, jalan, dan gedung, tetapi juga dengan pohon yang memberi kehidupan.',
       paragraphs: [
         'Di tengah suhu kota yang semakin panas, kualitas udara yang menurun, dan dampak perubahan iklim yang semakin nyata, setiap orang kini dapat ikut menjadi bagian dari solusinya.',
-        'Melalui Pintu Berbagi Pohon, setiap donasi akan tumbuh menjadi pohon yang menghadirkan keteduhan, menyerap karbon, menghasilkan oksigen, dan memperkuat ketahanan kota bagi generasi mendatang.',
+        'Melalui Pintu Berbagi Lingkungan, setiap donasi akan tumbuh menjadi pohon yang menghadirkan keteduhan, menyerap karbon, menghasilkan oksigen, dan memperkuat ketahanan kota bagi generasi mendatang.',
       ],
       closing: 'Karena membangun kota yang lebih hijau bukan hanya tugas pemerintah, tetapi gerakan kita bersama.',
     },

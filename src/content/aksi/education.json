@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "title": "Titipkan nama pelajar yang kamu kenal",
+      "desc": "Ada anak di sekitarmu yang terancam berhenti sekolah karena biaya? Kabari kami sekarang; datanya kami kumpulkan sambil jalur beasiswanya kami siapkan.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin menitipkan data pelajar yang terancam berhenti sekolah karena biaya."
+        }
+      }
+    },
+    {
+      "title": "Sisihkan buku dan alat sekolah layak pakai",
+      "desc": "Simpan dulu di tempatmu, jangan dikirim. Kami kabari begitu penyalurannya siap, supaya tidak ada yang menumpuk tanpa tujuan.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya buku dan alat sekolah layak pakai yang ingin disumbangkan."
+        }
+      }
+    }
+  ]
+}

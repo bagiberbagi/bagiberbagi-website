@@ -49,6 +49,27 @@ export default defineConfig({
   redirects: {
     '/program': '/#pintu',
 
+    // Pintu berpindah sumbu dari BENTUK ke PERUNTUKAN, dan seluruh enam URL
+    // lamanya ikut berganti. Dua punya penerus langsung; empat sisanya adalah
+    // pintu yang dibubarkan, jadi diarahkan ke hub — mengirim /berbagi-dana/
+    // ke Pendidikan cuma karena beasiswa pindah ke sana akan menyesatkan orang
+    // yang datang mencari jalur zakat.
+    //
+    // Ini SENGAJA kembar dengan blok 301 di deploy/nginx/bagiberbagi.id.conf,
+    // dan bukan pemborosan: `deploy/**` ada di `paths-ignore` workflow, jadi
+    // berkas nginx tak pernah ikut ter-deploy. Tanpa entri di sini, merge
+    // membuat keenam URL lama mati sampai ada orang menyunting VPS secara
+    // manual. Stub meta-refresh ber-noindex memang lebih lemah dari 301 untuk
+    // mesin pencari, tapi ia hidup sejak menit pertama; nginx lalu menaikkannya
+    // jadi 301 sungguhan kapan pun tanpa jendela mati. Ia juga satu-satunya
+    // bagian perpindahan URL yang bisa diuji lewat `bun run preview`.
+    '/berbagi-makanan': '/peduli/pangan/',
+    '/berbagi-pohon': '/peduli/lingkungan/',
+    '/berbagi-barang': '/peduli/',
+    '/berbagi-dana': '/peduli/',
+    '/berbagi-waktu': '/peduli/',
+    '/berbagi-ruang': '/peduli/',
+
     // Slug jejak yang pernah terbit lalu diganti. Dipertahankan supaya tautan
     // yang sudah tersebar (WhatsApp, Instagram, hasil pencarian) tidak mati.
     //

@@ -534,8 +534,13 @@ const STEPS_PENCATATAN = [
     cards.find((c) => !c.hidden && !before.has(c))?.focus({ preventScroll: true });
   });
 
-  // Deep-link: /jejak/?berbagi=makanan langsung terapkan filter itu bila chip-nya ada.
-  const q = new URLSearchParams(location.search).get('berbagi');
+  // Deep-link: /jejak/?peduli=pangan langsung terapkan filter itu bila chip-nya ada.
+  // `berbagi` tetap dibaca sebagai nama lama supaya tautan yang sudah tersebar
+  // di WhatsApp dan Instagram tidak kehilangan filternya. Slug lama yang tak
+  // dikenal jatuh ke feed penuh, bukan feed kosong — itu perilaku lama dan
+  // sengaja dipertahankan.
+  const params = new URLSearchParams(location.search);
+  const q = params.get('peduli') ?? params.get('berbagi');
   if (q && chips.some((c) => c.dataset.jfilter === q)) filter = q;
   // Render awal juga yang menerapkan pembatasan kartu; markup server tak pernah
   // menyembunyikan kartu, jadi tanpa JS semua jejak tetap terbaca.

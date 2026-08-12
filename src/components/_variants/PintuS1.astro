@@ -234,7 +234,7 @@ import type { ImageMetadata } from 'astro';
 import Container from '../Container.astro';
 import Icon from '../Icon.astro';
 import ProgramCover from '../ProgramCover.astro';
-import { PINTU, type Pintu, type PintuId, type CategoryContent } from '../../consts';
+import { PINTU, type Pintu, type PintuId, type CategoryContent, pintuPath } from '../../consts';
 import type { Program } from '../../lib/programs';
 import type { Impact as PintuImpact } from '../../lib/impact';
 import { formatMetric } from '../../lib/format';
@@ -322,57 +322,57 @@ interface PintuConcept {
 
 const PINTU_CONCEPT: Record<PintuId, PintuConcept> = {
   food: {
-    what: 'Berbagi Makanan menghubungkan dapur yang punya lebih dengan meja yang sedang kurang. Yang berpindah bukan cuma porsi, tapi kepastian bahwa hari itu ada yang dimakan.',
+    what: 'Pangan memastikan ada yang dimakan hari itu, lalu ada lagi pekan depan. Yang berpindah bukan cuma porsi, tapi kepastian bahwa besok tidak kosong.',
     examples: [
       'Donasi paket makan siap antar',
       'Surplus dapur yang masih layak',
-      'Jadi mitra dapur penyalur',
-      'Menyiapkan titik penerima',
+      'Paket sembako untuk keluarga',
+      'Dapur darurat saat bencana',
     ],
   },
-  goods: {
-    what: 'Berbagi Barang memindahkan yang sudah tidak terpakai di satu rumah ke rumah yang masih memerlukannya. Barangnya tetap sama, yang berubah nilainya bagi yang menerima.',
+  education: {
+    what: 'Pendidikan menahan satu hal saja: jangan sampai seorang anak berhenti sekolah karena biaya, padahal kemampuannya cukup.',
     examples: [
-      'Pakaian layak pakai',
-      'Buku dan alat sekolah',
-      'Perlengkapan bayi dan rumah tangga',
-      'Alat kerja yang masih berfungsi',
+      'Beasiswa dan biaya sekolah',
+      'Buku dan alat tulis',
+      'Seragam dan perlengkapan',
+      'Perangkat untuk belajar',
     ],
   },
-  time: {
-    what: 'Berbagi Waktu adalah satu-satunya pintu yang tidak menuntut apa pun selain kehadiran. Keahlian yang kamu pakai sehari-hari sering justru yang paling dicari di kegiatan sosial.',
+  health: {
+    what: 'Kesehatan menutup jarak antara tahu harus berobat dan mampu berobat. Yang ditunda karena biaya hampir selalu berakhir lebih mahal.',
     examples: [
-      'Mengajar dan mendampingi belajar',
-      'Membantu penyaluran di lapangan',
-      'Konsultasi sesuai keahlian',
-      'Mendokumentasikan kegiatan',
+      'Biaya pengobatan',
+      'Pemeriksaan kesehatan warga',
+      'Alat bantu dan alat kesehatan',
+      'Pemenuhan gizi anak dan lansia',
     ],
   },
-  space: {
-    what: 'Berbagi Ruang membuka tempat yang sedang kosong untuk kegiatan yang sedang butuh tempat. Satu aula yang menganggur setengah hari bisa jadi titik penyaluran.',
+  empowerment: {
+    what: 'Pemberdayaan mengubah bantuan sekali jadi penghasilan yang berlanjut. Dapur yang memasak untuk penyaluran bukan penerima bantuan, ia usaha yang sedang tumbuh.',
     examples: [
-      'Aula dan ruang pertemuan',
-      'Gudang penyimpanan sementara',
-      'Dapur bersama',
-      'Kendaraan pengantar',
+      'Order rutin untuk dapur warga',
+      'Modal usaha produktif',
+      'Peralatan kerja',
+      'Pelatihan keterampilan',
     ],
   },
-  money: {
-    what: 'Berbagi Dana menutup bagian yang tidak bisa ditutup barang atau tenaga, mulai dari bahan baku sampai ongkos antar. Setiap penyaluran meninggalkan catatan yang bisa dibaca ulang.',
+  humanitarian: {
+    what: 'Kemanusiaan bekerja di hari-hari pertama, saat bantuan paling menentukan, lalu tetap tinggal sampai pemulihannya selesai.',
     examples: [
-      'Zakat, infak, dan sedekah',
-      'Donasi rutin bulanan',
-      'Dana CSR perusahaan',
-      'Patungan komunitas',
+      'Kebutuhan dasar pascabencana',
+      'Dapur umum darurat',
+      'Pemulihan usaha terdampak',
+      'Kesiapsiagaan relawan',
     ],
   },
-  tree: {
-    what: 'Berbagi Pohon menanam donasi jadi pohon yang meneduhkan kota, menyerap karbon, dan menghasilkan oksigen. Yang ditanam bukan cuma bibit, tapi ketahanan kota untuk generasi mendatang.',
+  environment: {
+    what: 'Lingkungan merawat apa yang baru terasa gunanya bertahun-tahun kemudian. Yang ditanam bukan cuma bibit, tapi ketahanan kota untuk generasi mendatang.',
     examples: [
-      'Tunjuk titik tanam yang panas',
-      'Tawarkan lahan atau bibit',
-      'Rawat pohon yang sudah ditanam',
-      'Donasi untuk pembibitan',
+      'Penanaman dan perawatan pohon',
+      'Bersih sungai dan kawasan',
+      'Bank sampah komunitas',
+      'Akses sanitasi warga',
     ],
   },
 };
@@ -992,7 +992,7 @@ const ARROW_HEAD = 'm13 6 6 6-6 6';
       <div class="s1-doors">
         {otherPintu.map((p) => (
           <a
-            href={`/berbagi-${p.slug}/`}
+            href={pintuPath(p.slug)}
             class="s1-door"
             style={`--cat:${p.color};--cat-tint:${p.colorTint};--cat-deep:${p.colorDeep}`}
             data-fade

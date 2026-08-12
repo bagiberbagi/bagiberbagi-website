@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { PINTU, PINTU_LABEL } from '../consts';
+import { PINTU, PINTU_LABEL, pintuPath } from '../consts';
 import { getPrograms } from '../lib/programs';
 
 /**
@@ -47,7 +47,7 @@ export const GET: APIRoute = async ({ site }) => {
     // salah ("Lima Pintu Berbagi" setelah pintu keenam terbit), dan daftarnya
     // sendiri sudah memberi tahu pembaca ada berapa.
     `## ${PINTU_LABEL}`,
-    ...PINTU.map((p) => `- ${p.label}: ${p.tagline} ${abs(`/berbagi-${p.slug}/`)}`),
+    ...PINTU.map((p) => `- ${p.label}: ${p.tagline} ${abs(pintuPath(p.slug))}`),
     '',
     '## Program',
     ...routed.map((p) => `- ${p.label}: ${p.summary} ${abs(p.href!)}`),

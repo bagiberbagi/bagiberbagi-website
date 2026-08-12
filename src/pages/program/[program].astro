@@ -14,7 +14,7 @@ import { getKetentuan } from '../../lib/ketentuan';
 import { getJejakByProgram } from '../../lib/jejak';
 import { getProgramImpact } from '../../lib/impact';
 import { findPageSeo, ogKeyFromPath } from '../../lib/seo';
-import { PINTU, CATEGORY_CONTENT } from '../../consts';
+import { PINTU, CATEGORY_CONTENT, pintuPath } from '../../consts';
 
 // Satu route untuk semua program aktif ber-halaman, di bawah /program/[slug]/.
 // Begitu editor mengaktifkan program di Keystatic & mengisi Detail, halamannya
@@ -46,8 +46,8 @@ const hasCuratedSeo = seoEntry ? Boolean(findPageSeo(seoEntry.data, Astro.url.pa
 // halaman jelas "dari pintu apa". Fallback ke pintu pertama bila tak ketemu.
 const pintu = PINTU.find((p) => p.id === program.pintuUtama) ?? PINTU[0];
 const styleVars = `--cat:${pintu.color};--cat-tint:${pintu.colorTint};--cat-deep:${pintu.colorDeep}`;
-const pintuHref = `/berbagi-${pintu.slug}/`;
-const jejakHref = `/jejak/?berbagi=${pintu.slug}`;
+const pintuHref = pintuPath(pintu.slug);
+const jejakHref = `/jejak/?peduli=${pintu.slug}`;
 
 // Cabang CTA: self-serve (harga tetap) vs inquiry (paket custom/negosiasi),
 // berbasis slug program, bukan field schema — baru 2 program inquiry di rilis

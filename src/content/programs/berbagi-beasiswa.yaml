@@ -1,5 +1,7 @@
 label: Berbagi Beasiswa
-pintu: money
+pintu:
+  - education
+pintuUtama: education
 order: 1
 active: false
 summary: Dukungan biaya belajar bagi yang membutuhkan.

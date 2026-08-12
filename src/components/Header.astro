@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import { NAV_LINKS, PINTU, PINTU_LABEL } from '../consts';
+import { NAV_LINKS, PINTU, PINTU_LABEL, pintuPath } from '../consts';
 import type { ProgramMenuCategoryData } from '../consts';
 import { getProgramCover, getProgramsByPintu } from '../lib/programs';
 import ProgramMenuCategory from './ProgramMenuCategory.astro';
@@ -18,7 +18,7 @@ const PROGRAM_MENU: ProgramMenuCategoryData[] = await Promise.all(
   PINTU.map(async (cat) => ({
     label: cat.label,
     icon: cat.icon,
-    href: `/berbagi-${cat.slug}/`,
+    href: pintuPath(cat.slug),
     color: cat.color,
     colorTint: cat.colorTint,
     tagline: cat.tagline,

@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "title": "Daftar jadi relawan siaga",
+      "desc": "Saat bencana terjadi, yang paling menentukan adalah siapa yang sudah siap sebelumnya. Tinggalkan kontak dan wilayahmu.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya ingin mendaftar sebagai relawan siaga bencana."
+        }
+      }
+    },
+    {
+      "title": "Siapkan dukungan yang bisa dipanggil mendadak",
+      "desc": "Kendaraan, gudang, dapur, atau jaringan di daerah rawan. Kami hubungi hanya ketika benar-benar dibutuhkan.",
+      "showOnPintu": true,
+      "mechanism": {
+        "discriminant": "conversation",
+        "value": {
+          "message": "Halo, saya punya dukungan (kendaraan/gudang/dapur) yang bisa dipanggil saat darurat."
+        }
+      }
+    }
+  ]
+}

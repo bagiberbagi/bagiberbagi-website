@@ -1,0 +1,80 @@
+---
+// Hub Pintu Berbagi (/peduli/). Dulu sengaja TIDAK ada: selama pintu cuma
+// kategori/filter di samping program, indeksnya cukup PintuSection di beranda.
+// Premis itu gugur begitu pintu memikul navigasi utama dan punya halaman
+// sendiri, dan hub ini sekaligus membayar dua hal lain:
+//
+//   1. Remah roti `/peduli/<slug>/` bisa diturunkan dari URL, bukan
+//      dideklarasikan tangan seperti halaman program terpaksa melakukannya
+//      karena `/program/` tak pernah benar-benar ada.
+//   2. Empat URL pintu lama yang dibubarkan (barang, dana, waktu, ruang) butuh
+//      tujuan pengalihan yang jujur. Mengirimnya ke pintu yang kebetulan
+//      menyerap satu programnya akan menyesatkan; hub yang menjelaskan seluruh
+//      peta tidak.
+//
+// Status tiap pintu diturunkan dari data program, tidak pernah diketik tangan,
+// supaya halaman ini tak bisa mengklaim lebih maju dari kenyataan.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/Container.astro';
+import Icon from '../../components/Icon.astro';
+import { PINTU, PINTU_LABEL, pintuPath } from '../../consts';
+import { getProgramsByPintu } from '../../lib/programs';
+
+const doors = await Promise.all(
+  PINTU.map(async (pintu) => {
+    const programs = await getProgramsByPintu(pintu.id);
+    return { ...pintu, active: programs.some((p) => p.active), count: programs.length };
+  })
+);
+---
+
+<BaseLayout
+  title={`${PINTU_LABEL} | bagiberbagi.id`}
+  description="Enam pintu berbagi bagiberbagi.id: pangan, pendidikan, kesehatan, pemberdayaan, kemanusiaan, dan lingkungan. Pilih yang paling kamu pedulikan."
+  breadcrumbName={PINTU_LABEL}
+>
+  <section class="py-20 md:py-28">
+    <Container width="wide">
+      <header class="max-w-text">
+        <p class="eyebrow">{PINTU_LABEL}</p>
+        <h1 class="text-title-lg font-semibold text-ink mt-2">Pilih yang paling kamu pedulikan.</h1>
+        <p class="text-body text-muted mt-4">
+          Tiap pintu adalah satu hal yang berubah bagi penerimanya. Sebagian sudah berjalan hari
+          ini, sebagian lagi sedang kami siapkan — dan yang mana, ditulis apa adanya di bawah.
+        </p>
+      </header>
+
+      <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-12">
+        {doors.map((pintu) => (
+          <a
+            href={pintuPath(pintu.slug)}
+            data-track="pintu_click"
+            data-track-pintu={pintu.slug}
+            style={`--cat:${pintu.color}`}
+            class="group relative overflow-hidden h-full rounded-card bg-white border border-border p-6 flex flex-col shadow-[0_8px_22px_-16px_rgba(15,23,42,0.28)] transition-all hover:-translate-y-1 hover:border-[var(--cat)]"
+          >
+            <span aria-hidden="true" class="pointer-events-none absolute -right-5 -bottom-7 text-[var(--cat)] opacity-[0.13] transition-opacity duration-300 group-hover:opacity-25">
+              <Icon name={pintu.icon} size={150} color="currentColor" />
+            </span>
+
+            <h2 class="relative text-title-sm font-semibold text-ink">{pintu.label}</h2>
+            <p class="relative text-body-sm text-muted leading-snug mt-2 mb-4 flex-1">{pintu.blurb}</p>
+
+            <span class="relative flex items-center justify-between gap-2 mt-auto">
+              {pintu.active ? (
+                <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-[#10803A]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>Sudah berjalan
+                </span>
+              ) : (
+                <span class="inline-flex items-center gap-1.5 text-micro font-bold uppercase tracking-wide text-muted">
+                  <span class="w-1.5 h-1.5 rounded-full bg-muted/50"></span>Sedang disiapkan
+                </span>
+              )}
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="flex-none text-[var(--cat)] opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </Container>
+  </section>
+</BaseLayout>

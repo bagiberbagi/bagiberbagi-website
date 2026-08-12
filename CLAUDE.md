@@ -12,7 +12,7 @@ Landing page situs donasi bagiberbagi.id (komunitas penyalur bantuan makanan & d
 - `bun run dev` — dev server (http://localhost:4321)
 - `bun run build` — build static site to `dist/`
 - `bun run preview` — preview the production build
-- `bun test` — run unit tests (`src/lib/*.test.ts`, yaitu `format` + `impact`)
+- `bun test` — run unit tests (`src/lib/*.test.ts`: `aksi`, `format`, `geo`, `impact`, `ketentuan`, `photos`, `video`)
 - `bunx astro check` — type-check `.astro` files
 - `bun run check:assets` — after a build, fail if `dist` carries an image no page references (see `.claude/rules/image-pipeline.md`)
 

@@ -6,7 +6,7 @@
     "enabled": false
   },
   "ga4": {
-    "enabled": true,
+    "enabled": false,
     "measurementId": "G-92GCJ4ZG47"
   },
   "metaPixel": {
@@ -16,7 +16,8 @@
     "enabled": false
   },
   "gtm": {
-    "enabled": false
+    "enabled": true,
+    "containerId": "G-92GCJ4ZG47"
   },
   "consentBanner": true
 }

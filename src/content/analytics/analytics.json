@@ -13,7 +13,8 @@
     "enabled": false
   },
   "clarity": {
-    "enabled": false
+    "enabled": true,
+    "projectId": "y443ztsxcr"
   },
   "gtm": {
     "enabled": true,

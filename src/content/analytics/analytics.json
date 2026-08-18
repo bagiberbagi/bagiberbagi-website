@@ -1,9 +1,22 @@
 {
-  "posthog": { "enabled": false, "host": "", "projectKey": "" },
-  "umami": { "enabled": false, "host": "", "websiteId": "" },
-  "ga4": { "enabled": false, "measurementId": "" },
-  "metaPixel": { "enabled": false, "pixelId": "" },
-  "clarity": { "enabled": false, "projectId": "" },
-  "gtm": { "enabled": false, "containerId": "" },
+  "posthog": {
+    "enabled": false
+  },
+  "umami": {
+    "enabled": false
+  },
+  "ga4": {
+    "enabled": true,
+    "measurementId": "G-92GCJ4ZG47"
+  },
+  "metaPixel": {
+    "enabled": false
+  },
+  "clarity": {
+    "enabled": false
+  },
+  "gtm": {
+    "enabled": false
+  },
   "consentBanner": true
 }
